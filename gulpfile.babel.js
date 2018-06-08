@@ -70,6 +70,21 @@ gulp.task('js', () => {
     .pipe(reload({ stream: true }))
 })
 
+gulp.task('jslogon', () => {
+  browserify('./src/js/logon.js')
+    .transform(babelify)
+    .bundle()
+    .on('error', err => console.log(err.message))
+    .pipe(source('logon.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(sourcemaps.write('./'))
+    .pipe(jsmin())
+    .pipe(gulp.dest('./dist/public/js'))
+    .pipe(reload({ stream: true }))
+})
+
+
 gulp.task('img', () => {
   gulp.src('./src/img/**/*.{png,jpg,jpeg,gif,svg}')
     .pipe(imagemin(imageminOptions))
@@ -78,5 +93,5 @@ gulp.task('img', () => {
 
 gulp.task('default', ['server', 'css', 'js'], () => {
   gulp.watch('./src/scss/**/*.+(scss|css)', ['css'])
-  gulp.watch('./src/js/**/*.+(js|json)', ['js'])
+  gulp.watch('./src/js/**/*.+(js|json)', ['js','jslogon'])
 })

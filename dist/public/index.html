@@ -14,48 +14,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
-<body>
-    <nav>
-        <div class="nav-wrapper">
-            <a href="#" class="brand-logo">Transferencia de ficheros</a>
-        </div>
-    </nav>
-        <div class="row">
-            
-                <div class="card-panel logon">
-                    <h4 class="header2">Inicio de sesión</h4>
-                    <div class="row">
-                        <form class="col s12">
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <i class="mdi-action-account-circle prefix"></i>
-                                    <input id="name3" type="text">
-                                    <label for="first_name">Usuario</label>
-                                </div>
+<body class="atos">
+    <div class="progress" id="loader">
+        <div class="indeterminate"></div>
+    </div>
+    <main style="display:none" id="main">
+        <center>
+            <div class="img-logo">
+                <!-- <img class="responsive-img" src="img/atos_logo_0.png" /> -->
+            </div>
+             <div class="indigo-text page-title">File Manager</div>
+             <div class="container"></div>
+            <div class="container">
+                <div class="z-depth-1 grey lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+                    <form class="col s12" method="post" id="formLogon">
+                        <div class='row'>
+                            <div class='col s12'>
+                                    <h5 class="indigo-text">User Logon</h5>
                             </div>
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <i class="mdi-action-lock-outline prefix"></i>
-                                    <input id="password3" type="password">
-                                    <label for="password">Clave</label>
-                                </div>
+                        </div>
+
+                        <div class='row'>
+                            <div class='input-field col s12'>
+                                <i class="prefix material-icons">person</i>
+                                <input class='validate' type='text' name='username' id='username' />
+                                <label for='username'>Enter your name</label>
                             </div>
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <button class="btn cyan waves-effect waves-light right" type="submit" name="action">Aceptar
-                                        <i class="mdi-content-send right"></i>
-                                    </button>
-                                </div>
+                        </div>
+
+                        <div class='row'>
+                            <div class='input-field col s12'>
+                                    <i class="material-icons prefix">lock</i>
+                                <input class='validate' type='password' name='password' id='password' />
+                                <label for='password'>Enter your password</label>
                             </div>
-                    </div>
+                            <label style='float: right;'>
+                                <a class='pink-text' href='#!'>
+                                    <b>Forgot Password?</b>
+                                </a>
+                            </label>
+                        </div>
+
+                        <br />
+                        <center>
+                            <div class='row'>
+                                <button type='submit' id='login-button' name='btn_login' class='col s12 btn btn-large waves-effect indigo'>Login</button>
+                            </div>
+                        </center>
                     </form>
                 </div>
-           
-        </div>
-  
+            </div>
+            <a href="#!">Create account</a>
+        </center>
 
-    <!--JavaScript at end of body for optimized loading-->
+        <div class="section"></div>
+        <div class="section"></div>
+    </main>
+
     <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script type="text/javascript" src="js/logon.js"></script>
 </body>
 
 </html>
