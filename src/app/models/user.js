@@ -7,6 +7,7 @@ let UserModel = {};
 let db;
 
 let dbOpen = function() {
+    console.log(dbPath);
     db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
         if (err) {
             console.error(err.message);
@@ -172,10 +173,10 @@ UserModel.All = function(callback) {
 };
 
 UserModel.Add = function(userData, callback) {
-    let response = {}; 
+    let response = {};
     dbOpen();
     let stmt = db.prepare("SELECT * FROM Users WHERE UserName = ?");
-    console.log('PASSWD:',userData.password);
+    console.log('PASSWD:', userData.password);
     stmt.bind(userData.username);
     stmt.get(function(error, rows) {
         //console.log(JSON.stringify(error)); return;

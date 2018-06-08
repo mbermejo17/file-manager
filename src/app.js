@@ -14,8 +14,9 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/", express.static('/uploads'));
-app.use("/", express.static(path.join(__dirname, 'public')));
+app.use("/", express.static(path.join(__dirname, '..', 'public')));
 app.set('view engine', 'pug');
+app.set("views", path.join(__dirname, "app", "views"));
 
 // Header settings
 app.use((req, res, next) => {
@@ -34,7 +35,7 @@ app.use((req, res, next) => {
 
 // Routes handle requests
 
-app.use("/", userRoutes);
+app.use("/filemanager", userRoutes);
 //app.use("/api", ApiRoutes);
 //app.use("/mnt", MntRoutes);
 
@@ -47,12 +48,12 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-    res.status(error.status || 500);
-    res.json({
+    res.status(error.status || 500).send();
+    /* res.json({
         error: {
             message: error.message
         }
-    });
+    }); */
 });
 
 module.exports = app;

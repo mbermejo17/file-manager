@@ -13,7 +13,7 @@ exports.Index = (req, res, next) => {
     const cookie = req.cookies.sessionId;
     console.log('user:Controller.Index');
     if (cookie === undefined) {
-        res.render('index', { title: 'Logon', message: '' });
+        res.render('logon', { title: 'Logon', message: '' });
     } else {
         if (req.cookies.token) {
             res.render('dashboard', {
@@ -38,17 +38,16 @@ exports.Dashboard = (req, res, next) => {
 
 exports.UserLogin = (req, res, next) => {
     User.Find(`SELECT UserName, UserPasswd, UserRole FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`, (status, data) => {
-        console.log("User Find : " + status);
-        console.dir(data);
+        //console.log("User Find : " + status);
+        //console.dir(data);
         if (status) {
             console.log(status);
             res.status(500).json({ "status": 'FAIL', "message": status });
         } else {
             if (data) {
-                //bcrypt.compare(req.body.password, data.UserPasswd, (err, result) => {
-                //console.log(Base64.encode(req.body.userpasswd));     
-                //console.log(Base64.decode(data.UserPasswd));  
-                if (Base64.decode(req.body.userpasswd) === data.UserPasswd) {
+                //console.log(req.body.password);
+                //console.log(Base64.decode(req.body.password))
+                if (Base64.decode(req.body.password) === data.UserPasswd) {
                     /* const token = jwt.sign({
                         UserName: data.UserName,
                         UserId: data._id
@@ -80,4 +79,3 @@ exports.UserLogin = (req, res, next) => {
         }
     });
 };
-

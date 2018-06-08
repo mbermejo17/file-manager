@@ -10,8 +10,8 @@ global.appRoot = path.resolve(__dirname);
 
 //const server = http.createServer(app);
 let httpsServer = https.createServer({
-    key: fs.readFileSync('./certs/ssl.key'),
-    cert: fs.readFileSync('./certs/ssl.crt')
+    key: fs.readFileSync(global.appRoot + '/app/certs/ssl.key'),
+    cert: fs.readFileSync(global.appRoot + '/app/certs/ssl.crt')
 }, app).listen(port, function() {
     console.log("https server listening on port " + port + "...");
 });

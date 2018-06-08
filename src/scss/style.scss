@@ -1,15 +1,11 @@
 @charset "UTF-8";
-
 // Color
 @import "components/color-variables";
 @import "components/color-classes";
-
 // Variables;
 @import "components/variables";
-
 // Reset
 @import "components/normalize";
-
 @import "components/global";
 @import "components/grid";
 @import "components/icons-material-design";
@@ -18,42 +14,51 @@
 @import "components/transitions";
 @import "components/forms/forms";
 @import "components/buttons";
+@import "components/preloader";
 @import "atos-colors";
-
-
 body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
-  }
+}
 
-  main {
+main {
     flex: 1 0 auto;
     background: -webkit-linear-gradient(top, rgb(205, 205, 205), rgb(255, 255, 255));
     overflow: hidden;
-  }
+}
 
-  .input-field input[type=date]:focus + label,
-  .input-field input[type=text]:focus + label,
-  .input-field input[type=email]:focus + label,
-  .input-field input[type=password]:focus + label {
+.input-field input[type=date]:focus+label,
+.input-field input[type=text]:focus+label,
+.input-field input[type=email]:focus+label,
+.input-field input[type=password]:focus+label {
     color: #e91e63;
-  }
+}
 
-  .input-field input[type=date]:focus,
-  .input-field input[type=text]:focus,
-  .input-field input[type=email]:focus,
-  .input-field input[type=password]:focus {
+.input-field input[type=date]:focus,
+.input-field input[type=text]:focus,
+.input-field input[type=email]:focus,
+.input-field input[type=password]:focus {
     border-bottom: 2px solid #e91e63;
     box-shadow: none;
-  }
+}
 
-  .img-logo {
-      width: auto; 
-      height: 80px;
-  }
-  .page-title {
-      padding: 10px !important;
-      font-weight: bold  !important;
-      font-size: 1.9em !important;
-  }
+.img-logo {
+    width: auto;
+    height: 80px;
+}
+
+.page-title {
+    padding: 10px !important;
+    font-weight: bold !important;
+    font-size: 1.9em !important;
+}
+
+#waiting {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    margin-top: 50%;
+    margin-left: 50%;
+    z-index: 900;
+}
