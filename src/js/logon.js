@@ -6,11 +6,11 @@ import md5 from './vendor/md5.min'
     const READY_STATE_COMPLETE = 4
     const OK = 200
     const NOT_FOUND = 404
-    const preload = d.querySelector('#loader')
+    const loader = d.querySelector('#loader')
     const main = d.querySelector('#main')
     const loginbutton = d.querySelector('#login-button')
 
-   let setCookie = function(name, value, days) {
+    let setCookie = function(name, value, days) {
         var expires = "";
         if (days) {
             var date = new Date();
@@ -19,7 +19,7 @@ import md5 from './vendor/md5.min'
         }
         document.cookie = name + "=" + (value || "") + expires + ";path='/'";
     }
-    
+
 
     let getCookie = function(cname) {
         var name = cname + "=";
@@ -37,13 +37,13 @@ import md5 from './vendor/md5.min'
         return "";
     };
 
-    let logout = function(){
-    setCookie('UserName', '', 0)
-    setCookie('UserRole', '', 0)
-    setCookie('sessionId', '', 0)
-    setCookie('token', '', 0)
-    setCookie('wssURL', '', 0)
-    document.location.href = '/'
+    let logout = function() {
+        setCookie('UserName', '', 0)
+        setCookie('UserRole', '', 0)
+        setCookie('sessionId', '', 0)
+        setCookie('token', '', 0)
+        setCookie('wssURL', '', 0)
+        document.location.href = '/'
     }
 
     let showDashboard = function(data) {
@@ -79,7 +79,7 @@ import md5 from './vendor/md5.min'
             success: (data) => {
                 //console.log(JSON.parse(data))
                 let { status, message } = JSON.parse(data)
-                console.log('status',status)
+                console.log('status', status)
                 if (status === 'FAIL') {
                     d.querySelector('#message').innerHTML = message
                 } else {
@@ -101,7 +101,8 @@ import md5 from './vendor/md5.min'
         })
     }
     //logout()
-    main.style.display = 'block'
-    preload.style.display = 'none'
+    //main.style.display = 'block'
+    waiting.style.display = 'none'
+    loader.style.display = 'none'
     loginbutton.addEventListener('click', submit)
 })(console.log, document)

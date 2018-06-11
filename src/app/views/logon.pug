@@ -21,37 +21,27 @@ html(lang="es")
           .circle
         .circle-clipper.right
           .circle  
-    main#main(style="display:none")
-      center
-        .img-logo
-          // <img class="responsive-img" src="img/atos_logo_0.png" />
-        .indigo-text.page-title File Manager
-        .container
-        .container
-          .z-depth-1.grey.lighten-4.row(style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;")
-            form#formLogon.col.s12(method="post")
-              .row
-                .col.s12
-                  h5.indigo-text User Logon
-              .row
-                .input-field.col.s12
-                  i.prefix.material-icons person
-                  input#username.validate(type="text" name="username")
-                  label(for="username") Enter your name
-              .row
-                .input-field.col.s12
-                  i.material-icons.prefix lock
-                  input#password.validate(type="password" name="password")
-                  label(for="password") Enter your password
-                label(style="float: right;")
-                  a.pink-text(href="#!")
-                    b Forgot Password?
-              br
-              center
-                .row.center
-                  button#login-button.col.s6.btn.waves-effect.btn-unify(type="submit" name="btn_login") Login
-        a(href="#!") Create account
-      .section
-      .section
+    .indigo-text.page-title.center File Manager
+    .row(style="width: 100%")
+      .z-depth-1.grey.lighten-4.col.l4.center
+          form#formLogon.col.l12.center
+            .row
+              .col.l8
+                h5.indigo-text User Logon
+            .row
+              .input-field.col.l8
+                i.prefix.material-icons person
+                input#username.validate(type="text" name="username")
+                label(for="username") Enter your name
+            .row
+              .input-field.col.l8
+                i.material-icons.prefix lock
+                input#password.validate(type="password" name="password")
+                label(for="password") Enter your password
+            br
+            .row.center
+              button#login-button.btn.waves-teal.btn-flat.btn-unify.center(type="submit" name="btn_login") Login
+    .section
+    .section
     script(type="text/javascript" src="js/materialize.min.js")
     script(type="text/javascript" src="js/logon.js")

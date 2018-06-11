@@ -2444,7 +2444,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     var READY_STATE_COMPLETE = 4;
     var OK = 200;
     var NOT_FOUND = 404;
-    var preload = d.querySelector('#loader');
+    var loader = d.querySelector('#loader');
     var main = d.querySelector('#main');
     var loginbutton = d.querySelector('#login-button');
 
@@ -2540,8 +2540,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         });
     }
     //logout()
-    main.style.display = 'block';
-    preload.style.display = 'none';
+    //main.style.display = 'block'
+    waiting.style.display = 'none';
+    loader.style.display = 'none';
     loginbutton.addEventListener('click', submit);
 })(console.log, document);
 

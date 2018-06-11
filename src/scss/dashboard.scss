@@ -1,33 +1,35 @@
-
 .unify {
     background-color: #293037;
 }
 
 .user-session {
-   margin-right: 60px !important;
+    margin-right: 60px !important;
 }
 
 .unify-logo {
-  margin-left: 30px !important;  
+    margin-left: 30px !important;
 }
+
 .btn-unify {
     background: linear-gradient(0deg, rgb(93, 164, 7) 0%, rgb(152, 198, 61) 100%);
     color: white !important;
-    margin-left: 5px !important;  
+    margin-left: 5px !important;
 }
 
 .menu-unify {
-    margin-top:10px;
+    margin-top: 10px;
 }
 
 .btn-unify:hover {
-    color: #293037 !important;
+    // color: #293037 !important;
+    text-decoration: underline;
 }
 
 .unify-text {
     font-size: .9em;
-    color:rgb(93, 164, 7);
+    color: rgb(93, 164, 7);
 }
+
 .main {
     background: -webkit-linear-gradient(top, rgb(205, 205, 205), rgb(255, 255, 255));
     height: 100vh !important;
@@ -38,4 +40,44 @@
     position: absolute;
     width: 100%;
     background-color: #293037;
+}
+
+.path li {
+    display: inline-block;
+    padding-right: 4px;
+    font-size: 1.2em;
+    & a:hover {
+        text-decoration: underline;
+    }
+}
+
+#currentpath {
+    font-size: 1.2em;
+    font-weight: bold;
+    padding-right: 5px;
+}
+
+.checkbox {
+    margin-left: 50px;
+}
+
+[type="checkbox"].filled-in:checked+label:after {
+    border: 2px solid rgb(93, 164, 7);
+    background-color: rgb(93, 164, 7);
+}
+
+.dashboard-statusFiles {
+    font-size: 1.2em;
+}
+
+i.fa {
+    margin-right: 15px;
+}
+
+.container-unify {
+    background-color: #fff;
+}
+
+table.highlight tbody tr:hover {
+    background-color: rgb(207, 233, 200) !important;
 }
