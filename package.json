@@ -4,11 +4,12 @@
   "description": "File Manager",
   "main": "gulpfile.babel.js",
   "scripts": {
-    "start": "gulp"
+    "start": "nodemon --watch src -e pug,scss,js,json ./src/server.js"
   },
   "author": "Manuel Bermejo <mbermejo17@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "autoprefixer": "^8.6.2",
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
     "babelify": "^8.0.0",

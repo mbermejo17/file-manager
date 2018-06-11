@@ -1,0 +1,7 @@
+block logon
+  form.form.logon-container#formLogon(method="post", action="/login") 
+    .logon-title User Logon
+    #message 
+    input(id="username",name="username",placeholder="Nombre usuario",type="text",required)
+    input(id="password",name="password",placeholder="Clave",type="password",required)
+    a.button(href="#", id="login-button") Aceptar

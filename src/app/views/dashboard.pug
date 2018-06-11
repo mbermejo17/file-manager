@@ -1,0 +1,43 @@
+doctype html
+html(lang="es")
+    head
+        meta(charset="utf-8")
+        meta(name="viewport" content="width=device-width,initial-scale=1")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge,chrome=1")
+        title
+        meta(name="description")
+        link(rel="stylesheet" href="/css/materialize.css")
+        link(rel="stylesheet" href="/css/dashboard.css")
+    body.main
+        nav.nav-extended
+            .nav-wrapper.unify 
+                img(src="./img/logo_brand.png" alt="").brand-logo.unify-logo
+                a.brand-logo.center(href='#') File Manager
+                a.user-session.right(href="#")#logout User: bbva
+        .row.center.menu-unify
+            a#home(href="#").waves-effect.waves-light.btn.btn-unify Home
+            a#newfolder(href="#").waves-effect.waves-light.btn.btn-unify New Folder
+            a#deleteFolder(href="#").waves-effect.waves-light.btn.btn-unify Delete Folder  
+            a#deleteFile(href="#").waves-effect.waves-light.btn.btn-unify Delete File
+            a#download(href="#").waves-effect.waves-light.btn.btn-unify Download 
+            a#upload(href="#").waves-effect.waves-light.btn.btn-unify Upload
+        hr  
+        .row
+            .col.m6.l2.dashboard-statusPath.center
+                label#currentpath Path: \
+            .col.m6.l10.dashboard-statusFiles.center
+                label
+                    input#selectAllFiles(type="checkbox").filled-in.col.l3
+                a(href="#")#name.col.l3 Name
+                a(href="#")#size.col.l3 Size
+                a(href="#")#date.col.l3 Date
+        hr            
+        .row.footer-unify
+            .col.l6.s12
+                img(src="./img/logo_brand.png" alt="")
+            .col.l4.offset-12.s12
+                h5.unify-text.right © Unify Inc. 2017
+        input#username(type="hidden" value="bbva")
+        input#path(type="hidden" value="\SEGURIDAD\BBVA\BBVA")
+        script(src="/js/materialize.min.js")
+

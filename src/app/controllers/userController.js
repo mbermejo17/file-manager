@@ -16,6 +16,7 @@ exports.Index = (req, res, next) => {
         res.render('logon', { title: 'Logon', message: '' });
     } else {
         if (req.cookies.token) {
+            console.log("render dashboard");
             res.render('dashboard', {
                 "UserName": data.UserName,
                 "Token": req.cookies.token,
@@ -28,6 +29,7 @@ exports.Index = (req, res, next) => {
 
 exports.Dashboard = (req, res, next) => {
     console.log('user:Controller.Dashboard');
+    console.log(req.cookies)
     res.render('dashboard', {
         "UserName": req.cookies.UserName,
         "Token": req.cookies.token,
@@ -59,7 +61,7 @@ exports.UserLogin = (req, res, next) => {
                         "Role": data.UserRole,
                         "wssURL": wsPath
                     }, JWT_KEY, { expiresIn: "10min" });
-
+                    console.log('token',token);    
                     res.cookie('sessionId', Base64.encode(data.UserName), { maxAge: 900000 });
                     return res.status(200).json({
                         "status": 'OK',
@@ -70,6 +72,13 @@ exports.UserLogin = (req, res, next) => {
                             "wssURL": wsPath
                         }
                     });
+                    /* let userdata = {
+                        "UserName": data.UserName,
+                        "Token": token,
+                        "Role": data.UserRole,
+                        "wssURL": wsPath
+                    }
+                    return res.render('dashboard',userdata); */
                 } else {
                     return res.status(401).json({ "status": 'FAIL', "message": "Auth failed" });
                 }

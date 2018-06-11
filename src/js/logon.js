@@ -10,6 +10,52 @@ import md5 from './vendor/md5.min'
     const main = d.querySelector('#main')
     const loginbutton = d.querySelector('#login-button')
 
+   let setCookie = function(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + ";path='/'";
+    }
+    
+
+    let getCookie = function(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    };
+
+    let logout = function(){
+    setCookie('UserName', '', 0)
+    setCookie('UserRole', '', 0)
+    setCookie('sessionId', '', 0)
+    setCookie('token', '', 0)
+    setCookie('wssURL', '', 0)
+    document.location.href = '/'
+    }
+
+    let showDashboard = function(data) {
+        console.log("hola");
+        setCookie('token', data.Token, 1);
+        setCookie('UserName', data.UserName, 1);
+        setCookie('UserRole', data.Role, 1);
+        setCookie('wssURL', data.wssURL, 1);
+        window.location.href = '/dashboard';
+    };
+
+
     c(loginbutton)
 
     function submit(e) {
@@ -23,7 +69,7 @@ import md5 from './vendor/md5.min'
         console.log(Base64.encode(md5(password)))
         ajax({
             type: 'POST',
-            url: '/filemanager/login',
+            url: '/login',
             data: { username: username, password: Base64.encode(md5(password)) },
             ajaxtimeout: 40000,
             beforeSend: () => {
@@ -31,12 +77,13 @@ import md5 from './vendor/md5.min'
                 waiting.classList.add('active')
             },
             success: (data) => {
-                console.log(JSON.parse(data))
+                //console.log(JSON.parse(data))
                 let { status, message } = JSON.parse(data)
+                console.log('status',status)
                 if (status === 'FAIL') {
                     d.querySelector('#message').innerHTML = message
                 } else {
-                    //d.location.href = message
+                    showDashboard(message)
                     console.log(message)
                 }
             },
@@ -53,6 +100,7 @@ import md5 from './vendor/md5.min'
             }
         })
     }
+    //logout()
     main.style.display = 'block'
     preload.style.display = 'none'
     loginbutton.addEventListener('click', submit)

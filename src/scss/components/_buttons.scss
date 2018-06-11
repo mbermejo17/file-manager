@@ -284,8 +284,7 @@ button.btn-floating {
   &:focus {
     background-color: rgba(0, 0, 0, .1);
   }
-  &.disabled,
-  &.btn-flat[disabled]  {
+  &.disabled {
     background-color: transparent !important;
     color: $button-flat-disabled-color !important;
     cursor: default;

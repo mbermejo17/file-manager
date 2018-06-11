@@ -6,7 +6,6 @@ html(lang="es")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     // Import Google Icon Font
     link(href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
-    // Import materialize.css
     // <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
     link(type="text/css" rel="stylesheet" href="css/style.css" media="screen,projection")
     // Let browser know website is optimized for mobile
@@ -14,7 +13,7 @@ html(lang="es")
   body.atos
     #loader.progress
       .indeterminate
-    #waiting.preloader-wrapper.big
+    #waiting.conatainer.preloader-wrapper.big
       .spinner-layer.spinner-blue-only
         .circle-clipper.left
           .circle
@@ -49,8 +48,8 @@ html(lang="es")
                     b Forgot Password?
               br
               center
-                .row
-                  button#login-button.col.s12.btn.btn-large.waves-effect.indigo(type="submit" name="btn_login") Login
+                .row.center
+                  button#login-button.col.s6.btn.waves-effect.btn-unify(type="submit" name="btn_login") Login
         a(href="#!") Create account
       .section
       .section

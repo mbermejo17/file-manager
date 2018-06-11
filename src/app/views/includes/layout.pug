@@ -1,0 +1,56 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width,initial-scale=1")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge,chrome=1")
+    block metatags
+    link(rel="stylesheet", href="/css/style.css")
+  body
+    block content
+    #modal.modal  
+      .modal-container
+        input(id="cerrar-modal",name="modal", type="radio")
+        label(for="cerrar-modal") X
+        .modal-title Ventana Modal
+        .modal-content
+          .modal--main
+          .modal--footer
+    #preloader
+      .preloader-content
+        .preloader-title Descarga de archivos
+        ul.preloader-file#DownloadfileList
+          li#li0
+            .li-content
+              #li-filename0.li-filename
+              .progress-content
+                #progress-bar0.progress-bar
+                #percent0.percent
+          li#li1
+            .li-content
+              #li-filename1.li-filename
+              .progress-content
+                #progress-bar1.progress-bar
+                #percent1.percent
+          li#li2
+            .li-content
+              #li-filename2.li-filename
+              .progress-content
+                #progress-bar2.progress-bar
+                #percent2.percent
+          li#li3
+            .li-content
+              #li-filename3.li-filename
+              .progress-content
+                #progress-bar3.progress-bar
+                #percent3.percent
+          li#li4
+            .li-content
+              #li-filename4.li-filename
+              .progress-content
+                #progress-bar4.progress-bar
+                #percent4.percent  
+        #download-end.button Cerrar                 
+    #waiting
+      img(src='/img/ajax-loader.gif')    
+    //- script(src="/js/script.js")

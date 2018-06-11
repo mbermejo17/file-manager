@@ -9,7 +9,7 @@
 @import "components/global";
 @import "components/grid";
 @import "components/icons-material-design";
-@import "components/icon";
+
 @import "components/typography";
 @import "components/transitions";
 @import "components/forms/forms";
@@ -61,4 +61,9 @@ main {
     margin-top: 50%;
     margin-left: 50%;
     z-index: 900;
+}
+.btn-unify {
+    background: linear-gradient(0deg, rgb(93, 164, 7) 0%, rgb(152, 198, 61) 100%);
+    color: white !important;
+    margin-left: 5px !important;  
 }

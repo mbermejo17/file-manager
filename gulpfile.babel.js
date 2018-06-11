@@ -11,6 +11,8 @@ import babelify from 'babelify';
 import source from 'vinyl-source-stream';
 import sourcemaps from 'gulp-sourcemaps';
 import buffer from 'vinyl-buffer';
+import autoprefixer from 'gulp-autoprefixer';
+import cleanCSS from 'gulp-clean-css';
 
 const server = browserSync.create();
 
@@ -72,7 +74,7 @@ gulp.task('scriptlogon', () =>
     .pipe(buffer())
     .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./public/js'))
+    .pipe(gulp.dest('./src/public/js'))
 );
 gulp.task('default', () => {
     server.init({
@@ -95,6 +97,15 @@ gulp.task('css', () => {
         .pipe(autoprefixer({ browsers: ['last 2 versions'] }))
         .pipe(cleanCSS())
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./dist/public/css'))
-        .pipe(reload({ stream: true }))
+        .pipe(gulp.dest('./src/public/css'))
+})
+gulp.task('cssdashboard', () => {
+    gulp.src('./src/scss/dashboard.scss')
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(plumber())
+        .pipe(sass())
+        .pipe(autoprefixer({ browsers: ['last 2 versions'] }))
+        .pipe(cleanCSS())
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('./src/public/css'))
 })

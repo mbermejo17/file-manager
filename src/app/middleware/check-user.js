@@ -4,6 +4,8 @@ module.exports = (req, res, next) => {
     console.log('middeleware:check-user');
     const sessionId = req.cookies.sessionId;
     const Token = req.cookies.token;
+    console.log('middleware:check-user:sessionId',sessionId)
+    console.log('middleware:check-user:Token',Token)
     if (sessionId && Token) {
         console.log('Token: ' + Token);
         next();

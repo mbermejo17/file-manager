@@ -1,0 +1,37 @@
+block main
+  .dashboard
+    .dashboard-menu
+      ul
+        li
+          a(href="#")#home Home
+        li
+          a(href="#")#newfolder New Folder
+        li
+          a(href="#")#deleteFolder Delete Folder  
+        li
+          a(href="#")#deleteFile Delete File
+        li
+          a(href="#")#download Download 
+        li
+          a(href="#")#upload Upload
+    .dashboard-status 
+       .dashboard-statusPath 
+        label#currentpath=`Path: \\`
+       .dashboard-statusFiles
+          .checkbox
+            input(type="checkbox")#selectAllFiles 
+          #name
+            a(href="#") Name
+          #size
+            a(href="#") Size
+          #date
+            a(href="#") Date
+    .dashboard-content
+      .dashboard-path
+        ul
+          li
+            input(type="checkbox",disabled)
+            img(src="", alt="").icon
+            a(href="#",class="path-link") ..
+      .dashboard-files
+

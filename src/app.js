@@ -14,10 +14,11 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/", express.static('/uploads'));
-app.use("/", express.static(path.join(__dirname, '..', 'public')));
+app.use("/", express.static(path.join(__dirname,'./', 'public')));
 app.set('view engine', 'pug');
 app.set("views", path.join(__dirname, "app", "views"));
 
+console.log(path.join(__dirname,'./', 'public'));
 // Header settings
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -35,7 +36,7 @@ app.use((req, res, next) => {
 
 // Routes handle requests
 
-app.use("/filemanager", userRoutes);
+app.use("/", userRoutes);
 //app.use("/api", ApiRoutes);
 //app.use("/mnt", MntRoutes);
 
