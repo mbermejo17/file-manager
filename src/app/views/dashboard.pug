@@ -1,137 +1,199 @@
 doctype html
-html(lang="es")
-    head
-        meta(charset="utf-8")
-        meta(name="viewport" content="width=device-width,initial-scale=1")
-        meta(http-equiv="X-UA-Compatible" content="IE=edge,chrome=1")
-        title
-        meta(name="description")
-        link(href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
-        link(rel="stylesheet" href="/css/materialize.css")
-        link(rel="stylesheet" href="/css/font-awesome.min.css")
-        link(rel="stylesheet" href="/css/dashboard.css")
-    body.main
-        nav.nav-extended.responsive
-            .nav-wrapper.unify 
-                img(src="./img/logo_brand.png" alt="").brand-logo.unify-logo
-                a.brand-logo.center(href='#') File Manager
-                a.user-session.right(href="#")#logout 
-                  i.material-icons.left person
-                  | bbva
-        .row.center.menu-unify
-            a#home(href="#").waves-effect.waves-teal.btn-flat.btn-unify Home
-            a#newfolder(href="#").waves-effect.waves-teal.btn-flat.btn-unify New Folder
-            a#deleteFile(href="#").waves-effect.waves-teal.btn-flat.btn-unify Delete
-            a#download(href="#").waves-effect.waves-teal.btn-flat.btn-unify Download 
-            a#upload(href="#").waves-effect.waves-teal.btn-flat.btn-unify Upload
-        .container.container-unify    
-          .row
-            .col.m6.l12#dashboard-statusPath
-              ul.path.left
-                li
-                  label#currentpath Path:
-                li
-                  a(href="#!").breadcrumb Root
-                li
-                  | \    
-                li
-                  a(href="#!").breadcrumb First
-                li
-                  | \
-                li
-                  a(href="#!").breadcrumb Second
-                li
-                  | \   
-              ul.path.right
-                li
-                  a(href="#")#refresh
-                    i.material-icons autorenew     
-          hr 
-          .row
-            table.striped.highlight.responsive-table
-              thead
-                tr
-                  th 
-                    input#selectAllFiles(type="checkbox").filled-in
-                    label(for="selectAllFiles").checkbox.left
-                  th
-                    | Name
-                  th  
-                    | Size
-                  th
-                    | Date
-              tbody
-                tr
-                  td 
-                    input#archivo1(type="checkbox").filled-in
-                    label(for="archivo1").checkbox.left
-                  td
-                    i.fa.fa-folder-o(aria-hidden="true")
-                    | folder1
-                  td  
-                  td
-                    | 10/2/2018
-                tr
-                  td 
-                    input#archivo3(type="checkbox").filled-in
-                    label(for="archivo3").checkbox.left
-                  td
-                    i.fa.fa-file-o(aria-hidden="true")
-                    | Archivo3  
-                  td
-                    | 24578KB
-                  td
-                    | 10/2/2018
-                tr
-                  td 
-                    input#archivo4(type="checkbox").filled-in
-                    label(for="archivo4").checkbox.left
-                  td
-                    i.fa.fa-file-o(aria-hidden="true")
-                    | Archivo4  
-                  td
-                    | 7667565KB
-                  td
-                    | 10/2/2018
-                tr
-                  td 
-                    input#archivo5(type="checkbox").filled-in
-                    label(for="archivo5").checkbox.left
-                  td
-                    i.fa.fa-file-o(aria-hidden="true")
-                    | Archivo5  
-                  td
-                    | 34356KB
-                  td
-                    | 10/2/2018
-                tr
-                  td 
-                    input#archivo6(type="checkbox").filled-in
-                    label(for="archivo6").checkbox.left
-                  td
-                    i.fa.fa-file-o(aria-hidden="true")
-                    | Archivo6  
-                  td
-                    | 68687686KB
-                  td
-                    | 10/2/2018
-                tr
-                  td 
-                    input#archivo7(type="checkbox").filled-in
-                    label(for="archivo7").checkbox.left
-                  td
-                    i.fa.fa-file-o(aria-hidden="true")
-                    | Archivo7  
-                  td
-                    | 77765443KB
-                  td
-                    | 10/2/2018                  
-        .row.footer-unify
-            .col.l6.s12
-                img(src="./img/logo_brand.png" alt="")
-            .col.l4.offset-12.s12
-                h5.unify-text.right Â© Unify KG es titular de la marca comercial 2018
-        input#username(type="hidden" value="bbva")
-        input#path(type="hidden" value="\SEGURIDAD\BBVA\BBVA")
-        script(src="/js/materialize.min.js")
-
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    title Document
+    link(type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection")
+    link(rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons")
+    link(type="text/css" rel="stylesheet" href="css/dashboard.css" media="screen,projection")
+  body
+    .row.head-container
+      .container
+        .col.m3.logo
+          img(src="img/logo_brand.png" alt="Unify Home")
+        .col.m6.center.title
+          | File Manager
+        .col.m3.status.right
+          i.material-icons person
+          a.user-link(href="#") BBVA
+    .row.nav-unify
+      a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Home
+      a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") New Folder
+      a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Delete
+      a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Download
+      a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Upload
+    .row
+    .container
+      .row.line-path
+        ul.path.left
+          li
+            label#currentpath Path:
+          li
+            a.breadcrumb(href="#!") Root
+          li
+            | \
+          li
+            a.breadcrumb(href="#!") Firts
+          li
+            | \
+          li
+            a.breadcrumb(href="#!") Seconds
+          li
+            | \
+        ul.path.right
+          li
+            a#refresh(href="#")
+              i.material-icons autorenew
+      .row.main-container
+        table.striped.highlight.responsive-table
+          thead
+            tr
+              th
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              th
+                | Name
+              th
+                | Size
+              th
+                | Date
+          tbody
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File1
+              td
+                | 288744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File2
+              td
+                | 288654KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+            tr
+              td
+                input#selectAllFiles.filled-in(type="checkbox")
+                label.checkbox.left(for="selectAllFiles")
+              td
+                | File3
+              td
+                | 5872744KB
+              td
+                | 10/04/2018
+    .footer-unify
+      .container
+        .col.m6.left
+          img(src="img/logo_brand.png" alt="")
+        .col.m6.right
+          h5.unify-text.right © Unify Inc. 2018
+    script(type="text/javascript" src="js/materialize.min.js")
