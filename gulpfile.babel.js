@@ -48,7 +48,7 @@ gulp.task('pug', () =>
     .pipe(gulp.dest('./public'))
 );
 
-gulp.task('scripts', () =>
+gulp.task('script', () =>
     browserify('./src/js/index.js')
     .transform(babelify)
     .bundle()
@@ -56,12 +56,13 @@ gulp.task('scripts', () =>
         console.error(err);
         this.emit('end')
     })
-    .pipe(source('script.js'))
+    .pipe(source('dashboard.js'))
     .pipe(buffer())
     .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./public/js'))
+    .pipe(gulp.dest('./src/public/js'))
 );
+
 gulp.task('scriptlogon', () =>
     browserify('./src/js/logon.js')
     .transform(babelify)
