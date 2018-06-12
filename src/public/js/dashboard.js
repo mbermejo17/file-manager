@@ -2,7 +2,6 @@
 "use strict";
 
 (function (c, d) {
-    var userlink = d.querySelector('.user-link');
 
     var setCookie = function setCookie(name, value, days) {
         var expires = "";
@@ -23,10 +22,16 @@
         document.location.href = '/';
     };
 
-    userlink.on('click', function (e) {
+    $('#logout').on('click', function (e) {
         e.preventDefault();
+        $('#logoutmodal').hide();
         logout();
     });
+    $('#cancel').on('click', function (e) {
+        e.preventDefault();
+        $('#logoutmodal').hide();
+    });
+    $('#modaltrigger').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
 })(console.log, document);
 
 },{}]},{},[1]);

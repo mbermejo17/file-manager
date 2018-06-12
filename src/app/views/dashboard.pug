@@ -17,7 +17,7 @@ html(lang="es")
           | File Manager
         .col.m3.status.right
           i.material-icons person
-          a.user-link(href="#") BBVA
+          a#modaltrigger.user-link.modal-trigger(href="#logoutmodal") BBVA
     .row.nav-unify
       a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Home
       a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") New Folder
@@ -196,5 +196,17 @@ html(lang="es")
           img(src="img/logo_brand.png" alt="")
         .col.m6.right
           h5.unify-text.right © Unify Inc. 2018
-    script(type="text/javascript" src="js/materialize.min.js")
+    #logoutmodal(style="display:none").modal
+      #modal-header
+        h5 User logout
+        a.modal_close(href="#")
+      .modal-content
+        h4 Close User Session
+        p Do you want to close the session?
+      .modal-footer
+        a#logout.modal-action.modal-close.waves-effect.waves-green.btn-flat.btn-unify2(href="#!") Yes
+        a#cancel.modal-action.modal-close.waves-effect.waves-green.btn-flat.btn-unify2(href="#!") Cancel
+    script(type="text/javascript" src="js/materialize.min.js")          
+    script(type="text/javascript" src="js/jquery-2.1.1.min.js")
+    script(type="text/javascript" src="js/jquery.leanModal.min.js")
     script(type="text/javascript" src="js/dashboard.js")

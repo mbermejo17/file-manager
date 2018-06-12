@@ -1,7 +1,5 @@
 ((c, d) => {
-    const userlink = d.querySelector('.user-link')
-
-
+   
     const setCookie = function(name, value, days) {
         var expires = "";
         if (days) {
@@ -12,8 +10,7 @@
         document.cookie = name + "=" + (value || "") + expires + ";path='/'";
     }
 
-
-    const logout = ()=>{
+   const logout = ()=>{
         setCookie('UserName', '', 0)
         setCookie('UserRole', '', 0)
         setCookie('sessionId', '', 0)
@@ -22,8 +19,15 @@
         document.location.href = '/'
     }
 
-    userlink.on('click',(e)=>{
+    $('#logout').on('click',(e)=>{
         e.preventDefault()
+        $('#logoutmodal').hide()
         logout()
     })
-})(console.log,document);
+    $('#cancel').on('click',(e)=>{
+        e.preventDefault()
+        $('#logoutmodal').hide()
+    })
+    $('#modaltrigger').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" })
+   
+})(console.log,document)
