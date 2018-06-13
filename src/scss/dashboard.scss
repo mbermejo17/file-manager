@@ -1,6 +1,6 @@
 $color_1: white;
 $color_2: #95C857;
-$color_3: #fff;
+$color_3: #FFF;
 $color_4: #FFF;
 $color_5: black;
 $font_family_1: 'Open Sans';
@@ -58,14 +58,16 @@ body {
 	}	
 }
 
-.btn-unify2 {
-	margin-left: 8px !important;
-	margin-right: 8px !important;
-	color: $color_5 !important;
+.btn2-unify {
 	background: linear-gradient(0deg, rgb(93, 164, 7) 0%, rgb(152, 198, 61) 100%);
-	&:hover{
+	color: $color_5 !important;
+	margin-left: 5px !important;
+	height: 25px;
+	font-size: .8em !important;
+	line-height: 25px;
+	&:hover {
 		text-decoration: underline;
-		color: $color_3 !important;
+		color: $color_4 !important;
 	}
 }
 
@@ -166,7 +168,7 @@ table {
 
 #modal-header {
     background: url(../img/hd-bg.png);
-    padding: 18px 18px 14px 18px;
+    padding: 8px 8px 4px 8px;
     border-bottom: 1px solid #CCC;
     border-top-left-radius: 5px;
     -moz-border-radius-topleft: 5px;
@@ -184,4 +186,10 @@ table {
     height: 14px;
     background: url(../img/modal_close.png);
 	z-index: 2;
+}
+.modal {
+	top: 130px !important;
+	& btn2-unify {
+		margin-left:10px;
+	}
 }

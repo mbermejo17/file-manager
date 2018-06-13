@@ -20,10 +20,10 @@ html(lang="es")
           a#modaltrigger.user-link.modal-trigger(href="#logoutmodal") BBVA
     .row.nav-unify
       a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Home
-      a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") New Folder
-      a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Delete
-      a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Download
-      a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Upload
+      a#newFolder.waves-effect.waves-teal.btn-flat.btn-unify(href="#") New Folder
+      a#delete.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Delete
+      a#download.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Download
+      a#upload.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Upload
     .row
     .container
       .row.line-path
@@ -198,14 +198,13 @@ html(lang="es")
           h5.unify-text.right © Unify Inc. 2018
     #logoutmodal(style="display:none").modal
       #modal-header
-        h5 User logout
-        a.modal_close(href="#")
+        h5 Close User Session
+        a#modalClose.modal_close(href="#hola")
       .modal-content
-        h4 Close User Session
         p Do you want to close the session?
       .modal-footer
-        a#logout.modal-action.modal-close.waves-effect.waves-green.btn-flat.btn-unify2(href="#!") Yes
-        a#cancel.modal-action.modal-close.waves-effect.waves-green.btn-flat.btn-unify2(href="#!") Cancel
+        a#logout.modal-action.modal-close.waves-effect.waves-teal.btn-flat.btn2-unify(href="#!") Yes
+        a#cancel.modal-action.modal-close.waves-effect.waves-teal.btn-flat.btn2-unify(href="#!") Cancel
     script(type="text/javascript" src="js/materialize.min.js")          
     script(type="text/javascript" src="js/jquery-2.1.1.min.js")
     script(type="text/javascript" src="js/jquery.leanModal.min.js")

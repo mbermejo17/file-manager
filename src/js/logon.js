@@ -56,8 +56,6 @@ import md5 from './vendor/md5.min'
     };
 
 
-    c(loginbutton)
-
     function submit(e) {
         e.preventDefault()
         let username = d.querySelector('#username').value

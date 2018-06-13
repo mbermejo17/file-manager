@@ -1,69 +1,102 @@
-@charset "UTF-8";
-// Color
-@import "components/color-variables";
-@import "components/color-classes";
-// Variables;
-@import "components/variables";
-// Reset
-@import "components/normalize";
-@import "components/global";
-@import "components/grid";
-@import "components/icons-material-design";
+$color_1: white;
+$color_2: #95C857;
+$color_3: black;
+$color_4: #FFF;
+$font_family_1: 'Open Sans';
+$font_family_2: 'Open Sans' , 'Arial' , sans-serif;
+$background_color_1: #293037;
+$background_color_2: #fff;
 
-@import "components/typography";
-@import "components/transitions";
-@import "components/forms/forms";
-@import "components/buttons";
-@import "components/preloader";
-@import "atos-colors";
+.head-container {
+	height: 70px;
+	background-image: url(../img/bg_header.png);
+}
+.logo {
+	padding-left: 10px;
+	font-size: 1.2em;
+	color: $color_1;
+	line-height: 70px;
+	font-family: $font_family_1;
+}
+.title {
+	text-align: center;
+	font-size: 1.6em;
+	font-weight: bold;
+	color: $color_1;
+	line-height: 70px;
+	font-family: $font_family_1;
+}
+.status {
+	text-align: right;
+	font-size: 1.2em;
+	color: $color_1;
+	line-height: 70px;
+	font-family: $font_family_1;
+	i {
+		color: $color_3;
+	}
+}
+.user-link {
+	padding-left: 10px;
+	color: $color_2;
+}
 body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
+	background: url(../img/bg_content.png) 0 0 repeat-x transparent;
+	height: 100vh;
 }
-
-main {
-    flex: 1 0 auto;
-    background: -webkit-linear-gradient(top, rgb(205, 205, 205), rgb(255, 255, 255));
-    overflow: hidden;
+.btn2-unify {
+	background: linear-gradient(0deg, rgb(93, 164, 7) 0%, rgb(152, 198, 61) 100%);
+	color: $color_3 !important;
+	margin-left: 5px !important;
+	height: 25px;
+	font-size: .8em !important;
+	line-height: 25px;
+	&:hover {
+		text-decoration: underline;
+		color: $color_4 !important;
+	}
 }
-
-.input-field input[type=date]:focus+label,
-.input-field input[type=text]:focus+label,
-.input-field input[type=email]:focus+label,
-.input-field input[type=password]:focus+label {
-    color: #e91e63;
+.nav-unify {
+	text-align: center;
+	top: 70px;
+	font-family: $font_family_2;
+	font-weight: 400;
+	position: absolute;
+	background: url(../img/bg_navi.png) 0 0 repeat-x transparent;
+	width: 100%;
+	color: $color_2;
+	height: 40px;
 }
-
-.input-field input[type=date]:focus,
-.input-field input[type=text]:focus,
-.input-field input[type=email]:focus,
-.input-field input[type=password]:focus {
-    border-bottom: 2px solid #e91e63;
-    box-shadow: none;
+.footer-unify {
+	height: 70px;
+	bottom: 0px;
+	position: fixed;
+	width: 100%;
+	background-color: $background_color_1;
 }
-
-.img-logo {
-    width: auto;
-    height: 80px;
+.unify-text {
+	font-size: 13px;
+	color: $color_4;
 }
-
-.page-title {
-    padding: 10px !important;
-    font-weight: bold !important;
-    font-size: 1.9em !important;
+.main-container {
+	height: auto;
+	padding-top: 20px;
+	width: 320px;
+	background-color: $background_color_2;
+	text-align: center;
 }
-
-#waiting {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    margin-top: 50%;
-    margin-left: 50%;
-    z-index: 900;
+#formLogon {
+	width: 320px !important;
+	text-align: center;
 }
-.btn-unify {
-    background: linear-gradient(0deg, rgb(93, 164, 7) 0%, rgb(152, 198, 61) 100%);
-    color: white !important;
-    margin-left: 5px !important;  
+.input-field {
+	margin: 0;
+}
+.logon-container {
+	text-align: center;
+}
+.card-panel {
+	text-align: center;
+	width: 380px;
+	margin: 0 auto;
 }
