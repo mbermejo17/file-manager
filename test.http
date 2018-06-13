@@ -1,0 +1,58 @@
+GET https://localhost:8443/api/path HTTP/1.1
+
+###
+
+GET https://localhost:8443/api/user/name/Pepe HTTP/1.1
+
+###
+
+GET https://localhost:8443/api/user/name/Juan HTTP/1.1
+
+###
+
+GET https://localhost:8443/api/user/name/Andres HTTP/1.1
+
+###
+
+GET https://localhost:8443/api/user/id/1 HTTP/1.1
+###
+GET https://localhost:8443/api/user/id/2 HTTP/1.1
+###
+GET https://localhost:8443/api/user/name/pedro HTTP/1.1
+
+###
+
+GET https://localhost:8443/api/user/login HTTP/1.1
+
+###
+
+POST https://localhost:8443/api/user/login HTTP/1.1
+content-type: application/json
+
+{
+    "username": "Pepe",
+    "userpasswd": "YzljMjQ0ZTQ4Y2FhNjQ1NjE4MzEyNWQ3ZDkzNTlmNGI="
+}
+
+###
+POST https://localhost:8443/api/user HTTP/1.1
+content-type: application/json
+
+{
+    "username": "Ramon",
+    "userpasswd": "YzljMjQ0ZTQ4Y2FhNjQ1NjE4MzEyNWQ3ZDkzNTlmNGI=",
+    "userrole" : "user"
+}
+
+
+###
+POST https://localhost:8443/mnt/upload HTTP/1.1
+content-type: multipart/form-data
+
+<request>
+    <sampleFile>sampleFile</sampleFile>
+</request>
+
+
+//curl -H "content-type: application/json" -k -d "{\"username\": \"pepe\", \"userpasswd\": \"YzljMjQ0ZTQ4Y2FhNjQ1NjE4MzEyNWQ3ZDkzNTlmNGI=\"}" -X POST https://localhost:8443/api/user/login
+//{"status":"OK","message":{"UserName":"Pepe","Token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VyTmFtZSI6IlBlcGUiLCJpYXQiOjE1MjY5MDM0OTQsImV4cCI6MTUyNjkwNDA5NH0.CM3ow5wwwxYz8JAthdi9ZqLvZSnoE-i_SszTZUWCkvs","Role":"admin","wssURL":"wss://localhost:8443/client"}}

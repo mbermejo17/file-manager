@@ -2480,6 +2480,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         setCookie('sessionId', '', 0);
         setCookie('token', '', 0);
         setCookie('wssURL', '', 0);
+        setCookie('CompanyName', '', 0);
+        setCookie('RootPath', '', 0);
+        setCookie('AccessString', '', 0);
         document.location.href = '/';
     };
 
@@ -2489,10 +2492,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         setCookie('UserName', data.UserName, 1);
         setCookie('UserRole', data.Role, 1);
         setCookie('wssURL', data.wssURL, 1);
+        setCookie('CompanyName', data.CompanyName, 1);
+        setCookie('RootPath', data.RootPath, 1);
+        setCookie('AccessString', data.AccessString, 1);
         window.location.href = '/dashboard';
     };
-
-    c(loginbutton);
 
     function submit(e) {
         e.preventDefault();

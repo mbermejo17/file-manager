@@ -39,7 +39,7 @@ exports.Dashboard = (req, res, next) => {
 };
 
 exports.UserLogin = (req, res, next) => {
-    User.Find(`SELECT UserName, UserPasswd, UserRole FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`, (status, data) => {
+    User.Find(`SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`, (status, data) => {
         //console.log("User Find : " + status);
         //console.dir(data);
         if (status) {
@@ -61,7 +61,7 @@ exports.UserLogin = (req, res, next) => {
                         "Role": data.UserRole,
                         "wssURL": wsPath
                     }, JWT_KEY, { expiresIn: "10min" });
-                    console.log('token',token);    
+                    console.log('token', token);
                     res.cookie('sessionId', Base64.encode(data.UserName), { maxAge: 900000 });
                     return res.status(200).json({
                         "status": 'OK',
@@ -69,7 +69,10 @@ exports.UserLogin = (req, res, next) => {
                             "UserName": data.UserName,
                             "Token": token,
                             "Role": data.UserRole,
-                            "wssURL": wsPath
+                            "wssURL": wsPath,
+                            "CompanyName": data.CompanyName,
+                            "RootPath": data.RootPath,
+                            "AccessString": data.AccessString
                         }
                     });
                     /* let userdata = {

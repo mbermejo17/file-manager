@@ -3,5 +3,6 @@
     "serverPORT": "8443",
     "dbName": "app.db",
     "dbPath": "./src/app/db",
-    "jwtKey": "Ejz1IpiziX_niPnMw3TGss2UQ"
+    "jwtKey": "Ejz1IpiziX_niPnMw3TGss2UQ",
+    "repositoryPath": "./repository"
 }
