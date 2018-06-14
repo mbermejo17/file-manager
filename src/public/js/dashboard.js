@@ -32,18 +32,20 @@ $(document).ready(function () {
     };
 
     var UserName = getCookie('UserName');
-    var UserRole = getCookie('UserName');
+    var UserRole = getCookie('UserRole');
     var CompanyName = getCookie('CompanyName');
     var RootPath = getCookie('RootPath');
     var AccessString = getCookie('AccessString');
 
     var _AccessString$split = AccessString.split(','),
-        _AccessString$split2 = _slicedToArray(_AccessString$split, 5),
+        _AccessString$split2 = _slicedToArray(_AccessString$split, 7),
         AllowNewFolder = _AccessString$split2[0],
-        AllowDeleteFolder = _AccessString$split2[1],
-        AllowDeleteFile = _AccessString$split2[2],
-        AllowUpload = _AccessString$split2[3],
-        AllowDownload = _AccessString$split2[4];
+        AllowRenameFolder = _AccessString$split2[1],
+        AllowRenameFile = _AccessString$split2[2],
+        AllowDeleteFolder = _AccessString$split2[3],
+        AllowDeleteFile = _AccessString$split2[4],
+        AllowUpload = _AccessString$split2[5],
+        AllowDownload = _AccessString$split2[6];
 
     var currentPath = RootPath + '\\';
 
@@ -73,6 +75,14 @@ $(document).ready(function () {
         $('#currentPath').html(newHtmlContent);
     };
 
+    var showUserProfile = function showUserProfile() {
+        var ModalTitle = 'User Profile';
+        var ModalContent = "<table id=\"tableUserProfile\" class=\"striped highlight\">\n                               <tr><td>User Name:</td><td>" + UserName + "</td></tr>\n                               <tr><td>User Role:</td><td>" + UserRole + "</td></tr> \n                               <tr><td>Company Name:</td><td>" + CompanyName + "</td></tr>\n                               <tr><td colspan=\"2\" style=\"text-align:center;border-botom:1px solid #CCC\"><strong>Access</strong></td></tr>\n                               <tr><td>Allow new Folder:</td><td>" + AllowNewFolder + "</td></tr>\n                               <tr><td>Allow rename Folder:</td><td>" + AllowRenameFolder + "</td></tr>\n                               <tr><td>Allow rename File:</td><td>" + AllowRenameFile + "</td></tr>\n                               <tr><td>Allow delete Folder:</td><td>" + AllowDeleteFolder + "</td></tr>\n                               <tr><td>Allow delete File:</td><td>" + AllowDeleteFile + "</td></tr>\n                               <tr><td>Allow Upload:</td><td>" + AllowUpload + "</td></tr>\n                               <tr><td>Allow Download:</td><td>" + AllowDownload + "</td></tr>\n                            </table>";
+        var htmlContent = "<div id=\"modal-header\">\n          <h5>" + ModalTitle + "</h5>\n          <a class=\"modal_close\" id=\"modalClose\" href=\"#hola\"></a>\n        </div>\n        <div class=\"modal-content\">\n          <p>" + ModalContent + "</p>\n        </div>\n        <div class=\"modal-footer\">\n            <a class=\"modal-action modal-close waves-effect waves-teal btn-flat btn2-unify\" id=\"ModalClose\" href=\"#!\">Close</a>\n        </div>    ";
+        $('#modal').html(htmlContent);
+        $('#modal').show();
+    };
+
     AllowNewFolder === '1' ? $('#NewFolder').removeClass('disabled') : $('#NewFolder').addClass('disabled');
     if (AllowDeleteFolder === '1' && AllowDeleteFile === '1') {
         $('#delete').removeClass('disabled');
@@ -80,8 +90,16 @@ $(document).ready(function () {
         $('#delete').removeClass('disabled');
         $('#delete').addClass('disabled');
     }
+    if (AllowRenameFolder === '1' && AllowRenameFile === '1') {
+        $('#rename').removeClass('disabled');
+    } else {
+        $('#rename').removeClass('disabled');
+        $('#rename').addClass('disabled');
+    }
     AllowUpload == '1' ? $('#upload').removeClass('disabled') : $('#upload').removeClass('disabled').addClass('disabled');
     AllowDownload == '1' ? $('#download').removeClass('disabled') : $('#download').removeClass('disabled').addClass('disabled');
+
+    UserRole == 'admin' ? $('#settings').show() : $('#settings').hide();
 
     $('#modaltrigger').html(UserName);
     $('#modaltrigger').leanModal({
@@ -89,20 +107,43 @@ $(document).ready(function () {
         overlay: 0.45,
         closeButton: ".hidemodal"
     });
+
     $('a').on('click', function (e) {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
+
         e.preventDefault();
         if (!$(this).hasClass('disabled')) {
             switch (this.id) {
+                case 'settings':
+                    break;
+                case 'usertrigger':
+                    $('#Usersdropdown').show();
+                    break;
                 case 'refresh':
                     refreshPath(currentPath);
                     break;
-                case 'logout':
+                case 'userLogout':
+                    $('#Usersdropdown').hide();
+                    $('#logoutmodal').show();
+                    break;
+                case 'ModalUserLogout':
                     $('#logoutmodal').hide();
                     logout();
                     break;
+                case 'userChangePassword':
+                    $('#Usersdropdown').hide();
+                    logout();
+                    break;
+                case 'userProfile':
+                    $('#Usersdropdown').hide();
+                    showUserProfile();
+                    break;
                 case 'modalClose':
+                case 'ModalClose':
+                    $('#modal').hide();
+                    break;
+                case 'logoutModalClose':
                 case 'cancel':
                     $('#logoutmodal').hide();
                     break;

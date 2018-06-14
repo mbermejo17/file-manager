@@ -85,6 +85,9 @@ import md5 from './vendor/md5.min'
                 let { status, message } = JSON.parse(data)
                 console.log('status', status)
                 if (status === 'FAIL') {
+                    M.toast({
+                        html: message
+                    })
                     d.querySelector('#message').innerHTML = message
                 } else {
                     showDashboard(message)
@@ -96,6 +99,9 @@ import md5 from './vendor/md5.min'
                 waiting.style.display = 'none'
             },
             error: (xhr, err) => {
+                M.toast({
+                    html: 'Wrong user name or password'
+                })
                 if (err === 'timeout') {
                     console.log('Timeout Error')
                 } else {

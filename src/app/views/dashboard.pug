@@ -17,10 +17,19 @@ html(lang="es")
           | File Manager
         .col.m3.status.right
           i.material-icons person
-          a#modaltrigger.user-link.modal-trigger(href="#logoutmodal") BBVA
+          a#usertrigger.dropdown-menu.user-link.btn-unify(href="#!",data-activates="Usersdropdown") BBVA
+          ul#Usersdropdown.dropdown-content.dropdown-horizontal-list(style="position: absolute; top: 64px; left: 974.594px; opacity: 1; display: none;")
+            li
+              a#userProfile.btn-unify(href="#") User Profile
+            li
+              a#userChangePassword.btn-unify(href="#") Change Password
+            li
+              a#userLogout.btn-unify(href="#") Logout  
     .row.nav-unify
+      i#settings.material-icons.btn-flat settings
       a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Home
       a#newFolder.waves-effect.waves-teal.btn-flat.btn-unify(href="#") New Folder
+      a#rename.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Rename
       a#delete.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Delete
       a#download.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Download
       a#upload.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Upload
@@ -196,14 +205,15 @@ html(lang="es")
           img(src="img/logo_brand.png" alt="")
         .col.m6.right
           h5.unify-text.right © Unify Inc. 2018
+    #modal(style="display:none").modal      
     #logoutmodal(style="display:none").modal
       #modal-header
         h5 Close User Session
-        a#modalClose.modal_close(href="#hola")
+        a#logoutModalClose.modal_close(href="#hola")
       .modal-content
         p Do you want to close the session?
       .modal-footer
-        a#logout.modal-action.modal-close.waves-effect.waves-teal.btn-flat.btn2-unify(href="#!") Yes
+        a#ModalUserLogout.modal-action.modal-close.waves-effect.waves-teal.btn-flat.btn2-unify(href="#!") Yes
         a#cancel.modal-action.modal-close.waves-effect.waves-teal.btn-flat.btn2-unify(href="#!") Cancel
     script(type="text/javascript" src="js/materialize.min.js")          
     script(type="text/javascript" src="js/jquery-2.1.1.min.js")
