@@ -2539,7 +2539,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
             },
             error: function error(xhr, err) {
                 M.toast({
-                    html: 'Wrong user or password'
+                    html: 'Wrong user name or password'
                 });
                 if (err === 'timeout') {
                     console.log('Timeout Error');

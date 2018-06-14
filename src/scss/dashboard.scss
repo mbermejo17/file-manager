@@ -270,15 +270,17 @@ table {
     border-radius: 2px;
     height: 115px;
     & li {
-        color:$color_2 !important;
+        color: $color_2 !important;
     }
     & li a:hover {
         color: $color_1;
         text-decoration: underline;
     }
-    box-shadow: 0 16px 28px 0 rgba(0,0,0,0.22), 0 25px 55px 0 rgba(0,0,0,0.21);
+    box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22),
+    0 25px 55px 0 rgba(0, 0, 0, 0.21);
 }
-.dropdown-content li:hover, 
+
+.dropdown-content li:hover,
 .dropdown-content li.active {
     background-color: $background_color_1 !important;
 }
@@ -296,7 +298,8 @@ table {
 [type="checkbox"].filled-in:not(:checked)+label:after {
     height: 15px;
     width: 15px;
-}    
+}
+
 #settings {
     color: $color_2;
     width: 5px !important;
@@ -311,16 +314,19 @@ table {
     td {
         padding: 0 !important;
         padding-left: 10px !important;
-        padding-right: 10px !important; 
-        &:nth-child(1){
+        padding-right: 10px !important;
+        &:nth-child(1) {
             width: 50% !important;
             text-align: right;
         }
-        &:nth-child(2){
+        &:nth-child(2) {
             width: 50% !important;
             padding-left: 30px !important;
             text-align: left;
         }
     }
-    
+}
+
+#modal .btn-flat {
+    margin: 10px 20px;
 }

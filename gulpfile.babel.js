@@ -77,6 +77,12 @@ gulp.task('scriptlogon', () =>
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./src/public/js'))
 );
+gulp.task('dev', () => {
+    gulp.start('css');
+    gulp.start('cssdashboard');
+    gulp.start('script');
+    gulp.start('scriptlogon');
+})
 gulp.task('default', () => {
     server.init({
         server: {
