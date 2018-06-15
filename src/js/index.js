@@ -33,7 +33,14 @@ $(document).ready(function() {
     const CompanyName = getCookie('CompanyName');
     const RootPath = getCookie('RootPath');
     const AccessString = getCookie('AccessString');
-    const [AllowNewFolder, AllowRenameFolder, AllowRenameFile, AllowDeleteFolder, AllowDeleteFile, AllowUpload, AllowDownload] = AccessString.split(',');
+    const [AllowNewFolder,
+        AllowRenameFolder,
+        AllowRenameFile,
+        AllowDeleteFolder,
+        AllowDeleteFile,
+        AllowUpload,
+        AllowDownload
+    ] = AccessString.split(',');
     let currentPath = RootPath + '\\';
 
     console.log(AccessString.split(','));
@@ -62,33 +69,47 @@ $(document).ready(function() {
         $('#currentPath').html(newHtmlContent);
     };
 
-    const showUserProfile = () => {
-        let ModalTitle = 'User Profile';
+    const showUserProfile = (w, h, t) => {
+        let ModalTitle = t;
         let ModalContent = `<table id="tableUserProfile" class="striped highlight">
                     <tr><td>User Name:</td><td>${UserName}</td></tr>
                     <tr><td>User Role:</td><td>${UserRole}</td></tr> 
                     <tr><td>Company Name:</td><td>${CompanyName}</td></tr>
                     <tr><td colspan="2" style="text-align:center;border-botom:1px solid #CCC"><strong>Access</strong></td></tr>
                     <tr><td>Allow new Folder:</td><td>`;
-        ModalContent += (AllowNewFolder == '1') ? 'Allow' : 'Deny';
+        ModalContent += (AllowNewFolder == '1') ?
+            'Allow' :
+            'Deny';
         ModalContent += `</td></tr>
                     <tr><td>Allow rename Folder:</td><td>`;
-        ModalContent += (AllowRenameFolder == '1') ? 'Allow' : 'Deny';
+        ModalContent += (AllowRenameFolder == '1') ?
+            'Allow' :
+            'Deny';
         ModalContent += `</td></tr>
                     <tr><td>Allow rename File:</td><td>`;
-        ModalContent += (AllowRenameFile == '1') ? 'Allow' : 'Deny';
+        ModalContent += (AllowRenameFile == '1') ?
+            'Allow' :
+            'Deny';
         ModalContent += `</td></tr>
                     <tr><td>Allow delete Folder:</td><td>`;
-        ModalContent += (AllowDeleteFolder == '1') ? 'Allow' : 'Deny';
+        ModalContent += (AllowDeleteFolder == '1') ?
+            'Allow' :
+            'Deny';
         ModalContent += `</td></tr>
                     <tr><td>Allow delete File:</td><td>`;
-        ModalContent += (AllowDeleteFile == '1') ? 'Allow' : 'Deny';
+        ModalContent += (AllowDeleteFile == '1') ?
+            'Allow' :
+            'Deny';
         ModalContent += `</td></tr>
                     <tr><td>Allow Upload:</td><td>`;
-        ModalContent += (AllowUpload == '1') ? 'Allow' : 'Deny';
+        ModalContent += (AllowUpload == '1') ?
+            'Allow' :
+            'Deny';
         ModalContent += `</td></tr>
                     <tr><td>Allow Download:</td><td>`;
-        ModalContent += (AllowDownload == '1') ? 'Allow' : 'Deny';
+        ModalContent += (AllowDownload == '1') ?
+            'Allow' :
+            'Deny';
         ModalContent += `</td></tr>
                 </table>`;
         let htmlContent = `<div id="modal-header">
@@ -101,7 +122,9 @@ $(document).ready(function() {
                       <div class="modal-footer">
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
                       </div>    `;
-        $('#modal').html(htmlContent).css('width: 40%;height: 440px;');
+        $('#modal')
+            .html(htmlContent)
+            .css('width: ' + w + '%;height: ' + h + 'px;');
         $('#modal').show();
         $('#ModalClose').on('click', () => {
             $('#modal').hide();
@@ -111,8 +134,8 @@ $(document).ready(function() {
         });
     };
 
-    const showChangeUserPassword = () => {
-        let ModalTitle = 'Change User Password';
+    const showChangeUserPassword = (w, h, t) => {
+        let ModalTitle = t;
         let ModalContent = `<div class="row">
                               <div class="input-field col s12">
                                 <input id="newpassword" type="password"/>
@@ -134,7 +157,9 @@ $(document).ready(function() {
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptChangeUserPassword" href="#!">Accept</a>
                       </div>    `;
-        $('#modal').html(htmlContent).css('width: 32%;height: 440px;text-align: center;');
+        $('#modal')
+            .html(htmlContent)
+            .css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
         $('.modal-content').css('width: 400px;');
         $('#modal').show();
         $('#AcceptChangeUserPassword').on('click', (e) => {
@@ -152,18 +177,16 @@ $(document).ready(function() {
                 ajaxtimeout: 40000,
                 beforeSend: () => {
                     /* waiting.style.display = 'block'
-                    waiting
-                        .classList
-                        .add('active') */
+                              waiting
+                                  .classList
+                                  .add('active') */
                 },
                 success: (data) => {
                     //console.log(JSON.parse(data))
                     let { status, message } = JSON.parse(data)
                     console.log('status', status)
                     if (status === 'FAIL') {
-                        M.toast({
-                            html: message
-                        })
+                        M.toast({ html: message })
                         d
                             .querySelector('#message')
                             .innerHTML = message
@@ -178,9 +201,7 @@ $(document).ready(function() {
                     $('#modal').hide()
                 },
                 error: (xhr, err) => {
-                    M.toast({
-                        html: 'Wrong password'
-                    })
+                    M.toast({ html: 'Wrong password' })
                     if (err === 'timeout') {
                         console.log('Timeout Error')
                     } else {
@@ -196,30 +217,36 @@ $(document).ready(function() {
             $('#modal').hide();
         });
     };
-    (AllowNewFolder === '1') ? $('#NewFolder').removeClass('disabled'): $('#NewFolder').addClass('disabled');
-    if (AllowDeleteFolder === '1' && AllowDeleteFile === '1') {
-        $('#delete').removeClass('disabled');
-    } else {
-        $('#delete').removeClass('disabled');
-        $('#delete').addClass('disabled');
-    }
-    if (AllowRenameFolder === '1' && AllowRenameFile === '1') {
-        $('#rename').removeClass('disabled');
-    } else {
-        $('#rename').removeClass('disabled');
-        $('#rename').addClass('disabled');
-    }
-    (AllowUpload == '1') ? $('#upload').removeClass('disabled'): $('#upload').removeClass('disabled').addClass('disabled');
 
-    (AllowDownload == '1') ? $('#download').removeClass('disabled'): $('#download').removeClass('disabled')
-        .addClass('disabled');
-    (UserRole == 'admin') ? $('#settings').show(): $('#settings').hide();
-    $('#modaltrigger').html(UserName);
-    $('#modaltrigger').leanModal({
-        top: 110,
-        overlay: 0.45,
-        closeButton: ".hidemodal"
-    });
+    let refreshBarMenu = () => {
+        (AllowNewFolder === '1') ?
+        $('#NewFolder').removeClass('disabled'): $('#NewFolder').addClass('disabled');
+        if (AllowDeleteFolder === '1' && AllowDeleteFile === '1') {
+            $('#delete').removeClass('disabled');
+        } else {
+            $('#delete').removeClass('disabled');
+            $('#delete').addClass('disabled');
+        }
+        if (AllowRenameFolder === '1' && AllowRenameFile === '1') {
+            $('#rename').removeClass('disabled');
+        } else {
+            $('#rename').removeClass('disabled');
+            $('#rename').addClass('disabled');
+        }
+        (AllowUpload == '1') ?
+        $('#upload').removeClass('disabled'): $('#upload')
+            .removeClass('disabled')
+            .addClass('disabled');
+
+        (AllowDownload == '1') ?
+        $('#download').removeClass('disabled'): $('#download')
+            .removeClass('disabled')
+            .addClass('disabled');
+        (UserRole == 'admin') ?
+        $('#settings').show(): $('#settings').hide();
+        $('#modaltrigger').html(UserName);
+        $('#modaltrigger').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
+    };
     $('a').on('click', function(e) {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
@@ -245,11 +272,11 @@ $(document).ready(function() {
                     break;
                 case 'userChangePassword':
                     $('#Usersdropdown').hide();
-                    showChangeUserPassword()
+                    showChangeUserPassword(32, 440, 'Change User Password');
                     break;
                 case 'userProfile':
                     $('#Usersdropdown').hide();
-                    showUserProfile();
+                    showUserProfile(40, 440, 'User Profile');
                     break;
                 case 'logoutModalClose':
                 case 'cancel':
@@ -260,31 +287,22 @@ $(document).ready(function() {
                     refreshPath(currentPath);
                     break;
                 case 'newFolder':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    M.toast({ html: 'Opcion no disponible' });
                     break;
                 case 'delete':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    M.toast({ html: 'Opcion no disponible' });
                     break;
                 case 'upload':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    M.toast({ html: 'Opcion no disponible' });
                     break;
                 case 'download':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    M.toast({ html: 'Opcion no disponible' });
                     break;
             }
         } else {
-            M.toast({
-                html: 'Opcion no permitida'
-            });
+            M.toast({ html: 'Opcion no permitida' });
         }
     });
-    refreshPath(currentPath)
+    refreshPath(currentPath);
+    refreshBarMenu();
 });

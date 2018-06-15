@@ -2562,9 +2562,9 @@ $(document).ready(function () {
                 ajaxtimeout: 40000,
                 beforeSend: function beforeSend() {
                     /* waiting.style.display = 'block'
-                    waiting
-                        .classList
-                        .add('active') */
+                              waiting
+                                  .classList
+                                  .add('active') */
                 },
                 success: function success(data) {
                     //console.log(JSON.parse(data))
@@ -2574,9 +2574,7 @@ $(document).ready(function () {
 
                     console.log('status', status);
                     if (status === 'FAIL') {
-                        M.toast({
-                            html: message
-                        });
+                        M.toast({ html: message });
                         d.querySelector('#message').innerHTML = message;
                     } else {
                         showDashboard(message);
@@ -2589,9 +2587,7 @@ $(document).ready(function () {
                     $('#modal').hide();
                 },
                 error: function error(xhr, err) {
-                    M.toast({
-                        html: 'Wrong password'
-                    });
+                    M.toast({ html: 'Wrong password' });
                     if (err === 'timeout') {
                         console.log('Timeout Error');
                     } else {
@@ -2625,11 +2621,7 @@ $(document).ready(function () {
     AllowDownload == '1' ? $('#download').removeClass('disabled') : $('#download').removeClass('disabled').addClass('disabled');
     UserRole == 'admin' ? $('#settings').show() : $('#settings').hide();
     $('#modaltrigger').html(UserName);
-    $('#modaltrigger').leanModal({
-        top: 110,
-        overlay: 0.45,
-        closeButton: ".hidemodal"
-    });
+    $('#modaltrigger').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
     $('a').on('click', function (e) {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
@@ -2670,30 +2662,20 @@ $(document).ready(function () {
                     refreshPath(currentPath);
                     break;
                 case 'newFolder':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    M.toast({ html: 'Opcion no disponible' });
                     break;
                 case 'delete':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    M.toast({ html: 'Opcion no disponible' });
                     break;
                 case 'upload':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    M.toast({ html: 'Opcion no disponible' });
                     break;
                 case 'download':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    M.toast({ html: 'Opcion no disponible' });
                     break;
             }
         } else {
-            M.toast({
-                html: 'Opcion no permitida'
-            });
+            M.toast({ html: 'Opcion no permitida' });
         }
     });
     refreshPath(currentPath);
