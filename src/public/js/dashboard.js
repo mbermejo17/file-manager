@@ -2512,9 +2512,9 @@ $(document).ready(function () {
         $('#currentPath').html(newHtmlContent);
     };
 
-    var showUserProfile = function showUserProfile() {
-        var ModalTitle = 'User Profile';
-        var ModalContent = '<table id="tableUserProfile" class="striped highlight">\n                    <tr><td>User Name:</td><td>' + UserName + '</td></tr>\n                    <tr><td>User Role:</td><td>' + UserRole + '</td></tr> \n                    <tr><td>Company Name:</td><td>' + CompanyName + '</td></tr>\n                    <tr><td colspan="2" style="text-align:center;border-botom:1px solid #CCC"><strong>Access</strong></td></tr>\n                    <tr><td>Allow new Folder:</td><td>';
+    var showUserProfile = function showUserProfile(w, h, t) {
+        var ModalTitle = t;
+        var ModalContent = '<table id="tableUserProfile" class="striped highlight">\n                    <tr><td>User Name:</td><td>' + UserName + '</td></tr>\n                    <tr><td>User Role:</td><td>' + UserRole + '</td></tr> \n                    <tr><td>Company Name:</td><td>' + CompanyName + '</td></tr>\n                    <tr><td colspan="2" style="text-align:center;border-botom:1px solid #CCC">&nbsp;</td></tr>\n                    <tr><td>Allow new Folder:</td><td>';
         ModalContent += AllowNewFolder == '1' ? 'Allow' : 'Deny';
         ModalContent += '</td></tr>\n                    <tr><td>Allow rename Folder:</td><td>';
         ModalContent += AllowRenameFolder == '1' ? 'Allow' : 'Deny';
@@ -2530,7 +2530,7 @@ $(document).ready(function () {
         ModalContent += AllowDownload == '1' ? 'Allow' : 'Deny';
         ModalContent += '</td></tr>\n                </table>';
         var htmlContent = '<div id="modal-header">\n                        <h5>' + ModalTitle + '</h5>\n                        <a class="modal_close" id="modalClose" href="#hola"></a>\n                      </div>\n                      <div class="modal-content">\n                        <p>' + ModalContent + '</p>\n                      </div>\n                      <div class="modal-footer">\n                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>\n                      </div>    ';
-        $('#modal').html(htmlContent).css('width: 40%;height: 440px;');
+        $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;');
         $('#modal').show();
         $('#ModalClose').on('click', function () {
             $('#modal').hide();
@@ -2540,11 +2540,11 @@ $(document).ready(function () {
         });
     };
 
-    var showChangeUserPassword = function showChangeUserPassword() {
-        var ModalTitle = 'Change User Password';
+    var showChangeUserPassword = function showChangeUserPassword(w, h, t) {
+        var ModalTitle = t;
         var ModalContent = '<div class="row">\n                              <div class="input-field col s12">\n                                <input id="newpassword" type="password"/>\n                                <label for="newpassword">New Password</label>\n                              </div>\n                              <div class="input-field col s12">\n                                <input id="newpassword2" type="password"/>\n                                <label for="newpassword2">Repeat Password</label>\n                              </div>\n                          </div>';
         var htmlContent = '<div id="modal-header">\n                        <h5>' + ModalTitle + '</h5>\n                        <a class="modal_close" id="modalClose" href="#hola"></a>\n                      </div>\n                      <div class="modal-content">\n                        <p>' + ModalContent + '</p>\n                      </div>\n                      <div class="modal-footer">\n                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>\n                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptChangeUserPassword" href="#!">Accept</a>\n                      </div>    ';
-        $('#modal').html(htmlContent).css('width: 32%;height: 440px;text-align: center;');
+        $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
         $('.modal-content').css('width: 400px;');
         $('#modal').show();
         $('#AcceptChangeUserPassword').on('click', function (e) {
@@ -2603,25 +2603,28 @@ $(document).ready(function () {
             $('#modal').hide();
         });
     };
-    AllowNewFolder === '1' ? $('#NewFolder').removeClass('disabled') : $('#NewFolder').addClass('disabled');
-    if (AllowDeleteFolder === '1' && AllowDeleteFile === '1') {
-        $('#delete').removeClass('disabled');
-    } else {
-        $('#delete').removeClass('disabled');
-        $('#delete').addClass('disabled');
-    }
-    if (AllowRenameFolder === '1' && AllowRenameFile === '1') {
-        $('#rename').removeClass('disabled');
-    } else {
-        $('#rename').removeClass('disabled');
-        $('#rename').addClass('disabled');
-    }
-    AllowUpload == '1' ? $('#upload').removeClass('disabled') : $('#upload').removeClass('disabled').addClass('disabled');
 
-    AllowDownload == '1' ? $('#download').removeClass('disabled') : $('#download').removeClass('disabled').addClass('disabled');
-    UserRole == 'admin' ? $('#settings').show() : $('#settings').hide();
-    $('#modaltrigger').html(UserName);
-    $('#modaltrigger').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
+    var refreshBarMenu = function refreshBarMenu() {
+        AllowNewFolder === '1' ? $('#NewFolder').removeClass('disabled') : $('#NewFolder').addClass('disabled');
+        if (AllowDeleteFolder === '1' && AllowDeleteFile === '1') {
+            $('#delete').removeClass('disabled');
+        } else {
+            $('#delete').removeClass('disabled');
+            $('#delete').addClass('disabled');
+        }
+        if (AllowRenameFolder === '1' && AllowRenameFile === '1') {
+            $('#rename').removeClass('disabled');
+        } else {
+            $('#rename').removeClass('disabled');
+            $('#rename').addClass('disabled');
+        }
+        AllowUpload == '1' ? $('#upload').removeClass('disabled') : $('#upload').removeClass('disabled').addClass('disabled');
+
+        AllowDownload == '1' ? $('#download').removeClass('disabled') : $('#download').removeClass('disabled').addClass('disabled');
+        UserRole == 'admin' ? $('#settings').show() : $('#settings').hide();
+        $('#modaltrigger').html(UserName);
+        $('#modaltrigger').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
+    };
     $('a').on('click', function (e) {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
@@ -2647,11 +2650,11 @@ $(document).ready(function () {
                     break;
                 case 'userChangePassword':
                     $('#Usersdropdown').hide();
-                    showChangeUserPassword();
+                    showChangeUserPassword(32, 440, 'Change User Password');
                     break;
                 case 'userProfile':
                     $('#Usersdropdown').hide();
-                    showUserProfile();
+                    showUserProfile(40, 440, 'User Profile');
                     break;
                 case 'logoutModalClose':
                 case 'cancel':
@@ -2679,6 +2682,7 @@ $(document).ready(function () {
         }
     });
     refreshPath(currentPath);
+    refreshBarMenu();
 });
 
 },{"./vendor/ajax":8,"./vendor/md5.min":9,"js-base64":4}],8:[function(require,module,exports){

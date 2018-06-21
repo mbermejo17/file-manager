@@ -75,7 +75,7 @@ $(document).ready(function() {
                     <tr><td>User Name:</td><td>${UserName}</td></tr>
                     <tr><td>User Role:</td><td>${UserRole}</td></tr> 
                     <tr><td>Company Name:</td><td>${CompanyName}</td></tr>
-                    <tr><td colspan="2" style="text-align:center;border-botom:1px solid #CCC"><strong>Access</strong></td></tr>
+                    <tr><td colspan="2" style="text-align:center;border-botom:1px solid #CCC">&nbsp;</td></tr>
                     <tr><td>Allow new Folder:</td><td>`;
         ModalContent += (AllowNewFolder == '1') ?
             'Allow' :
