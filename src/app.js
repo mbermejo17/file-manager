@@ -4,7 +4,8 @@ const cookieParser = require('cookie-parser');
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 //const ApiRoutes = require("./routes/api");
-const userRoutes = require('./app/routes/userRoute');
+const userRoutes = require('./app/routes/userRoutes');
+const fileRoutes = require('./app/routes/fileRoutes');
 //const MntRoutes = require('./routes/mnt');
 const path = require('path');
 const debug = require('debug');
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
 // Routes handle requests
 
 app.use("/", userRoutes);
+app.use("/files", fileRoutes);
 //app.use("/api", ApiRoutes);
 //app.use("/mnt", MntRoutes);
 
@@ -49,6 +51,7 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
+    console.log(error); 
     res.status(error.status || 500).send();
     /* res.json({
         error: {

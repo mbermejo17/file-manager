@@ -1,11 +1,26 @@
+
 $color_1: white;
 $color_2: #95C857;
 $color_3: black;
 $color_4: #FFF;
-$font_family_1: 'Open Sans';
+$font_family_1: 'Roboto','Open Sans';
 $font_family_2: 'Open Sans' , 'Arial' , sans-serif;
 $background_color_1: #293037;
 $background_color_2: #fff;
+
+@font-face {
+	font-family: 'roboto';
+	src: url('../font/roboto/roboto.eot'); /* IE9 Compat Modes */
+	src: url('../font/roboto/roboto.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+	url('../font/roboto/roboto.woff') format('woff'), /* Modern Browsers */
+	url('../font/roboto/roboto.ttf')  format('truetype'), /* Safari, Android, iOS */
+	url('../font/roboto/roboto.svg#svgFontName') format('svg'); /* Legacy iOS */
+  }
+  
+  /* use the font */
+  body {
+	font-family: 'roboto', sans-serif;
+  }
 
 .head-container {
 	height: 70px;

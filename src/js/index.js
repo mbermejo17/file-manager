@@ -32,6 +32,7 @@ $(document).ready(function() {
     const UserRole = getCookie('UserRole');
     const CompanyName = getCookie('CompanyName');
     const RootPath = getCookie('RootPath');
+    const Token = getCookie('token');
     const AccessString = getCookie('AccessString');
     const [AllowNewFolder,
         AllowRenameFolder,
@@ -58,16 +59,65 @@ $(document).ready(function() {
         setCookie('wssURL', '', 0);
         document.location.href = '/';
     };
-
+    const changePath = (newPath) => {
+        const p1 = currentPath.split(newPath);
+        console.log(p1[0] + "\\" + newPath);
+        currentPath = p1[0] + "\\" + newPath;
+        refreshPath(currentPath);
+        refreshBarMenu();
+    };
     const refreshPath = (cPath) => {
         let cPathArray = cPath.split('\\');
         let newHtmlContent = `<li><label id="currentpath">Path:</label></li>`;
-
+        const headers = new Headers();
+         
+        console.log(cPath);
+        headers.append( 'Authorization', 'Bearer ' + Token);
         cPathArray.forEach((val, idx, array) => {
             newHtmlContent += `<li><a class="breadcrumb" href="#!">${val}</a></li><li></li>`;
         });
         $('#currentPath').html(newHtmlContent);
+
+        $('.breadcrumb').on('click',(e)=>{
+            changePath(e.target.innerText);
+        });
+        fetch('/files?path=' + encodeURI(cPath),{
+            method: 'GET',
+            headers: headers
+        }).then(r =>r.json()).then((data)=>{
+            console.log(data);
+            refreshFilesTable(data);
+        }).catch((err)=>{
+            console.log(err)    
+        });
     };
+
+
+
+    const refreshFilesTable = (data) => {
+        const tbodyContent = document.getElementById("tbl-files").getElementsByTagName('tbody')[0];
+        let newHtmlContent = ``;
+        console.log(data);
+        data.forEach((val, idx, array) => {
+            let fileSize = parseInt(val.size /1024);
+            newHtmlContent += `<tr><td><input class="filled-in" id="${val.name}" type="checkbox">
+                               <label class="checkbox left" for="${val.name}"></label></td>`;
+            if(val.isFolder) {
+                newHtmlContent += `<td><a href="#" class="file-Name">${val.name}</a></td>`;       
+            } else {
+                newHtmlContent += `<td>${val.name}</td>`;
+            }                  
+            newHtmlContent += `<td>${fileSize} KB</td><td>${val.date}</td></tr>`;
+        });
+        tbodyContent.innerHTML= newHtmlContent;
+        $('.file-Name').on('click',(e)=>{
+            console.log(e);
+            refreshPath(currentPath + '\\'+ e.target.innerText);
+            currentPath = currentPath + '\\'+ e.target.innerText;
+            refreshBarMenu();
+        });
+    };
+
 
     const showUserProfile = (w, h, t) => {
         let ModalTitle = t;
@@ -250,8 +300,8 @@ $(document).ready(function() {
     $('a').on('click', function(e) {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
-
         e.preventDefault();
+        
         if (!$(this).hasClass('disabled')) {
             switch (this.id) {
                 case 'settings':
@@ -303,6 +353,7 @@ $(document).ready(function() {
             M.toast({ html: 'Opcion no permitida' });
         }
     });
+    $('#usertrigger').html(UserName).attr('title','Empresa: '+UserCompany);
     refreshPath(currentPath);
     refreshBarMenu();
 });

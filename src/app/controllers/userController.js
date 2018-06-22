@@ -71,7 +71,7 @@ exports.UserLogin = (req, res, next) => {
                             "Role": data.UserRole,
                             "wssURL": wsPath,
                             "CompanyName": data.CompanyName,
-                            "RootPath": data.RootPath,
+                            "RootPath": (data.UserRole === 'admin') ? '/' : data.RootPath,
                             "AccessString": data.AccessString
                         }
                     });

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
-    console.log('middeleware:check-user');
+    console.log('middleware:check-user');
     const sessionId = req.cookies.sessionId;
     const Token = req.cookies.token;
     console.log('middleware:check-user:sessionId',sessionId)

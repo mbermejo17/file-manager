@@ -2472,6 +2472,7 @@ $(document).ready(function () {
     var UserRole = getCookie('UserRole');
     var CompanyName = getCookie('CompanyName');
     var RootPath = getCookie('RootPath');
+    var Token = getCookie('token');
     var AccessString = getCookie('AccessString');
 
     var _AccessString$split = AccessString.split(','),
@@ -2501,15 +2502,62 @@ $(document).ready(function () {
         setCookie('wssURL', '', 0);
         document.location.href = '/';
     };
-
+    var changePath = function changePath(newPath) {
+        var p1 = currentPath.split(newPath);
+        console.log(p1[0] + "\\" + newPath);
+        currentPath = p1[0] + "\\" + newPath;
+        refreshPath(currentPath);
+        refreshBarMenu();
+    };
     var refreshPath = function refreshPath(cPath) {
         var cPathArray = cPath.split('\\');
         var newHtmlContent = '<li><label id="currentpath">Path:</label></li>';
+        var headers = new Headers();
 
+        console.log(cPath);
+        headers.append('Authorization', 'Bearer ' + Token);
         cPathArray.forEach(function (val, idx, array) {
             newHtmlContent += '<li><a class="breadcrumb" href="#!">' + val + '</a></li><li></li>';
         });
         $('#currentPath').html(newHtmlContent);
+
+        $('.breadcrumb').on('click', function (e) {
+            changePath(e.target.innerText);
+        });
+        fetch('/files?path=' + encodeURI(cPath), {
+            method: 'GET',
+            headers: headers
+        }).then(function (r) {
+            return r.json();
+        }).then(function (data) {
+            console.log(data);
+            refreshFilesTable(data);
+        }).catch(function (err) {
+            console.log(err);
+        });
+    };
+
+    var refreshFilesTable = function refreshFilesTable(data) {
+        var tbodyContent = document.getElementById("tbl-files").getElementsByTagName('tbody')[0];
+        var newHtmlContent = '';
+        console.log(data);
+        data.forEach(function (val, idx, array) {
+            var fileSize = parseInt(val.size / 1024);
+            newHtmlContent += '<tr><td><input class="filled-in" id="' + val.name + '" type="checkbox">\n                               <label class="checkbox left" for="' + val.name + '"></label></td>';
+            if (val.isFolder) {
+                newHtmlContent += '<td><a href="#" class="file-Name">' + val.name + '</a></td>';
+            } else {
+                newHtmlContent += '<td>' + val.name + '</td>';
+            }
+            newHtmlContent += '<td>' + fileSize + ' KB</td><td>' + val.date + '</td></tr>';
+        });
+        tbodyContent.innerHTML = newHtmlContent;
+        $('.file-Name').on('click', function (e) {
+            console.log(e);
+            refreshPath(currentPath + '\\' + e.target.innerText);
+            currentPath = currentPath + '\\' + e.target.innerText;
+            refreshBarMenu();
+        });
     };
 
     var showUserProfile = function showUserProfile(w, h, t) {
@@ -2628,8 +2676,8 @@ $(document).ready(function () {
     $('a').on('click', function (e) {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
-
         e.preventDefault();
+
         if (!$(this).hasClass('disabled')) {
             switch (this.id) {
                 case 'settings':
@@ -2681,6 +2729,7 @@ $(document).ready(function () {
             M.toast({ html: 'Opcion no permitida' });
         }
     });
+    $('#usertrigger').html(UserName).attr('title', 'Empresa: ' + UserCompany);
     refreshPath(currentPath);
     refreshBarMenu();
 });
