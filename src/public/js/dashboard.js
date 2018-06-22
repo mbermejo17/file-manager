@@ -2465,7 +2465,7 @@ $(document).ready(function () {
                 return c.substring(name.length, c.length);
             }
         }
-        return "";
+        return '';
     };
 
     var UserName = getCookie('UserName');
@@ -2485,7 +2485,7 @@ $(document).ready(function () {
         AllowUpload = _AccessString$split2[5],
         AllowDownload = _AccessString$split2[6];
 
-    var currentPath = RootPath + '\\';
+    var currentPath = RootPath;
 
     console.log(AccessString.split(','));
     console.log('AllowNewFolder', AllowNewFolder);
@@ -2517,7 +2517,7 @@ $(document).ready(function () {
         console.log(cPath);
         headers.append('Authorization', 'Bearer ' + Token);
         cPathArray.forEach(function (val, idx, array) {
-            newHtmlContent += '<li><a class="breadcrumb" href="#!">' + val + '</a></li><li></li>';
+            newHtmlContent += '<li><a class="breadcrumb" href="#!">' + val + '</a></li>';
         });
         $('#currentPath').html(newHtmlContent);
 
@@ -2729,7 +2729,7 @@ $(document).ready(function () {
             M.toast({ html: 'Opcion no permitida' });
         }
     });
-    $('#usertrigger').html(UserName).attr('title', 'Empresa: ' + UserCompany);
+    $('#usertrigger').html(UserName).attr('title', 'Empresa: ' + CompanyName);
     refreshPath(currentPath);
     refreshBarMenu();
 });

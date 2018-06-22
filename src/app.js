@@ -1,3 +1,4 @@
+/*jslint es6 */
 const express = require("express");
 const app = express();
 const cookieParser = require('cookie-parser');
@@ -14,12 +15,11 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use("/", express.static('/uploads'));
-app.use("/", express.static(path.join(__dirname,'./', 'public')));
+app.use("/", express.static('./repository'));
+app.use("/", express.static('./public'));
 app.set('view engine', 'pug');
 app.set("views", path.join(__dirname, "app", "views"));
 
-console.log(path.join(__dirname,'./', 'public'));
 // Header settings
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-    console.log(error); 
+    console.log(error);
     res.status(error.status || 500).send();
     /* res.json({
         error: {

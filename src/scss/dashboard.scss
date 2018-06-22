@@ -1,16 +1,46 @@
+/* fallback */
+
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url('font/material-design-icons/Material-Design-Icons.woff2') format('woff2'), url('font/material-design-icons/Material-Design-Icons.woff') format('woff'), url('font/material-design-icons/Material-Design-Icons.eot') format('eot'), url('font/material-design-icons/Material-Design-Icons.ttf') format('truetype'), url('font/material-design-icons/Material-Design-Icons.svg') format('svg');
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
 $color_1: white;
 $color_2: #95C857;
 $color_3: #FFF;
 $color_4: #FFF;
 $color_5: black;
-$font_family_1: 'roboto','Open Sans';
+$font_family_1: 'roboto',
+'Open Sans';
 $font_family_2: 'Open Sans',
 'Arial',
 sans-serif;
 $background_color_1: #293037;
 $background_color_2: #FFF;
-$background_color_3: rgb(207, 233, 200);
-$background_color_4: rgb(93, 164, 7);
+$background_color_3: rgb(207,
+233,
+200);
+$background_color_4: rgb(93,
+164,
+7);
 .head-container {
     height: 70px;
     background-image: url(../img/bg_header.png);
@@ -276,8 +306,14 @@ table {
         color: $color_1;
         text-decoration: underline;
     }
-    box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22),
-    0 25px 55px 0 rgba(0, 0, 0, 0.21);
+    box-shadow: 0 16px 28px 0 rgba(0,
+    0,
+    0,
+    0.22),
+    0 25px 55px 0 rgba(0,
+    0,
+    0,
+    0.21);
 }
 
 .dropdown-content li:hover,

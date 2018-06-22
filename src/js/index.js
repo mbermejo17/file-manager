@@ -1,6 +1,6 @@
-import ajax from './vendor/ajax'
+import ajax from './vendor/ajax';
 import { Base64 } from 'js-base64';
-import md5 from './vendor/md5.min'
+import md5 from './vendor/md5.min';
 $(document).ready(function() {
     const setCookie = function(name, value, days) {
         var expires = "";
@@ -25,7 +25,7 @@ $(document).ready(function() {
                 return c.substring(name.length, c.length);
             }
         }
-        return ""
+        return '';
     };
 
     const UserName = getCookie('UserName');
@@ -42,7 +42,7 @@ $(document).ready(function() {
         AllowUpload,
         AllowDownload
     ] = AccessString.split(',');
-    let currentPath = RootPath + '\\';
+    let currentPath = RootPath;
 
     console.log(AccessString.split(','));
     console.log('AllowNewFolder', AllowNewFolder);
@@ -70,25 +70,25 @@ $(document).ready(function() {
         let cPathArray = cPath.split('\\');
         let newHtmlContent = `<li><label id="currentpath">Path:</label></li>`;
         const headers = new Headers();
-         
+
         console.log(cPath);
-        headers.append( 'Authorization', 'Bearer ' + Token);
+        headers.append('Authorization', 'Bearer ' + Token);
         cPathArray.forEach((val, idx, array) => {
-            newHtmlContent += `<li><a class="breadcrumb" href="#!">${val}</a></li><li></li>`;
+            newHtmlContent += `<li><a class="breadcrumb" href="#!">${val}</a></li>`;
         });
         $('#currentPath').html(newHtmlContent);
 
-        $('.breadcrumb').on('click',(e)=>{
+        $('.breadcrumb').on('click', (e) => {
             changePath(e.target.innerText);
         });
-        fetch('/files?path=' + encodeURI(cPath),{
+        fetch('/files?path=' + encodeURI(cPath), {
             method: 'GET',
             headers: headers
-        }).then(r =>r.json()).then((data)=>{
+        }).then(r => r.json()).then((data) => {
             console.log(data);
             refreshFilesTable(data);
-        }).catch((err)=>{
-            console.log(err)    
+        }).catch((err) => {
+            console.log(err);
         });
     };
 
@@ -99,21 +99,21 @@ $(document).ready(function() {
         let newHtmlContent = ``;
         console.log(data);
         data.forEach((val, idx, array) => {
-            let fileSize = parseInt(val.size /1024);
+            let fileSize = parseInt(val.size / 1024);
             newHtmlContent += `<tr><td><input class="filled-in" id="${val.name}" type="checkbox">
                                <label class="checkbox left" for="${val.name}"></label></td>`;
-            if(val.isFolder) {
-                newHtmlContent += `<td><a href="#" class="file-Name">${val.name}</a></td>`;       
+            if (val.isFolder) {
+                newHtmlContent += `<td><a href="#" class="file-Name">${val.name}</a></td>`;
             } else {
                 newHtmlContent += `<td>${val.name}</td>`;
-            }                  
+            }
             newHtmlContent += `<td>${fileSize} KB</td><td>${val.date}</td></tr>`;
         });
-        tbodyContent.innerHTML= newHtmlContent;
-        $('.file-Name').on('click',(e)=>{
+        tbodyContent.innerHTML = newHtmlContent;
+        $('.file-Name').on('click', (e) => {
             console.log(e);
-            refreshPath(currentPath + '\\'+ e.target.innerText);
-            currentPath = currentPath + '\\'+ e.target.innerText;
+            refreshPath(currentPath + '\\' + e.target.innerText);
+            currentPath = currentPath + '\\' + e.target.innerText;
             refreshBarMenu();
         });
     };
@@ -234,15 +234,15 @@ $(document).ready(function() {
                 success: (data) => {
                     //console.log(JSON.parse(data))
                     let { status, message } = JSON.parse(data)
-                    console.log('status', status)
+                    console.log('status', status);
                     if (status === 'FAIL') {
-                        M.toast({ html: message })
+                        M.toast({ html: message });
                         d
                             .querySelector('#message')
-                            .innerHTML = message
+                            .innerHTML = message;
                     } else {
-                        showDashboard(message)
-                        console.log(message)
+                        showDashboard(message);
+                        console.log(message);
                     }
                 },
                 complete: (xhr, status) => {
@@ -251,11 +251,11 @@ $(document).ready(function() {
                     $('#modal').hide()
                 },
                 error: (xhr, err) => {
-                    M.toast({ html: 'Wrong password' })
+                    M.toast({ html: 'Wrong password' });
                     if (err === 'timeout') {
-                        console.log('Timeout Error')
+                        console.log('Timeout Error');
                     } else {
-                        console.log(xhr, err)
+                        console.log(xhr, err);
                     }
                 }
             });
@@ -301,7 +301,7 @@ $(document).ready(function() {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
         e.preventDefault();
-        
+
         if (!$(this).hasClass('disabled')) {
             switch (this.id) {
                 case 'settings':
@@ -353,7 +353,7 @@ $(document).ready(function() {
             M.toast({ html: 'Opcion no permitida' });
         }
     });
-    $('#usertrigger').html(UserName).attr('title','Empresa: '+UserCompany);
+    $('#usertrigger').html(UserName).attr('title', 'Empresa: ' + CompanyName);
     refreshPath(currentPath);
     refreshBarMenu();
 });
