@@ -4,7 +4,7 @@
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    src: url('font/material-design-icons/Material-Design-Icons.woff2') format('woff2'), url('font/material-design-icons/Material-Design-Icons.woff') format('woff'), url('font/material-design-icons/Material-Design-Icons.eot') format('eot'), url('font/material-design-icons/Material-Design-Icons.ttf') format('truetype'), url('font/material-design-icons/Material-Design-Icons.svg') format('svg');
+    src: url('../css/font/material-design-icons/Material-Design-Icons.woff2') format('woff2'), url('../css/font/material-design-icons/Material-Design-Icons.woff') format('woff'), url('../css/font/material-design-icons/Material-Design-Icons.eot') format('eot'), url('../css/font/material-design-icons/Material-Design-Icons.ttf') format('truetype'), url('../css/font/material-design-icons/Material-Design-Icons.svg') format('svg');
 }
 
 .material-icons {
@@ -219,7 +219,7 @@ table {
             width: 20px !important;
         }
         th:nth-child(2) {
-            text-align: center;
+            text-align: left;
             width: 220px !important;
         }
         th:nth-child(3) {
@@ -365,4 +365,18 @@ table {
 
 #modal .btn-flat {
     margin: 10px 20px;
+}
+
+.fas,
+.far {
+    padding-right: 5px !important;
+}
+
+.typeFolder:hover {
+    text-decoration: underline !important;
+    font-weight: bold;
+}
+
+.typeFolder {
+    color: $color_5 !important;
 }

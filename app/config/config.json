@@ -2,7 +2,7 @@
     "wssURL": "wss://localhost:8443",
     "serverPORT": "8443",
     "dbName": "app.db",
-    "dbPath": "./src/app/db",
+    "dbPath": "./app/db",
     "jwtKey": "Ejz1IpiziX_niPnMw3TGss2UQ",
     "repositoryPath": "./repository"
 }

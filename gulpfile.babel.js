@@ -1,3 +1,4 @@
+/*jslint es6*/
 import gulp from 'gulp';
 import plumber from 'gulp-plumber';
 import pug from 'gulp-pug';
@@ -31,7 +32,7 @@ const postcssPlugins = [
 ];
 
 gulp.task('styles', () =>
-    gulp.src('./src/scss/style.scss')
+    gulp.src('./scss/style.scss')
     .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(plumber())
     .pipe(sass(sassOptions))
@@ -42,14 +43,14 @@ gulp.task('styles', () =>
 );
 
 gulp.task('pug', () =>
-    gulp.src('./src/app/views/*.pug')
+    gulp.src('./app/views/*.pug')
     .pipe(plumber())
     .pipe(pug())
     .pipe(gulp.dest('./public'))
 );
 
 gulp.task('script', () =>
-    browserify('./src/js/index.js')
+    browserify('./js/index.js')
     .transform(babelify)
     .bundle()
     .on('error', function(err) {
@@ -60,11 +61,11 @@ gulp.task('script', () =>
     .pipe(buffer())
     .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./src/public/js'))
+    .pipe(gulp.dest('./public/js'))
 );
 
 gulp.task('scriptlogon', () =>
-    browserify('./src/js/logon.js')
+    browserify('./js/logon.js')
     .transform(babelify)
     .bundle()
     .on('error', function(err) {
@@ -75,7 +76,7 @@ gulp.task('scriptlogon', () =>
     .pipe(buffer())
     .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./src/public/js'))
+    .pipe(gulp.dest('./public/js'))
 );
 gulp.task('dev', () => {
     gulp.start('css');
@@ -90,29 +91,29 @@ gulp.task('default', () => {
         },
     });
 
-    watch('./src/scss/**/*.scss', () => gulp.start('styles'));
-    watch('./src/js/**/*.js', () => gulp.start('scripts', server.reload));
-    watch('./src/pug/**/*.pug', () => gulp.start('pug', server.reload));
+    watch('./scss/**/*.scss', () => gulp.start('styles'));
+    watch('./js/**/*.js', () => gulp.start('scripts', server.reload));
+    watch('./pug/**/*.pug', () => gulp.start('pug', server.reload));
 });
 
 
 gulp.task('css', () => {
-    gulp.src('./src/scss/style.scss')
+    gulp.src('./scss/style.scss')
         .pipe(sourcemaps.init({ loadMaps: true }))
         .pipe(plumber())
         .pipe(sass())
         .pipe(autoprefixer({ browsers: ['last 2 versions'] }))
         .pipe(cleanCSS())
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./src/public/css'))
+        .pipe(gulp.dest('./public/css'))
 })
 gulp.task('cssdashboard', () => {
-    gulp.src('./src/scss/dashboard.scss')
+    gulp.src('./scss/dashboard.scss')
         .pipe(sourcemaps.init({ loadMaps: true }))
         .pipe(plumber())
         .pipe(sass())
         .pipe(autoprefixer({ browsers: ['last 2 versions'] }))
         .pipe(cleanCSS())
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./src/public/css'))
+        .pipe(gulp.dest('./public/css'))
 })

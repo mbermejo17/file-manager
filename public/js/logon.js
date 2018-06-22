@@ -1,4 +1,582 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+'use strict';
+
+var _ajax = require('./vendor/ajax');
+
+var _ajax2 = _interopRequireDefault(_ajax);
+
+var _jsBase = require('js-base64');
+
+var _md = require('./vendor/md5.min');
+
+var _md2 = _interopRequireDefault(_md);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (c, d) {
+    var waiting = d.querySelector('#waiting');
+    var READY_STATE_COMPLETE = 4;
+    var OK = 200;
+    var NOT_FOUND = 404;
+    var loader = d.querySelector('#loader');
+    var main = d.querySelector('#main');
+    var loginbutton = d.querySelector('#login-button');
+
+    var setCookie = function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + ";path='/'";
+    };
+
+    var getCookie = function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    };
+
+    var logout = function logout() {
+        setCookie('UserName', '', 0);
+        setCookie('UserRole', '', 0);
+        setCookie('sessionId', '', 0);
+        setCookie('token', '', 0);
+        setCookie('wssURL', '', 0);
+        setCookie('CompanyName', '', 0);
+        setCookie('RootPath', '', 0);
+        setCookie('AccessString', '', 0);
+        document.location.href = '/';
+    };
+
+    var showDashboard = function showDashboard(data) {
+        console.log("hola");
+        setCookie('token', data.Token, 1);
+        setCookie('UserName', data.UserName, 1);
+        setCookie('UserRole', data.Role, 1);
+        setCookie('wssURL', data.wssURL, 1);
+        setCookie('CompanyName', data.CompanyName, 1);
+        setCookie('RootPath', data.RootPath, 1);
+        setCookie('AccessString', data.AccessString, 1);
+        window.location.href = '/dashboard';
+    };
+
+    function submit(e) {
+        e.preventDefault();
+        var username = d.querySelector('#username').value;
+        var password = d.querySelector('#password').value;
+        var form = d.querySelector('#formLogon');
+        //d.querySelector('#password').value = Base64.encode(md5(password)
+        console.log(password);
+        console.log((0, _md2.default)(password));
+        console.log(_jsBase.Base64.encode((0, _md2.default)(password)));
+        (0, _ajax2.default)({
+            type: 'POST',
+            url: '/login',
+            data: { username: username, password: _jsBase.Base64.encode((0, _md2.default)(password)) },
+            ajaxtimeout: 40000,
+            beforeSend: function beforeSend() {
+                waiting.style.display = 'block';
+                waiting.classList.add('active');
+            },
+            success: function success(data) {
+                //console.log(JSON.parse(data))
+                var _JSON$parse = JSON.parse(data),
+                    status = _JSON$parse.status,
+                    message = _JSON$parse.message;
+
+                console.log('status', status);
+                if (status === 'FAIL') {
+                    M.toast({
+                        html: message
+                    });
+                    d.querySelector('#message').innerHTML = message;
+                } else {
+                    showDashboard(message);
+                    console.log(message);
+                }
+            },
+            complete: function complete(xhr, status) {
+                console.log(xhr, status);
+                waiting.style.display = 'none';
+            },
+            error: function error(xhr, err) {
+                M.toast({
+                    html: 'Wrong user name or password'
+                });
+                if (err === 'timeout') {
+                    console.log('Timeout Error');
+                } else {
+                    console.log(xhr, err);
+                }
+            }
+        });
+    }
+    //logout()
+    //main.style.display = 'block'
+    waiting.style.display = 'none';
+    loader.style.display = 'none';
+    loginbutton.addEventListener('click', submit);
+})(console.log, document);
+
+},{"./vendor/ajax":2,"./vendor/md5.min":3,"js-base64":7}],2:[function(require,module,exports){
+'use strict';
+
+var type;
+try {
+  type = require('type-of');
+} catch (ex) {
+  // hide from browserify
+  var r = require;
+  type = r('type');
+}
+
+var jsonpID = 0;
+var document = window.document;
+var key;
+var name;
+// var rscript = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi
+var scriptTypeRE = /^(?:text|application)\/javascript/i;
+var xmlTypeRE = /^(?:text|application)\/xml/i;
+var jsonType = 'application/json';
+var htmlType = 'text/html';
+var blankRE = /^\s*$/;
+
+var ajax = module.exports = function (options) {
+  var settings = extend({}, options || {});
+  for (key in ajax.settings) {
+    if (settings[key] === undefined) settings[key] = ajax.settings[key];
+  }
+
+  ajaxStart(settings);
+
+  if (!settings.crossDomain) {
+    settings.crossDomain = /^([\w-]+:)?\/\/([^\/]+)/.test(settings.url) && RegExp.$2 !== window.location.host;
+  }
+
+  var dataType = settings.dataType;
+  var hasPlaceholder = /=\?/.test(settings.url);
+  if (dataType === 'jsonp' || hasPlaceholder) {
+    if (!hasPlaceholder) settings.url = appendQuery(settings.url, 'callback=?');
+    return ajax.JSONP(settings);
+  }
+
+  if (!settings.url) settings.url = window.location.toString();
+  serializeData(settings);
+
+  var mime = settings.accepts[dataType];
+  var baseHeaders = {};
+  var protocol = /^([\w-]+:)\/\//.test(settings.url) ? RegExp.$1 : window.location.protocol;
+  var xhr = ajax.settings.xhr();
+  var abortTimeout;
+
+  if (settings.ajaxtimeout) xhr.timeout = settings.ajaxtimeout;
+  if (!settings.crossDomain) baseHeaders['X-Requested-With'] = 'XMLHttpRequest';
+  if (mime) {
+    baseHeaders['Accept'] = mime;
+    if (mime.indexOf(',') > -1) mime = mime.split(',', 2)[0];
+    xhr.overrideMimeType && xhr.overrideMimeType(mime);
+  }
+  if (settings.contentType || settings.data && settings.type.toUpperCase() !== 'GET') {
+    baseHeaders['Content-Type'] = settings.contentType || 'application/x-www-form-urlencoded';
+  }
+  settings.headers = extend(baseHeaders, settings.headers || {});
+  xhr.ontimeout = function () {
+    ajaxError(null, 'timeout', xhr, settings);
+  };
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      clearTimeout(abortTimeout);
+      var result;
+      var error = false;
+      if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 0 && protocol === 'file:') {
+        dataType = dataType || mimeToDataType(xhr.getResponseHeader('content-type'));
+        result = xhr.responseText;
+
+        try {
+          if (dataType === 'script') (1, eval)(result);else if (dataType === 'xml') result = xhr.responseXML;else if (dataType === 'json') result = blankRE.test(result) ? null : JSON.parse(result);
+        } catch (e) {
+          error = e;
+        }
+
+        if (error) ajaxError(error, 'parsererror', xhr, settings);else ajaxSuccess(result, xhr, settings);
+      } else {
+        if (xhr.status !== 0) {
+          ajaxError(null, 'error', xhr, settings);
+        }
+      }
+    }
+  };
+
+  var async = 'async' in settings ? settings.async : true;
+  xhr.open(settings.type, settings.url, async);
+
+  for (name in settings.headers) {
+    xhr.setRequestHeader(name, settings.headers[name]);
+  }if (ajaxBeforeSend(xhr, settings) === false) {
+    xhr.abort();
+    return false;
+  }
+
+  /* if (settings.timeout > 0) abortTimeout = setTimeout(function() {
+      xhr.onreadystatechange = empty
+      xhr.abort()
+      ajaxError(null, 'timeout', xhr, settings)
+  }, settings.timeout) */
+
+  // avoid sending empty string (#319)
+  xhr.send(settings.data ? settings.data : null);
+  return xhr;
+};
+
+// trigger a custom event and return false if it was cancelled
+function triggerAndReturn(context, eventName, data) {
+  // todo: Fire off some events
+  // var event = $.Event(eventName)
+  // $(context).trigger(event, data)
+  return true; //! event.defaultPrevented
+}
+
+// trigger an Ajax "global" event
+function triggerGlobal(settings, context, eventName, data) {
+  if (settings.global) return triggerAndReturn(context || document, eventName, data);
+}
+
+// Number of active Ajax requests
+ajax.active = 0;
+
+function ajaxStart(settings) {
+  if (settings.global && ajax.active++ === 0) triggerGlobal(settings, null, 'ajaxStart');
+}
+
+function ajaxStop(settings) {
+  if (settings.global && ! --ajax.active) triggerGlobal(settings, null, 'ajaxStop');
+}
+
+// triggers an extra global event "ajaxBeforeSend" that's like "ajaxSend" but cancelable
+function ajaxBeforeSend(xhr, settings) {
+  var context = settings.context;
+  if (settings.beforeSend.call(context, xhr, settings) === false || triggerGlobal(settings, context, 'ajaxBeforeSend', [xhr, settings]) === false) {
+    return false;
+  }
+
+  triggerGlobal(settings, context, 'ajaxSend', [xhr, settings]);
+}
+
+function ajaxSuccess(data, xhr, settings) {
+  var context = settings.context;
+  var status = 'success';
+  settings.success.call(context, data, status, xhr);
+  triggerGlobal(settings, context, 'ajaxSuccess', [xhr, settings, data]);
+  ajaxComplete(status, xhr, settings);
+}
+// type: "timeout", "error", "abort", "parsererror"
+function ajaxError(error, type, xhr, settings) {
+  var context = settings.context;
+  settings.error.call(context, xhr, type, error);
+  triggerGlobal(settings, context, 'ajaxError', [xhr, settings, error]);
+  ajaxComplete(type, xhr, settings);
+}
+// status: "success", "notmodified", "error", "timeout", "abort", "parsererror"
+function ajaxComplete(status, xhr, settings) {
+  var context = settings.context;
+  settings.complete.call(context, xhr, status);
+  triggerGlobal(settings, context, 'ajaxComplete', [xhr, settings]);
+  ajaxStop(settings);
+}
+
+// Empty function, used as default callback
+function empty() {}
+
+ajax.JSONP = function (options) {
+  if (!('type' in options)) return ajax(options);
+  var callbackName = 'jsonp' + ++jsonpID;
+  var script = document.createElement('script');
+  var abort = function abort() {
+    // todo: remove script
+    // $(script).remove()
+    if (callbackName in window) window[callbackName] = empty;
+    ajaxComplete('abort', xhr, options);
+  };
+  var xhr = { abort: abort };
+  var abortTimeout;
+  var head = document.getElementsByTagName('head')[0] || document.documentElement;
+
+  if (options.error) {
+    script.onerror = function () {
+      xhr.abort();
+      options.error();
+    };
+  }
+
+  window[callbackName] = function (data) {
+    clearTimeout(abortTimeout);
+    // todo: remove script
+    // $(script).remove()
+    delete window[callbackName];
+    ajaxSuccess(data, xhr, options);
+  };
+
+  serializeData(options);
+  script.src = options.url.replace(/=\?/, '=' + callbackName);
+
+  // Use insertBefore instead of appendChild to circumvent an IE6 bug.
+  // This arises when a base node is used (see jQuery bugs #2709 and #4378).
+  head.insertBefore(script, head.firstChild);
+
+  if (options.timeout > 0) {
+    abortTimeout = setTimeout(function () {
+      xhr.abort();
+      ajaxComplete('timeout', xhr, options);
+    }, options.timeout);
+  }
+
+  return xhr;
+};
+
+ajax.settings = {
+  // Default type of request
+  type: 'GET',
+  // Callback that is executed before request
+  beforeSend: empty,
+  // Callback that is executed if the request succeeds
+  success: empty,
+  // Callback that is executed the the server drops error
+  error: empty,
+  // Callback that is executed on request complete (both: error and success)
+  complete: empty,
+  // The context for the callbacks
+  context: null,
+  // Whether to trigger "global" Ajax events
+  global: true,
+  // Transport
+  xhr: function xhr() {
+    return new window.XMLHttpRequest();
+  },
+  // MIME types mapping
+  accepts: {
+    script: 'text/javascript, application/javascript',
+    json: jsonType,
+    xml: 'application/xml, text/xml',
+    html: htmlType,
+    text: 'text/plain'
+  },
+  // Whether the request is to another domain
+  crossDomain: false,
+  // Default timeout
+  timeout: 0
+};
+
+function mimeToDataType(mime) {
+  return mime && (mime === htmlType ? 'html' : mime === jsonType ? 'json' : scriptTypeRE.test(mime) ? 'script' : xmlTypeRE.test(mime) && 'xml') || 'text';
+}
+
+function appendQuery(url, query) {
+  return (url + '&' + query).replace(/[&?]{1,2}/, '?');
+}
+
+// serialize payload and append it to the URL for GET requests
+function serializeData(options) {
+  if (type(options.data) === 'object') options.data = param(options.data);
+  if (options.data && (!options.type || options.type.toUpperCase() === 'GET')) {
+    options.url = appendQuery(options.url, options.data);
+  }
+}
+
+ajax.get = function (url, success) {
+  return ajax({ url: url, success: success });
+};
+
+ajax.post = function (url, data, success, dataType) {
+  if (type(data) === 'function') {
+    dataType = dataType || success;
+    success = data;
+    data = null;
+  }
+  return ajax({ type: 'POST', url: url, data: data, success: success, dataType: dataType });
+};
+
+ajax.getJSON = function (url, success) {
+  return ajax({ url: url, success: success, dataType: 'json' });
+};
+
+var escape = encodeURIComponent;
+
+function serialize(params, obj, traditional, scope) {
+  var array = type(obj) === 'array';
+  for (var key in obj) {
+    var value = obj[key];
+
+    if (scope) key = traditional ? scope : scope + '[' + (array ? '' : key) + ']';
+    // handle data in serializeArray() format
+    if (!scope && array) params.add(value.name, value.value);
+    // recurse into nested objects
+    else if (traditional ? type(value) === 'array' : type(value) === 'object') {
+        serialize(params, value, traditional, key);
+      } else params.add(key, value);
+  }
+}
+
+function param(obj, traditional) {
+  var params = [];
+  params.add = function (k, v) {
+    this.push(escape(k) + '=' + escape(v));
+  };
+  serialize(params, obj, traditional);
+  return params.join('&').replace('%20', '+');
+}
+
+function extend(target) {
+  var slice = Array.prototype.slice;
+  slice.call(arguments, 1).forEach(function (source) {
+    for (key in source) {
+      if (source[key] !== undefined) {
+        target[key] = source[key];
+      }
+    }
+  });
+  return target;
+}
+
+},{"type-of":9}],3:[function(require,module,exports){
+(function (process,global){
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+/**
+ * [js-md5]{@link https://github.com/emn178/js-md5}
+ *
+ * @namespace md5
+ * @version 0.7.3
+ * @author Chen, Yi-Cyuan [emn178@gmail.com]
+ * @copyright Chen, Yi-Cyuan 2014-2017
+ * @license MIT
+ */
+!function () {
+    "use strict";
+
+    function t(t) {
+        if (t) d[0] = d[16] = d[1] = d[2] = d[3] = d[4] = d[5] = d[6] = d[7] = d[8] = d[9] = d[10] = d[11] = d[12] = d[13] = d[14] = d[15] = 0, this.blocks = d, this.buffer8 = l;else if (a) {
+            var r = new ArrayBuffer(68);
+            this.buffer8 = new Uint8Array(r), this.blocks = new Uint32Array(r);
+        } else this.blocks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        this.h0 = this.h1 = this.h2 = this.h3 = this.start = this.bytes = this.hBytes = 0, this.finalized = this.hashed = !1, this.first = !0;
+    }var r = "input is invalid type",
+        e = "object" == (typeof window === "undefined" ? "undefined" : _typeof(window)),
+        i = e ? window : {};
+    i.JS_MD5_NO_WINDOW && (e = !1);var s = !e && "object" == (typeof self === "undefined" ? "undefined" : _typeof(self)),
+        h = !i.JS_MD5_NO_NODE_JS && "object" == (typeof process === "undefined" ? "undefined" : _typeof(process)) && process.versions && process.versions.node;
+    h ? i = global : s && (i = self);var f = !i.JS_MD5_NO_COMMON_JS && "object" == (typeof module === "undefined" ? "undefined" : _typeof(module)) && module.exports,
+        o = "function" == typeof define && define.amd,
+        a = !i.JS_MD5_NO_ARRAY_BUFFER && "undefined" != typeof ArrayBuffer,
+        n = "0123456789abcdef".split(""),
+        u = [128, 32768, 8388608, -2147483648],
+        y = [0, 8, 16, 24],
+        c = ["hex", "array", "digest", "buffer", "arrayBuffer", "base64"],
+        p = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split(""),
+        d = [],
+        l;if (a) {
+        var A = new ArrayBuffer(68);
+        l = new Uint8Array(A), d = new Uint32Array(A);
+    }!i.JS_MD5_NO_NODE_JS && Array.isArray || (Array.isArray = function (t) {
+        return "[object Array]" === Object.prototype.toString.call(t);
+    }), !a || !i.JS_MD5_NO_ARRAY_BUFFER_IS_VIEW && ArrayBuffer.isView || (ArrayBuffer.isView = function (t) {
+        return "object" == (typeof t === "undefined" ? "undefined" : _typeof(t)) && t.buffer && t.buffer.constructor === ArrayBuffer;
+    });var b = function b(r) {
+        return function (e) {
+            return new t(!0).update(e)[r]();
+        };
+    },
+        v = function v() {
+        var r = b("hex");
+        h && (r = w(r)), r.create = function () {
+            return new t();
+        }, r.update = function (t) {
+            return r.create().update(t);
+        };for (var e = 0; e < c.length; ++e) {
+            var i = c[e];
+            r[i] = b(i);
+        }return r;
+    },
+        w = function w(t) {
+        var e = eval("require('crypto')"),
+            i = eval("require('buffer').Buffer"),
+            s = function s(_s) {
+            if ("string" == typeof _s) return e.createHash("md5").update(_s, "utf8").digest("hex");if (null === _s || void 0 === _s) throw r;return _s.constructor === ArrayBuffer && (_s = new Uint8Array(_s)), Array.isArray(_s) || ArrayBuffer.isView(_s) || _s.constructor === i ? e.createHash("md5").update(new i(_s)).digest("hex") : t(_s);
+        };return s;
+    };
+    t.prototype.update = function (t) {
+        if (!this.finalized) {
+            var e,
+                i = typeof t === "undefined" ? "undefined" : _typeof(t);if ("string" !== i) {
+                if ("object" !== i) throw r;if (null === t) throw r;if (a && t.constructor === ArrayBuffer) t = new Uint8Array(t);else if (!(Array.isArray(t) || a && ArrayBuffer.isView(t))) throw r;
+                e = !0;
+            }for (var s, h, f = 0, o = t.length, n = this.blocks, u = this.buffer8; f < o;) {
+                if (this.hashed && (this.hashed = !1, n[0] = n[16], n[16] = n[1] = n[2] = n[3] = n[4] = n[5] = n[6] = n[7] = n[8] = n[9] = n[10] = n[11] = n[12] = n[13] = n[14] = n[15] = 0), e) {
+                    if (a) for (h = this.start; f < o && h < 64; ++f) {
+                        u[h++] = t[f];
+                    } else for (h = this.start; f < o && h < 64; ++f) {
+                        n[h >> 2] |= t[f] << y[3 & h++];
+                    }
+                } else if (a) for (h = this.start; f < o && h < 64; ++f) {
+                    (s = t.charCodeAt(f)) < 128 ? u[h++] = s : s < 2048 ? (u[h++] = 192 | s >> 6, u[h++] = 128 | 63 & s) : s < 55296 || s >= 57344 ? (u[h++] = 224 | s >> 12, u[h++] = 128 | s >> 6 & 63, u[h++] = 128 | 63 & s) : (s = 65536 + ((1023 & s) << 10 | 1023 & t.charCodeAt(++f)), u[h++] = 240 | s >> 18, u[h++] = 128 | s >> 12 & 63, u[h++] = 128 | s >> 6 & 63, u[h++] = 128 | 63 & s);
+                } else for (h = this.start; f < o && h < 64; ++f) {
+                    (s = t.charCodeAt(f)) < 128 ? n[h >> 2] |= s << y[3 & h++] : s < 2048 ? (n[h >> 2] |= (192 | s >> 6) << y[3 & h++], n[h >> 2] |= (128 | 63 & s) << y[3 & h++]) : s < 55296 || s >= 57344 ? (n[h >> 2] |= (224 | s >> 12) << y[3 & h++], n[h >> 2] |= (128 | s >> 6 & 63) << y[3 & h++], n[h >> 2] |= (128 | 63 & s) << y[3 & h++]) : (s = 65536 + ((1023 & s) << 10 | 1023 & t.charCodeAt(++f)), n[h >> 2] |= (240 | s >> 18) << y[3 & h++], n[h >> 2] |= (128 | s >> 12 & 63) << y[3 & h++], n[h >> 2] |= (128 | s >> 6 & 63) << y[3 & h++], n[h >> 2] |= (128 | 63 & s) << y[3 & h++]);
+                }this.lastByteIndex = h, this.bytes += h - this.start, h >= 64 ? (this.start = h - 64, this.hash(), this.hashed = !0) : this.start = h;
+            }return this.bytes > 4294967295 && (this.hBytes += this.bytes / 4294967296 << 0, this.bytes = this.bytes % 4294967296), this;
+        }
+    }, t.prototype.finalize = function () {
+        if (!this.finalized) {
+            this.finalized = !0;var t = this.blocks,
+                r = this.lastByteIndex;
+            t[r >> 2] |= u[3 & r], r >= 56 && (this.hashed || this.hash(), t[0] = t[16], t[16] = t[1] = t[2] = t[3] = t[4] = t[5] = t[6] = t[7] = t[8] = t[9] = t[10] = t[11] = t[12] = t[13] = t[14] = t[15] = 0), t[14] = this.bytes << 3, t[15] = this.hBytes << 3 | this.bytes >>> 29, this.hash();
+        }
+    }, t.prototype.hash = function () {
+        var t,
+            r,
+            e,
+            i,
+            s,
+            h,
+            f = this.blocks;
+        this.first ? r = ((r = ((t = ((t = f[0] - 680876937) << 7 | t >>> 25) - 271733879 << 0) ^ (e = ((e = (-271733879 ^ (i = ((i = (-1732584194 ^ 2004318071 & t) + f[1] - 117830708) << 12 | i >>> 20) + t << 0) & (-271733879 ^ t)) + f[2] - 1126478375) << 17 | e >>> 15) + i << 0) & (i ^ t)) + f[3] - 1316259209) << 22 | r >>> 10) + e << 0 : (t = this.h0, r = this.h1, e = this.h2, r = ((r += ((t = ((t += ((i = this.h3) ^ r & (e ^ i)) + f[0] - 680876936) << 7 | t >>> 25) + r << 0) ^ (e = ((e += (r ^ (i = ((i += (e ^ t & (r ^ e)) + f[1] - 389564586) << 12 | i >>> 20) + t << 0) & (t ^ r)) + f[2] + 606105819) << 17 | e >>> 15) + i << 0) & (i ^ t)) + f[3] - 1044525330) << 22 | r >>> 10) + e << 0), r = ((r += ((t = ((t += (i ^ r & (e ^ i)) + f[4] - 176418897) << 7 | t >>> 25) + r << 0) ^ (e = ((e += (r ^ (i = ((i += (e ^ t & (r ^ e)) + f[5] + 1200080426) << 12 | i >>> 20) + t << 0) & (t ^ r)) + f[6] - 1473231341) << 17 | e >>> 15) + i << 0) & (i ^ t)) + f[7] - 45705983) << 22 | r >>> 10) + e << 0, r = ((r += ((t = ((t += (i ^ r & (e ^ i)) + f[8] + 1770035416) << 7 | t >>> 25) + r << 0) ^ (e = ((e += (r ^ (i = ((i += (e ^ t & (r ^ e)) + f[9] - 1958414417) << 12 | i >>> 20) + t << 0) & (t ^ r)) + f[10] - 42063) << 17 | e >>> 15) + i << 0) & (i ^ t)) + f[11] - 1990404162) << 22 | r >>> 10) + e << 0, r = ((r += ((t = ((t += (i ^ r & (e ^ i)) + f[12] + 1804603682) << 7 | t >>> 25) + r << 0) ^ (e = ((e += (r ^ (i = ((i += (e ^ t & (r ^ e)) + f[13] - 40341101) << 12 | i >>> 20) + t << 0) & (t ^ r)) + f[14] - 1502002290) << 17 | e >>> 15) + i << 0) & (i ^ t)) + f[15] + 1236535329) << 22 | r >>> 10) + e << 0, r = ((r += ((i = ((i += (r ^ e & ((t = ((t += (e ^ i & (r ^ e)) + f[1] - 165796510) << 5 | t >>> 27) + r << 0) ^ r)) + f[6] - 1069501632) << 9 | i >>> 23) + t << 0) ^ t & ((e = ((e += (t ^ r & (i ^ t)) + f[11] + 643717713) << 14 | e >>> 18) + i << 0) ^ i)) + f[0] - 373897302) << 20 | r >>> 12) + e << 0, r = ((r += ((i = ((i += (r ^ e & ((t = ((t += (e ^ i & (r ^ e)) + f[5] - 701558691) << 5 | t >>> 27) + r << 0) ^ r)) + f[10] + 38016083) << 9 | i >>> 23) + t << 0) ^ t & ((e = ((e += (t ^ r & (i ^ t)) + f[15] - 660478335) << 14 | e >>> 18) + i << 0) ^ i)) + f[4] - 405537848) << 20 | r >>> 12) + e << 0, r = ((r += ((i = ((i += (r ^ e & ((t = ((t += (e ^ i & (r ^ e)) + f[9] + 568446438) << 5 | t >>> 27) + r << 0) ^ r)) + f[14] - 1019803690) << 9 | i >>> 23) + t << 0) ^ t & ((e = ((e += (t ^ r & (i ^ t)) + f[3] - 187363961) << 14 | e >>> 18) + i << 0) ^ i)) + f[8] + 1163531501) << 20 | r >>> 12) + e << 0, r = ((r += ((i = ((i += (r ^ e & ((t = ((t += (e ^ i & (r ^ e)) + f[13] - 1444681467) << 5 | t >>> 27) + r << 0) ^ r)) + f[2] - 51403784) << 9 | i >>> 23) + t << 0) ^ t & ((e = ((e += (t ^ r & (i ^ t)) + f[7] + 1735328473) << 14 | e >>> 18) + i << 0) ^ i)) + f[12] - 1926607734) << 20 | r >>> 12) + e << 0, r = ((r += ((h = (i = ((i += ((s = r ^ e) ^ (t = ((t += (s ^ i) + f[5] - 378558) << 4 | t >>> 28) + r << 0)) + f[8] - 2022574463) << 11 | i >>> 21) + t << 0) ^ t) ^ (e = ((e += (h ^ r) + f[11] + 1839030562) << 16 | e >>> 16) + i << 0)) + f[14] - 35309556) << 23 | r >>> 9) + e << 0, r = ((r += ((h = (i = ((i += ((s = r ^ e) ^ (t = ((t += (s ^ i) + f[1] - 1530992060) << 4 | t >>> 28) + r << 0)) + f[4] + 1272893353) << 11 | i >>> 21) + t << 0) ^ t) ^ (e = ((e += (h ^ r) + f[7] - 155497632) << 16 | e >>> 16) + i << 0)) + f[10] - 1094730640) << 23 | r >>> 9) + e << 0, r = ((r += ((h = (i = ((i += ((s = r ^ e) ^ (t = ((t += (s ^ i) + f[13] + 681279174) << 4 | t >>> 28) + r << 0)) + f[0] - 358537222) << 11 | i >>> 21) + t << 0) ^ t) ^ (e = ((e += (h ^ r) + f[3] - 722521979) << 16 | e >>> 16) + i << 0)) + f[6] + 76029189) << 23 | r >>> 9) + e << 0, r = ((r += ((h = (i = ((i += ((s = r ^ e) ^ (t = ((t += (s ^ i) + f[9] - 640364487) << 4 | t >>> 28) + r << 0)) + f[12] - 421815835) << 11 | i >>> 21) + t << 0) ^ t) ^ (e = ((e += (h ^ r) + f[15] + 530742520) << 16 | e >>> 16) + i << 0)) + f[2] - 995338651) << 23 | r >>> 9) + e << 0, r = ((r += ((i = ((i += (r ^ ((t = ((t += (e ^ (r | ~i)) + f[0] - 198630844) << 6 | t >>> 26) + r << 0) | ~e)) + f[7] + 1126891415) << 10 | i >>> 22) + t << 0) ^ ((e = ((e += (t ^ (i | ~r)) + f[14] - 1416354905) << 15 | e >>> 17) + i << 0) | ~t)) + f[5] - 57434055) << 21 | r >>> 11) + e << 0, r = ((r += ((i = ((i += (r ^ ((t = ((t += (e ^ (r | ~i)) + f[12] + 1700485571) << 6 | t >>> 26) + r << 0) | ~e)) + f[3] - 1894986606) << 10 | i >>> 22) + t << 0) ^ ((e = ((e += (t ^ (i | ~r)) + f[10] - 1051523) << 15 | e >>> 17) + i << 0) | ~t)) + f[1] - 2054922799) << 21 | r >>> 11) + e << 0, r = ((r += ((i = ((i += (r ^ ((t = ((t += (e ^ (r | ~i)) + f[8] + 1873313359) << 6 | t >>> 26) + r << 0) | ~e)) + f[15] - 30611744) << 10 | i >>> 22) + t << 0) ^ ((e = ((e += (t ^ (i | ~r)) + f[6] - 1560198380) << 15 | e >>> 17) + i << 0) | ~t)) + f[13] + 1309151649) << 21 | r >>> 11) + e << 0, r = ((r += ((i = ((i += (r ^ ((t = ((t += (e ^ (r | ~i)) + f[4] - 145523070) << 6 | t >>> 26) + r << 0) | ~e)) + f[11] - 1120210379) << 10 | i >>> 22) + t << 0) ^ ((e = ((e += (t ^ (i | ~r)) + f[2] + 718787259) << 15 | e >>> 17) + i << 0) | ~t)) + f[9] - 343485551) << 21 | r >>> 11) + e << 0, this.first ? (this.h0 = t + 1732584193 << 0, this.h1 = r - 271733879 << 0, this.h2 = e - 1732584194 << 0, this.h3 = i + 271733878 << 0, this.first = !1) : (this.h0 = this.h0 + t << 0, this.h1 = this.h1 + r << 0, this.h2 = this.h2 + e << 0, this.h3 = this.h3 + i << 0);
+    }, t.prototype.hex = function () {
+        this.finalize();var t = this.h0,
+            r = this.h1,
+            e = this.h2,
+            i = this.h3;return n[t >> 4 & 15] + n[15 & t] + n[t >> 12 & 15] + n[t >> 8 & 15] + n[t >> 20 & 15] + n[t >> 16 & 15] + n[t >> 28 & 15] + n[t >> 24 & 15] + n[r >> 4 & 15] + n[15 & r] + n[r >> 12 & 15] + n[r >> 8 & 15] + n[r >> 20 & 15] + n[r >> 16 & 15] + n[r >> 28 & 15] + n[r >> 24 & 15] + n[e >> 4 & 15] + n[15 & e] + n[e >> 12 & 15] + n[e >> 8 & 15] + n[e >> 20 & 15] + n[e >> 16 & 15] + n[e >> 28 & 15] + n[e >> 24 & 15] + n[i >> 4 & 15] + n[15 & i] + n[i >> 12 & 15] + n[i >> 8 & 15] + n[i >> 20 & 15] + n[i >> 16 & 15] + n[i >> 28 & 15] + n[i >> 24 & 15];
+    }, t.prototype.toString = t.prototype.hex, t.prototype.digest = function () {
+        this.finalize();var t = this.h0,
+            r = this.h1,
+            e = this.h2,
+            i = this.h3;return [255 & t, t >> 8 & 255, t >> 16 & 255, t >> 24 & 255, 255 & r, r >> 8 & 255, r >> 16 & 255, r >> 24 & 255, 255 & e, e >> 8 & 255, e >> 16 & 255, e >> 24 & 255, 255 & i, i >> 8 & 255, i >> 16 & 255, i >> 24 & 255];
+    }, t.prototype.array = t.prototype.digest, t.prototype.arrayBuffer = function () {
+        this.finalize();var t = new ArrayBuffer(16),
+            r = new Uint32Array(t);return r[0] = this.h0, r[1] = this.h1, r[2] = this.h2, r[3] = this.h3, t;
+    }, t.prototype.buffer = t.prototype.arrayBuffer, t.prototype.base64 = function () {
+        for (var t, r, e, i = "", s = this.array(), h = 0; h < 15;) {
+            t = s[h++], r = s[h++], e = s[h++], i += p[t >>> 2] + p[63 & (t << 4 | r >>> 4)] + p[63 & (r << 2 | e >>> 6)] + p[63 & e];
+        }return t = s[h], i += p[t >>> 2] + p[t << 4 & 63] + "==";
+    };var _ = v();
+    f ? module.exports = _ : (i.md5 = _, o && define(function () {
+        return _;
+    }));
+}();
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":8}],4:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -151,7 +729,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],2:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -1889,7 +2467,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":1,"ieee754":3}],3:[function(require,module,exports){
+},{"base64-js":4,"ieee754":6}],6:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -1975,7 +2553,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],4:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (global){
 /*
  *  base64.js
@@ -2207,7 +2785,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 }));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"buffer":2}],5:[function(require,module,exports){
+},{"buffer":5}],8:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2393,7 +2971,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],6:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var toString = Object.prototype.toString
 
 module.exports = function(val){
@@ -2424,584 +3002,6 @@ module.exports = function(val){
   return typeof val
 }
 
-},{}],7:[function(require,module,exports){
-'use strict';
-
-var _ajax = require('./vendor/ajax');
-
-var _ajax2 = _interopRequireDefault(_ajax);
-
-var _jsBase = require('js-base64');
-
-var _md = require('./vendor/md5.min');
-
-var _md2 = _interopRequireDefault(_md);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-(function (c, d) {
-    var waiting = d.querySelector('#waiting');
-    var READY_STATE_COMPLETE = 4;
-    var OK = 200;
-    var NOT_FOUND = 404;
-    var loader = d.querySelector('#loader');
-    var main = d.querySelector('#main');
-    var loginbutton = d.querySelector('#login-button');
-
-    var setCookie = function setCookie(name, value, days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + ";path='/'";
-    };
-
-    var getCookie = function getCookie(cname) {
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    };
-
-    var logout = function logout() {
-        setCookie('UserName', '', 0);
-        setCookie('UserRole', '', 0);
-        setCookie('sessionId', '', 0);
-        setCookie('token', '', 0);
-        setCookie('wssURL', '', 0);
-        setCookie('CompanyName', '', 0);
-        setCookie('RootPath', '', 0);
-        setCookie('AccessString', '', 0);
-        document.location.href = '/';
-    };
-
-    var showDashboard = function showDashboard(data) {
-        console.log("hola");
-        setCookie('token', data.Token, 1);
-        setCookie('UserName', data.UserName, 1);
-        setCookie('UserRole', data.Role, 1);
-        setCookie('wssURL', data.wssURL, 1);
-        setCookie('CompanyName', data.CompanyName, 1);
-        setCookie('RootPath', data.RootPath, 1);
-        setCookie('AccessString', data.AccessString, 1);
-        window.location.href = '/dashboard';
-    };
-
-    function submit(e) {
-        e.preventDefault();
-        var username = d.querySelector('#username').value;
-        var password = d.querySelector('#password').value;
-        var form = d.querySelector('#formLogon');
-        //d.querySelector('#password').value = Base64.encode(md5(password)
-        console.log(password);
-        console.log((0, _md2.default)(password));
-        console.log(_jsBase.Base64.encode((0, _md2.default)(password)));
-        (0, _ajax2.default)({
-            type: 'POST',
-            url: '/login',
-            data: { username: username, password: _jsBase.Base64.encode((0, _md2.default)(password)) },
-            ajaxtimeout: 40000,
-            beforeSend: function beforeSend() {
-                waiting.style.display = 'block';
-                waiting.classList.add('active');
-            },
-            success: function success(data) {
-                //console.log(JSON.parse(data))
-                var _JSON$parse = JSON.parse(data),
-                    status = _JSON$parse.status,
-                    message = _JSON$parse.message;
-
-                console.log('status', status);
-                if (status === 'FAIL') {
-                    M.toast({
-                        html: message
-                    });
-                    d.querySelector('#message').innerHTML = message;
-                } else {
-                    showDashboard(message);
-                    console.log(message);
-                }
-            },
-            complete: function complete(xhr, status) {
-                console.log(xhr, status);
-                waiting.style.display = 'none';
-            },
-            error: function error(xhr, err) {
-                M.toast({
-                    html: 'Wrong user name or password'
-                });
-                if (err === 'timeout') {
-                    console.log('Timeout Error');
-                } else {
-                    console.log(xhr, err);
-                }
-            }
-        });
-    }
-    //logout()
-    //main.style.display = 'block'
-    waiting.style.display = 'none';
-    loader.style.display = 'none';
-    loginbutton.addEventListener('click', submit);
-})(console.log, document);
-
-},{"./vendor/ajax":8,"./vendor/md5.min":9,"js-base64":4}],8:[function(require,module,exports){
-'use strict';
-
-var type;
-try {
-  type = require('type-of');
-} catch (ex) {
-  // hide from browserify
-  var r = require;
-  type = r('type');
-}
-
-var jsonpID = 0;
-var document = window.document;
-var key;
-var name;
-// var rscript = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi
-var scriptTypeRE = /^(?:text|application)\/javascript/i;
-var xmlTypeRE = /^(?:text|application)\/xml/i;
-var jsonType = 'application/json';
-var htmlType = 'text/html';
-var blankRE = /^\s*$/;
-
-var ajax = module.exports = function (options) {
-  var settings = extend({}, options || {});
-  for (key in ajax.settings) {
-    if (settings[key] === undefined) settings[key] = ajax.settings[key];
-  }
-
-  ajaxStart(settings);
-
-  if (!settings.crossDomain) {
-    settings.crossDomain = /^([\w-]+:)?\/\/([^\/]+)/.test(settings.url) && RegExp.$2 !== window.location.host;
-  }
-
-  var dataType = settings.dataType;
-  var hasPlaceholder = /=\?/.test(settings.url);
-  if (dataType === 'jsonp' || hasPlaceholder) {
-    if (!hasPlaceholder) settings.url = appendQuery(settings.url, 'callback=?');
-    return ajax.JSONP(settings);
-  }
-
-  if (!settings.url) settings.url = window.location.toString();
-  serializeData(settings);
-
-  var mime = settings.accepts[dataType];
-  var baseHeaders = {};
-  var protocol = /^([\w-]+:)\/\//.test(settings.url) ? RegExp.$1 : window.location.protocol;
-  var xhr = ajax.settings.xhr();
-  var abortTimeout;
-
-  if (settings.ajaxtimeout) xhr.timeout = settings.ajaxtimeout;
-  if (!settings.crossDomain) baseHeaders['X-Requested-With'] = 'XMLHttpRequest';
-  if (mime) {
-    baseHeaders['Accept'] = mime;
-    if (mime.indexOf(',') > -1) mime = mime.split(',', 2)[0];
-    xhr.overrideMimeType && xhr.overrideMimeType(mime);
-  }
-  if (settings.contentType || settings.data && settings.type.toUpperCase() !== 'GET') {
-    baseHeaders['Content-Type'] = settings.contentType || 'application/x-www-form-urlencoded';
-  }
-  settings.headers = extend(baseHeaders, settings.headers || {});
-  xhr.ontimeout = function () {
-    ajaxError(null, 'timeout', xhr, settings);
-  };
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4) {
-      clearTimeout(abortTimeout);
-      var result;
-      var error = false;
-      if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 0 && protocol === 'file:') {
-        dataType = dataType || mimeToDataType(xhr.getResponseHeader('content-type'));
-        result = xhr.responseText;
-
-        try {
-          if (dataType === 'script') (1, eval)(result);else if (dataType === 'xml') result = xhr.responseXML;else if (dataType === 'json') result = blankRE.test(result) ? null : JSON.parse(result);
-        } catch (e) {
-          error = e;
-        }
-
-        if (error) ajaxError(error, 'parsererror', xhr, settings);else ajaxSuccess(result, xhr, settings);
-      } else {
-        if (xhr.status !== 0) {
-          ajaxError(null, 'error', xhr, settings);
-        }
-      }
-    }
-  };
-
-  var async = 'async' in settings ? settings.async : true;
-  xhr.open(settings.type, settings.url, async);
-
-  for (name in settings.headers) {
-    xhr.setRequestHeader(name, settings.headers[name]);
-  }if (ajaxBeforeSend(xhr, settings) === false) {
-    xhr.abort();
-    return false;
-  }
-
-  /* if (settings.timeout > 0) abortTimeout = setTimeout(function() {
-      xhr.onreadystatechange = empty
-      xhr.abort()
-      ajaxError(null, 'timeout', xhr, settings)
-  }, settings.timeout) */
-
-  // avoid sending empty string (#319)
-  xhr.send(settings.data ? settings.data : null);
-  return xhr;
-};
-
-// trigger a custom event and return false if it was cancelled
-function triggerAndReturn(context, eventName, data) {
-  // todo: Fire off some events
-  // var event = $.Event(eventName)
-  // $(context).trigger(event, data)
-  return true; //! event.defaultPrevented
-}
-
-// trigger an Ajax "global" event
-function triggerGlobal(settings, context, eventName, data) {
-  if (settings.global) return triggerAndReturn(context || document, eventName, data);
-}
-
-// Number of active Ajax requests
-ajax.active = 0;
-
-function ajaxStart(settings) {
-  if (settings.global && ajax.active++ === 0) triggerGlobal(settings, null, 'ajaxStart');
-}
-
-function ajaxStop(settings) {
-  if (settings.global && ! --ajax.active) triggerGlobal(settings, null, 'ajaxStop');
-}
-
-// triggers an extra global event "ajaxBeforeSend" that's like "ajaxSend" but cancelable
-function ajaxBeforeSend(xhr, settings) {
-  var context = settings.context;
-  if (settings.beforeSend.call(context, xhr, settings) === false || triggerGlobal(settings, context, 'ajaxBeforeSend', [xhr, settings]) === false) {
-    return false;
-  }
-
-  triggerGlobal(settings, context, 'ajaxSend', [xhr, settings]);
-}
-
-function ajaxSuccess(data, xhr, settings) {
-  var context = settings.context;
-  var status = 'success';
-  settings.success.call(context, data, status, xhr);
-  triggerGlobal(settings, context, 'ajaxSuccess', [xhr, settings, data]);
-  ajaxComplete(status, xhr, settings);
-}
-// type: "timeout", "error", "abort", "parsererror"
-function ajaxError(error, type, xhr, settings) {
-  var context = settings.context;
-  settings.error.call(context, xhr, type, error);
-  triggerGlobal(settings, context, 'ajaxError', [xhr, settings, error]);
-  ajaxComplete(type, xhr, settings);
-}
-// status: "success", "notmodified", "error", "timeout", "abort", "parsererror"
-function ajaxComplete(status, xhr, settings) {
-  var context = settings.context;
-  settings.complete.call(context, xhr, status);
-  triggerGlobal(settings, context, 'ajaxComplete', [xhr, settings]);
-  ajaxStop(settings);
-}
-
-// Empty function, used as default callback
-function empty() {}
-
-ajax.JSONP = function (options) {
-  if (!('type' in options)) return ajax(options);
-  var callbackName = 'jsonp' + ++jsonpID;
-  var script = document.createElement('script');
-  var abort = function abort() {
-    // todo: remove script
-    // $(script).remove()
-    if (callbackName in window) window[callbackName] = empty;
-    ajaxComplete('abort', xhr, options);
-  };
-  var xhr = { abort: abort };
-  var abortTimeout;
-  var head = document.getElementsByTagName('head')[0] || document.documentElement;
-
-  if (options.error) {
-    script.onerror = function () {
-      xhr.abort();
-      options.error();
-    };
-  }
-
-  window[callbackName] = function (data) {
-    clearTimeout(abortTimeout);
-    // todo: remove script
-    // $(script).remove()
-    delete window[callbackName];
-    ajaxSuccess(data, xhr, options);
-  };
-
-  serializeData(options);
-  script.src = options.url.replace(/=\?/, '=' + callbackName);
-
-  // Use insertBefore instead of appendChild to circumvent an IE6 bug.
-  // This arises when a base node is used (see jQuery bugs #2709 and #4378).
-  head.insertBefore(script, head.firstChild);
-
-  if (options.timeout > 0) {
-    abortTimeout = setTimeout(function () {
-      xhr.abort();
-      ajaxComplete('timeout', xhr, options);
-    }, options.timeout);
-  }
-
-  return xhr;
-};
-
-ajax.settings = {
-  // Default type of request
-  type: 'GET',
-  // Callback that is executed before request
-  beforeSend: empty,
-  // Callback that is executed if the request succeeds
-  success: empty,
-  // Callback that is executed the the server drops error
-  error: empty,
-  // Callback that is executed on request complete (both: error and success)
-  complete: empty,
-  // The context for the callbacks
-  context: null,
-  // Whether to trigger "global" Ajax events
-  global: true,
-  // Transport
-  xhr: function xhr() {
-    return new window.XMLHttpRequest();
-  },
-  // MIME types mapping
-  accepts: {
-    script: 'text/javascript, application/javascript',
-    json: jsonType,
-    xml: 'application/xml, text/xml',
-    html: htmlType,
-    text: 'text/plain'
-  },
-  // Whether the request is to another domain
-  crossDomain: false,
-  // Default timeout
-  timeout: 0
-};
-
-function mimeToDataType(mime) {
-  return mime && (mime === htmlType ? 'html' : mime === jsonType ? 'json' : scriptTypeRE.test(mime) ? 'script' : xmlTypeRE.test(mime) && 'xml') || 'text';
-}
-
-function appendQuery(url, query) {
-  return (url + '&' + query).replace(/[&?]{1,2}/, '?');
-}
-
-// serialize payload and append it to the URL for GET requests
-function serializeData(options) {
-  if (type(options.data) === 'object') options.data = param(options.data);
-  if (options.data && (!options.type || options.type.toUpperCase() === 'GET')) {
-    options.url = appendQuery(options.url, options.data);
-  }
-}
-
-ajax.get = function (url, success) {
-  return ajax({ url: url, success: success });
-};
-
-ajax.post = function (url, data, success, dataType) {
-  if (type(data) === 'function') {
-    dataType = dataType || success;
-    success = data;
-    data = null;
-  }
-  return ajax({ type: 'POST', url: url, data: data, success: success, dataType: dataType });
-};
-
-ajax.getJSON = function (url, success) {
-  return ajax({ url: url, success: success, dataType: 'json' });
-};
-
-var escape = encodeURIComponent;
-
-function serialize(params, obj, traditional, scope) {
-  var array = type(obj) === 'array';
-  for (var key in obj) {
-    var value = obj[key];
-
-    if (scope) key = traditional ? scope : scope + '[' + (array ? '' : key) + ']';
-    // handle data in serializeArray() format
-    if (!scope && array) params.add(value.name, value.value);
-    // recurse into nested objects
-    else if (traditional ? type(value) === 'array' : type(value) === 'object') {
-        serialize(params, value, traditional, key);
-      } else params.add(key, value);
-  }
-}
-
-function param(obj, traditional) {
-  var params = [];
-  params.add = function (k, v) {
-    this.push(escape(k) + '=' + escape(v));
-  };
-  serialize(params, obj, traditional);
-  return params.join('&').replace('%20', '+');
-}
-
-function extend(target) {
-  var slice = Array.prototype.slice;
-  slice.call(arguments, 1).forEach(function (source) {
-    for (key in source) {
-      if (source[key] !== undefined) {
-        target[key] = source[key];
-      }
-    }
-  });
-  return target;
-}
-
-},{"type-of":6}],9:[function(require,module,exports){
-(function (process,global){
-"use strict";
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-/**
- * [js-md5]{@link https://github.com/emn178/js-md5}
- *
- * @namespace md5
- * @version 0.7.3
- * @author Chen, Yi-Cyuan [emn178@gmail.com]
- * @copyright Chen, Yi-Cyuan 2014-2017
- * @license MIT
- */
-!function () {
-    "use strict";
-
-    function t(t) {
-        if (t) d[0] = d[16] = d[1] = d[2] = d[3] = d[4] = d[5] = d[6] = d[7] = d[8] = d[9] = d[10] = d[11] = d[12] = d[13] = d[14] = d[15] = 0, this.blocks = d, this.buffer8 = l;else if (a) {
-            var r = new ArrayBuffer(68);
-            this.buffer8 = new Uint8Array(r), this.blocks = new Uint32Array(r);
-        } else this.blocks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        this.h0 = this.h1 = this.h2 = this.h3 = this.start = this.bytes = this.hBytes = 0, this.finalized = this.hashed = !1, this.first = !0;
-    }var r = "input is invalid type",
-        e = "object" == (typeof window === "undefined" ? "undefined" : _typeof(window)),
-        i = e ? window : {};
-    i.JS_MD5_NO_WINDOW && (e = !1);var s = !e && "object" == (typeof self === "undefined" ? "undefined" : _typeof(self)),
-        h = !i.JS_MD5_NO_NODE_JS && "object" == (typeof process === "undefined" ? "undefined" : _typeof(process)) && process.versions && process.versions.node;
-    h ? i = global : s && (i = self);var f = !i.JS_MD5_NO_COMMON_JS && "object" == (typeof module === "undefined" ? "undefined" : _typeof(module)) && module.exports,
-        o = "function" == typeof define && define.amd,
-        a = !i.JS_MD5_NO_ARRAY_BUFFER && "undefined" != typeof ArrayBuffer,
-        n = "0123456789abcdef".split(""),
-        u = [128, 32768, 8388608, -2147483648],
-        y = [0, 8, 16, 24],
-        c = ["hex", "array", "digest", "buffer", "arrayBuffer", "base64"],
-        p = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split(""),
-        d = [],
-        l;if (a) {
-        var A = new ArrayBuffer(68);
-        l = new Uint8Array(A), d = new Uint32Array(A);
-    }!i.JS_MD5_NO_NODE_JS && Array.isArray || (Array.isArray = function (t) {
-        return "[object Array]" === Object.prototype.toString.call(t);
-    }), !a || !i.JS_MD5_NO_ARRAY_BUFFER_IS_VIEW && ArrayBuffer.isView || (ArrayBuffer.isView = function (t) {
-        return "object" == (typeof t === "undefined" ? "undefined" : _typeof(t)) && t.buffer && t.buffer.constructor === ArrayBuffer;
-    });var b = function b(r) {
-        return function (e) {
-            return new t(!0).update(e)[r]();
-        };
-    },
-        v = function v() {
-        var r = b("hex");
-        h && (r = w(r)), r.create = function () {
-            return new t();
-        }, r.update = function (t) {
-            return r.create().update(t);
-        };for (var e = 0; e < c.length; ++e) {
-            var i = c[e];
-            r[i] = b(i);
-        }return r;
-    },
-        w = function w(t) {
-        var e = eval("require('crypto')"),
-            i = eval("require('buffer').Buffer"),
-            s = function s(_s) {
-            if ("string" == typeof _s) return e.createHash("md5").update(_s, "utf8").digest("hex");if (null === _s || void 0 === _s) throw r;return _s.constructor === ArrayBuffer && (_s = new Uint8Array(_s)), Array.isArray(_s) || ArrayBuffer.isView(_s) || _s.constructor === i ? e.createHash("md5").update(new i(_s)).digest("hex") : t(_s);
-        };return s;
-    };
-    t.prototype.update = function (t) {
-        if (!this.finalized) {
-            var e,
-                i = typeof t === "undefined" ? "undefined" : _typeof(t);if ("string" !== i) {
-                if ("object" !== i) throw r;if (null === t) throw r;if (a && t.constructor === ArrayBuffer) t = new Uint8Array(t);else if (!(Array.isArray(t) || a && ArrayBuffer.isView(t))) throw r;
-                e = !0;
-            }for (var s, h, f = 0, o = t.length, n = this.blocks, u = this.buffer8; f < o;) {
-                if (this.hashed && (this.hashed = !1, n[0] = n[16], n[16] = n[1] = n[2] = n[3] = n[4] = n[5] = n[6] = n[7] = n[8] = n[9] = n[10] = n[11] = n[12] = n[13] = n[14] = n[15] = 0), e) {
-                    if (a) for (h = this.start; f < o && h < 64; ++f) {
-                        u[h++] = t[f];
-                    } else for (h = this.start; f < o && h < 64; ++f) {
-                        n[h >> 2] |= t[f] << y[3 & h++];
-                    }
-                } else if (a) for (h = this.start; f < o && h < 64; ++f) {
-                    (s = t.charCodeAt(f)) < 128 ? u[h++] = s : s < 2048 ? (u[h++] = 192 | s >> 6, u[h++] = 128 | 63 & s) : s < 55296 || s >= 57344 ? (u[h++] = 224 | s >> 12, u[h++] = 128 | s >> 6 & 63, u[h++] = 128 | 63 & s) : (s = 65536 + ((1023 & s) << 10 | 1023 & t.charCodeAt(++f)), u[h++] = 240 | s >> 18, u[h++] = 128 | s >> 12 & 63, u[h++] = 128 | s >> 6 & 63, u[h++] = 128 | 63 & s);
-                } else for (h = this.start; f < o && h < 64; ++f) {
-                    (s = t.charCodeAt(f)) < 128 ? n[h >> 2] |= s << y[3 & h++] : s < 2048 ? (n[h >> 2] |= (192 | s >> 6) << y[3 & h++], n[h >> 2] |= (128 | 63 & s) << y[3 & h++]) : s < 55296 || s >= 57344 ? (n[h >> 2] |= (224 | s >> 12) << y[3 & h++], n[h >> 2] |= (128 | s >> 6 & 63) << y[3 & h++], n[h >> 2] |= (128 | 63 & s) << y[3 & h++]) : (s = 65536 + ((1023 & s) << 10 | 1023 & t.charCodeAt(++f)), n[h >> 2] |= (240 | s >> 18) << y[3 & h++], n[h >> 2] |= (128 | s >> 12 & 63) << y[3 & h++], n[h >> 2] |= (128 | s >> 6 & 63) << y[3 & h++], n[h >> 2] |= (128 | 63 & s) << y[3 & h++]);
-                }this.lastByteIndex = h, this.bytes += h - this.start, h >= 64 ? (this.start = h - 64, this.hash(), this.hashed = !0) : this.start = h;
-            }return this.bytes > 4294967295 && (this.hBytes += this.bytes / 4294967296 << 0, this.bytes = this.bytes % 4294967296), this;
-        }
-    }, t.prototype.finalize = function () {
-        if (!this.finalized) {
-            this.finalized = !0;var t = this.blocks,
-                r = this.lastByteIndex;
-            t[r >> 2] |= u[3 & r], r >= 56 && (this.hashed || this.hash(), t[0] = t[16], t[16] = t[1] = t[2] = t[3] = t[4] = t[5] = t[6] = t[7] = t[8] = t[9] = t[10] = t[11] = t[12] = t[13] = t[14] = t[15] = 0), t[14] = this.bytes << 3, t[15] = this.hBytes << 3 | this.bytes >>> 29, this.hash();
-        }
-    }, t.prototype.hash = function () {
-        var t,
-            r,
-            e,
-            i,
-            s,
-            h,
-            f = this.blocks;
-        this.first ? r = ((r = ((t = ((t = f[0] - 680876937) << 7 | t >>> 25) - 271733879 << 0) ^ (e = ((e = (-271733879 ^ (i = ((i = (-1732584194 ^ 2004318071 & t) + f[1] - 117830708) << 12 | i >>> 20) + t << 0) & (-271733879 ^ t)) + f[2] - 1126478375) << 17 | e >>> 15) + i << 0) & (i ^ t)) + f[3] - 1316259209) << 22 | r >>> 10) + e << 0 : (t = this.h0, r = this.h1, e = this.h2, r = ((r += ((t = ((t += ((i = this.h3) ^ r & (e ^ i)) + f[0] - 680876936) << 7 | t >>> 25) + r << 0) ^ (e = ((e += (r ^ (i = ((i += (e ^ t & (r ^ e)) + f[1] - 389564586) << 12 | i >>> 20) + t << 0) & (t ^ r)) + f[2] + 606105819) << 17 | e >>> 15) + i << 0) & (i ^ t)) + f[3] - 1044525330) << 22 | r >>> 10) + e << 0), r = ((r += ((t = ((t += (i ^ r & (e ^ i)) + f[4] - 176418897) << 7 | t >>> 25) + r << 0) ^ (e = ((e += (r ^ (i = ((i += (e ^ t & (r ^ e)) + f[5] + 1200080426) << 12 | i >>> 20) + t << 0) & (t ^ r)) + f[6] - 1473231341) << 17 | e >>> 15) + i << 0) & (i ^ t)) + f[7] - 45705983) << 22 | r >>> 10) + e << 0, r = ((r += ((t = ((t += (i ^ r & (e ^ i)) + f[8] + 1770035416) << 7 | t >>> 25) + r << 0) ^ (e = ((e += (r ^ (i = ((i += (e ^ t & (r ^ e)) + f[9] - 1958414417) << 12 | i >>> 20) + t << 0) & (t ^ r)) + f[10] - 42063) << 17 | e >>> 15) + i << 0) & (i ^ t)) + f[11] - 1990404162) << 22 | r >>> 10) + e << 0, r = ((r += ((t = ((t += (i ^ r & (e ^ i)) + f[12] + 1804603682) << 7 | t >>> 25) + r << 0) ^ (e = ((e += (r ^ (i = ((i += (e ^ t & (r ^ e)) + f[13] - 40341101) << 12 | i >>> 20) + t << 0) & (t ^ r)) + f[14] - 1502002290) << 17 | e >>> 15) + i << 0) & (i ^ t)) + f[15] + 1236535329) << 22 | r >>> 10) + e << 0, r = ((r += ((i = ((i += (r ^ e & ((t = ((t += (e ^ i & (r ^ e)) + f[1] - 165796510) << 5 | t >>> 27) + r << 0) ^ r)) + f[6] - 1069501632) << 9 | i >>> 23) + t << 0) ^ t & ((e = ((e += (t ^ r & (i ^ t)) + f[11] + 643717713) << 14 | e >>> 18) + i << 0) ^ i)) + f[0] - 373897302) << 20 | r >>> 12) + e << 0, r = ((r += ((i = ((i += (r ^ e & ((t = ((t += (e ^ i & (r ^ e)) + f[5] - 701558691) << 5 | t >>> 27) + r << 0) ^ r)) + f[10] + 38016083) << 9 | i >>> 23) + t << 0) ^ t & ((e = ((e += (t ^ r & (i ^ t)) + f[15] - 660478335) << 14 | e >>> 18) + i << 0) ^ i)) + f[4] - 405537848) << 20 | r >>> 12) + e << 0, r = ((r += ((i = ((i += (r ^ e & ((t = ((t += (e ^ i & (r ^ e)) + f[9] + 568446438) << 5 | t >>> 27) + r << 0) ^ r)) + f[14] - 1019803690) << 9 | i >>> 23) + t << 0) ^ t & ((e = ((e += (t ^ r & (i ^ t)) + f[3] - 187363961) << 14 | e >>> 18) + i << 0) ^ i)) + f[8] + 1163531501) << 20 | r >>> 12) + e << 0, r = ((r += ((i = ((i += (r ^ e & ((t = ((t += (e ^ i & (r ^ e)) + f[13] - 1444681467) << 5 | t >>> 27) + r << 0) ^ r)) + f[2] - 51403784) << 9 | i >>> 23) + t << 0) ^ t & ((e = ((e += (t ^ r & (i ^ t)) + f[7] + 1735328473) << 14 | e >>> 18) + i << 0) ^ i)) + f[12] - 1926607734) << 20 | r >>> 12) + e << 0, r = ((r += ((h = (i = ((i += ((s = r ^ e) ^ (t = ((t += (s ^ i) + f[5] - 378558) << 4 | t >>> 28) + r << 0)) + f[8] - 2022574463) << 11 | i >>> 21) + t << 0) ^ t) ^ (e = ((e += (h ^ r) + f[11] + 1839030562) << 16 | e >>> 16) + i << 0)) + f[14] - 35309556) << 23 | r >>> 9) + e << 0, r = ((r += ((h = (i = ((i += ((s = r ^ e) ^ (t = ((t += (s ^ i) + f[1] - 1530992060) << 4 | t >>> 28) + r << 0)) + f[4] + 1272893353) << 11 | i >>> 21) + t << 0) ^ t) ^ (e = ((e += (h ^ r) + f[7] - 155497632) << 16 | e >>> 16) + i << 0)) + f[10] - 1094730640) << 23 | r >>> 9) + e << 0, r = ((r += ((h = (i = ((i += ((s = r ^ e) ^ (t = ((t += (s ^ i) + f[13] + 681279174) << 4 | t >>> 28) + r << 0)) + f[0] - 358537222) << 11 | i >>> 21) + t << 0) ^ t) ^ (e = ((e += (h ^ r) + f[3] - 722521979) << 16 | e >>> 16) + i << 0)) + f[6] + 76029189) << 23 | r >>> 9) + e << 0, r = ((r += ((h = (i = ((i += ((s = r ^ e) ^ (t = ((t += (s ^ i) + f[9] - 640364487) << 4 | t >>> 28) + r << 0)) + f[12] - 421815835) << 11 | i >>> 21) + t << 0) ^ t) ^ (e = ((e += (h ^ r) + f[15] + 530742520) << 16 | e >>> 16) + i << 0)) + f[2] - 995338651) << 23 | r >>> 9) + e << 0, r = ((r += ((i = ((i += (r ^ ((t = ((t += (e ^ (r | ~i)) + f[0] - 198630844) << 6 | t >>> 26) + r << 0) | ~e)) + f[7] + 1126891415) << 10 | i >>> 22) + t << 0) ^ ((e = ((e += (t ^ (i | ~r)) + f[14] - 1416354905) << 15 | e >>> 17) + i << 0) | ~t)) + f[5] - 57434055) << 21 | r >>> 11) + e << 0, r = ((r += ((i = ((i += (r ^ ((t = ((t += (e ^ (r | ~i)) + f[12] + 1700485571) << 6 | t >>> 26) + r << 0) | ~e)) + f[3] - 1894986606) << 10 | i >>> 22) + t << 0) ^ ((e = ((e += (t ^ (i | ~r)) + f[10] - 1051523) << 15 | e >>> 17) + i << 0) | ~t)) + f[1] - 2054922799) << 21 | r >>> 11) + e << 0, r = ((r += ((i = ((i += (r ^ ((t = ((t += (e ^ (r | ~i)) + f[8] + 1873313359) << 6 | t >>> 26) + r << 0) | ~e)) + f[15] - 30611744) << 10 | i >>> 22) + t << 0) ^ ((e = ((e += (t ^ (i | ~r)) + f[6] - 1560198380) << 15 | e >>> 17) + i << 0) | ~t)) + f[13] + 1309151649) << 21 | r >>> 11) + e << 0, r = ((r += ((i = ((i += (r ^ ((t = ((t += (e ^ (r | ~i)) + f[4] - 145523070) << 6 | t >>> 26) + r << 0) | ~e)) + f[11] - 1120210379) << 10 | i >>> 22) + t << 0) ^ ((e = ((e += (t ^ (i | ~r)) + f[2] + 718787259) << 15 | e >>> 17) + i << 0) | ~t)) + f[9] - 343485551) << 21 | r >>> 11) + e << 0, this.first ? (this.h0 = t + 1732584193 << 0, this.h1 = r - 271733879 << 0, this.h2 = e - 1732584194 << 0, this.h3 = i + 271733878 << 0, this.first = !1) : (this.h0 = this.h0 + t << 0, this.h1 = this.h1 + r << 0, this.h2 = this.h2 + e << 0, this.h3 = this.h3 + i << 0);
-    }, t.prototype.hex = function () {
-        this.finalize();var t = this.h0,
-            r = this.h1,
-            e = this.h2,
-            i = this.h3;return n[t >> 4 & 15] + n[15 & t] + n[t >> 12 & 15] + n[t >> 8 & 15] + n[t >> 20 & 15] + n[t >> 16 & 15] + n[t >> 28 & 15] + n[t >> 24 & 15] + n[r >> 4 & 15] + n[15 & r] + n[r >> 12 & 15] + n[r >> 8 & 15] + n[r >> 20 & 15] + n[r >> 16 & 15] + n[r >> 28 & 15] + n[r >> 24 & 15] + n[e >> 4 & 15] + n[15 & e] + n[e >> 12 & 15] + n[e >> 8 & 15] + n[e >> 20 & 15] + n[e >> 16 & 15] + n[e >> 28 & 15] + n[e >> 24 & 15] + n[i >> 4 & 15] + n[15 & i] + n[i >> 12 & 15] + n[i >> 8 & 15] + n[i >> 20 & 15] + n[i >> 16 & 15] + n[i >> 28 & 15] + n[i >> 24 & 15];
-    }, t.prototype.toString = t.prototype.hex, t.prototype.digest = function () {
-        this.finalize();var t = this.h0,
-            r = this.h1,
-            e = this.h2,
-            i = this.h3;return [255 & t, t >> 8 & 255, t >> 16 & 255, t >> 24 & 255, 255 & r, r >> 8 & 255, r >> 16 & 255, r >> 24 & 255, 255 & e, e >> 8 & 255, e >> 16 & 255, e >> 24 & 255, 255 & i, i >> 8 & 255, i >> 16 & 255, i >> 24 & 255];
-    }, t.prototype.array = t.prototype.digest, t.prototype.arrayBuffer = function () {
-        this.finalize();var t = new ArrayBuffer(16),
-            r = new Uint32Array(t);return r[0] = this.h0, r[1] = this.h1, r[2] = this.h2, r[3] = this.h3, t;
-    }, t.prototype.buffer = t.prototype.arrayBuffer, t.prototype.base64 = function () {
-        for (var t, r, e, i = "", s = this.array(), h = 0; h < 15;) {
-            t = s[h++], r = s[h++], e = s[h++], i += p[t >>> 2] + p[63 & (t << 4 | r >>> 4)] + p[63 & (r << 2 | e >>> 6)] + p[63 & e];
-        }return t = s[h], i += p[t >>> 2] + p[t << 4 & 63] + "==";
-    };var _ = v();
-    f ? module.exports = _ : (i.md5 = _, o && define(function () {
-        return _;
-    }));
-}();
-
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":5}]},{},[7]);
+},{}]},{},[1]);
 
 //# sourceMappingURL=logon.js.map

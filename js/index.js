@@ -1,3 +1,4 @@
+/*jslint es6*/
 import ajax from './vendor/ajax';
 import { Base64 } from 'js-base64';
 import md5 from './vendor/md5.min';
@@ -82,30 +83,80 @@ $(document).ready(function() {
             changePath(e.target.innerText);
         });
         fetch('/files?path=' + encodeURI(cPath), {
-            method: 'GET',
-            headers: headers
-        }).then(r => r.json()).then((data) => {
-            console.log(data);
-            refreshFilesTable(data);
-        }).catch((err) => {
-            console.log(err);
+                method: 'GET',
+                headers: headers
+            })
+            .then(r => r.json())
+            .then((data) => {
+                console.log(data);
+                refreshFilesTable(data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+    const selectAll = (e) => {
+        var allCkeckbox = document.querySelectorAll('.checkFile');
+        let v = document
+            .querySelector("#selectAllFiles")
+            .checked;
+        console.log(v);
+        allCkeckbox.forEach(function(element, i) {
+            if (!allCkeckbox[i].disabled) {
+                if (v === true) {
+                    allCkeckbox[i].setAttribute('checked', 'checked');
+                } else {
+                    allCkeckbox[i].removeAttribute('checked');
+                }
+            }
         });
+        console.log(getCheckedFiles());
+    };
+    const getCheckedFiles = function() {
+        var checkedFiles = [];
+        var allElements = document.querySelectorAll('.typeFile');
+        allElements.forEach(function(element, i) {
+            // c(element.children[0].children[0].checked)
+            if (element.children[0].children[0].checked) {
+                checkedFiles.push(currentPath + '\\' + element.children[1].innerHTML);
+                // c(element.children[1].innerHTML)
+            }
+        });
+        return checkedFiles;
     };
 
-
-
+    const getCheckedFolder = function getCheckedFolder() {
+        var checkedFolders = [];
+        var allElements = document.querySelectorAll('.dashboard-path');
+        allElements.forEach(function(v, i) {
+            v
+                .children[0]
+                .childNodes
+                .forEach(function(l, idx) {
+                    if (l.children[0].checked) {
+                        checkedFolders.push(currentPath + '\\' + l.children[2].text);
+                        // c(currentPath + l.children[2].text)
+                    }
+                });
+        });
+        return checkedFolders;
+    };
     const refreshFilesTable = (data) => {
-        const tbodyContent = document.getElementById("tbl-files").getElementsByTagName('tbody')[0];
+        const tbodyContent = document
+            .getElementById("tbl-files")
+            .getElementsByTagName('tbody')[0];
         let newHtmlContent = ``;
         console.log(data);
         data.forEach((val, idx, array) => {
             let fileSize = parseInt(val.size / 1024);
-            newHtmlContent += `<tr><td><input class="filled-in" id="${val.name}" type="checkbox">
-                               <label class="checkbox left" for="${val.name}"></label></td>`;
             if (val.isFolder) {
-                newHtmlContent += `<td><a href="#" class="file-Name">${val.name}</a></td>`;
+                newHtmlContent += `<tr><td><input class="filled-in checkFolder" id="${val.name}" type="checkbox">
+              <label class="checkbox left" for="${val.name}"></label></td>`;
+                newHtmlContent += `<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">${val.name}</a></td>`;
             } else {
-                newHtmlContent += `<td>${val.name}</td>`;
+                newHtmlContent += `<tr><td><input class="filled-in checkFile" id="${val.name}" type="checkbox">
+              <label class="checkbox left" for="${val.name}"></label></td>`;
+                newHtmlContent += `<td><i class="far fa-file"></i><span class="typeFile">${val.name}</span></td>`;
             }
             newHtmlContent += `<td>${fileSize} KB</td><td>${val.date}</td></tr>`;
         });
@@ -117,7 +168,6 @@ $(document).ready(function() {
             refreshBarMenu();
         });
     };
-
 
     const showUserProfile = (w, h, t) => {
         let ModalTitle = t;
@@ -227,9 +277,9 @@ $(document).ready(function() {
                 ajaxtimeout: 40000,
                 beforeSend: () => {
                     /* waiting.style.display = 'block'
-                              waiting
-                                  .classList
-                                  .add('active') */
+                                                            waiting
+                                                                .classList
+                                                                .add('active') */
                 },
                 success: (data) => {
                     //console.log(JSON.parse(data))
@@ -297,10 +347,22 @@ $(document).ready(function() {
         $('#modaltrigger').html(UserName);
         $('#modaltrigger').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
     };
+
+    $('.checkbox').on('click', (e) => {
+        e.preventDefault();
+        if (e.target.htmlFor === 'selectAllFiles') {
+            if (document.querySelector("#selectAllFiles").checked === false) {
+                document.querySelector("#selectAllFiles").setAttribute('checked', 'checked');
+            } else {
+                document.querySelector("#selectAllFiles").removeAttribute('checked');
+            }
+            console.log(document.querySelector("#selectAllFiles").checked);
+            selectAll(e.target.htmlFor);
+        }
+    });
     $('a').on('click', function(e) {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
-        e.preventDefault();
 
         if (!$(this).hasClass('disabled')) {
             switch (this.id) {
@@ -353,7 +415,10 @@ $(document).ready(function() {
             M.toast({ html: 'Opcion no permitida' });
         }
     });
-    $('#usertrigger').html(UserName).attr('title', 'Empresa: ' + CompanyName);
+    $('#usertrigger')
+        .html(UserName)
+        .attr('title', 'Empresa: ' + CompanyName);
     refreshPath(currentPath);
     refreshBarMenu();
+    console.log(document.querySelector("#selectAllFiles").checked);
 });
