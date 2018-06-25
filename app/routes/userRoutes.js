@@ -17,7 +17,7 @@ router.get("/dashboard", checkUser,UserController.Dashboard);
 
 //router.get("/name/:userName", UserController.GetUserByName);
 
-//router.post("/add", UserController.UserAdd);
+router.post("/changepasswd", UserController.changePasswd);
 
 router.post("/login", UserController.UserLogin);
 

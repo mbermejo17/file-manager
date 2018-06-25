@@ -38,6 +38,12 @@ exports.Dashboard = (req, res, next) => {
     });
 };
 
+exports.changePasswd = (req, res, next)=>{
+    return res.status(200).json({
+        "status": 'OK',
+        "message": 'Clave cambiada'
+    });    
+};
 exports.UserLogin = (req, res, next) => {
     User.Find(`SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`, (status, data) => {
         //console.log("User Find : " + status);

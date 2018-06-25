@@ -447,7 +447,7 @@ $(document).ready(function () {
             console.log(username, newpassword);
             ajax({
                 type: 'POST',
-                url: '/user/changePassword',
+                url: '/changePasswd',
                 data: {
                     username: username,
                     newpassword: Base64.encode(md5(newpassword))

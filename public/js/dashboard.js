@@ -392,7 +392,7 @@ $(document).ready(function () {
             console.log(username, newpassword);
             (0, _ajax2.default)({
                 type: 'POST',
-                url: '/user/changePassword',
+                url: '/changePasswd',
                 data: {
                     username: username,
                     newpassword: _jsBase.Base64.encode((0, _md2.default)(newpassword))
