@@ -4,7 +4,7 @@
     "description": "File Manager",
     "main": "gulpfile.babel.js",
     "scripts": {
-        "start": "nodemon --watch src -e pug,scss,js,json server.js"
+        "start": "nodemon --watch app --watch public -e pug,scss,js,json server.js"
     },
     "author": "Manuel Bermejo <mbermejo17@gmail.com>",
     "license": "MIT",

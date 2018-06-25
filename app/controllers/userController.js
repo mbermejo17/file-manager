@@ -39,10 +39,26 @@ exports.Dashboard = (req, res, next) => {
 };
 
 exports.changePasswd = (req, res, next)=>{
-    return res.status(200).json({
-        "status": 'OK',
-        "message": 'Clave cambiada'
-    });    
+    let userData = {
+      "userName":req.body.username,
+      "userPasswd": Base64.decode(req.body.newpassword)
+    };
+    User.ChangePasswd(userData, (status,data)=>{
+      if (status) {
+        console.log(status);
+        res.status(500).json({ "status": 'FAIL', "message": status });
+      } else {
+        if(data) {
+          return res.status(200).json({
+            "status": 'OK',
+            "message": 'Clave cambiada'
+        }); 
+        } else {
+          res.status(500).json({ "status": 'FAIL', "message": "Error al actualizar base de datos" });
+        }
+      }  
+       
+  });
 };
 exports.UserLogin = (req, res, next) => {
     User.Find(`SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`, (status, data) => {

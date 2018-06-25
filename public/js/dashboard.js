@@ -1,5 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 'use strict';
+'use sctrict';
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
@@ -15,6 +16,7 @@ var _md2 = _interopRequireDefault(_md);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+;
 $(document).ready(function () {
     var setCookie = function setCookie(name, value, days) {
         var expires = "";
@@ -34,12 +36,12 @@ $(document).ready(function () {
         var decodedCookie = decodeURIComponent(document.cookie);
         var ca = decodedCookie.split(';');
         for (var i = 0; i < ca.length; i++) {
-            var _c = ca[i];
-            while (_c.charAt(0) == ' ') {
-                _c = _c.substring(1);
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
             }
-            if (_c.indexOf(name) == 0) {
-                return _c.substring(name.length, _c.length);
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
             }
         }
         return '';
@@ -107,10 +109,26 @@ $(document).ready(function () {
         var reqList = [],
             handlerCount = 0,
             responseTimeout = [];
-
+        var w = 32;
+        var h = 440;
+        var ModalTitle = "Descarga de archivos seleccionados";
+        var ModalContent = '<ul class="preloader-file" id="DownloadfileList">\n            <li id="li0">\n                <div class="li-content">\n                    <div class="li-filename" id="li-filename0"></div>\n                    <div class="progress-content">\n                        <div class="progress-bar" id="progress-bar0"></div>\n                        <div class="percent" id="percent0"></div>\n                    </div>\n                </div>\n            </li>\n            <li id="li1">\n                <div class="li-content">\n                    <div class="li-filename" id="li-filename1"></div>\n                    <div class="progress-content">\n                        <div class="progress-bar" id="progress-bar1"></div>\n                        <div class="percent" id="percent1"></div>\n                    </div>\n                </div>\n            </li>\n            <li id="li2">\n                <div class="li-content">\n                    <div class="li-filename" id="li-filename2"></div>\n                    <div class="progress-content">\n                        <div class="progress-bar" id="progress-bar2"></div>\n                        <div class="percent" id="percent2"></div>\n                    </div>\n                </div>\n            </li>\n            <li id="li3">\n                <div class="li-content">\n                    <div class="li-filename" id="li-filename3"></div>\n                    <div class="progress-content">\n                        <div class="progress-bar" id="progress-bar3"></div>\n                        <div class="percent" id="percent3"></div>\n                    </div>\n                </div>\n            </li>\n            <li id="li4">\n                <div class="li-content">\n                    <div class="li-filename" id="li-filename4"></div>\n                    <div class="progress-content">\n                        <div class="progress-bar" id="progress-bar4"></div>\n                        <div class="percent" id="percent4"></div>\n                    </div>\n                </div>\n            </li>\n        </ul>';
+        var htmlContent = '<div id="modal-header">\n                            <h5>' + ModalTitle + '</h5>\n                            <a class="modal_close" id="modalClose" href="#"></a>\n                          </div>\n                          <div class="modal-content">\n                            <p>' + ModalContent + '</p>\n                          </div>\n                          <div class="modal-footer">\n                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>\n                          </div>    ';
+        $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
+        //$('.modal-content').css('width: 350px;');
+        $('.modal').css('width: 40% !important');
+        $('#modal').show();
         $('#download').addClass('disabled');
-        $('#preloader').show();
-
+        $('#btnCloseDownload').on('click', function (e) {
+            $('#download').removeClass('disabled');
+            $('#modal').hide();
+            $('#refresh').trigger('click');
+        });
+        $('#modalClose').on('click', function (e) {
+            $('#download').removeClass('disabled');
+            $('#modal').hide();
+            $('#refresh').trigger('click');
+        });
         var _loop = function _loop(i) {
             var fName = fileList[i];
             var liNumber = document.querySelector('#li' + i);
@@ -126,7 +144,7 @@ $(document).ready(function () {
             liFilename.innerHTML = fName;
             reqList[i].timeout = 36000;
             reqList[i].ontimeout = function () {
-                c('** Timeout error ->File:' + fName + ' ' + reqList[i].status + ' ' + reqList[i].statusText);
+                console.log('** Timeout error ->File:' + fName + ' ' + reqList[i].status + ' ' + reqList[i].statusText);
                 // handlerCount = handlerCount - 1
                 progressBar.innerHTML = 'Timeout Error';
                 percentLabel.innerHTML = '';
@@ -208,9 +226,9 @@ $(document).ready(function () {
                 }
             };
             reqList[i].setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            reqList[i].send(serializeObject({ 'filename': fileList[i] }));
+            console.log(currentPath + '\\' + fileList[i]);
+            reqList[i].send(serializeObject({ 'filename': currentPath + '\\' + fileList[i] }));
         };
-
         for (var i = 0; i < fileList.length; i++) {
             _loop(i);
         }
@@ -295,11 +313,12 @@ $(document).ready(function () {
             if (val.isFolder) {
                 newHtmlContent += '<tr><td><input class="filled-in checkFolder check" id="' + val.name + '" type="checkbox">\n              <label class="checkbox left" for="' + val.name + '"></label></td>';
                 newHtmlContent += '<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">' + val.name + '</a></td>';
+                newHtmlContent += '<td>&nbsp;</td><td>' + val.date + '</td></tr>';
             } else {
                 newHtmlContent += '<tr><td><input class="filled-in checkFile check" id="' + val.name + '" type="checkbox">\n              <label class="checkbox left" for="' + val.name + '"></label></td>';
                 newHtmlContent += '<td><i class="far fa-file"></i><span class="typeFile">' + val.name + '</span></td>';
+                newHtmlContent += '<td>' + fileSize + ' KB</td><td>' + val.date + '</td></tr>';
             }
-            newHtmlContent += '<td>' + fileSize + ' KB</td><td>' + val.date + '</td></tr>';
         });
         tbodyContent.innerHTML = newHtmlContent;
         $('.file-Name').on('click', function (e) {
@@ -383,7 +402,8 @@ $(document).ready(function () {
         var ModalContent = '<div class="row">\n                              <div class="input-field col s12">\n                                <input id="newpassword" type="password"/>\n                                <label for="newpassword">New Password</label>\n                              </div>\n                              <div class="input-field col s12">\n                                <input id="newpassword2" type="password"/>\n                                <label for="newpassword2">Repeat Password</label>\n                              </div>\n                          </div>';
         var htmlContent = '<div id="modal-header">\n                        <h5>' + ModalTitle + '</h5>\n                        <a class="modal_close" id="modalClose" href="#hola"></a>\n                      </div>\n                      <div class="modal-content">\n                        <p>' + ModalContent + '</p>\n                      </div>\n                      <div class="modal-footer">\n                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>\n                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptChangeUserPassword" href="#!">Accept</a>\n                      </div>    ';
         $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
-        $('.modal-content').css('width: 400px;');
+        //$('.modal-content').css('width: 350px;');
+        $('.modal').css('width: 40% !important');
         $('#modal').show();
         $('#AcceptChangeUserPassword').on('click', function (e) {
             e.preventDefault();
@@ -392,7 +412,7 @@ $(document).ready(function () {
             console.log(username, newpassword);
             (0, _ajax2.default)({
                 type: 'POST',
-                url: '/changePasswd',
+                url: '/changepasswd',
                 data: {
                     username: username,
                     newpassword: _jsBase.Base64.encode((0, _md2.default)(newpassword))
@@ -417,9 +437,12 @@ $(document).ready(function () {
                         });
                         d.querySelector('#message').innerHTML = message;
                     } else {
-                        showDashboard(message);
+                        M.toast({
+                            html: message
+                        });
                         console.log(message);
                     }
+                    $('#modal').hide();
                 },
                 complete: function complete(xhr, status) {
                     console.log(xhr, status);
@@ -498,6 +521,7 @@ $(document).ready(function () {
         console.log(document.querySelector("#selectAllFiles").checked);
         selectAll(e.target.htmlFor);
     });
+
     $('a').on('click', function (e) {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
@@ -507,7 +531,15 @@ $(document).ready(function () {
                 case 'settings':
                     break;
                 case 'usertrigger':
-                    $('#Usersdropdown').show();
+                    e.stopPropagation();
+                    console.log($('#Usersdropdown').css('display'));
+                    if ($('#Usersdropdown').css('display') === 'block') {
+                        $('#usertrigger').removeClass('selected');
+                        $('#Usersdropdown').hide();
+                    } else {
+                        $('#usertrigger').addClass('selected');
+                        $('#Usersdropdown').show();
+                    }
                     break;
                 case 'refresh':
                     refreshPath(currentPath);
@@ -553,6 +585,12 @@ $(document).ready(function () {
                     break;
                 case 'download':
                     if (aSelectedFiles.length > 0) {
+                        if (aSelectedFiles.length > 5) {
+                            M.toast({
+                                html: 'No se pueden descargar más de 5 archivos a la vez'
+                            });
+                            break;
+                        }
                         download(aSelectedFiles, 'File');
                     } else {
                         M.toast({
@@ -568,6 +606,24 @@ $(document).ready(function () {
         }
     });
     $('#usertrigger').html(UserName).attr('title', 'Empresa: ' + CompanyName);
+    $('#settings').on('click', function (e) {
+        console.log($('#Settingdropdown').css('display'));
+        if ($('#Settingdropdown').css('display') === 'block') {
+            $('#settings').removeClass('selected');
+            $('#Settingdropdown').removeClass('setting').hide();
+        } else {
+            $('#settings').addClass('selected');
+            $('#Settingdropdown').addClass('setting').show();
+        }
+    });
+    $('#Usersdropdown').on('mouseleave', function () {
+        $('#Usersdropdown').hide();
+        $('#usertrigger').removeClass('selected');
+    });
+    $('#Settingdropdown').on('mouseleave', function () {
+        $('#Settingdropdown').hide();
+        $('#settings').removeClass('selected');
+    });
     refreshPath(currentPath);
     refreshBarMenu();
     console.log(document.querySelector("#selectAllFiles").checked);

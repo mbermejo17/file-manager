@@ -1,8 +1,10 @@
+'use sctrict';
 import ajax from './vendor/ajax';
 import {
     Base64
 } from 'js-base64';
 import md5 from './vendor/md5.min';
+;
 $(document).ready(function () {
     const setCookie = function (name, value, days) {
         var expires = "";
@@ -93,10 +95,81 @@ $(document).ready(function () {
         let reqList = [],
             handlerCount = 0,
             responseTimeout = [];
-
+            let w = 32;
+            let h = 440;
+            let ModalTitle = "Descarga de archivos seleccionados";
+            let ModalContent = `<ul class="preloader-file" id="DownloadfileList">
+            <li id="li0">
+                <div class="li-content">
+                    <div class="li-filename" id="li-filename0"></div>
+                    <div class="progress-content">
+                        <div class="progress-bar" id="progress-bar0"></div>
+                        <div class="percent" id="percent0"></div>
+                    </div>
+                </div>
+            </li>
+            <li id="li1">
+                <div class="li-content">
+                    <div class="li-filename" id="li-filename1"></div>
+                    <div class="progress-content">
+                        <div class="progress-bar" id="progress-bar1"></div>
+                        <div class="percent" id="percent1"></div>
+                    </div>
+                </div>
+            </li>
+            <li id="li2">
+                <div class="li-content">
+                    <div class="li-filename" id="li-filename2"></div>
+                    <div class="progress-content">
+                        <div class="progress-bar" id="progress-bar2"></div>
+                        <div class="percent" id="percent2"></div>
+                    </div>
+                </div>
+            </li>
+            <li id="li3">
+                <div class="li-content">
+                    <div class="li-filename" id="li-filename3"></div>
+                    <div class="progress-content">
+                        <div class="progress-bar" id="progress-bar3"></div>
+                        <div class="percent" id="percent3"></div>
+                    </div>
+                </div>
+            </li>
+            <li id="li4">
+                <div class="li-content">
+                    <div class="li-filename" id="li-filename4"></div>
+                    <div class="progress-content">
+                        <div class="progress-bar" id="progress-bar4"></div>
+                        <div class="percent" id="percent4"></div>
+                    </div>
+                </div>
+            </li>
+        </ul>`;
+            let htmlContent = `<div id="modal-header">
+                            <h5>${ModalTitle}</h5>
+                            <a class="modal_close" id="modalClose" href="#"></a>
+                          </div>
+                          <div class="modal-content">
+                            <p>${ModalContent}</p>
+                          </div>
+                          <div class="modal-footer">
+                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>
+                          </div>    `;
+            $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
+            //$('.modal-content').css('width: 350px;');
+            $('.modal').css('width: 40% !important');
+            $('#modal').show();
         $('#download').addClass('disabled');
-        $('#preloader').show();
-
+        $('#btnCloseDownload').on('click',(e)=>{
+          $('#download').removeClass('disabled');
+          $('#modal').hide();
+          $('#refresh').trigger('click');
+        });
+        $('#modalClose').on('click',(e)=>{
+          $('#download').removeClass('disabled');
+          $('#modal').hide();
+          $('#refresh').trigger('click');
+        });
         let _loop = (i) => {
             let fName = fileList[i];
             let liNumber = document.querySelector('#li' + i);
@@ -112,7 +185,7 @@ $(document).ready(function () {
             liFilename.innerHTML = fName;
             reqList[i].timeout = 36000;
             reqList[i].ontimeout = function () {
-                c('** Timeout error ->File:' + fName + ' ' + reqList[i].status + ' ' + reqList[i].statusText);
+                console.log('** Timeout error ->File:' + fName + ' ' + reqList[i].status + ' ' + reqList[i].statusText);
                 // handlerCount = handlerCount - 1
                 progressBar.innerHTML = 'Timeout Error';
                 percentLabel.innerHTML = '';
@@ -194,9 +267,9 @@ $(document).ready(function () {
                 }
             };
             reqList[i].setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            reqList[i].send(serializeObject({ 'filename': fileList[i] }));
+            console.log(currentPath + '\\'+fileList[i]);
+            reqList[i].send(serializeObject({ 'filename': currentPath + '\\'+fileList[i] }));
         };
-
         for (var i = 0; i < fileList.length; i++) {
             _loop(i);
         }
@@ -290,12 +363,14 @@ $(document).ready(function () {
                 newHtmlContent += `<tr><td><input class="filled-in checkFolder check" id="${val.name}" type="checkbox">
               <label class="checkbox left" for="${val.name}"></label></td>`;
                 newHtmlContent += `<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">${val.name}</a></td>`;
+                newHtmlContent += `<td>&nbsp;</td><td>${val.date}</td></tr>`;
             } else {
                 newHtmlContent += `<tr><td><input class="filled-in checkFile check" id="${val.name}" type="checkbox">
               <label class="checkbox left" for="${val.name}"></label></td>`;
                 newHtmlContent += `<td><i class="far fa-file"></i><span class="typeFile">${val.name}</span></td>`;
+                newHtmlContent += `<td>${fileSize} KB</td><td>${val.date}</td></tr>`;
             }
-            newHtmlContent += `<td>${fileSize} KB</td><td>${val.date}</td></tr>`;
+            
         });
         tbodyContent.innerHTML = newHtmlContent;
         $('.file-Name').on('click', (e) => {
@@ -438,7 +513,8 @@ $(document).ready(function () {
         $('#modal')
             .html(htmlContent)
             .css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
-        $('.modal-content').css('width: 400px;');
+        //$('.modal-content').css('width: 350px;');
+        $('.modal').css('width: 40% !important');
         $('#modal').show();
         $('#AcceptChangeUserPassword').on('click', (e) => {
             e.preventDefault();
@@ -447,7 +523,7 @@ $(document).ready(function () {
             console.log(username, newpassword);
             ajax({
                 type: 'POST',
-                url: '/changePasswd',
+                url: '/changepasswd',
                 data: {
                     username: username,
                     newpassword: Base64.encode(md5(newpassword))
@@ -474,9 +550,12 @@ $(document).ready(function () {
                             .querySelector('#message')
                             .innerHTML = message;
                     } else {
-                        showDashboard(message);
+                      M.toast({
+                        html: message
+                    });
                         console.log(message);
                     }
+                    $('#modal').hide();
                 },
                 complete: (xhr, status) => {
                     console.log(xhr, status);
@@ -555,6 +634,7 @@ $(document).ready(function () {
         console.log(document.querySelector("#selectAllFiles").checked);
         selectAll(e.target.htmlFor);
     });
+
     $('a').on('click', function (e) {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
@@ -564,7 +644,15 @@ $(document).ready(function () {
                 case 'settings':
                     break;
                 case 'usertrigger':
-                    $('#Usersdropdown').show();
+                    e.stopPropagation();
+                    console.log($('#Usersdropdown').css('display'));
+                    if($('#Usersdropdown').css('display') === 'block') {
+                      $('#usertrigger').removeClass('selected'); 
+                      $('#Usersdropdown').hide(); 
+                    } else {
+                      $('#usertrigger').addClass('selected'); 
+                      $('#Usersdropdown').show();
+                    }
                     break;
                 case 'refresh':
                     refreshPath(currentPath);
@@ -610,6 +698,12 @@ $(document).ready(function () {
                     break;
                 case 'download':
                     if (aSelectedFiles.length > 0) {
+                        if(aSelectedFiles.length > 5 ) {
+                          M.toast({
+                            html: 'No se pueden descargar más de 5 archivos a la vez'
+                          });
+                          break;
+                        }
                         download(aSelectedFiles,'File');
                     } else {
                     M.toast({
@@ -627,6 +721,24 @@ $(document).ready(function () {
     $('#usertrigger')
         .html(UserName)
         .attr('title', 'Empresa: ' + CompanyName);
+    $('#settings').on('click',(e)=>{
+                console.log($('#Settingdropdown').css('display'));
+                if($('#Settingdropdown').css('display') === 'block') {
+                  $('#settings').removeClass('selected'); 
+                  $('#Settingdropdown').removeClass('setting').hide();
+                } else {
+                  $('#settings').addClass('selected'); 
+                  $('#Settingdropdown').addClass('setting').show();
+                }
+    });    
+    $('#Usersdropdown').on('mouseleave',()=>{
+      $('#Usersdropdown').hide();
+      $('#usertrigger').removeClass('selected'); 
+    });    
+    $('#Settingdropdown').on('mouseleave',()=>{
+      $('#Settingdropdown').hide();
+      $('#settings').removeClass('selected'); 
+    });   
     refreshPath(currentPath);
     refreshBarMenu();
     console.log(document.querySelector("#selectAllFiles").checked);

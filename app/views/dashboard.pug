@@ -19,7 +19,7 @@ html(lang="es")
         .col.m3.status.right
           i.material-icons person
           a#usertrigger.dropdown-menu.user-link.btn-unify(href="#!",data-activates="Usersdropdown") 
-          ul#Usersdropdown.dropdown-content.dropdown-horizontal-list(style="position: absolute; top: 64px; left: 974.594px; opacity: 1; display: none;")
+          ul#Usersdropdown.dropdown-content.dropdown-horizontal-list(style="display: none;")
             li
               a#userProfile.btn-unify(href="#") User Profile
             li
@@ -28,6 +28,11 @@ html(lang="es")
               a#userLogout.btn-unify(href="#") Logout  
     .row.nav-unify
       i#settings.material-icons.btn-flat settings
+      ul#Settingdropdown.dropdown-content.dropdown-horizontal-list(style="display: none;")
+        li
+          a#userAdd.btn-unify(href="#") Add User
+        li
+          a#userPassword.btn-unify(href="#") Change User Password
       a#home.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Home
       a#newFolder.waves-effect.waves-teal.btn-flat.btn-unify(href="#") New Folder
       a#rename.waves-effect.waves-teal.btn-flat.btn-unify(href="#") Rename
@@ -86,42 +91,6 @@ html(lang="es")
       .modal-footer
         a#ModalUserLogout.modal-action.modal-close.waves-effect.waves-teal.btn-flat.btn2-unify(href="#!") Yes
         a#cancel.modal-action.modal-close.waves-effect.waves-teal.btn-flat.btn2-unify(href="#!") Cancel
-    #preloader
-      .preloader-content
-        .preloader-header
-          .preloader-title Descarga de archivos
-        ul.preloader-file#DownloadfileList
-          li#li0
-            .li-content
-              #li-filename0.li-filename
-              .progress-content
-                #progress-bar0.progress-bar
-                #percent0.percent
-          li#li1
-            .li-content
-              #li-filename1.li-filename
-              .progress-content
-                #progress-bar1.progress-bar
-                #percent1.percent
-          li#li2
-            .li-content
-              #li-filename2.li-filename
-              .progress-content
-                #progress-bar2.progress-bar
-                #percent2.percent
-          li#li3
-            .li-content
-              #li-filename3.li-filename
-              .progress-content
-                #progress-bar3.progress-bar
-                #percent3.percent
-          li#li4
-            .li-content
-              #li-filename4.li-filename
-              .progress-content
-                #progress-bar4.progress-bar
-                #percent4.percent  
-        a#download-end.waves-effect.waves-teal.btn-flat.btn2-unify(href="#") Cerrar    
     script(type="text/javascript" src="js/materialize.min.js")          
     script(type="text/javascript" src="js/jquery-2.1.1.min.js")
     script(type="text/javascript" src="js/jquery.leanModal.min.js")
