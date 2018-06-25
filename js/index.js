@@ -1,9 +1,10 @@
-/*jslint es6*/
 import ajax from './vendor/ajax';
-import { Base64 } from 'js-base64';
+import {
+    Base64
+} from 'js-base64';
 import md5 from './vendor/md5.min';
-$(document).ready(function() {
-    const setCookie = function(name, value, days) {
+$(document).ready(function () {
+    const setCookie = function (name, value, days) {
         var expires = "";
         if (days) {
             var date = new Date();
@@ -13,7 +14,10 @@ $(document).ready(function() {
         document.cookie = name + "=" + (value || "") + expires + ";path='/'";
     };
 
-    const getCookie = function(cname) {
+    let aSelectedFiles = [];
+    let aSelectedFolders = [];
+
+    const getCookie = function (cname) {
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
         let ca = decodedCookie.split(';');
@@ -60,6 +64,22 @@ $(document).ready(function() {
         setCookie('wssURL', '', 0);
         document.location.href = '/';
     };
+
+    const serializeObject = (dataObject) => {
+        var stringResult = '',
+            value = void 0;
+        for (var key in dataObject) {
+            console.log(dataObject[key], key);
+            value = dataObject[key];
+            if (stringResult !== '') {
+                stringResult += '&' + key + '=' + value;
+            } else {
+                stringResult += key + '=' + value;
+            }
+        }
+        return stringResult;
+    };
+
     const changePath = (newPath) => {
         const p1 = currentPath.split(newPath);
         console.log(p1[0] + "\\" + newPath);
@@ -67,6 +87,121 @@ $(document).ready(function() {
         refreshPath(currentPath);
         refreshBarMenu();
     };
+
+
+    const download = (fileList, text) =>{
+        let reqList = [],
+            handlerCount = 0,
+            responseTimeout = [];
+
+        $('#download').addClass('disabled');
+        $('#preloader').show();
+
+        let _loop = (i) => {
+            let fName = fileList[i];
+            let liNumber = document.querySelector('#li' + i);
+            let liFilename = document.querySelector('#li-filename' + i);
+            let progressBar = document.querySelector('#progress-bar' + i);
+            let percentLabel = document.querySelector('#percent' + i);
+            responseTimeout[i] = false;
+            fName = fName.split('\\').pop().split('/').pop();
+            reqList[i] = new XMLHttpRequest();
+            reqList[i].open('POST', '/files/download', true);
+            reqList[i].responseType = 'arraybuffer';
+            liNumber.style.display = 'block';
+            liFilename.innerHTML = fName;
+            reqList[i].timeout = 36000;
+            reqList[i].ontimeout = function () {
+                c('** Timeout error ->File:' + fName + ' ' + reqList[i].status + ' ' + reqList[i].statusText);
+                // handlerCount = handlerCount - 1
+                progressBar.innerHTML = 'Timeout Error';
+                percentLabel.innerHTML = '';
+                progressBar.style.color = 'red';
+                progressBar.style.width = '100%';
+                progressBar.style.backgroundColor = 'white';
+                progressBar.classList.add('blink');
+                responseTimeout[i] = true;
+            };
+            reqList[i].onprogress = function (evt) {
+                if (evt.lengthComputable) {
+                    var percentComplete = parseInt(evt.loaded / evt.total * 100);
+                    progressBar.style.width = percentComplete + '%';
+                    percentLabel.innerHTML = percentComplete + '%';
+                }
+            };
+            reqList[i].onerror = function () {
+                console.log('** An error occurred during the transaction ->File:' + fName + ' ' + req.status + ' ' + req.statusText);
+                handlerCount = handlerCount - 1;
+                percentLabel.innerHTML = 'Error';
+                percentLabel.style.color = 'red';
+            };
+            reqList[i].onloadend = function () {
+                handlerCount = handlerCount - 1;
+                if (!responseTimeout[i]) {
+                    progressBar.style.width = '100%';
+                    percentLabel.innerHTML = '100%';
+                }
+                if (handlerCount === 0) {
+                    $("#download-end").show();
+                }
+            };
+            reqList[i].onloadstart = function () {
+                handlerCount = handlerCount + 1;
+                progressBar.style.width = '0';
+                percentLabel.innerHTML = '0%';
+            };
+            reqList[i].onload = function () {
+                if (reqList[i].readyState === 4 && reqList[i].status === 200) {
+                    var filename = '';
+                    var disposition = reqList[i].getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                        var matches = filenameRegex.exec(disposition);
+                        if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                    }
+                    var type = reqList[i].getResponseHeader('Content-Type');
+                    var blob = new Blob([this.response], { type: type });
+                    if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                        // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+                        window.navigator.msSaveBlob(blob, filename);
+                    } else {
+                        var URL = window.URL || window.webkitURL;
+                        var downloadUrl = URL.createObjectURL(blob);
+
+                        if (filename) {
+                            // use HTML5 a[download] attribute to specify filename
+                            var a = document.createElement('a');
+                            // safari doesn't support this yet
+                            if (typeof a.download === 'undefined') {
+                                window.location = downloadUrl;
+                                preloader.style.display = 'none';
+                            } else {
+                                a.href = downloadUrl;
+                                a.download = filename;
+                                document.body.appendChild(a);
+                                a.click();
+                                // preloader.style.display = 'none'
+                            }
+                        } else {
+                            window.open = downloadUrl;
+                            // preloader.style.display = 'none'
+                        }
+
+                        setTimeout(function () {
+                            URL.revokeObjectURL(downloadUrl);
+                        }, 100); // cleanup
+                    }
+                }
+            };
+            reqList[i].setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            reqList[i].send(serializeObject({ 'filename': fileList[i] }));
+        };
+
+        for (var i = 0; i < fileList.length; i++) {
+            _loop(i);
+        }
+    };
+
     const refreshPath = (cPath) => {
         let cPathArray = cPath.split('\\');
         let newHtmlContent = `<li><label id="currentpath">Path:</label></li>`;
@@ -96,12 +231,12 @@ $(document).ready(function() {
             });
     };
     const selectAll = (e) => {
-        var allCkeckbox = document.querySelectorAll('.checkFile');
+        var allCkeckbox = document.querySelectorAll('.check');
         let v = document
             .querySelector("#selectAllFiles")
             .checked;
         console.log(v);
-        allCkeckbox.forEach(function(element, i) {
+        allCkeckbox.forEach(function (element, i) {
             if (!allCkeckbox[i].disabled) {
                 if (v === true) {
                     allCkeckbox[i].setAttribute('checked', 'checked');
@@ -112,10 +247,10 @@ $(document).ready(function() {
         });
         console.log(getCheckedFiles());
     };
-    const getCheckedFiles = function() {
+    const getCheckedFiles = function () {
         var checkedFiles = [];
         var allElements = document.querySelectorAll('.typeFile');
-        allElements.forEach(function(element, i) {
+        allElements.forEach(function (element, i) {
             // c(element.children[0].children[0].checked)
             if (element.children[0].children[0].checked) {
                 checkedFiles.push(currentPath + '\\' + element.children[1].innerHTML);
@@ -128,11 +263,11 @@ $(document).ready(function() {
     const getCheckedFolder = function getCheckedFolder() {
         var checkedFolders = [];
         var allElements = document.querySelectorAll('.dashboard-path');
-        allElements.forEach(function(v, i) {
+        allElements.forEach(function (v, i) {
             v
                 .children[0]
                 .childNodes
-                .forEach(function(l, idx) {
+                .forEach(function (l, idx) {
                     if (l.children[0].checked) {
                         checkedFolders.push(currentPath + '\\' + l.children[2].text);
                         // c(currentPath + l.children[2].text)
@@ -147,14 +282,16 @@ $(document).ready(function() {
             .getElementsByTagName('tbody')[0];
         let newHtmlContent = ``;
         console.log(data);
+        aSelectedFiles = [];
+        aSelectedFolders = [];
         data.forEach((val, idx, array) => {
             let fileSize = parseInt(val.size / 1024);
             if (val.isFolder) {
-                newHtmlContent += `<tr><td><input class="filled-in checkFolder" id="${val.name}" type="checkbox">
+                newHtmlContent += `<tr><td><input class="filled-in checkFolder check" id="${val.name}" type="checkbox">
               <label class="checkbox left" for="${val.name}"></label></td>`;
                 newHtmlContent += `<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">${val.name}</a></td>`;
             } else {
-                newHtmlContent += `<tr><td><input class="filled-in checkFile" id="${val.name}" type="checkbox">
+                newHtmlContent += `<tr><td><input class="filled-in checkFile check" id="${val.name}" type="checkbox">
               <label class="checkbox left" for="${val.name}"></label></td>`;
                 newHtmlContent += `<td><i class="far fa-file"></i><span class="typeFile">${val.name}</span></td>`;
             }
@@ -167,6 +304,47 @@ $(document).ready(function() {
             currentPath = currentPath + '\\' + e.target.innerText;
             refreshBarMenu();
         });
+        $('.check').on('click', (e) => {
+            selectDeselect(e);
+            //e.preventDefault();
+            //if checked add element
+            //var index = array.indexOf(5);
+            //if (index > -1) {
+            //array.splice(index, 1);
+            //}
+            console.log(e.target.checked);
+            console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
+            console.log(e.target.parentNode.parentNode.rowIndex);
+            console.log(e.target.parentNode.children[1].htmlFor);
+        });
+    };
+
+    const selectDeselect = (e) =>{
+        const isChecked = e.target.checked;
+        const contentType = e.target.className.split(/\s+/).indexOf("checkFile");
+        const name = e.target.parentNode.children[1].htmlFor;
+        
+        if (contentType != -1) {
+           if (isChecked) {
+             aSelectedFiles.push(name);  
+           } else {
+            const idx = aSelectedFiles.indexOf(name);
+            if ( idx > -1) {
+               aSelectedFiles.splice(idx,1);   
+            }   
+           }
+        } else {
+           if(isChecked) {
+               aSelectedFolders.push(name); 
+           } else {
+            const idx = aSelectedFolders.indexOf(name);
+            if ( idx > -1) {
+               aSelectedFolders.splice(idx,1);   
+            }  
+           } 
+
+        }
+        console.log(aSelectedFiles,aSelectedFolders);
     };
 
     const showUserProfile = (w, h, t) => {
@@ -283,10 +461,15 @@ $(document).ready(function() {
                 },
                 success: (data) => {
                     //console.log(JSON.parse(data))
-                    let { status, message } = JSON.parse(data)
+                    let {
+                        status,
+                        message
+                    } = JSON.parse(data);
                     console.log('status', status);
                     if (status === 'FAIL') {
-                        M.toast({ html: message });
+                        M.toast({
+                            html: message
+                        });
                         d
                             .querySelector('#message')
                             .innerHTML = message;
@@ -296,12 +479,14 @@ $(document).ready(function() {
                     }
                 },
                 complete: (xhr, status) => {
-                    console.log(xhr, status)
-                        //waiting.style.display = 'none'
-                    $('#modal').hide()
+                    console.log(xhr, status);
+                    //waiting.style.display = 'none'
+                    $('#modal').hide();
                 },
                 error: (xhr, err) => {
-                    M.toast({ html: 'Wrong password' });
+                    M.toast({
+                        html: 'Wrong password'
+                    });
                     if (err === 'timeout') {
                         console.log('Timeout Error');
                     } else {
@@ -319,8 +504,11 @@ $(document).ready(function() {
     };
 
     let refreshBarMenu = () => {
-        (AllowNewFolder === '1') ?
-        $('#NewFolder').removeClass('disabled'): $('#NewFolder').addClass('disabled');
+        if (AllowNewFolder === '1') {
+            $('#NewFolder').removeClass('disabled');
+        } else {
+            $('#NewFolder').addClass('disabled');
+        }
         if (AllowDeleteFolder === '1' && AllowDeleteFile === '1') {
             $('#delete').removeClass('disabled');
         } else {
@@ -333,34 +521,41 @@ $(document).ready(function() {
             $('#rename').removeClass('disabled');
             $('#rename').addClass('disabled');
         }
-        (AllowUpload == '1') ?
-        $('#upload').removeClass('disabled'): $('#upload')
-            .removeClass('disabled')
-            .addClass('disabled');
+        if (AllowUpload == '1') {
+            $('#upload').removeClass('disabled');
+        } else {
+            $('#upload').removeClass('disabled').addClass('disabled');
+        }
 
-        (AllowDownload == '1') ?
-        $('#download').removeClass('disabled'): $('#download')
-            .removeClass('disabled')
-            .addClass('disabled');
-        (UserRole == 'admin') ?
-        $('#settings').show(): $('#settings').hide();
+        if (AllowDownload == '1') {
+            $('#download').removeClass('disabled');
+        } else {
+            $('#download').removeClass('disabled').addClass('disabled');
+        }
+        if (UserRole == 'admin') {
+            $('#settings').show();
+        } else {
+            $('#settings').hide();
+        }
         $('#modaltrigger').html(UserName);
-        $('#modaltrigger').leanModal({ top: 110, overlay: 0.45, closeButton: ".hidemodal" });
+        $('#modaltrigger').leanModal({
+            top: 110,
+            overlay: 0.45,
+            closeButton: ".hidemodal"
+        });
     };
 
-    $('.checkbox').on('click', (e) => {
+    $('#selectAllFiles').on('click', (e) => {
         e.preventDefault();
-        if (e.target.htmlFor === 'selectAllFiles') {
-            if (document.querySelector("#selectAllFiles").checked === false) {
-                document.querySelector("#selectAllFiles").setAttribute('checked', 'checked');
-            } else {
-                document.querySelector("#selectAllFiles").removeAttribute('checked');
-            }
-            console.log(document.querySelector("#selectAllFiles").checked);
-            selectAll(e.target.htmlFor);
+        if (document.querySelector("#selectAllFiles").checked === false) {
+            document.querySelector("#selectAllFiles").setAttribute('checked', 'checked');
+        } else {
+            document.querySelector("#selectAllFiles").removeAttribute('checked');
         }
+        console.log(document.querySelector("#selectAllFiles").checked);
+        selectAll(e.target.htmlFor);
     });
-    $('a').on('click', function(e) {
+    $('a').on('click', function (e) {
         console.log(this.id);
         console.log($(this).hasClass('disabled'));
 
@@ -399,20 +594,34 @@ $(document).ready(function() {
                     refreshPath(currentPath);
                     break;
                 case 'newFolder':
-                    M.toast({ html: 'Opcion no disponible' });
+                    M.toast({
+                        html: 'Opcion no disponible'
+                    });
                     break;
                 case 'delete':
-                    M.toast({ html: 'Opcion no disponible' });
+                    M.toast({
+                        html: 'Opcion no disponible'
+                    });
                     break;
                 case 'upload':
-                    M.toast({ html: 'Opcion no disponible' });
+                    M.toast({
+                        html: 'Opcion no disponible'
+                    });
                     break;
                 case 'download':
-                    M.toast({ html: 'Opcion no disponible' });
+                    if (aSelectedFiles.length > 0) {
+                        download(aSelectedFiles,'File');
+                    } else {
+                    M.toast({
+                        html: 'No se han seleccionado archivos para descargar'
+                    });
+                }
                     break;
             }
         } else {
-            M.toast({ html: 'Opcion no permitida' });
+            M.toast({
+                html: 'Opcion no permitida'
+            });
         }
     });
     $('#usertrigger')
