@@ -4,7 +4,6 @@ import {
     Base64
 } from 'js-base64';
 import md5 from './vendor/md5.min';
-;
 $(document).ready(function () {
     const setCookie = function (name, value, days) {
         var expires = "";
@@ -18,7 +17,9 @@ $(document).ready(function () {
 
     let aSelectedFiles = [];
     let aSelectedFolders = [];
-
+    let aFolders = [];
+    let aFiles = [];
+    
     const getCookie = function (cname) {
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
@@ -91,14 +92,14 @@ $(document).ready(function () {
     };
 
 
-    const download = (fileList, text) =>{
+    const download = (fileList, text) => {
         let reqList = [],
             handlerCount = 0,
             responseTimeout = [];
-            let w = 32;
-            let h = 440;
-            let ModalTitle = "Descarga de archivos seleccionados";
-            let ModalContent = `<ul class="preloader-file" id="DownloadfileList">
+        let w = 32;
+        let h = 440;
+        let ModalTitle = "Descarga de archivos seleccionados";
+        let ModalContent = `<ul class="preloader-file" id="DownloadfileList">
             <li id="li0">
                 <div class="li-content">
                     <div class="li-filename" id="li-filename0"></div>
@@ -145,7 +146,7 @@ $(document).ready(function () {
                 </div>
             </li>
         </ul>`;
-            let htmlContent = `<div id="modal-header">
+        let htmlContent = `<div id="modal-header">
                             <h5>${ModalTitle}</h5>
                             <a class="modal_close" id="modalClose" href="#"></a>
                           </div>
@@ -155,20 +156,20 @@ $(document).ready(function () {
                           <div class="modal-footer">
                               <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>
                           </div>    `;
-            $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
-            //$('.modal-content').css('width: 350px;');
-            $('.modal').css('width: 40% !important');
-            $('#modal').show();
+        $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
+        //$('.modal-content').css('width: 350px;');
+        $('.modal').css('width: 40% !important');
+        $('#modal').show();
         $('#download').addClass('disabled');
-        $('#btnCloseDownload').on('click',(e)=>{
-          $('#download').removeClass('disabled');
-          $('#modal').hide();
-          $('#refresh').trigger('click');
+        $('#btnCloseDownload').on('click', (e) => {
+            $('#download').removeClass('disabled');
+            $('#modal').hide();
+            $('#refresh').trigger('click');
         });
-        $('#modalClose').on('click',(e)=>{
-          $('#download').removeClass('disabled');
-          $('#modal').hide();
-          $('#refresh').trigger('click');
+        $('#modalClose').on('click', (e) => {
+            $('#download').removeClass('disabled');
+            $('#modal').hide();
+            $('#refresh').trigger('click');
         });
         let _loop = (i) => {
             let fName = fileList[i];
@@ -233,7 +234,9 @@ $(document).ready(function () {
                         if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
                     }
                     var type = reqList[i].getResponseHeader('Content-Type');
-                    var blob = new Blob([this.response], { type: type });
+                    var blob = new Blob([this.response], {
+                        type: type
+                    });
                     if (typeof window.navigator.msSaveBlob !== 'undefined') {
                         // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
                         window.navigator.msSaveBlob(blob, filename);
@@ -267,8 +270,10 @@ $(document).ready(function () {
                 }
             };
             reqList[i].setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            console.log(currentPath + '\\'+fileList[i]);
-            reqList[i].send(serializeObject({ 'filename': currentPath + '\\'+fileList[i] }));
+            console.log(currentPath + '\\' + fileList[i]);
+            reqList[i].send(serializeObject({
+                'filename': currentPath + '\\' + fileList[i]
+            }));
         };
         for (var i = 0; i < fileList.length; i++) {
             _loop(i);
@@ -276,14 +281,22 @@ $(document).ready(function () {
     };
 
     const refreshPath = (cPath) => {
+        console.log('init path: ',cPath);
         let cPathArray = cPath.split('\\');
         let newHtmlContent = `<li><label id="currentpath">Path:</label></li>`;
         const headers = new Headers();
 
-        console.log(cPath);
+        console.log(cPathArray);
         headers.append('Authorization', 'Bearer ' + Token);
+        if(cPathArray[cPathArray.lenght -1] == '/') aPathArray.slice(-1,1);
         cPathArray.forEach((val, idx, array) => {
-            newHtmlContent += `<li><a class="breadcrumb" href="#!">${val}</a></li>`;
+            console.log(val);
+            if ( val !='/') {
+                newHtmlContent += `<li><spand>/</spand><a class="breadcrumb" href="#!">${val}</a></li>`;     
+            } else {
+                newHtmlContent += `<li><a class="breadcrumb" href="#!">${val}</a></li>`;
+            }
+            
         });
         $('#currentPath').html(newHtmlContent);
 
@@ -312,10 +325,15 @@ $(document).ready(function () {
         allCkeckbox.forEach(function (element, i) {
             if (!allCkeckbox[i].disabled) {
                 if (v === true) {
-                    allCkeckbox[i].setAttribute('checked', 'checked');
+                   console.log(element); 
+                   
+                    //allCkeckbox[i].setAttribute('checked', 'checked');
                 } else {
-                    allCkeckbox[i].removeAttribute('checked');
+                    console.log(element);
+                    //allCkeckbox[i].trigger('click');
+                    //allCkeckbox[i].removeAttribute('checked');
                 }
+                $('#'+element.id).trigger('click');
             }
         });
         console.log(getCheckedFiles());
@@ -349,77 +367,115 @@ $(document).ready(function () {
         });
         return checkedFolders;
     };
-    const refreshFilesTable = (data) => {
+
+    const renderFilesTable = (aFol,aFil) =>{
+        let newHtmlContent = ``;
         const tbodyContent = document
             .getElementById("tbl-files")
             .getElementsByTagName('tbody')[0];
-        let newHtmlContent = ``;
-        console.log(data);
-        aSelectedFiles = [];
-        aSelectedFolders = [];
-        data.forEach((val, idx, array) => {
+
+        newHtmlContent += `<tr><td><span>&nbsp;</span></td>
+              <td><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>
+              <td>&nbsp;</td><td>&nbsp;</td></tr>`;
+        aFol.forEach((val, idx, array) => {
             let fileSize = parseInt(val.size / 1024);
-            if (val.isFolder) {
                 newHtmlContent += `<tr><td><input class="filled-in checkFolder check" id="${val.name}" type="checkbox">
               <label class="checkbox left" for="${val.name}"></label></td>`;
                 newHtmlContent += `<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">${val.name}</a></td>`;
                 newHtmlContent += `<td>&nbsp;</td><td>${val.date}</td></tr>`;
-            } else {
-                newHtmlContent += `<tr><td><input class="filled-in checkFile check" id="${val.name}" type="checkbox">
-              <label class="checkbox left" for="${val.name}"></label></td>`;
-                newHtmlContent += `<td><i class="far fa-file"></i><span class="typeFile">${val.name}</span></td>`;
-                newHtmlContent += `<td>${fileSize} KB</td><td>${val.date}</td></tr>`;
-            }
-            
+        });
+
+        aFil.forEach((val,idx,array)=>{
+            let fileSize = parseInt(val.size / 1024);
+            newHtmlContent += `<tr><td><input class="filled-in checkFile check" id="${val.name}" type="checkbox">
+            <label class="checkbox left" for="${val.name}"></label></td>`;
+              newHtmlContent += `<td><i class="far fa-file"></i><span class="typeFile">${val.name}</span></td>`;
+              newHtmlContent += `<td>${fileSize} KB</td><td>${val.date}</td></tr>`;
         });
         tbodyContent.innerHTML = newHtmlContent;
+    };
+
+
+    const goBackFolder = () =>{
+        let newpath = currentPath.split('\\');
+        if (newpath[0]>'') {
+            newpath.slice(-1,1);
+            newpath.join('\\');
+            changePath(newpath);
+        }
+    };
+    const refreshFilesTable = (data) => {
+        const tbodyContent = document
+            .getElementById("tbl-files")
+            .getElementsByTagName('tbody')[0];
+        
+        console.log(data);
+        aFolders = [];
+        aFiles = [];
+        data.forEach((val, idx, array) => {
+            let fileSize = parseInt(val.size / 1024);
+            if (val.isFolder) {
+               aFolders.push({name:val.name,date:val.date});
+            } else {
+               aFiles.push({name:val.name,size:val.size,date:val.date}); 
+            }
+        });
+        aFolders.sort((a,b)=>{
+            return a.name.localeCompare(b.name);
+        });
+        aFiles.sort((a,b)=>{
+            return a.date.localeCompare(b.date);
+        });
+
+        renderFilesTable(aFolders,aFiles);
+        
         $('.file-Name').on('click', (e) => {
             console.log(e);
+            console.log('Current Path: ',currentPath);
+            console.log('New Path: ',currentPath + '\\' + e.target.innerText);
             refreshPath(currentPath + '\\' + e.target.innerText);
             currentPath = currentPath + '\\' + e.target.innerText;
             refreshBarMenu();
         });
         $('.check').on('click', (e) => {
             selectDeselect(e);
-            //e.preventDefault();
-            //if checked add element
-            //var index = array.indexOf(5);
-            //if (index > -1) {
-            //array.splice(index, 1);
-            //}
             console.log(e.target.checked);
             console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
             console.log(e.target.parentNode.parentNode.rowIndex);
             console.log(e.target.parentNode.children[1].htmlFor);
         });
+        $('#goBackFolder').on('click',(e)=>{
+            e.preventDefault();
+            goBackFolder(); 
+         });
     };
 
-    const selectDeselect = (e) =>{
+    const selectDeselect = (e) => {
         const isChecked = e.target.checked;
         const contentType = e.target.className.split(/\s+/).indexOf("checkFile");
         const name = e.target.parentNode.children[1].htmlFor;
-        
+
         if (contentType != -1) {
-           if (isChecked) {
-             aSelectedFiles.push(name);  
-           } else {
-            const idx = aSelectedFiles.indexOf(name);
-            if ( idx > -1) {
-               aSelectedFiles.splice(idx,1);   
-            }   
-           }
+            if (isChecked) {
+                aSelectedFiles.push(name);
+            } else {
+                const idx = aSelectedFiles.indexOf(name);
+                if (idx > -1) {
+                    aSelectedFiles.splice(idx, 1);
+                }
+            }
         } else {
-           if(isChecked) {
-               aSelectedFolders.push(name); 
-           } else {
-            const idx = aSelectedFolders.indexOf(name);
-            if ( idx > -1) {
-               aSelectedFolders.splice(idx,1);   
-            }  
-           } 
+            if (isChecked) {
+                aSelectedFolders.push(name);
+            } else {
+                const idx = aSelectedFolders.indexOf(name);
+                if (idx > -1) {
+                    aSelectedFolders.splice(idx, 1);
+                }
+            }
 
         }
-        console.log(aSelectedFiles,aSelectedFolders);
+        console.log(aSelectedFiles, aSelectedFolders);
     };
 
     const showUserProfile = (w, h, t) => {
@@ -550,9 +606,9 @@ $(document).ready(function () {
                             .querySelector('#message')
                             .innerHTML = message;
                     } else {
-                      M.toast({
-                        html: message
-                    });
+                        M.toast({
+                            html: message
+                        });
                         console.log(message);
                     }
                     $('#modal').hide();
@@ -646,12 +702,12 @@ $(document).ready(function () {
                 case 'usertrigger':
                     e.stopPropagation();
                     console.log($('#Usersdropdown').css('display'));
-                    if($('#Usersdropdown').css('display') === 'block') {
-                      $('#usertrigger').removeClass('selected'); 
-                      $('#Usersdropdown').hide(); 
+                    if ($('#Usersdropdown').css('display') === 'block') {
+                        $('#usertrigger').removeClass('selected');
+                        $('#Usersdropdown').hide();
                     } else {
-                      $('#usertrigger').addClass('selected'); 
-                      $('#Usersdropdown').show();
+                        $('#usertrigger').addClass('selected');
+                        $('#Usersdropdown').show();
                     }
                     break;
                 case 'refresh':
@@ -698,18 +754,18 @@ $(document).ready(function () {
                     break;
                 case 'download':
                     if (aSelectedFiles.length > 0) {
-                        if(aSelectedFiles.length > 5 ) {
-                          M.toast({
-                            html: 'No se pueden descargar más de 5 archivos a la vez'
-                          });
-                          break;
+                        if (aSelectedFiles.length > 5) {
+                            M.toast({
+                                html: 'No se pueden descargar más de 5 archivos a la vez'
+                            });
+                            break;
                         }
-                        download(aSelectedFiles,'File');
+                        download(aSelectedFiles, 'File');
                     } else {
-                    M.toast({
-                        html: 'No se han seleccionado archivos para descargar'
-                    });
-                }
+                        M.toast({
+                            html: 'No se han seleccionado archivos para descargar'
+                        });
+                    }
                     break;
             }
         } else {
@@ -721,24 +777,24 @@ $(document).ready(function () {
     $('#usertrigger')
         .html(UserName)
         .attr('title', 'Empresa: ' + CompanyName);
-    $('#settings').on('click',(e)=>{
-                console.log($('#Settingdropdown').css('display'));
-                if($('#Settingdropdown').css('display') === 'block') {
-                  $('#settings').removeClass('selected'); 
-                  $('#Settingdropdown').removeClass('setting').hide();
-                } else {
-                  $('#settings').addClass('selected'); 
-                  $('#Settingdropdown').addClass('setting').show();
-                }
-    });    
-    $('#Usersdropdown').on('mouseleave',()=>{
-      $('#Usersdropdown').hide();
-      $('#usertrigger').removeClass('selected'); 
-    });    
-    $('#Settingdropdown').on('mouseleave',()=>{
-      $('#Settingdropdown').hide();
-      $('#settings').removeClass('selected'); 
-    });   
+    $('#settings').on('click', (e) => {
+        console.log($('#Settingdropdown').css('display'));
+        if ($('#Settingdropdown').css('display') === 'block') {
+            $('#settings').removeClass('selected');
+            $('#Settingdropdown').removeClass('setting').hide();
+        } else {
+            $('#settings').addClass('selected');
+            $('#Settingdropdown').addClass('setting').show();
+        }
+    });
+    $('#Usersdropdown').on('mouseleave', () => {
+        $('#Usersdropdown').hide();
+        $('#usertrigger').removeClass('selected');
+    });
+    $('#Settingdropdown').on('mouseleave', () => {
+        $('#Settingdropdown').hide();
+        $('#settings').removeClass('selected');
+    });
     refreshPath(currentPath);
     refreshBarMenu();
     console.log(document.querySelector("#selectAllFiles").checked);

@@ -16,7 +16,6 @@ var _md2 = _interopRequireDefault(_md);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-;
 $(document).ready(function () {
     var setCookie = function setCookie(name, value, days) {
         var expires = "";
@@ -30,6 +29,8 @@ $(document).ready(function () {
 
     var aSelectedFiles = [];
     var aSelectedFolders = [];
+    var aFolders = [];
+    var aFiles = [];
 
     var getCookie = function getCookie(cname) {
         var name = cname + "=";
@@ -192,7 +193,9 @@ $(document).ready(function () {
                         if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
                     }
                     var type = reqList[i].getResponseHeader('Content-Type');
-                    var blob = new Blob([this.response], { type: type });
+                    var blob = new Blob([this.response], {
+                        type: type
+                    });
                     if (typeof window.navigator.msSaveBlob !== 'undefined') {
                         // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
                         window.navigator.msSaveBlob(blob, filename);
@@ -227,7 +230,9 @@ $(document).ready(function () {
             };
             reqList[i].setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             console.log(currentPath + '\\' + fileList[i]);
-            reqList[i].send(serializeObject({ 'filename': currentPath + '\\' + fileList[i] }));
+            reqList[i].send(serializeObject({
+                'filename': currentPath + '\\' + fileList[i]
+            }));
         };
         for (var i = 0; i < fileList.length; i++) {
             _loop(i);
@@ -235,14 +240,21 @@ $(document).ready(function () {
     };
 
     var refreshPath = function refreshPath(cPath) {
+        console.log('init path: ', cPath);
         var cPathArray = cPath.split('\\');
         var newHtmlContent = '<li><label id="currentpath">Path:</label></li>';
         var headers = new Headers();
 
-        console.log(cPath);
+        console.log(cPathArray);
         headers.append('Authorization', 'Bearer ' + Token);
+        if (cPathArray[cPathArray.lenght - 1] == '/') aPathArray.slice(-1, 1);
         cPathArray.forEach(function (val, idx, array) {
-            newHtmlContent += '<li><a class="breadcrumb" href="#!">' + val + '</a></li>';
+            console.log(val);
+            if (val != '/') {
+                newHtmlContent += '<li><spand>/</spand><a class="breadcrumb" href="#!">' + val + '</a></li>';
+            } else {
+                newHtmlContent += '<li><a class="breadcrumb" href="#!">' + val + '</a></li>';
+            }
         });
         $('#currentPath').html(newHtmlContent);
 
@@ -268,10 +280,15 @@ $(document).ready(function () {
         allCkeckbox.forEach(function (element, i) {
             if (!allCkeckbox[i].disabled) {
                 if (v === true) {
-                    allCkeckbox[i].setAttribute('checked', 'checked');
+                    console.log(element);
+
+                    //allCkeckbox[i].setAttribute('checked', 'checked');
                 } else {
-                    allCkeckbox[i].removeAttribute('checked');
+                    console.log(element);
+                    //allCkeckbox[i].trigger('click');
+                    //allCkeckbox[i].removeAttribute('checked');
                 }
+                $('#' + element.id).trigger('click');
             }
         });
         console.log(getCheckedFiles());
@@ -302,43 +319,77 @@ $(document).ready(function () {
         });
         return checkedFolders;
     };
+
+    var renderFilesTable = function renderFilesTable(aFol, aFil) {
+        var newHtmlContent = '';
+        var tbodyContent = document.getElementById("tbl-files").getElementsByTagName('tbody')[0];
+
+        newHtmlContent += '<tr><td><span>&nbsp;</span></td>\n              <td><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>\n              <td>&nbsp;</td><td>&nbsp;</td></tr>';
+        aFol.forEach(function (val, idx, array) {
+            var fileSize = parseInt(val.size / 1024);
+            newHtmlContent += '<tr><td><input class="filled-in checkFolder check" id="' + val.name + '" type="checkbox">\n              <label class="checkbox left" for="' + val.name + '"></label></td>';
+            newHtmlContent += '<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">' + val.name + '</a></td>';
+            newHtmlContent += '<td>&nbsp;</td><td>' + val.date + '</td></tr>';
+        });
+
+        aFil.forEach(function (val, idx, array) {
+            var fileSize = parseInt(val.size / 1024);
+            newHtmlContent += '<tr><td><input class="filled-in checkFile check" id="' + val.name + '" type="checkbox">\n            <label class="checkbox left" for="' + val.name + '"></label></td>';
+            newHtmlContent += '<td><i class="far fa-file"></i><span class="typeFile">' + val.name + '</span></td>';
+            newHtmlContent += '<td>' + fileSize + ' KB</td><td>' + val.date + '</td></tr>';
+        });
+        tbodyContent.innerHTML = newHtmlContent;
+    };
+
+    var goBackFolder = function goBackFolder() {
+        var newpath = currentPath.split('\\');
+        if (newpath[0] > '') {
+            newpath.slice(-1, 1);
+            newpath.join('\\');
+            changePath(newpath);
+        }
+    };
     var refreshFilesTable = function refreshFilesTable(data) {
         var tbodyContent = document.getElementById("tbl-files").getElementsByTagName('tbody')[0];
-        var newHtmlContent = '';
+
         console.log(data);
-        aSelectedFiles = [];
-        aSelectedFolders = [];
+        aFolders = [];
+        aFiles = [];
         data.forEach(function (val, idx, array) {
             var fileSize = parseInt(val.size / 1024);
             if (val.isFolder) {
-                newHtmlContent += '<tr><td><input class="filled-in checkFolder check" id="' + val.name + '" type="checkbox">\n              <label class="checkbox left" for="' + val.name + '"></label></td>';
-                newHtmlContent += '<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">' + val.name + '</a></td>';
-                newHtmlContent += '<td>&nbsp;</td><td>' + val.date + '</td></tr>';
+                aFolders.push({ name: val.name, date: val.date });
             } else {
-                newHtmlContent += '<tr><td><input class="filled-in checkFile check" id="' + val.name + '" type="checkbox">\n              <label class="checkbox left" for="' + val.name + '"></label></td>';
-                newHtmlContent += '<td><i class="far fa-file"></i><span class="typeFile">' + val.name + '</span></td>';
-                newHtmlContent += '<td>' + fileSize + ' KB</td><td>' + val.date + '</td></tr>';
+                aFiles.push({ name: val.name, size: val.size, date: val.date });
             }
         });
-        tbodyContent.innerHTML = newHtmlContent;
+        aFolders.sort(function (a, b) {
+            return a.name.localeCompare(b.name);
+        });
+        aFiles.sort(function (a, b) {
+            return a.date.localeCompare(b.date);
+        });
+
+        renderFilesTable(aFolders, aFiles);
+
         $('.file-Name').on('click', function (e) {
             console.log(e);
+            console.log('Current Path: ', currentPath);
+            console.log('New Path: ', currentPath + '\\' + e.target.innerText);
             refreshPath(currentPath + '\\' + e.target.innerText);
             currentPath = currentPath + '\\' + e.target.innerText;
             refreshBarMenu();
         });
         $('.check').on('click', function (e) {
             selectDeselect(e);
-            //e.preventDefault();
-            //if checked add element
-            //var index = array.indexOf(5);
-            //if (index > -1) {
-            //array.splice(index, 1);
-            //}
             console.log(e.target.checked);
             console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
             console.log(e.target.parentNode.parentNode.rowIndex);
             console.log(e.target.parentNode.children[1].htmlFor);
+        });
+        $('#goBackFolder').on('click', function (e) {
+            e.preventDefault();
+            goBackFolder();
         });
     };
 
