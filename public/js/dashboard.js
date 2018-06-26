@@ -14,46 +14,20 @@ var _md = require('./vendor/md5.min');
 
 var _md2 = _interopRequireDefault(_md);
 
+var _jsCookie = require('./vendor/js-cookie');
+
+var _jsCookie2 = _interopRequireDefault(_jsCookie);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 $(document).ready(function () {
-    var setCookie = function setCookie(name, value, days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + ";path='/'";
-    };
 
-    var aSelectedFiles = [];
-    var aSelectedFolders = [];
-    var aFolders = [];
-    var aFiles = [];
-
-    var getCookie = function getCookie(cname) {
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return '';
-    };
-
-    var UserName = getCookie('UserName');
-    var UserRole = getCookie('UserRole');
-    var CompanyName = getCookie('CompanyName');
-    var RootPath = getCookie('RootPath');
-    var Token = getCookie('token');
-    var AccessString = getCookie('AccessString');
+    var UserName = _jsCookie2.default.get('UserName');
+    var UserRole = _jsCookie2.default.get('UserRole');
+    var CompanyName = _jsCookie2.default.get('CompanyName');
+    var RootPath = _jsCookie2.default.get('RootPath');
+    var Token = _jsCookie2.default.get('token');
+    var AccessString = _jsCookie2.default.get('AccessString');
 
     var _AccessString$split = AccessString.split(','),
         _AccessString$split2 = _slicedToArray(_AccessString$split, 7),
@@ -66,20 +40,48 @@ $(document).ready(function () {
         AllowDownload = _AccessString$split2[6];
 
     var currentPath = RootPath;
+    var aSelectedFiles = [];
+    var aSelectedFolders = [];
+    var aFolders = [];
+    var aFiles = [];
 
-    console.log(AccessString.split(','));
-    console.log('AllowNewFolder', AllowNewFolder);
-    console.log('AllowDeleteFolder', AllowDeleteFolder);
-    console.log('AllowDeleteFile', AllowDeleteFile);
-    console.log('AllowUpload', AllowUpload);
-    console.log('AllowDownload', AllowDownload);
+    /* const setCookie = function (name, value, days) {
+          var expires = "";
+          if (days) {
+              var date = new Date();
+              date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+              expires = "; expires=" + date.toUTCString();
+          }
+          document.cookie = name + "=" + (value || "") + expires + ";path='/'";
+      };
+      
+      const getCookie = function (cname) {
+          let name = cname + "=";
+          let decodedCookie = decodeURIComponent(document.cookie);
+          let ca = decodedCookie.split(';');
+          for (let i = 0; i < ca.length; i++) {
+              let c = ca[i];
+              while (c.charAt(0) == ' ') {
+                  c = c.substring(1);
+              }
+              if (c.indexOf(name) == 0) {
+                  return c.substring(name.length, c.length);
+              }
+          }
+          return '';
+      }; */
 
     var logout = function logout() {
-        setCookie('UserName', '', 0);
-        setCookie('UserRole', '', 0);
-        setCookie('sessionId', '', 0);
-        setCookie('token', '', 0);
-        setCookie('wssURL', '', 0);
+        _jsCookie2.default.set('UserName', '', { expires: 0, path: '' });
+        _jsCookie2.default.set('UserRole', '', { expires: 0, path: '' });
+        _jsCookie2.default.set('sessionId', '', { expires: 0, path: '' });
+        _jsCookie2.default.set('token', '', { expires: 0, path: '' });
+        _jsCookie2.default.set('wssURL', '', { expires: 0, path: '' });
+        _jsCookie2.default.remove('UserName');
+        _jsCookie2.default.remove('UserRole');
+        _jsCookie2.default.remove('sessionId');
+        _jsCookie2.default.remove('token');
+        _jsCookie2.default.remove('wssURL');
         document.location.href = '/';
     };
 
@@ -100,12 +102,14 @@ $(document).ready(function () {
 
     var changePath = function changePath(newPath) {
         var p1 = currentPath.split(newPath);
-        console.log(p1[0] + "\\" + newPath);
-        currentPath = p1[0] + "\\" + newPath;
+        console.log(p1[0] + "/" + newPath);
+        currentPath = p1[0] + "/" + newPath;
         refreshPath(currentPath);
         refreshBarMenu();
     };
 
+    //TODO: Optimizar renderizado de elementos li 
+    //incorporando el contenido en el bucle _loop
     var download = function download(fileList, text) {
         var reqList = [],
             handlerCount = 0,
@@ -241,21 +245,27 @@ $(document).ready(function () {
 
     var refreshPath = function refreshPath(cPath) {
         console.log('init path: ', cPath);
-        var cPathArray = cPath.split('\\');
         var newHtmlContent = '<li><label id="currentpath">Path:</label></li>';
-        var headers = new Headers();
+        if (cPath.length > 1) {
+            var cPathArray = cPath.split('/');
 
-        console.log(cPathArray);
+            console.log(cPathArray);
+
+            if (cPathArray[cPathArray.lenght - 1] == '/') aPathArray.slice(-1, 1);
+            cPathArray.forEach(function (val, idx, array) {
+                console.log(val);
+                if (val != '/') {
+                    newHtmlContent += '<li><spand>/</spand><a class="breadcrumb" href="#!">' + val + '</a></li>';
+                } else {
+                    newHtmlContent += '<li><a class="breadcrumb" href="#!">' + val + '</a></li>';
+                }
+            });
+        } else {
+            newHtmlContent += '<li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>';
+        }
+        var headers = new Headers();
         headers.append('Authorization', 'Bearer ' + Token);
-        if (cPathArray[cPathArray.lenght - 1] == '/') aPathArray.slice(-1, 1);
-        cPathArray.forEach(function (val, idx, array) {
-            console.log(val);
-            if (val != '/') {
-                newHtmlContent += '<li><spand>/</spand><a class="breadcrumb" href="#!">' + val + '</a></li>';
-            } else {
-                newHtmlContent += '<li><a class="breadcrumb" href="#!">' + val + '</a></li>';
-            }
-        });
+
         $('#currentPath').html(newHtmlContent);
 
         $('.breadcrumb').on('click', function (e) {
@@ -273,6 +283,7 @@ $(document).ready(function () {
             console.log(err);
         });
     };
+
     var selectAll = function selectAll(e) {
         var allCkeckbox = document.querySelectorAll('.check');
         var v = document.querySelector("#selectAllFiles").checked;
@@ -293,6 +304,7 @@ $(document).ready(function () {
         });
         console.log(getCheckedFiles());
     };
+
     var getCheckedFiles = function getCheckedFiles() {
         var checkedFiles = [];
         var allElements = document.querySelectorAll('.typeFile');
@@ -324,9 +336,8 @@ $(document).ready(function () {
         var newHtmlContent = '';
         var tbodyContent = document.getElementById("tbl-files").getElementsByTagName('tbody')[0];
 
-        newHtmlContent += '<tr><td><span>&nbsp;</span></td>\n              <td><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>\n              <td>&nbsp;</td><td>&nbsp;</td></tr>';
+        newHtmlContent += '<tr><td><span>&nbsp;</span></td>\n              <td><i class="fas fa-folder"></i><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>\n              <td>&nbsp;</td><td>&nbsp;</td></tr>';
         aFol.forEach(function (val, idx, array) {
-            var fileSize = parseInt(val.size / 1024);
             newHtmlContent += '<tr><td><input class="filled-in checkFolder check" id="' + val.name + '" type="checkbox">\n              <label class="checkbox left" for="' + val.name + '"></label></td>';
             newHtmlContent += '<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">' + val.name + '</a></td>';
             newHtmlContent += '<td>&nbsp;</td><td>' + val.date + '</td></tr>';
@@ -342,10 +353,10 @@ $(document).ready(function () {
     };
 
     var goBackFolder = function goBackFolder() {
-        var newpath = currentPath.split('\\');
+        var newpath = currentPath.split('/');
         if (newpath[0] > '') {
             newpath.slice(-1, 1);
-            newpath.join('\\');
+            newpath.join('/');
             changePath(newpath);
         }
     };
@@ -375,9 +386,15 @@ $(document).ready(function () {
         $('.file-Name').on('click', function (e) {
             console.log(e);
             console.log('Current Path: ', currentPath);
-            console.log('New Path: ', currentPath + '\\' + e.target.innerText);
-            refreshPath(currentPath + '\\' + e.target.innerText);
-            currentPath = currentPath + '\\' + e.target.innerText;
+            var newPath = '';
+            if (currentPath == '/') {
+                newPath = currentPath + e.target.innerText;
+            } else {
+                newPath = currentPath + '/' + e.target.innerText;
+            }
+            console.log('New Path: ', newPath);
+            refreshPath(newPath);
+            currentPath = newPath;
             refreshBarMenu();
         });
         $('.check').on('click', function (e) {
@@ -657,6 +674,7 @@ $(document).ready(function () {
         }
     });
     $('#usertrigger').html(UserName).attr('title', 'Empresa: ' + CompanyName);
+
     $('#settings').on('click', function (e) {
         console.log($('#Settingdropdown').css('display'));
         if ($('#Settingdropdown').css('display') === 'block') {
@@ -680,7 +698,7 @@ $(document).ready(function () {
     console.log(document.querySelector("#selectAllFiles").checked);
 });
 
-},{"./vendor/ajax":2,"./vendor/md5.min":3,"js-base64":7}],2:[function(require,module,exports){
+},{"./vendor/ajax":2,"./vendor/js-cookie":3,"./vendor/md5.min":4,"js-base64":8}],2:[function(require,module,exports){
 'use strict';
 
 var type;
@@ -999,7 +1017,169 @@ function extend(target) {
   return target;
 }
 
-},{"type-of":9}],3:[function(require,module,exports){
+},{"type-of":10}],3:[function(require,module,exports){
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+/*!
+ * JavaScript Cookie v2.2.0
+ * https://github.com/js-cookie/js-cookie
+ *
+ * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
+ * Released under the MIT license
+ */
+;(function (factory) {
+	var registeredInModuleLoader;
+	if (typeof define === 'function' && define.amd) {
+		define(factory);
+		registeredInModuleLoader = true;
+	}
+	if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object') {
+		module.exports = factory();
+		registeredInModuleLoader = true;
+	}
+	if (!registeredInModuleLoader) {
+		var OldCookies = window.Cookies;
+		var api = window.Cookies = factory();
+		api.noConflict = function () {
+			window.Cookies = OldCookies;
+			return api;
+		};
+	}
+})(function () {
+	function extend() {
+		var i = 0;
+		var result = {};
+		for (; i < arguments.length; i++) {
+			var attributes = arguments[i];
+			for (var key in attributes) {
+				result[key] = attributes[key];
+			}
+		}
+		return result;
+	}
+
+	function init(converter) {
+		function api(key, value, attributes) {
+			if (typeof document === 'undefined') {
+				return;
+			}
+
+			// Write
+
+			if (arguments.length > 1) {
+				attributes = extend({
+					path: '/'
+				}, api.defaults, attributes);
+
+				if (typeof attributes.expires === 'number') {
+					attributes.expires = new Date(new Date() * 1 + attributes.expires * 864e+5);
+				}
+
+				// We're using "expires" because "max-age" is not supported by IE
+				attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
+
+				try {
+					var result = JSON.stringify(value);
+					if (/^[\{\[]/.test(result)) {
+						value = result;
+					}
+				} catch (e) {}
+
+				value = converter.write ? converter.write(value, key) : encodeURIComponent(String(value)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+
+				key = encodeURIComponent(String(key)).replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent).replace(/[\(\)]/g, escape);
+
+				var stringifiedAttributes = '';
+				for (var attributeName in attributes) {
+					if (!attributes[attributeName]) {
+						continue;
+					}
+					stringifiedAttributes += '; ' + attributeName;
+					if (attributes[attributeName] === true) {
+						continue;
+					}
+
+					// Considers RFC 6265 section 5.2:
+					// ...
+					// 3.  If the remaining unparsed-attributes contains a %x3B (";")
+					//     character:
+					// Consume the characters of the unparsed-attributes up to,
+					// not including, the first %x3B (";") character.
+					// ...
+					stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
+				}
+
+				return document.cookie = key + '=' + value + stringifiedAttributes;
+			}
+
+			// Read
+
+			var jar = {};
+			var decode = function decode(s) {
+				return s.replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent);
+			};
+			// To prevent the for loop in the first place assign an empty array
+			// in case there are no cookies at all.
+			var cookies = document.cookie ? document.cookie.split('; ') : [];
+			var i = 0;
+
+			for (; i < cookies.length; i++) {
+				var parts = cookies[i].split('=');
+				var cookie = parts.slice(1).join('=');
+
+				if (!this.json && cookie.charAt(0) === '"') {
+					cookie = cookie.slice(1, -1);
+				}
+
+				try {
+					var name = decode(parts[0]);
+					cookie = (converter.read || converter)(cookie, name) || decode(cookie);
+
+					if (this.json) {
+						try {
+							cookie = JSON.parse(cookie);
+						} catch (e) {}
+					}
+
+					jar[name] = cookie;
+
+					if (key === name) {
+						break;
+					}
+				} catch (e) {}
+			}
+
+			return key ? jar[key] : jar;
+		}
+
+		api.set = api;
+		api.get = function (key) {
+			return api.call(api, key);
+		};
+		api.getJSON = function (key) {
+			return api.call({
+				json: true
+			}, key);
+		};
+		api.remove = function (key, attributes) {
+			api(key, '', extend(attributes, {
+				expires: -1
+			}));
+		};
+
+		api.defaults = {};
+
+		api.withConverter = init;
+
+		return api;
+	}
+
+	return init(function () {});
+});
+
+},{}],4:[function(require,module,exports){
 (function (process,global){
 "use strict";
 
@@ -1126,7 +1306,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 }();
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":8}],4:[function(require,module,exports){
+},{"_process":9}],5:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -1279,7 +1459,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -3017,7 +3197,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":4,"ieee754":6}],6:[function(require,module,exports){
+},{"base64-js":5,"ieee754":7}],7:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -3103,7 +3283,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (global){
 /*
  *  base64.js
@@ -3335,7 +3515,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 }));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"buffer":5}],8:[function(require,module,exports){
+},{"buffer":6}],9:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -3521,7 +3701,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var toString = Object.prototype.toString
 
 module.exports = function(val){

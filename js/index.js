@@ -4,8 +4,32 @@ import {
     Base64
 } from 'js-base64';
 import md5 from './vendor/md5.min';
+import Cookies from './vendor/js-cookie';
+
 $(document).ready(function () {
-    const setCookie = function (name, value, days) {
+
+  const UserName = Cookies.get('UserName');
+  const UserRole = Cookies.get('UserRole');
+  const CompanyName = Cookies.get('CompanyName');
+  const RootPath = Cookies.get('RootPath');
+  const Token = Cookies.get('token');
+  const AccessString = Cookies.get('AccessString');
+  const [AllowNewFolder,
+        AllowRenameFolder,
+        AllowRenameFile,
+        AllowDeleteFolder,
+        AllowDeleteFile,
+        AllowUpload,
+        AllowDownload
+    ] = AccessString.split(',');
+  let currentPath = RootPath;
+  let aSelectedFiles = [];
+  let aSelectedFolders = [];
+  let aFolders = [];
+  let aFiles = [];
+
+
+  /* const setCookie = function (name, value, days) {
         var expires = "";
         if (days) {
             var date = new Date();
@@ -14,11 +38,6 @@ $(document).ready(function () {
         }
         document.cookie = name + "=" + (value || "") + expires + ";path='/'";
     };
-
-    let aSelectedFiles = [];
-    let aSelectedFolders = [];
-    let aFolders = [];
-    let aFiles = [];
     
     const getCookie = function (cname) {
         let name = cname + "=";
@@ -34,37 +53,19 @@ $(document).ready(function () {
             }
         }
         return '';
-    };
-
-    const UserName = getCookie('UserName');
-    const UserRole = getCookie('UserRole');
-    const CompanyName = getCookie('CompanyName');
-    const RootPath = getCookie('RootPath');
-    const Token = getCookie('token');
-    const AccessString = getCookie('AccessString');
-    const [AllowNewFolder,
-        AllowRenameFolder,
-        AllowRenameFile,
-        AllowDeleteFolder,
-        AllowDeleteFile,
-        AllowUpload,
-        AllowDownload
-    ] = AccessString.split(',');
-    let currentPath = RootPath;
-
-    console.log(AccessString.split(','));
-    console.log('AllowNewFolder', AllowNewFolder);
-    console.log('AllowDeleteFolder', AllowDeleteFolder);
-    console.log('AllowDeleteFile', AllowDeleteFile);
-    console.log('AllowUpload', AllowUpload);
-    console.log('AllowDownload', AllowDownload);
+    }; */
 
     const logout = () => {
-        setCookie('UserName', '', 0);
-        setCookie('UserRole', '', 0);
-        setCookie('sessionId', '', 0);
-        setCookie('token', '', 0);
-        setCookie('wssURL', '', 0);
+      Cookies.set('UserName', '',{ expires: 0, path: ''});
+      Cookies.set('UserRole', '',{ expires: 0, path: ''});
+      Cookies.set('sessionId', '',{ expires: 0, path: ''});
+      Cookies.set('token', '',{ expires: 0, path: ''});
+      Cookies.set('wssURL', '',{ expires: 0, path: ''});
+      Cookies.remove('UserName');
+      Cookies.remove('UserRole');
+      Cookies.remove('sessionId');
+      Cookies.remove('token');
+      Cookies.remove('wssURL');
         document.location.href = '/';
     };
 
@@ -85,13 +86,14 @@ $(document).ready(function () {
 
     const changePath = (newPath) => {
         const p1 = currentPath.split(newPath);
-        console.log(p1[0] + "\\" + newPath);
-        currentPath = p1[0] + "\\" + newPath;
+        console.log(p1[0] + "/" + newPath);
+        currentPath = p1[0] + "/" + newPath;
         refreshPath(currentPath);
         refreshBarMenu();
     };
 
-
+    //TODO: Optimizar renderizado de elementos li 
+    //incorporando el contenido en el bucle _loop
     const download = (fileList, text) => {
         let reqList = [],
             handlerCount = 0,
@@ -282,12 +284,12 @@ $(document).ready(function () {
 
     const refreshPath = (cPath) => {
         console.log('init path: ',cPath);
-        let cPathArray = cPath.split('\\');
         let newHtmlContent = `<li><label id="currentpath">Path:</label></li>`;
-        const headers = new Headers();
-
+        if (cPath.length >1) {
+        let cPathArray = cPath.split('/');     
+        
         console.log(cPathArray);
-        headers.append('Authorization', 'Bearer ' + Token);
+       
         if(cPathArray[cPathArray.lenght -1] == '/') aPathArray.slice(-1,1);
         cPathArray.forEach((val, idx, array) => {
             console.log(val);
@@ -298,6 +300,12 @@ $(document).ready(function () {
             }
             
         });
+      } else {
+         newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>`;  
+      }
+      const headers = new Headers();
+      headers.append('Authorization', 'Bearer ' + Token);
+
         $('#currentPath').html(newHtmlContent);
 
         $('.breadcrumb').on('click', (e) => {
@@ -316,6 +324,7 @@ $(document).ready(function () {
                 console.log(err);
             });
     };
+
     const selectAll = (e) => {
         var allCkeckbox = document.querySelectorAll('.check');
         let v = document
@@ -338,6 +347,7 @@ $(document).ready(function () {
         });
         console.log(getCheckedFiles());
     };
+
     const getCheckedFiles = function () {
         var checkedFiles = [];
         var allElements = document.querySelectorAll('.typeFile');
@@ -375,10 +385,9 @@ $(document).ready(function () {
             .getElementsByTagName('tbody')[0];
 
         newHtmlContent += `<tr><td><span>&nbsp;</span></td>
-              <td><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>
+              <td><i class="fas fa-folder"></i><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>
               <td>&nbsp;</td><td>&nbsp;</td></tr>`;
         aFol.forEach((val, idx, array) => {
-            let fileSize = parseInt(val.size / 1024);
                 newHtmlContent += `<tr><td><input class="filled-in checkFolder check" id="${val.name}" type="checkbox">
               <label class="checkbox left" for="${val.name}"></label></td>`;
                 newHtmlContent += `<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">${val.name}</a></td>`;
@@ -397,10 +406,10 @@ $(document).ready(function () {
 
 
     const goBackFolder = () =>{
-        let newpath = currentPath.split('\\');
+        let newpath = currentPath.split('/');
         if (newpath[0]>'') {
             newpath.slice(-1,1);
-            newpath.join('\\');
+            newpath.join('/');
             changePath(newpath);
         }
     };
@@ -432,9 +441,15 @@ $(document).ready(function () {
         $('.file-Name').on('click', (e) => {
             console.log(e);
             console.log('Current Path: ',currentPath);
-            console.log('New Path: ',currentPath + '\\' + e.target.innerText);
-            refreshPath(currentPath + '\\' + e.target.innerText);
-            currentPath = currentPath + '\\' + e.target.innerText;
+            let newPath = '';
+            if(currentPath == '/') {
+              newPath = currentPath + e.target.innerText;
+            }else {
+              newPath = currentPath + '/' + e.target.innerText;
+            }
+            console.log('New Path: ',newPath);
+            refreshPath(newPath);
+            currentPath = newPath;
             refreshBarMenu();
         });
         $('.check').on('click', (e) => {
@@ -777,6 +792,7 @@ $(document).ready(function () {
     $('#usertrigger')
         .html(UserName)
         .attr('title', 'Empresa: ' + CompanyName);
+
     $('#settings').on('click', (e) => {
         console.log($('#Settingdropdown').css('display'));
         if ($('#Settingdropdown').css('display') === 'block') {
