@@ -8,13 +8,13 @@ import Cookies from './vendor/js-cookie';
 
 $(document).ready(function () {
 
-  const UserName = Cookies.get('UserName');
-  const UserRole = Cookies.get('UserRole');
-  const CompanyName = Cookies.get('CompanyName');
-  const RootPath = Cookies.get('RootPath');
-  const Token = Cookies.get('token');
-  const AccessString = Cookies.get('AccessString');
-  const [AllowNewFolder,
+    const UserName = Cookies.get('UserName');
+    const UserRole = Cookies.get('UserRole');
+    const CompanyName = Cookies.get('CompanyName');
+    const RootPath = Cookies.get('RootPath');
+    const Token = Cookies.get('token');
+    const AccessString = Cookies.get('AccessString');
+    const [AllowNewFolder,
         AllowRenameFolder,
         AllowRenameFile,
         AllowDeleteFolder,
@@ -22,50 +22,65 @@ $(document).ready(function () {
         AllowUpload,
         AllowDownload
     ] = AccessString.split(',');
-  let currentPath = RootPath;
-  let aSelectedFiles = [];
-  let aSelectedFolders = [];
-  let aFolders = [];
-  let aFiles = [];
+    let currentPath = RootPath;
+    let aSelectedFiles = [];
+    let aSelectedFolders = [];
+    let aFolders = [];
+    let aFiles = [];
 
 
-  /* const setCookie = function (name, value, days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + ";path='/'";
-    };
-    
-    const getCookie = function (cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return '';
-    }; */
+    /* const setCookie = function (name, value, days) {
+          var expires = "";
+          if (days) {
+              var date = new Date();
+              date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+              expires = "; expires=" + date.toUTCString();
+          }
+          document.cookie = name + "=" + (value || "") + expires + ";path='/'";
+      };
+      
+      const getCookie = function (cname) {
+          let name = cname + "=";
+          let decodedCookie = decodeURIComponent(document.cookie);
+          let ca = decodedCookie.split(';');
+          for (let i = 0; i < ca.length; i++) {
+              let c = ca[i];
+              while (c.charAt(0) == ' ') {
+                  c = c.substring(1);
+              }
+              if (c.indexOf(name) == 0) {
+                  return c.substring(name.length, c.length);
+              }
+          }
+          return '';
+      }; */
 
     const logout = () => {
-      Cookies.set('UserName', '',{ expires: 0, path: ''});
-      Cookies.set('UserRole', '',{ expires: 0, path: ''});
-      Cookies.set('sessionId', '',{ expires: 0, path: ''});
-      Cookies.set('token', '',{ expires: 0, path: ''});
-      Cookies.set('wssURL', '',{ expires: 0, path: ''});
-      Cookies.remove('UserName');
-      Cookies.remove('UserRole');
-      Cookies.remove('sessionId');
-      Cookies.remove('token');
-      Cookies.remove('wssURL');
+        Cookies.set('UserName', '', {
+            expires: 0,
+            path: ''
+        });
+        Cookies.set('UserRole', '', {
+            expires: 0,
+            path: ''
+        });
+        Cookies.set('sessionId', '', {
+            expires: 0,
+            path: ''
+        });
+        Cookies.set('token', '', {
+            expires: 0,
+            path: ''
+        });
+        Cookies.set('wssURL', '', {
+            expires: 0,
+            path: ''
+        });
+        Cookies.remove('UserName');
+        Cookies.remove('UserRole');
+        Cookies.remove('sessionId');
+        Cookies.remove('token');
+        Cookies.remove('wssURL');
         document.location.href = '/';
     };
 
@@ -85,9 +100,13 @@ $(document).ready(function () {
     };
 
     const changePath = (newPath) => {
+        if(newPath != RootPath) {
         const p1 = currentPath.split(newPath);
-        console.log(p1[0] + "/" + newPath);
-        currentPath = p1[0] + "/" + newPath;
+            console.log(p1[0] + "/" + newPath);
+            currentPath = p1[0] + "/" + newPath;
+        } else {
+            currentPath = RootPath;
+        }
         refreshPath(currentPath);
         refreshBarMenu();
     };
@@ -272,9 +291,9 @@ $(document).ready(function () {
                 }
             };
             reqList[i].setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            console.log(currentPath + '\\' + fileList[i]);
+            console.log(currentPath + '/' + fileList[i]);
             reqList[i].send(serializeObject({
-                'filename': currentPath + '\\' + fileList[i]
+                'filename': currentPath + '/' + fileList[i]
             }));
         };
         for (var i = 0; i < fileList.length; i++) {
@@ -283,28 +302,27 @@ $(document).ready(function () {
     };
 
     const refreshPath = (cPath) => {
-        console.log('init path: ',cPath);
+        console.log('init path: ', cPath);
         let newHtmlContent = `<li><label id="currentpath">Path:</label></li>`;
-        if (cPath.length >1) {
-        let cPathArray = cPath.split('/');     
-        
-        console.log(cPathArray);
-       
-        if(cPathArray[cPathArray.lenght -1] == '/') aPathArray.slice(-1,1);
-        cPathArray.forEach((val, idx, array) => {
-            console.log(val);
-            if ( val !='/') {
-                newHtmlContent += `<li><spand>/</spand><a class="breadcrumb" href="#!">${val}</a></li>`;     
-            } else {
-                newHtmlContent += `<li><a class="breadcrumb" href="#!">${val}</a></li>`;
-            }
-            
-        });
-      } else {
-         newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>`;  
-      }
-      const headers = new Headers();
-      headers.append('Authorization', 'Bearer ' + Token);
+        if (cPath.length > 1) {
+            let cPathArray = cPath.split('/');
+
+            console.log(cPathArray);
+
+            if (cPathArray[cPathArray.lenght - 1] == '/') aPathArray.slice(-1, 1);
+            cPathArray.forEach((val, idx, array) => {
+                console.log(val);
+                if (val == '') {
+                    newHtmlContent += `<li><a class="breadcrumb" href="#!">/</a></li>`;
+                } else {
+                    newHtmlContent += `<li><a class="breadcrumb" href="#!">${val}</a></li>`;
+                }
+            });
+        } else {
+            newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>`;
+        }
+        const headers = new Headers();
+        headers.append('Authorization', 'Bearer ' + Token);
 
         $('#currentPath').html(newHtmlContent);
 
@@ -334,15 +352,15 @@ $(document).ready(function () {
         allCkeckbox.forEach(function (element, i) {
             if (!allCkeckbox[i].disabled) {
                 if (v === true) {
-                   console.log(element); 
-                   
+                    console.log(element);
+
                     //allCkeckbox[i].setAttribute('checked', 'checked');
                 } else {
                     console.log(element);
                     //allCkeckbox[i].trigger('click');
                     //allCkeckbox[i].removeAttribute('checked');
                 }
-                $('#'+element.id).trigger('click');
+                $('#' + element.id).trigger('click');
             }
         });
         console.log(getCheckedFiles());
@@ -354,7 +372,7 @@ $(document).ready(function () {
         allElements.forEach(function (element, i) {
             // c(element.children[0].children[0].checked)
             if (element.children[0].children[0].checked) {
-                checkedFiles.push(currentPath + '\\' + element.children[1].innerHTML);
+                checkedFiles.push(currentPath + '/' + element.children[1].innerHTML);
                 // c(element.children[1].innerHTML)
             }
         });
@@ -370,7 +388,7 @@ $(document).ready(function () {
                 .childNodes
                 .forEach(function (l, idx) {
                     if (l.children[0].checked) {
-                        checkedFolders.push(currentPath + '\\' + l.children[2].text);
+                        checkedFolders.push(currentPath + '/' + l.children[2].text);
                         // c(currentPath + l.children[2].text)
                     }
                 });
@@ -378,7 +396,7 @@ $(document).ready(function () {
         return checkedFolders;
     };
 
-    const renderFilesTable = (aFol,aFil) =>{
+    const renderFilesTable = (aFol, aFil) => {
         let newHtmlContent = ``;
         const tbodyContent = document
             .getElementById("tbl-files")
@@ -388,28 +406,32 @@ $(document).ready(function () {
               <td><i class="fas fa-folder"></i><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>
               <td>&nbsp;</td><td>&nbsp;</td></tr>`;
         aFol.forEach((val, idx, array) => {
-                newHtmlContent += `<tr><td><input class="filled-in checkFolder check" id="${val.name}" type="checkbox">
+            newHtmlContent += `<tr><td><input class="filled-in checkFolder check" id="${val.name}" type="checkbox">
               <label class="checkbox left" for="${val.name}"></label></td>`;
-                newHtmlContent += `<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">${val.name}</a></td>`;
-                newHtmlContent += `<td>&nbsp;</td><td>${val.date}</td></tr>`;
+            newHtmlContent += `<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">${val.name}</a></td>`;
+            newHtmlContent += `<td>&nbsp;</td><td>${val.date}</td></tr>`;
         });
 
-        aFil.forEach((val,idx,array)=>{
+        aFil.forEach((val, idx, array) => {
             let fileSize = parseInt(val.size / 1024);
             newHtmlContent += `<tr><td><input class="filled-in checkFile check" id="${val.name}" type="checkbox">
             <label class="checkbox left" for="${val.name}"></label></td>`;
-              newHtmlContent += `<td><i class="far fa-file"></i><span class="typeFile">${val.name}</span></td>`;
-              newHtmlContent += `<td>${fileSize} KB</td><td>${val.date}</td></tr>`;
+            newHtmlContent += `<td><i class="far fa-file"></i><span class="typeFile">${val.name}</span></td>`;
+            newHtmlContent += `<td>${fileSize} KB</td><td>${val.date}</td></tr>`;
         });
         tbodyContent.innerHTML = newHtmlContent;
     };
 
 
-    const goBackFolder = () =>{
+    const goBackFolder = () => {
         let newpath = currentPath.split('/');
-        if (newpath[0]>'') {
-            newpath.slice(-1,1);
+        console.log(newpath);
+        if (newpath[0] != '') {
+            newpath.slice(-1, 1);
             newpath.join('/');
+            changePath(newpath);
+        } else {
+            newpath= '/';
             changePath(newpath);
         }
     };
@@ -417,40 +439,52 @@ $(document).ready(function () {
         const tbodyContent = document
             .getElementById("tbl-files")
             .getElementsByTagName('tbody')[0];
-        
+
         console.log(data);
         aFolders = [];
         aFiles = [];
         data.forEach((val, idx, array) => {
             let fileSize = parseInt(val.size / 1024);
             if (val.isFolder) {
-               aFolders.push({name:val.name,date:val.date});
+                aFolders.push({
+                    name: val.name,
+                    date: val.date
+                });
             } else {
-               aFiles.push({name:val.name,size:val.size,date:val.date}); 
+                aFiles.push({
+                    name: val.name,
+                    size: val.size,
+                    date: val.date
+                });
             }
         });
-        aFolders.sort((a,b)=>{
+        aFolders.sort((a, b) => {
             return a.name.localeCompare(b.name);
         });
-        aFiles.sort((a,b)=>{
+        aFiles.sort((a, b) => {
             return a.date.localeCompare(b.date);
         });
 
-        renderFilesTable(aFolders,aFiles);
-        
+        renderFilesTable(aFolders, aFiles);
+
         $('.file-Name').on('click', (e) => {
             console.log(e);
-            console.log('Current Path: ',currentPath);
+            console.log('Current Path: ', currentPath);
             let newPath = '';
-            if(currentPath == '/') {
-              newPath = currentPath + e.target.innerText;
-            }else {
-              newPath = currentPath + '/' + e.target.innerText;
+            if (e.target.innerText != '..') {
+                if (currentPath == '/') {
+                    newPath = currentPath + e.target.innerText;
+                } else {
+                    newPath = currentPath + '/' + e.target.innerText;
+                }
+
+                console.log('New Path: ', newPath);
+                refreshPath(newPath);
+                currentPath = newPath;
+                refreshBarMenu();
+            } else {
+                goBackFolder();
             }
-            console.log('New Path: ',newPath);
-            refreshPath(newPath);
-            currentPath = newPath;
-            refreshBarMenu();
         });
         $('.check').on('click', (e) => {
             selectDeselect(e);
@@ -459,10 +493,10 @@ $(document).ready(function () {
             console.log(e.target.parentNode.parentNode.rowIndex);
             console.log(e.target.parentNode.children[1].htmlFor);
         });
-        $('#goBackFolder').on('click',(e)=>{
+        $('#goBackFolder').on('click', (e) => {
             e.preventDefault();
-            goBackFolder(); 
-         });
+            goBackFolder();
+        });
     };
 
     const selectDeselect = (e) => {
@@ -749,7 +783,7 @@ $(document).ready(function () {
                     $('#logoutmodal').hide();
                     break;
                 case 'home':
-                    currentPath = RootPath + '\\';
+                    currentPath = RootPath;
                     refreshPath(currentPath);
                     break;
                 case 'newFolder':

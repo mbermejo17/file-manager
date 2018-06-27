@@ -72,11 +72,26 @@ $(document).ready(function () {
       }; */
 
     var logout = function logout() {
-        _jsCookie2.default.set('UserName', '', { expires: 0, path: '' });
-        _jsCookie2.default.set('UserRole', '', { expires: 0, path: '' });
-        _jsCookie2.default.set('sessionId', '', { expires: 0, path: '' });
-        _jsCookie2.default.set('token', '', { expires: 0, path: '' });
-        _jsCookie2.default.set('wssURL', '', { expires: 0, path: '' });
+        _jsCookie2.default.set('UserName', '', {
+            expires: 0,
+            path: ''
+        });
+        _jsCookie2.default.set('UserRole', '', {
+            expires: 0,
+            path: ''
+        });
+        _jsCookie2.default.set('sessionId', '', {
+            expires: 0,
+            path: ''
+        });
+        _jsCookie2.default.set('token', '', {
+            expires: 0,
+            path: ''
+        });
+        _jsCookie2.default.set('wssURL', '', {
+            expires: 0,
+            path: ''
+        });
         _jsCookie2.default.remove('UserName');
         _jsCookie2.default.remove('UserRole');
         _jsCookie2.default.remove('sessionId');
@@ -101,9 +116,13 @@ $(document).ready(function () {
     };
 
     var changePath = function changePath(newPath) {
-        var p1 = currentPath.split(newPath);
-        console.log(p1[0] + "/" + newPath);
-        currentPath = p1[0] + "/" + newPath;
+        if (newPath != RootPath) {
+            var p1 = currentPath.split(newPath);
+            console.log(p1[0] + "/" + newPath);
+            currentPath = p1[0] + "/" + newPath;
+        } else {
+            currentPath = RootPath;
+        }
         refreshPath(currentPath);
         refreshBarMenu();
     };
@@ -233,9 +252,9 @@ $(document).ready(function () {
                 }
             };
             reqList[i].setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            console.log(currentPath + '\\' + fileList[i]);
+            console.log(currentPath + '/' + fileList[i]);
             reqList[i].send(serializeObject({
-                'filename': currentPath + '\\' + fileList[i]
+                'filename': currentPath + '/' + fileList[i]
             }));
         };
         for (var i = 0; i < fileList.length; i++) {
@@ -254,8 +273,8 @@ $(document).ready(function () {
             if (cPathArray[cPathArray.lenght - 1] == '/') aPathArray.slice(-1, 1);
             cPathArray.forEach(function (val, idx, array) {
                 console.log(val);
-                if (val != '/') {
-                    newHtmlContent += '<li><spand>/</spand><a class="breadcrumb" href="#!">' + val + '</a></li>';
+                if (val == '') {
+                    newHtmlContent += '<li><a class="breadcrumb" href="#!">/</a></li>';
                 } else {
                     newHtmlContent += '<li><a class="breadcrumb" href="#!">' + val + '</a></li>';
                 }
@@ -311,7 +330,7 @@ $(document).ready(function () {
         allElements.forEach(function (element, i) {
             // c(element.children[0].children[0].checked)
             if (element.children[0].children[0].checked) {
-                checkedFiles.push(currentPath + '\\' + element.children[1].innerHTML);
+                checkedFiles.push(currentPath + '/' + element.children[1].innerHTML);
                 // c(element.children[1].innerHTML)
             }
         });
@@ -324,7 +343,7 @@ $(document).ready(function () {
         allElements.forEach(function (v, i) {
             v.children[0].childNodes.forEach(function (l, idx) {
                 if (l.children[0].checked) {
-                    checkedFolders.push(currentPath + '\\' + l.children[2].text);
+                    checkedFolders.push(currentPath + '/' + l.children[2].text);
                     // c(currentPath + l.children[2].text)
                 }
             });
@@ -354,9 +373,13 @@ $(document).ready(function () {
 
     var goBackFolder = function goBackFolder() {
         var newpath = currentPath.split('/');
-        if (newpath[0] > '') {
+        console.log(newpath);
+        if (newpath[0] != '') {
             newpath.slice(-1, 1);
             newpath.join('/');
+            changePath(newpath);
+        } else {
+            newpath = '/';
             changePath(newpath);
         }
     };
@@ -369,9 +392,16 @@ $(document).ready(function () {
         data.forEach(function (val, idx, array) {
             var fileSize = parseInt(val.size / 1024);
             if (val.isFolder) {
-                aFolders.push({ name: val.name, date: val.date });
+                aFolders.push({
+                    name: val.name,
+                    date: val.date
+                });
             } else {
-                aFiles.push({ name: val.name, size: val.size, date: val.date });
+                aFiles.push({
+                    name: val.name,
+                    size: val.size,
+                    date: val.date
+                });
             }
         });
         aFolders.sort(function (a, b) {
@@ -387,15 +417,20 @@ $(document).ready(function () {
             console.log(e);
             console.log('Current Path: ', currentPath);
             var newPath = '';
-            if (currentPath == '/') {
-                newPath = currentPath + e.target.innerText;
+            if (e.target.innerText != '..') {
+                if (currentPath == '/') {
+                    newPath = currentPath + e.target.innerText;
+                } else {
+                    newPath = currentPath + '/' + e.target.innerText;
+                }
+
+                console.log('New Path: ', newPath);
+                refreshPath(newPath);
+                currentPath = newPath;
+                refreshBarMenu();
             } else {
-                newPath = currentPath + '/' + e.target.innerText;
+                goBackFolder();
             }
-            console.log('New Path: ', newPath);
-            refreshPath(newPath);
-            currentPath = newPath;
-            refreshBarMenu();
         });
         $('.check').on('click', function (e) {
             selectDeselect(e);
@@ -633,7 +668,7 @@ $(document).ready(function () {
                     $('#logoutmodal').hide();
                     break;
                 case 'home':
-                    currentPath = RootPath + '\\';
+                    currentPath = RootPath;
                     refreshPath(currentPath);
                     break;
                 case 'newFolder':
