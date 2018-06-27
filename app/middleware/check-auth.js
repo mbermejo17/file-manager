@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
         console.log('Token:',token);
         const decoded = jwt.verify(token.trim(), JWT_KEY);
         console.log('Token Decoded:',decoded);
-        req.userData = decoded;
+        req.userData = JSON.stringify(decoded);
         next();
     } catch (error) {
         return res.status(401).json({

@@ -11,7 +11,7 @@ $(document).ready(function () {
     const UserName = Cookies.get('UserName');
     const UserRole = Cookies.get('UserRole');
     const CompanyName = Cookies.get('CompanyName');
-    const RootPath = Cookies.get('RootPath');
+    const realRootPath = Cookies.get('RootPath');
     const Token = Cookies.get('token');
     const AccessString = Cookies.get('AccessString');
     const [AllowNewFolder,
@@ -22,6 +22,7 @@ $(document).ready(function () {
         AllowUpload,
         AllowDownload
     ] = AccessString.split(',');
+    let RootPath = '/';
     let currentPath = RootPath;
     let aSelectedFiles = [];
     let aSelectedFolders = [];
@@ -100,13 +101,8 @@ $(document).ready(function () {
     };
 
     const changePath = (newPath) => {
-        if(newPath != RootPath) {
-        const p1 = currentPath.split(newPath);
-            console.log(p1[0] + "/" + newPath);
-            currentPath = p1[0] + "/" + newPath;
-        } else {
-            currentPath = RootPath;
-        }
+        console.log('changePath:newPath ',newPath);
+        currentPath = newPath.trim();
         refreshPath(currentPath);
         refreshBarMenu();
     };
@@ -303,33 +299,49 @@ $(document).ready(function () {
 
     const refreshPath = (cPath) => {
         console.log('init path: ', cPath);
-        let newHtmlContent = `<li><label id="currentpath">Path:</label></li>`;
+        let newHtmlContent = `<li><label id="currentpath">Path:</label></li>
+                              <li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>`;
+        console.log('cPath lenght:',cPath.length);
         if (cPath.length > 1) {
             let cPathArray = cPath.split('/');
-
-            console.log(cPathArray);
-
-            if (cPathArray[cPathArray.lenght - 1] == '/') aPathArray.slice(-1, 1);
+            console.log('refreshPath:cPathArray ',cPathArray);
             cPathArray.forEach((val, idx, array) => {
                 console.log(val);
-                if (val == '') {
-                    newHtmlContent += `<li><a class="breadcrumb" href="#!">/</a></li>`;
+                if (val.trim() == '') {
+                    if(idx == 0){
+                      newHtmlContent += `<li><a class="breadcrumb" href="#!">${val}</a></li>`;
+                    }
                 } else {
-                    newHtmlContent += `<li><a class="breadcrumb" href="#!">${val}</a></li>`;
+                    if(idx == 1) {
+                      newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">${val}</a></li>`;
+                    } else {
+                      newHtmlContent += `<li><spand>/&nbsp;</spand><a class="breadcrumb" href="#!">${val}</a></li>`;
+                    }                   
                 }
             });
-        } else {
-            newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>`;
-        }
-        const headers = new Headers();
-        headers.append('Authorization', 'Bearer ' + Token);
-
+        } 
+        
         $('#currentPath').html(newHtmlContent);
 
         $('.breadcrumb').on('click', (e) => {
             changePath(e.target.innerText);
         });
-        fetch('/files?path=' + encodeURI(cPath), {
+
+        const headers = new Headers();
+        headers.append('Authorization', 'Bearer ' + Token);
+        let realpath ='';
+        if (realRootPath !== '/') {
+          realpath = '/' + realRootPath + cPath;
+        } else {
+           if(cPath == '/'){
+            realpath = cPath;
+           } else {
+            realpath = realRootPath + cPath;
+           }
+            
+        } 
+        console.log('realRootPath: ' + realRootPath + ' realpath:' + realpath);
+        fetch('/files?path=' + encodeURI(realpath), {
                 method: 'GET',
                 headers: headers
             })
@@ -404,12 +416,12 @@ $(document).ready(function () {
 
         newHtmlContent += `<tr><td><span>&nbsp;</span></td>
               <td><i class="fas fa-folder"></i><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>
-              <td>&nbsp;</td><td>&nbsp;</td></tr>`;
+              <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`;
         aFol.forEach((val, idx, array) => {
             newHtmlContent += `<tr><td><input class="filled-in checkFolder check" id="${val.name}" type="checkbox">
               <label class="checkbox left" for="${val.name}"></label></td>`;
             newHtmlContent += `<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">${val.name}</a></td>`;
-            newHtmlContent += `<td>&nbsp;</td><td>${val.date}</td></tr>`;
+            newHtmlContent += `<td>&nbsp;</td><td>&nbsp;</td><td>${val.date}</td></tr>`;
         });
 
         aFil.forEach((val, idx, array) => {
@@ -417,22 +429,20 @@ $(document).ready(function () {
             newHtmlContent += `<tr><td><input class="filled-in checkFile check" id="${val.name}" type="checkbox">
             <label class="checkbox left" for="${val.name}"></label></td>`;
             newHtmlContent += `<td><i class="far fa-file"></i><span class="typeFile">${val.name}</span></td>`;
-            newHtmlContent += `<td>${fileSize} KB</td><td>${val.date}</td></tr>`;
+            newHtmlContent += `<td>${fileSize} KB</td><td>&nbsp;</td><td>${val.date}</td></tr>`;
         });
         tbodyContent.innerHTML = newHtmlContent;
     };
 
 
-    const goBackFolder = () => {
-        let newpath = currentPath.split('/');
-        console.log(newpath);
-        if (newpath[0] != '') {
-            newpath.slice(-1, 1);
-            newpath.join('/');
-            changePath(newpath);
-        } else {
-            newpath= '/';
-            changePath(newpath);
+    const goBackFolder = (folder) => {
+      console.log('goBackFolder:folder ',folder);
+      console.log('goBackFolder:currentPath ',currentPath);
+        if (currentPath !== '/' && folder =='..') {
+          let lastFolder = currentPath.lastIndexOf('/');
+          let newPath = currentPath.substr(0,lastFolder);
+          console.log('goBackFolder:lastFolder-> '+lastFolder+' goBackFolder:newPath->'+ newPath);
+          changePath(newPath.trim());
         }
     };
     const refreshFilesTable = (data) => {
@@ -443,6 +453,7 @@ $(document).ready(function () {
         console.log(data);
         aFolders = [];
         aFiles = [];
+        if(data.message) return null;  
         data.forEach((val, idx, array) => {
             let fileSize = parseInt(val.size / 1024);
             if (val.isFolder) {
@@ -472,18 +483,18 @@ $(document).ready(function () {
             console.log('Current Path: ', currentPath);
             let newPath = '';
             if (e.target.innerText != '..') {
-                if (currentPath == '/') {
-                    newPath = currentPath + e.target.innerText;
+                if (currentPath.trim() == '/') {
+                    newPath = currentPath.trim() + e.target.innerText;
                 } else {
-                    newPath = currentPath + '/' + e.target.innerText;
+                    newPath = currentPath.trim() + '/' + e.target.innerText;
                 }
 
-                console.log('New Path: ', newPath);
-                refreshPath(newPath);
-                currentPath = newPath;
+                console.log('New Path: ', newPath.trim());
+                refreshPath(newPath.trim());
+                currentPath = newPath.trim();
                 refreshBarMenu();
             } else {
-                goBackFolder();
+              if(currentPath !== RootPath) goBackFolder(e.target.innerText);
             }
         });
         $('.check').on('click', (e) => {

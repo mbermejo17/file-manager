@@ -35,9 +35,17 @@ class FileController {
       response = [],
             // dirPath = req.body.dirPath
       dirPath = req.query.path
-    dirPath = normalize(pathPrefix + dirPath)
+    
+    console.log('fileController::req.userData: ',req.userData)
     console.log('fileController::getFiles:dirPath: ',dirPath)
-
+    let userData = JSON.parse(req.userData)
+    console.log('fileController::getFiles:userData: ',userData)
+    let rPath = userData.RootPath
+      console.log('getFiles:dirPath.indexOf(rPath) ',dirPath.indexOf(rPath))
+      if(dirPath.indexOf(rPath) != 0) {
+        return res.send(JSON.stringify({}))
+      }  
+    dirPath = normalize(pathPrefix + dirPath)
     response = (dirPath) => {
       return fs.readdirSync(dirPath)
                 .reduce((list, file) => {

@@ -213,10 +213,13 @@ table.highlight {
 
 table {
     thead {
+        th {
+          padding: 5px 5px !important;
+        }
         border-bottom: 1px solid black;
         th:first-child {
             text-align: center;
-            width: 20px !important;
+            width: 10px !important;
         }
         th:nth-child(2) {
             text-align: left;
@@ -228,25 +231,39 @@ table {
         }
         th:nth-child(4) {
             text-align: center;
-            width: 70px !important;
+            width: 10px !important;
         }
+        th:nth-child(5) {
+          text-align: center;
+          width: 70px !important;
+      }
     }
-    td:first-child {
+    tbody{
+      font-size: .9em;
+      td{
+        padding: 5px 5px !important;
+      }
+      td:first-child {
         text-align: center;
-        width: 20px !important;
-    }
-    td:nth-child(2) {
-        text-align: left;
-        width: 220px !important;
-    }
-    td:nth-child(3) {
-        text-align: right;
-        width: 80px !important;
-    }
-    td:nth-child(4) {
+        width: 10px !important;
+      }
+      td:nth-child(2) {
+          text-align: left;
+          width: 220px !important;
+      }
+      td:nth-child(3) {
+          text-align: right;
+          width: 80px !important;
+      }
+      td:nth-child(4) {
+          text-align: center;
+          width: 10px !important;
+      }
+      td:nth-child(5) {
         text-align: center;
         width: 70px !important;
     }
+    }   
 }
 
 // #lean_overlay {

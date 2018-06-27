@@ -9,7 +9,7 @@ const checkUser = require('../middleware/check-user');
 // Gestion de usuarios
 ////////////////////////
 
-router.get("/", FileController.getFiles);
+router.get("/", checkAuth,FileController.getFiles);
 
 //router.post('/download', checkAuth,FileController.download)
 router.post('/download',FileController.download)

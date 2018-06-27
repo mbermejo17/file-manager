@@ -25,7 +25,7 @@ $(document).ready(function () {
     var UserName = _jsCookie2.default.get('UserName');
     var UserRole = _jsCookie2.default.get('UserRole');
     var CompanyName = _jsCookie2.default.get('CompanyName');
-    var RootPath = _jsCookie2.default.get('RootPath');
+    var realRootPath = _jsCookie2.default.get('RootPath');
     var Token = _jsCookie2.default.get('token');
     var AccessString = _jsCookie2.default.get('AccessString');
 
@@ -39,6 +39,7 @@ $(document).ready(function () {
         AllowUpload = _AccessString$split2[5],
         AllowDownload = _AccessString$split2[6];
 
+    var RootPath = '/';
     var currentPath = RootPath;
     var aSelectedFiles = [];
     var aSelectedFolders = [];
@@ -116,13 +117,8 @@ $(document).ready(function () {
     };
 
     var changePath = function changePath(newPath) {
-        if (newPath != RootPath) {
-            var p1 = currentPath.split(newPath);
-            console.log(p1[0] + "/" + newPath);
-            currentPath = p1[0] + "/" + newPath;
-        } else {
-            currentPath = RootPath;
-        }
+        console.log('changePath:newPath ', newPath);
+        currentPath = newPath.trim();
         refreshPath(currentPath);
         refreshBarMenu();
     };
@@ -264,33 +260,47 @@ $(document).ready(function () {
 
     var refreshPath = function refreshPath(cPath) {
         console.log('init path: ', cPath);
-        var newHtmlContent = '<li><label id="currentpath">Path:</label></li>';
+        var newHtmlContent = '<li><label id="currentpath">Path:</label></li>\n                              <li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>';
+        console.log('cPath lenght:', cPath.length);
         if (cPath.length > 1) {
             var cPathArray = cPath.split('/');
-
-            console.log(cPathArray);
-
-            if (cPathArray[cPathArray.lenght - 1] == '/') aPathArray.slice(-1, 1);
+            console.log('refreshPath:cPathArray ', cPathArray);
             cPathArray.forEach(function (val, idx, array) {
                 console.log(val);
-                if (val == '') {
-                    newHtmlContent += '<li><a class="breadcrumb" href="#!">/</a></li>';
+                if (val.trim() == '') {
+                    if (idx == 0) {
+                        newHtmlContent += '<li><a class="breadcrumb" href="#!">' + val + '</a></li>';
+                    }
                 } else {
-                    newHtmlContent += '<li><a class="breadcrumb" href="#!">' + val + '</a></li>';
+                    if (idx == 1) {
+                        newHtmlContent += '<li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">' + val + '</a></li>';
+                    } else {
+                        newHtmlContent += '<li><spand>/&nbsp;</spand><a class="breadcrumb" href="#!">' + val + '</a></li>';
+                    }
                 }
             });
-        } else {
-            newHtmlContent += '<li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>';
         }
-        var headers = new Headers();
-        headers.append('Authorization', 'Bearer ' + Token);
 
         $('#currentPath').html(newHtmlContent);
 
         $('.breadcrumb').on('click', function (e) {
             changePath(e.target.innerText);
         });
-        fetch('/files?path=' + encodeURI(cPath), {
+
+        var headers = new Headers();
+        headers.append('Authorization', 'Bearer ' + Token);
+        var realpath = '';
+        if (realRootPath !== '/') {
+            realpath = '/' + realRootPath + cPath;
+        } else {
+            if (cPath == '/') {
+                realpath = cPath;
+            } else {
+                realpath = realRootPath + cPath;
+            }
+        }
+        console.log('realRootPath: ' + realRootPath + ' realpath:' + realpath);
+        fetch('/files?path=' + encodeURI(realpath), {
             method: 'GET',
             headers: headers
         }).then(function (r) {
@@ -355,32 +365,30 @@ $(document).ready(function () {
         var newHtmlContent = '';
         var tbodyContent = document.getElementById("tbl-files").getElementsByTagName('tbody')[0];
 
-        newHtmlContent += '<tr><td><span>&nbsp;</span></td>\n              <td><i class="fas fa-folder"></i><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>\n              <td>&nbsp;</td><td>&nbsp;</td></tr>';
+        newHtmlContent += '<tr><td><span>&nbsp;</span></td>\n              <td><i class="fas fa-folder"></i><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>\n              <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
         aFol.forEach(function (val, idx, array) {
             newHtmlContent += '<tr><td><input class="filled-in checkFolder check" id="' + val.name + '" type="checkbox">\n              <label class="checkbox left" for="' + val.name + '"></label></td>';
             newHtmlContent += '<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">' + val.name + '</a></td>';
-            newHtmlContent += '<td>&nbsp;</td><td>' + val.date + '</td></tr>';
+            newHtmlContent += '<td>&nbsp;</td><td>&nbsp;</td><td>' + val.date + '</td></tr>';
         });
 
         aFil.forEach(function (val, idx, array) {
             var fileSize = parseInt(val.size / 1024);
             newHtmlContent += '<tr><td><input class="filled-in checkFile check" id="' + val.name + '" type="checkbox">\n            <label class="checkbox left" for="' + val.name + '"></label></td>';
             newHtmlContent += '<td><i class="far fa-file"></i><span class="typeFile">' + val.name + '</span></td>';
-            newHtmlContent += '<td>' + fileSize + ' KB</td><td>' + val.date + '</td></tr>';
+            newHtmlContent += '<td>' + fileSize + ' KB</td><td>&nbsp;</td><td>' + val.date + '</td></tr>';
         });
         tbodyContent.innerHTML = newHtmlContent;
     };
 
-    var goBackFolder = function goBackFolder() {
-        var newpath = currentPath.split('/');
-        console.log(newpath);
-        if (newpath[0] != '') {
-            newpath.slice(-1, 1);
-            newpath.join('/');
-            changePath(newpath);
-        } else {
-            newpath = '/';
-            changePath(newpath);
+    var goBackFolder = function goBackFolder(folder) {
+        console.log('goBackFolder:folder ', folder);
+        console.log('goBackFolder:currentPath ', currentPath);
+        if (currentPath !== '/' && folder == '..') {
+            var lastFolder = currentPath.lastIndexOf('/');
+            var newPath = currentPath.substr(0, lastFolder);
+            console.log('goBackFolder:lastFolder-> ' + lastFolder + ' goBackFolder:newPath->' + newPath);
+            changePath(newPath.trim());
         }
     };
     var refreshFilesTable = function refreshFilesTable(data) {
@@ -389,6 +397,7 @@ $(document).ready(function () {
         console.log(data);
         aFolders = [];
         aFiles = [];
+        if (data.message) return null;
         data.forEach(function (val, idx, array) {
             var fileSize = parseInt(val.size / 1024);
             if (val.isFolder) {
@@ -418,18 +427,18 @@ $(document).ready(function () {
             console.log('Current Path: ', currentPath);
             var newPath = '';
             if (e.target.innerText != '..') {
-                if (currentPath == '/') {
-                    newPath = currentPath + e.target.innerText;
+                if (currentPath.trim() == '/') {
+                    newPath = currentPath.trim() + e.target.innerText;
                 } else {
-                    newPath = currentPath + '/' + e.target.innerText;
+                    newPath = currentPath.trim() + '/' + e.target.innerText;
                 }
 
-                console.log('New Path: ', newPath);
-                refreshPath(newPath);
-                currentPath = newPath;
+                console.log('New Path: ', newPath.trim());
+                refreshPath(newPath.trim());
+                currentPath = newPath.trim();
                 refreshBarMenu();
             } else {
-                goBackFolder();
+                if (currentPath !== RootPath) goBackFolder(e.target.innerText);
             }
         });
         $('.check').on('click', function (e) {
