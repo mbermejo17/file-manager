@@ -5,7 +5,8 @@ const fs = require('fs'),
   path = require('path'),
   pathPrefix = '.\\repository\\',
   platform = require('os').platform,
-  normalize = require('normalize-path')
+  normalize = require('normalize-path'),
+  formidable = require('formidable')
 
 let _getStats = (p) => {
   fs.stat(p, (err, stats) => {
@@ -30,50 +31,50 @@ fs.readdirSync(dir)
  */
 
 class FileController {
-  getFiles (req, res, next) {
+  getFiles(req, res, next) {
     let result = {},
       response = [],
-            // dirPath = req.body.dirPath
+      // dirPath = req.body.dirPath
       dirPath = req.query.path
-    
-    console.log('fileController::req.userData: ',req.userData)
-    console.log('fileController::getFiles:dirPath: ',dirPath)
+
+    console.log('fileController::req.userData: ', req.userData)
+    console.log('fileController::getFiles:dirPath: ', dirPath)
     let userData = JSON.parse(req.userData)
-    console.log('fileController::getFiles:userData: ',userData)
+    console.log('fileController::getFiles:userData: ', userData)
     let rPath = userData.RootPath
-      console.log('getFiles:dirPath.indexOf(rPath) ',dirPath.indexOf(rPath))
-      if(dirPath.indexOf(rPath) != 0) {
-        return res.send(JSON.stringify({}))
-      }  
+    console.log('getFiles:dirPath.indexOf(rPath) ', dirPath.indexOf(rPath))
+    if (dirPath.indexOf(rPath) != 0) {
+      return res.send(JSON.stringify({}))
+    }
     dirPath = normalize(pathPrefix + dirPath)
     response = (dirPath) => {
       return fs.readdirSync(dirPath)
-                .reduce((list, file) => {
-                  let name = path.join(dirPath, file),
-                    isFolder = fs.statSync(name).isDirectory(),
-                    isFile = fs.statSync(name).isFile(),
-                    stat = fs.statSync(name),
-                    date = new Date(stat.mtime).toISOString().replace(/T/, ' ').replace(/\..+/, '')
-                  list = list || []
-                  list.push({
-                    'name': name.split(path.sep).slice(-1)[0],
-                    'size': stat.size,
-                    'date': date,
-                    'isFolder': isFolder,
-                    'isFile': isFile,
-                        // "mode": parseInt(stat.mode.toString(8), 10)
-                    'mode': stat.mode,
-                    'type': mimeType.getType(name)
-                  })
-                  if (isFile) console.log('mode: ', stat.mode)
-                  return list
-                }, [])
+        .reduce((list, file) => {
+          let name = path.join(dirPath, file),
+            isFolder = fs.statSync(name).isDirectory(),
+            isFile = fs.statSync(name).isFile(),
+            stat = fs.statSync(name),
+            date = new Date(stat.mtime).toISOString().replace(/T/, ' ').replace(/\..+/, '')
+          list = list || []
+          list.push({
+            'name': name.split(path.sep).slice(-1)[0],
+            'size': stat.size,
+            'date': date,
+            'isFolder': isFolder,
+            'isFile': isFile,
+            // "mode": parseInt(stat.mode.toString(8), 10)
+            'mode': stat.mode,
+            'type': mimeType.getType(name)
+          })
+          if (isFile) console.log('mode: ', stat.mode)
+          return list
+        }, [])
     }
     console.log(response(dirPath))
     res.send(JSON.stringify(response(dirPath)))
   }
-  
-  newFolder (req, res, next) {
+
+  newFolder(req, res, next) {
     let newFolder = req.body.path
     newFolder = normalize(pathPrefix + newFolder)
     fs.mkdir(newFolder, function (err) {
@@ -85,7 +86,7 @@ class FileController {
       res.send(JSON.stringify({ status: 'OK', data: req.body.path }))
     })
   }
-  deleteFiles (req, res, next) {
+  deleteFiles(req, res, next) {
     let fileName = req.body.path
     fileName = normalize(pathPrefix + fileName)
     fsextra.remove(fileName, function (err) {
@@ -97,7 +98,7 @@ class FileController {
       res.send(JSON.stringify({ status: 'OK', data: req.body.path }))
     })
   }
-  deleteFolder (req, res, next) {
+  deleteFolder(req, res, next) {
     let newFolder = req.body.path
     newFolder = normalize(pathPrefix + newFolder)
     fsextra.remove(newFolder, function (err) {
@@ -110,10 +111,43 @@ class FileController {
     })
   }
 
-  upload () {
+  upload(req,res) {
+     // create an incoming form object
+     let form = new formidable.IncomingForm()
+     let repoPath = req.body.path
+     
 
-  }
-  download (req, res, next) {
+     // specify that we want to allow the user to upload multiple files in a single request
+     form.multiples = true
+
+     // store all uploads in the /uploads directory
+     form.uploadDir = repoPath
+     form.uploadDir = normalize(pathPrefix + repoPath)
+     console.log(repoPath) 
+     console.log(form.uploadDir)
+     // every time a file has been uploaded successfully,
+     // rename it to it's orignal name
+     form.on('file', function(field, file) {
+         fs.rename(file.path, path.join(form.uploadDir, file.name))
+     });
+
+     // log any errors that occur
+     form.on('error', function(err) {
+         console.log('An error has occured: \n' + err)
+     });
+
+     // once all the files have been uploaded, send a response to the client
+     form.on('end', function() {
+         res.end('success')
+     });
+
+     // parse the incoming request containing the form data
+     form.parse(req)
+     
+
+    }
+  
+  download(req, res, next) {
     let fileName = req.body.filename
     res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
     res.setHeader('Content-Transfer-Encoding', 'binary')

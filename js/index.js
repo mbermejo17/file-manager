@@ -107,6 +107,162 @@ $(document).ready(function () {
         refreshBarMenu();
     };
 
+    const FetchHandleErrors = function(response) {
+      if (!response.ok) {
+          throw Error(response.statusText);
+      }
+      return response;
+  }
+    const upload =  () =>{
+      let w = 32;
+        let h = 440;
+        let ModalTitle = "Subida de archivos";
+      let ModalContent = `<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify">
+                    <ul class="preloader-file" id="DownloadfileList">
+                    <li id="li0">
+                        <div class="li-content">
+                            <div class="li-filename" id="li-filename0"></div>
+                            <div class="progress-content">
+                                <div class="progress-bar" id="progress-bar0"></div>
+                                <div class="percent" id="percent0"></div>
+                            </div>
+                        </div>
+                    </li>
+                    <li id="li1">
+                        <div class="li-content">
+                            <div class="li-filename" id="li-filename1"></div>
+                            <div class="progress-content">
+                                <div class="progress-bar" id="progress-bar1"></div>
+                                <div class="percent" id="percent1"></div>
+                            </div>
+                        </div>
+                    </li>
+                    <li id="li2">
+                        <div class="li-content">
+                            <div class="li-filename" id="li-filename2"></div>
+                            <div class="progress-content">
+                                <div class="progress-bar" id="progress-bar2"></div>
+                                <div class="percent" id="percent2"></div>
+                            </div>
+                        </div>
+                    </li>
+                    <li id="li3">
+                        <div class="li-content">
+                            <div class="li-filename" id="li-filename3"></div>
+                            <div class="progress-content">
+                                <div class="progress-bar" id="progress-bar3"></div>
+                                <div class="percent" id="percent3"></div>
+                            </div>
+                        </div>
+                    </li>
+                    <li id="li4">
+                        <div class="li-content">
+                            <div class="li-filename" id="li-filename4"></div>
+                            <div class="progress-content">
+                                <div class="progress-bar" id="progress-bar4"></div>
+                                <div class="percent" id="percent4"></div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>`;
+      let htmlContent = `<div id="modal-header">
+                            <h5>${ModalTitle}</h5>
+                            <a class="modal_close" id="modalClose" href="#"></a>
+                          </div>
+                          <div class="modal-content">
+                            <p>${ModalContent}</p>
+                          </div>
+                          <div class="modal-footer">
+                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>
+                          </div>    `;
+
+
+        function fnUploadFile(formData, nFile, fileName){ 
+          $('#li' + nFile).show(); 
+          $('#li-fileName' + nFile).show(); 
+          $('#li-fileName' + nFile).html(fileName);  
+          $.ajax({
+            url: '/files/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data){
+                console.log(fileName + 'upload successful!\n' + data);
+            },
+            xhr: function() {
+              // create an XMLHttpRequest
+              var xhr = new XMLHttpRequest();
+      
+              // listen to the 'progress' event
+              xhr.upload.addEventListener('progress', function(evt) {
+      
+                if (evt.lengthComputable) {
+                  // calculate the percentage of upload completed
+                  var percentComplete = evt.loaded / evt.total;
+                  percentComplete = parseInt(percentComplete * 100);
+      
+                  // update the Bootstrap progress bar with the new percentage
+                  $('#percent' + nFile).text(percentComplete + '%');
+                  $('#progress-bar' + nFile).width(percentComplete + '%');
+      
+                  // once the upload reaches 100%, set the progress bar text to done
+                  /* if (percentComplete === 100) {
+                    $('#progress-bar' + nFile).html('Done');
+                  } */
+      
+                }
+      
+              }, false);
+      
+              return xhr;
+            }
+          });
+        }                  
+        $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
+        //$('.modal-content').css('width: 350px;');
+        $('.modal').css('width: 40% !important');
+        $('#modal').show();
+        $('#btnCloseDownload').on('click', (e) => {
+          $('#download').removeClass('disabled');
+          $('#modal').hide();
+      });
+      $('#modalClose').on('click', (e) => {
+          $('#download').removeClass('disabled');
+          $('#modal').hide();
+      });
+      $('#upload-input').on('change', function(){
+
+        var files = $(this).get(0).files;
+        console.log(files.length);
+        if (files.length > 0 && files.length < 5){
+          // create a FormData object which will be sent as the data payload in the
+          // AJAX request
+          let realpath='';
+          if(currentPath == '/'){
+            realpath = currentPath;
+           } else {
+            realpath = realRootPath + currentPath;
+           }
+           console.log(realpath);
+          // loop through all the selected files and add them to the formData object
+          for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var formData = new FormData();
+            // add the files to formData object for the data payload
+            formData.append('path',realpath);
+            formData.append('uploads[]', file, file.name);
+            fnUploadFile(formData, i, file.name);
+          }
+        } else {
+          M.toast({
+            html: 'No se pueden descargar más de 5 archivos a la vez'
+        });
+        }
+      });
+    };
+    
+
     //TODO: Optimizar renderizado de elementos li 
     //incorporando el contenido en el bucle _loop
     const download = (fileList, text) => {
@@ -345,6 +501,7 @@ $(document).ready(function () {
                 method: 'GET',
                 headers: headers
             })
+            .then(FetchHandleErrors)
             .then(r => r.json())
             .then((data) => {
                 console.log(data);
@@ -436,11 +593,16 @@ $(document).ready(function () {
 
 
     const goBackFolder = (folder) => {
+      let newPath ='';
       console.log('goBackFolder:folder ',folder);
       console.log('goBackFolder:currentPath ',currentPath);
         if (currentPath !== '/' && folder =='..') {
           let lastFolder = currentPath.lastIndexOf('/');
-          let newPath = currentPath.substr(0,lastFolder);
+          if (lastFolder == 0) {
+            newPath = '/';
+          } else {
+            newPath = currentPath.substr(0,lastFolder);
+          }
           console.log('goBackFolder:lastFolder-> '+lastFolder+' goBackFolder:newPath->'+ newPath);
           changePath(newPath.trim());
         }
@@ -808,9 +970,7 @@ $(document).ready(function () {
                     });
                     break;
                 case 'upload':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    upload();
                     break;
                 case 'download':
                     if (aSelectedFiles.length > 0) {

@@ -123,6 +123,102 @@ $(document).ready(function () {
         refreshBarMenu();
     };
 
+    var FetchHandleErrors = function FetchHandleErrors(response) {
+        if (!response.ok) {
+            throw Error(response.statusText);
+        }
+        return response;
+    };
+    var upload = function upload() {
+        var w = 32;
+        var h = 440;
+        var ModalTitle = "Subida de archivos";
+        var ModalContent = '<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify">\n                    <ul class="preloader-file" id="DownloadfileList">\n                    <li id="li0">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename0"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar0"></div>\n                                <div class="percent" id="percent0"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li1">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename1"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar1"></div>\n                                <div class="percent" id="percent1"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li2">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename2"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar2"></div>\n                                <div class="percent" id="percent2"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li3">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename3"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar3"></div>\n                                <div class="percent" id="percent3"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li4">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename4"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar4"></div>\n                                <div class="percent" id="percent4"></div>\n                            </div>\n                        </div>\n                    </li>\n                </ul>';
+        var htmlContent = '<div id="modal-header">\n                            <h5>' + ModalTitle + '</h5>\n                            <a class="modal_close" id="modalClose" href="#"></a>\n                          </div>\n                          <div class="modal-content">\n                            <p>' + ModalContent + '</p>\n                          </div>\n                          <div class="modal-footer">\n                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>\n                          </div>    ';
+
+        function fnUploadFile(formData, nFile, fileName) {
+            $('#li' + nFile).show();
+            $('#li-fileName' + nFile).show();
+            $('#li-fileName' + nFile).html(fileName);
+            $.ajax({
+                url: '/files/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function success(data) {
+                    console.log(fileName + 'upload successful!\n' + data);
+                },
+                xhr: function xhr() {
+                    // create an XMLHttpRequest
+                    var xhr = new XMLHttpRequest();
+
+                    // listen to the 'progress' event
+                    xhr.upload.addEventListener('progress', function (evt) {
+
+                        if (evt.lengthComputable) {
+                            // calculate the percentage of upload completed
+                            var percentComplete = evt.loaded / evt.total;
+                            percentComplete = parseInt(percentComplete * 100);
+
+                            // update the Bootstrap progress bar with the new percentage
+                            $('#percent' + nFile).text(percentComplete + '%');
+                            $('#progress-bar' + nFile).width(percentComplete + '%');
+
+                            // once the upload reaches 100%, set the progress bar text to done
+                            /* if (percentComplete === 100) {
+                              $('#progress-bar' + nFile).html('Done');
+                            } */
+                        }
+                    }, false);
+
+                    return xhr;
+                }
+            });
+        }
+        $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
+        //$('.modal-content').css('width: 350px;');
+        $('.modal').css('width: 40% !important');
+        $('#modal').show();
+        $('#btnCloseDownload').on('click', function (e) {
+            $('#download').removeClass('disabled');
+            $('#modal').hide();
+        });
+        $('#modalClose').on('click', function (e) {
+            $('#download').removeClass('disabled');
+            $('#modal').hide();
+        });
+        $('#upload-input').on('change', function () {
+
+            var files = $(this).get(0).files;
+            console.log(files.length);
+            if (files.length > 0 && files.length < 5) {
+                // create a FormData object which will be sent as the data payload in the
+                // AJAX request
+                var realpath = '';
+                if (currentPath == '/') {
+                    realpath = currentPath;
+                } else {
+                    realpath = realRootPath + currentPath;
+                }
+                console.log(realpath);
+                // loop through all the selected files and add them to the formData object
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    var formData = new FormData();
+                    // add the files to formData object for the data payload
+                    formData.append('path', realpath);
+                    formData.append('uploads[]', file, file.name);
+                    fnUploadFile(formData, i, file.name);
+                }
+            } else {
+                M.toast({
+                    html: 'No se pueden descargar más de 5 archivos a la vez'
+                });
+            }
+        });
+    };
+
     //TODO: Optimizar renderizado de elementos li 
     //incorporando el contenido en el bucle _loop
     var download = function download(fileList, text) {
@@ -303,7 +399,7 @@ $(document).ready(function () {
         fetch('/files?path=' + encodeURI(realpath), {
             method: 'GET',
             headers: headers
-        }).then(function (r) {
+        }).then(FetchHandleErrors).then(function (r) {
             return r.json();
         }).then(function (data) {
             console.log(data);
@@ -382,11 +478,16 @@ $(document).ready(function () {
     };
 
     var goBackFolder = function goBackFolder(folder) {
+        var newPath = '';
         console.log('goBackFolder:folder ', folder);
         console.log('goBackFolder:currentPath ', currentPath);
         if (currentPath !== '/' && folder == '..') {
             var lastFolder = currentPath.lastIndexOf('/');
-            var newPath = currentPath.substr(0, lastFolder);
+            if (lastFolder == 0) {
+                newPath = '/';
+            } else {
+                newPath = currentPath.substr(0, lastFolder);
+            }
             console.log('goBackFolder:lastFolder-> ' + lastFolder + ' goBackFolder:newPath->' + newPath);
             changePath(newPath.trim());
         }
@@ -691,9 +792,7 @@ $(document).ready(function () {
                     });
                     break;
                 case 'upload':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    upload();
                     break;
                 case 'download':
                     if (aSelectedFiles.length > 0) {

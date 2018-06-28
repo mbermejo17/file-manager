@@ -16,6 +16,6 @@ router.post('/download',FileController.download)
 router.post('/newfolder', checkAuth,FileController.newFolder)
 router.post('/delete', checkAuth,FileController.deleteFiles)
 router.post('/deletefolder', checkAuth,FileController.deleteFolder)
-router.post('/upload', checkAuth,FileController.upload)
+router.post('/upload',FileController.upload)
 
 module.exports = router;
