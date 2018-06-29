@@ -252,8 +252,6 @@ $(document).ready(function () {
             if (files.length > 0 && files.length < 5) {
                 // create a FormData object which will be sent as the data payload in the
                 // AJAX request
-               
-               
                 // loop through all the selected files and add them to the formData object
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
