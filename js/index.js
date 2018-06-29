@@ -205,30 +205,19 @@ $(document).ready(function () {
                     console.log(fileName + 'upload successful!\n' + data);
                 },
                 xhr: function () {
-                    // create an XMLHttpRequest
-                    var xhr = new XMLHttpRequest();
-
-                    // listen to the 'progress' event
+                    let xhr = new XMLHttpRequest();
+                    let percentComplete = 0;
                     xhr.upload.addEventListener('progress', function (evt) {
-
                         if (evt.lengthComputable) {
-                            // calculate the percentage of upload completed
-                            var percentComplete = evt.loaded / evt.total;
+                            percentComplete = evt.loaded / evt.total;
                             percentComplete = parseInt(percentComplete * 100);
-
-                            // update the Bootstrap progress bar with the new percentage
                             $('#percent' + nFile).text(percentComplete + '%');
                             $('#progress-bar' + nFile).width(percentComplete + '%');
-
-                            // once the upload reaches 100%, set the progress bar text to done
-                            /* if (percentComplete === 100) {
-                              $('#progress-bar' + nFile).html('Done');
-                            } */
-
+                            if (percentComplete === 100) {
+                                $('#refresh').trigger('click');
+                            }
                         }
-
                     }, false);
-
                     return xhr;
                 }
             });
