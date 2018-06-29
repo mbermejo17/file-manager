@@ -111,19 +111,20 @@ class FileController {
     })
   }
 
-  upload(req,res) {
+  upload(req,res,next) {
+    console.log(req.query)
      // create an incoming form object
      let form = new formidable.IncomingForm()
-     let repoPath = req.body.path
+     let repoPath = req.query.destPath
      
 
      // specify that we want to allow the user to upload multiple files in a single request
      form.multiples = true
 
      // store all uploads in the /uploads directory
-     form.uploadDir = repoPath
      form.uploadDir = normalize(pathPrefix + repoPath)
-     console.log(repoPath) 
+     
+     
      console.log(form.uploadDir)
      // every time a file has been uploaded successfully,
      // rename it to it's orignal name
