@@ -87,15 +87,18 @@ class FileController {
     })
   }
   deleteFiles(req, res, next) {
-    let fileName = req.body.path
-    fileName = normalize(pathPrefix + fileName)
-    fsextra.remove(fileName, function (err) {
+    console.log(req.body);
+    let destPath = req.body.path
+    let fileName = req.body.fileName 
+    let fullName = normalize(pathPrefix + destPath + '/' + fileName)
+    console.log('Deleting file '+ fullName + ' ...')
+    fsextra.remove(fullName, function (err) {
       if (err) {
         console.error(err)
         res.send(JSON.stringify({ status: 'FAIL', data: err }))
       }
       console.log('File deleted successfully!')
-      res.send(JSON.stringify({ status: 'OK', data: req.body.path }))
+      res.send(JSON.stringify({ status: 'OK', data: { 'fileName': req.body.fileName,'Path': req.body.path }}))
     })
   }
   deleteFolder(req, res, next) {
@@ -117,7 +120,7 @@ class FileController {
      let form = new formidable.IncomingForm()
      let repoPath = req.query.destPath
      
-
+     form.maxFileSize = 700 * 1024 * 1024;    
      // specify that we want to allow the user to upload multiple files in a single request
      form.multiples = true
 

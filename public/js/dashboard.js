@@ -136,13 +136,13 @@ $(document).ready(function () {
         var w = 32;
         var h = 440;
         var ModalTitle = "Subida de archivos";
-        var ModalContent = '<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify">\n                    <ul class="preloader-file" id="DownloadfileList">\n                    <li id="li0">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename0"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar0"></div>\n                                <div class="percent" id="percent0"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li1">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename1"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar1"></div>\n                                <div class="percent" id="percent1"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li2">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename2"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar2"></div>\n                                <div class="percent" id="percent2"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li3">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename3"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar3"></div>\n                                <div class="percent" id="percent3"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li4">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename4"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar4"></div>\n                                <div class="percent" id="percent4"></div>\n                            </div>\n                        </div>\n                    </li>\n                </ul>';
+        var ModalContent = '<label class="file-input waves-effect waves-teal btn-flat btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>\n        <span id="sFiles">Ningun archivo seleccionado</span>\n                    <ul class="preloader-file" id="DownloadfileList">\n                    <li id="li0">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename0"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar0"></div>\n                                <div class="percent" id="percent0"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li1">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename1"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar1"></div>\n                                <div class="percent" id="percent1"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li2">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename2"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar2"></div>\n                                <div class="percent" id="percent2"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li3">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename3"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar3"></div>\n                                <div class="percent" id="percent3"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li4">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename4"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar4"></div>\n                                <div class="percent" id="percent4"></div>\n                            </div>\n                        </div>\n                    </li>\n                </ul>';
         var htmlContent = '<div id="modal-header">\n                            <h5>' + ModalTitle + '</h5>\n                            <a class="modal_close" id="modalClose" href="#"></a>\n                          </div>\n                          <div class="modal-content">\n                            <p>' + ModalContent + '</p>\n                          </div>\n                          <div class="modal-footer">\n                              <input type="text" hidden id="destPath" name="destPath" value=""/>  \n                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>\n                          </div>    ';
 
         function fnUploadFile(formData, nFile, fileName) {
             $('#li' + nFile).show();
-            $('#li-fileName' + nFile).show();
-            $('#li-fileName' + nFile).html(fileName);
+            $('#li-filename' + nFile).show();
+            $('#li-filename' + nFile).html(fileName);
             var realpath = '';
             if (currentPath == '/') {
                 realpath = currentPath;
@@ -163,28 +163,19 @@ $(document).ready(function () {
                     console.log(fileName + 'upload successful!\n' + data);
                 },
                 xhr: function xhr() {
-                    // create an XMLHttpRequest
                     var xhr = new XMLHttpRequest();
-
-                    // listen to the 'progress' event
+                    var percentComplete = 0;
                     xhr.upload.addEventListener('progress', function (evt) {
-
                         if (evt.lengthComputable) {
-                            // calculate the percentage of upload completed
-                            var percentComplete = evt.loaded / evt.total;
+                            percentComplete = evt.loaded / evt.total;
                             percentComplete = parseInt(percentComplete * 100);
-
-                            // update the Bootstrap progress bar with the new percentage
                             $('#percent' + nFile).text(percentComplete + '%');
                             $('#progress-bar' + nFile).width(percentComplete + '%');
-
-                            // once the upload reaches 100%, set the progress bar text to done
-                            /* if (percentComplete === 100) {
-                              $('#progress-bar' + nFile).html('Done');
-                            } */
+                            if (percentComplete === 100) {
+                                $('#refresh').trigger('click');
+                            }
                         }
                     }, false);
-
                     return xhr;
                 }
             });
@@ -204,6 +195,7 @@ $(document).ready(function () {
         $('#upload-input').on('change', function () {
 
             var files = $(this).get(0).files;
+            files.length > 0 ? $('#sFiles').html(files.length + ' archivos seleccionados.') : $('#sFiles').html(files[0]);
             console.log(files.length);
             if (files.length > 0 && files.length < 5) {
                 // create a FormData object which will be sent as the data payload in the
@@ -223,6 +215,37 @@ $(document).ready(function () {
                 });
             }
         });
+    };
+
+    var deleteFile = function deleteFile(path, fileName) {
+        var headers = new Headers();
+        var x = 0;
+        var aF = aSelectedFiles.slice();
+        console.log(aF);
+        headers.append('Authorization', 'Bearer ' + Token);
+        headers.append('Content-Type', 'application/json');
+        for (x = 0; x < aF.length; x++) {
+            console.log('Deleting file ' + aF[x] + ' ...');
+
+            fetch('/files/delete', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ "path": path,
+                    "fileName": aF[x]
+                })
+            }).then(FetchHandleErrors).then(function (r) {
+                return r.json();
+            }).then(function (data) {
+                console.log(data);
+                if (data.status == 'OK') {
+                    M.toast({ html: 'Archivo ' + data.data.fileName + ' borrado' });
+                    $('#refresh').trigger('click');
+                }
+            }).catch(function (err) {
+                console.log(err);
+            });
+            aSelectedFiles.splice(x, 1);
+        }
     };
 
     //TODO: Optimizar renderizado de elementos li 
@@ -793,9 +816,7 @@ $(document).ready(function () {
                     });
                     break;
                 case 'delete':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    deleteFile(currentPath);
                     break;
                 case 'upload':
                     upload();
