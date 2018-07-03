@@ -502,3 +502,12 @@ table {
     #sFiles {
       line-height: 2.9em;
     }
+
+    .preloader-wrapper {
+        display: inline-block;
+        position: fixed;
+        width: 48px;
+        height: 48px;
+        top: 50%;
+        left: 50%;
+    }

@@ -75,17 +75,20 @@ class FileController {
   }
 
   newFolder(req, res, next) {
-    let newFolder = req.body.path
-    newFolder = normalize(pathPrefix + newFolder)
+    let destPath = req.body.path
+    let folderName = req.body.folderName 
+    let newFolder = normalize(pathPrefix + destPath + '/'+ folderName.toUpperCase())
+    console.log('Creating new folder '+ newFolder + ' ...')
     fs.mkdir(newFolder, function (err) {
       if (err) {
         console.error(err)
         res.send(JSON.stringify({ status: 'FAIL', data: err }))
       }
       console.log('Directory created successfully!')
-      res.send(JSON.stringify({ status: 'OK', data: req.body.path }))
+      res.send(JSON.stringify({ status: 'OK', data: { 'folderName': req.body.folderName,'Path': req.body.path } }))
     })
   }
+
   deleteFiles(req, res, next) {
     console.log(req.body);
     let destPath = req.body.path

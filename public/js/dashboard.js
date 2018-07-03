@@ -139,6 +139,7 @@ $(document).ready(function () {
         var ModalContent = '<label class="file-input waves-effect waves-teal btn-flat btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>\n        <span id="sFiles">Ningun archivo seleccionado</span>\n                    <ul class="preloader-file" id="DownloadfileList">\n                    <li id="li0">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename0"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar0"></div>\n                                <div class="percent" id="percent0"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li1">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename1"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar1"></div>\n                                <div class="percent" id="percent1"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li2">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename2"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar2"></div>\n                                <div class="percent" id="percent2"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li3">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename3"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar3"></div>\n                                <div class="percent" id="percent3"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li4">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename4"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar4"></div>\n                                <div class="percent" id="percent4"></div>\n                            </div>\n                        </div>\n                    </li>\n                </ul>';
         var htmlContent = '<div id="modal-header">\n                            <h5>' + ModalTitle + '</h5>\n                            <a class="modal_close" id="modalClose" href="#"></a>\n                          </div>\n                          <div class="modal-content">\n                            <p>' + ModalContent + '</p>\n                          </div>\n                          <div class="modal-footer">\n                              <input type="text" hidden id="destPath" name="destPath" value=""/>  \n                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>\n                          </div>    ';
 
+        $('#waiting').addClass('active');
         function fnUploadFile(formData, nFile, fileName) {
             $('#li' + nFile).show();
             $('#li-filename' + nFile).show();
@@ -161,6 +162,7 @@ $(document).ready(function () {
                 },
                 success: function success(data) {
                     console.log(fileName + 'upload successful!\n' + data);
+                    $('#waiting').removeClass('active');
                 },
                 xhr: function xhr() {
                     var xhr = new XMLHttpRequest();
@@ -217,13 +219,38 @@ $(document).ready(function () {
         });
     };
 
-    var deleteFile = function deleteFile(path, fileName) {
+    var newFolder = function newFolder(folderName) {
+        var headers = new Headers();
+        headers.append('Authorization', 'Bearer ' + Token);
+        headers.append('Content-Type', 'application/json');
+        fetch('/files/newfolder', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ "path": currentPath,
+                "folderName": folderName
+            })
+        }).then(FetchHandleErrors).then(function (r) {
+            return r.json();
+        }).then(function (data) {
+            console.log(data);
+            if (data.status == 'OK') {
+                $('#modal').hide();
+                $('#refresh').trigger('click');
+                M.toast({ html: 'Creada nueva carpeta ' + data.data.folderName });
+            }
+        }).catch(function (err) {
+            console.log(err);
+        });
+    };
+
+    var deleteFile = function deleteFile(path) {
         var headers = new Headers();
         var x = 0;
         var aF = aSelectedFiles.slice();
         console.log(aF);
         headers.append('Authorization', 'Bearer ' + Token);
         headers.append('Content-Type', 'application/json');
+        $('#waiting').addClass('active');
         for (x = 0; x < aF.length; x++) {
             console.log('Deleting file ' + aF[x] + ' ...');
 
@@ -238,7 +265,7 @@ $(document).ready(function () {
             }).then(function (data) {
                 console.log(data);
                 if (data.status == 'OK') {
-                    M.toast({ html: 'Archivo ' + data.data.fileName + ' borrado' });
+                    M.toast('Archivo ' + data.data.fileName + ' borrado', 3000, 'blue');
                     $('#refresh').trigger('click');
                 }
             }).catch(function (err) {
@@ -246,6 +273,40 @@ $(document).ready(function () {
             });
             aSelectedFiles.splice(x, 1);
         }
+        $('#waiting').removeClass('active');
+    };
+
+    var deleteFolder = function deleteFolder(path) {
+        var headers = new Headers();
+        var x = 0;
+        var aF = aSelectedFolders.slice();
+        console.log(aF);
+        headers.append('Authorization', 'Bearer ' + Token);
+        headers.append('Content-Type', 'application/json');
+        $('#waiting').addClass('active');
+        for (x = 0; x < aF.length; x++) {
+            console.log('Deleting folder ' + aF[x] + ' ...');
+
+            fetch('/files/delete', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ "path": path,
+                    "fileName": aF[x]
+                })
+            }).then(FetchHandleErrors).then(function (r) {
+                return r.json();
+            }).then(function (data) {
+                console.log(data);
+                if (data.status == 'OK') {
+                    M.toast({ html: 'Carpeta ' + data.data.fileName + ' borrada' });
+                    $('#refresh').trigger('click');
+                }
+            }).catch(function (err) {
+                console.log(err);
+            });
+            aSelectedFolders.splice(x, 1);
+        }
+        $('#waiting').removeClass('active');
     };
 
     //TODO: Optimizar renderizado de elementos li 
@@ -274,6 +335,7 @@ $(document).ready(function () {
             $('#modal').hide();
             $('#refresh').trigger('click');
         });
+        $('#waiting').addClass('active');
         var _loop = function _loop(i) {
             var fName = fileList[i];
             var liNumber = document.querySelector('#li' + i);
@@ -381,6 +443,7 @@ $(document).ready(function () {
         for (var i = 0; i < fileList.length; i++) {
             _loop(i);
         }
+        $('#waiting').removeClass('active');
     };
 
     var refreshPath = function refreshPath(cPath) {
@@ -388,6 +451,7 @@ $(document).ready(function () {
         var newHtmlContent = '<li><label id="currentpath">Path:</label></li>\n                              <li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>';
         console.log('cPath lenght:', cPath.length);
         if (cPath.length > 1) {
+            $('#waiting').addClass('active');
             var cPathArray = cPath.split('/');
             console.log('refreshPath:cPathArray ', cPathArray);
             cPathArray.forEach(function (val, idx, array) {
@@ -404,6 +468,7 @@ $(document).ready(function () {
                     }
                 }
             });
+            $('#waiting').removeClass('active');
         }
 
         $('#currentPath').html(newHtmlContent);
@@ -638,6 +703,27 @@ $(document).ready(function () {
             $('#modal').hide();
         });
     };
+    var showNewFolder = function showNewFolder(w, h, t) {
+        var ModalTitle = t;
+        var ModalContent = '<div class="row">\n                              <div class="input-field col s12">\n                                <input id="newFolderName" type="text"/>\n                                <label for="newFolderName">New Folder Name</label>\n                              </div>\n                          </div>';
+        var htmlContent = '<div id="modal-header">\n                        <h5>' + ModalTitle + '</h5>\n                        <a class="modal_close" id="modalClose" href="#"></a>\n                      </div>\n                      <div class="modal-content">\n                        <p>' + ModalContent + '</p>\n                      </div>\n                      <div class="modal-footer">\n                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>\n                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptNewFolder" href="#!">Accept</a>\n                      </div>    ';
+        $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
+        //$('.modal-content').css('width: 350px;');
+        $('.modal').css('width: 40% !important');
+        $('#modal').show();
+        $('#AcceptNewFolder').on('click', function (e) {
+            e.preventDefault();
+            var newFolderName = $('#newFolderName').val();
+            console.log(newFolderName);
+            newFolder(newFolderName);
+        });
+        $('#modalClose').on('click', function () {
+            $('#modal').hide();
+        });
+        $('#ModalClose').on('click', function () {
+            $('#modal').hide();
+        });
+    };
 
     var showChangeUserPassword = function showChangeUserPassword(w, h, t) {
         var ModalTitle = t;
@@ -811,12 +897,11 @@ $(document).ready(function () {
                     refreshPath(currentPath);
                     break;
                 case 'newFolder':
-                    M.toast({
-                        html: 'Opcion no disponible'
-                    });
+                    showNewFolder(32, 440, 'New Folder');
                     break;
                 case 'delete':
                     deleteFile(currentPath);
+                    deleteFolder(currentPath);
                     break;
                 case 'upload':
                     upload();
