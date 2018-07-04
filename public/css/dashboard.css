@@ -75,7 +75,8 @@ body {
   .btn-unify.disabled:hover,
   .btn2-unify.disabled:hover {
     text-decoration: none;
-    cursor: not-allowed; }
+    cursor: not-allowed;
+    color: #95C857 !important; }
 
 .btn2-unify {
   background: linear-gradient(0deg, #5da407 0%, #98c63d 100%);
@@ -214,6 +215,7 @@ table tbody {
   z-index: 2; }
 
 .modal {
+  z-index: 1003 !important;
   top: 130px !important; }
   .modal btn2-unify {
     margin-left: 10px; }
@@ -393,7 +395,7 @@ table tbody {
   background: #3A4349;
   color: #95c857;
   border-radius: 4px;
-  font-size: .8em; }
+  font-size: 1.5em; }
 
 .toast.err {
   border: 2px solid red; }
@@ -403,3 +405,11 @@ table tbody {
 
 .toast.success {
   border: 2px solid green; }
+
+.modal-overlay {
+  opacity: 0.5 !important;
+  transition: opacity 500ms !important; }
+
+div .progress-content .modal_close {
+  top: 8px !important;
+  right: -28px !important; }

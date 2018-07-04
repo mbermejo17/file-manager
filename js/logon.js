@@ -1,6 +1,6 @@
-import ajax from './vendor/ajax'
+import ajax from './vendor/ajax';
 import { Base64 } from 'js-base64';
-import md5 from './vendor/md5.min'
+import md5 from './vendor/md5.min';
 ((c, d) => {
     let waiting = d.querySelector('#waiting')
     const READY_STATE_COMPLETE = 4
