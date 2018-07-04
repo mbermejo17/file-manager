@@ -107,6 +107,16 @@ $(document).ready(function () {
         refreshBarMenu();
     };
 
+    async function deleteSelected() {
+        await showDialogYesNo('Borrar archivos','¿Quiere borrar los archivos seleccionados?',(result)=>{
+            if (result == 'YES') deleteFile(currentPath);
+        });
+        await showDialogYesNo('Borrar carpetas','¿Quiere borrar las carpetas seleccionadas?',(result)=>{
+            console.log('yesNo',result);
+            if (result == 'YES') deleteFolder(currentPath);
+        });
+    }
+
     const FetchHandleErrors = function (response) {
         if (!response.ok) {
             //throw Error(response.statusText);
@@ -178,10 +188,10 @@ $(document).ready(function () {
                           </div>
                           <div class="modal-footer">
                               <input type="text" hidden id="destPath" name="destPath" value=""/>  
-                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>
+                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Cerrar</a>
                           </div>    `;
 
-        $('#waiting').addClass('active');
+        $('#upload').removeClass('disabled').addClass('disabled');
         function fnUploadFile(formData, nFile, fileName) {
             $('#li' + nFile).show();
             $('#li-filename' + nFile).show();
@@ -198,13 +208,15 @@ $(document).ready(function () {
                 data: formData,
                 processData: false,
                 contentType: false,
+                timeout: 270000,
                 beforeSend: function(xhrObj){
                     xhrObj.setRequestHeader('Authorization', 'Bearer ' + Token);
                     xhrObj.setRequestHeader("destPath",realpath);
             },
                 success: function (data) {
                     console.log(fileName + 'upload successful!\n' + data);
-                    $('#waiting').removeClass('active');
+                    $('.toast').removeClass('success').addClass('success');
+                    M.toast({html: fileName + ' uploaded sucessfully'});
                 },
                 xhr: function () {
                     let xhr = new XMLHttpRequest();
@@ -227,24 +239,23 @@ $(document).ready(function () {
         $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
         //$('.modal-content').css('width: 350px;');
         $('.modal').css('width: 40% !important');
+        $('.file-input').show();
         $('#modal').show();
-        $('#btnCloseDownload').on('click', (e) => {
-            $('#download').removeClass('disabled');
+        $('#btnCloseUpload').on('click', (e) => {
+            $('#upload').removeClass('disabled');
             $('#modal').hide();
         });
         $('#modalClose').on('click', (e) => {
-            $('#download').removeClass('disabled');
+            $('#upload').removeClass('disabled');
             $('#modal').hide();
         });
         $('#upload-input').on('change', function () {
-
             var files = $(this).get(0).files;
             (files.length >0) ? $('#sFiles').html(files.length + ' archivos seleccionados.') : $('#sFiles').html(files[0]);
             console.log(files.length);
-            if (files.length > 0 && files.length < 5) {
-                // create a FormData object which will be sent as the data payload in the
-                // AJAX request
-                // loop through all the selected files and add them to the formData object
+            $('.file-input').hide();
+            if (files.length > 0 && files.length <= 5) {
+                $('#btnCloseUpload').removeClass('disabled').addClass('disabled');
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     var formData = new FormData();
@@ -253,12 +264,14 @@ $(document).ready(function () {
                     formData.append('uploads[]', file, file.name);
                     fnUploadFile(formData, i, file.name);
                 }
+                $('#btnCloseUpload').removeClass('disabled');
             } else {
                 M.toast({
                     html: 'No se pueden descargar más de 5 archivos a la vez'
                 });
             }
         });
+
     };
 
     const newFolder = (folderName) =>{
@@ -270,7 +283,8 @@ $(document).ready(function () {
             headers: headers,
             body: JSON.stringify( {"path": currentPath,
                   "folderName": folderName
-                  })
+                  }),
+                  timeout: 720000
         })
         .then(FetchHandleErrors)
         .then(r => r.json())
@@ -286,6 +300,37 @@ $(document).ready(function () {
             console.log(err);
         }); 
     };
+
+    const showDialogYesNo = (title,content,cb) =>{
+        let w = 32;                                                                                                                                                                                                                      
+        let h = 440;                                                                                                                                                                                                                                                                                                                                                                                             
+        let htmlContent = `<div id="modal-header">
+                            <h5>${title}</h5>
+                            <a class="modal_close" id="logoutModalClose" href="#hola"></a>
+                        </div>
+                        <div class="modal-content">
+                            <p>${content}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnYes" href="#">Yes</a>
+                            <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnNO" href="#">NO</a>
+                        </div>`;                                                                                                                                                                  
+
+        $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
+        //$('.modal-content').css('width: 350px;');
+        $('.modal').css('width: 40% !important');
+        $('#modal').show(); 
+        $('#btnYes').on('click',(e)=>{
+            e.preventDefault();
+            $('#modal').hide();
+            return cb('YES')
+        });
+        $('#btnNo').on('click',(e)=>{
+            e.preventDefault();
+            $('#modal').hide();
+            return cb('No')
+        });
+    }; 
 
     const deleteFile = (path) =>{
       const headers = new Headers();
@@ -303,21 +348,26 @@ $(document).ready(function () {
         headers: headers,
         body: JSON.stringify( {"path": path,
               "fileName": aF[x]
-              })
+              }),
+              timeout: 720000
     })
     .then(FetchHandleErrors)
     .then(r => r.json())
     .then((data) => {
         console.log(data);
         if (data.status == 'OK') {
-          M.toast('Archivo '+ data.data.fileName + ' borrado',3000,'blue');   
+          aSelectedFiles.shift();  
+          $('.toast').removeClass('success').addClass('success');  
+          M.toast({html:'Archivo '+ data.data.fileName + ' borrado'});   
           $('#refresh').trigger('click');
         }
     })
     .catch((err) => {
         console.log(err);
+        $('.toast').removeClass('err').addClass('err');  
+        M.toast({html: err});
     });
-    aSelectedFiles.splice(x,1);
+    
    
   }
   $('#waiting').removeClass('active');
@@ -339,7 +389,8 @@ $(document).ready(function () {
           headers: headers,
           body: JSON.stringify( {"path": path,
                 "fileName": aF[x]
-                })
+                }),
+                timeout: 720000
       })
       .then(FetchHandleErrors)
       .then(r => r.json())
@@ -601,7 +652,8 @@ $(document).ready(function () {
         console.log('realRootPath: ' + realRootPath + ' realpath:' + realpath);
         fetch('/files?path=' + encodeURI(realpath), {
                 method: 'GET',
-                headers: headers
+                headers: headers,
+                timeout: 720000
             })
             .then(FetchHandleErrors)
             .then(r => r.json())
@@ -1103,8 +1155,7 @@ $(document).ready(function () {
                     showNewFolder(32,440,'New Folder');
                     break;
                 case 'delete':
-                    deleteFile(currentPath);
-                    deleteFolder(currentPath);
+                    deleteSelected()
                     break;
                 case 'upload':
                     upload();

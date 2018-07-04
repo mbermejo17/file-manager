@@ -84,7 +84,7 @@ exports.UserLogin = (req, res, next) => {
                         "wssURL": wsPath,
                         "RootPath": (data.UserRole === 'admin') ? '/' : data.RootPath,
                         "AccessString": data.AccessString
-                    }, JWT_KEY, { expiresIn: "10min" });
+                    }, JWT_KEY, { expiresIn: "24h" });
                     console.log('token', token);
                     res.cookie('sessionId', Base64.encode(data.UserName), { maxAge: 900000 });
                     return res.status(200).json({

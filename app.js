@@ -27,6 +27,9 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
+  res.header('X-Frame-Options', 'SAMEORIGIN');
+  res.header('Strict-Transport-Security','max-age=31536000; includeSubDomains');
+  res.header('X-Content-Type-Options','nosniff');
   if (req.method === "OPTIONS") {
     res.header("Access-Control-Allow-Methods", "PUT, POST, DELETE, GET");
     return res.status(200).json({});

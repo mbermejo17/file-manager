@@ -96,7 +96,8 @@ body {
     }
 }
 
-.btn-unify.disabled {
+.btn-unify.disabled ,
+.btn2-unify.disabled {
     color: $color_2 !important;
     margin-left: 5px !important;
     height: 25px;
@@ -119,6 +120,7 @@ body {
         color: $color_4 !important;
     }
 }
+
 
 .nav-unify {
     text-align: center;
@@ -510,4 +512,28 @@ table {
         height: 48px;
         top: 50%;
         left: 50%;
+    }
+    #modal-header h5 {
+        font-family: Roboto !important;
+        font-size: 1.5rem !important;
+        margin: 0.82rem 0 0.656rem 0.9rem !important;
+    }
+
+    .toast {
+        background: #3A4349;
+        color:#95c857;
+        border-radius: 4px;
+        font-size: .8em;
+    }
+
+    .toast.err {
+        border:2px solid red;
+    }
+
+    .toast.info {
+        border:2px solid blue;
+    }
+
+    .toast.success {
+        border:2px solid green;
     }

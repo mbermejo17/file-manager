@@ -20,7 +20,39 @@ var _jsCookie2 = _interopRequireDefault(_jsCookie);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 $(document).ready(function () {
+    var deleteSelected = function () {
+        var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+            return regeneratorRuntime.wrap(function _callee$(_context) {
+                while (1) {
+                    switch (_context.prev = _context.next) {
+                        case 0:
+                            _context.next = 2;
+                            return showDialogYesNo('Borrar archivos', '¿Quiere borrar los archivos seleccionados?', function (result) {
+                                if (result == 'YES') deleteFile(currentPath);
+                            });
+
+                        case 2:
+                            _context.next = 4;
+                            return showDialogYesNo('Borrar carpetas', '¿Quiere borrar las carpetas seleccionadas?', function (result) {
+                                console.log('yesNo', result);
+                                if (result == 'YES') deleteFolder(currentPath);
+                            });
+
+                        case 4:
+                        case 'end':
+                            return _context.stop();
+                    }
+                }
+            }, _callee, this);
+        }));
+
+        return function deleteSelected() {
+            return _ref.apply(this, arguments);
+        };
+    }();
 
     var UserName = _jsCookie2.default.get('UserName');
     var UserRole = _jsCookie2.default.get('UserRole');
@@ -137,9 +169,9 @@ $(document).ready(function () {
         var h = 440;
         var ModalTitle = "Subida de archivos";
         var ModalContent = '<label class="file-input waves-effect waves-teal btn-flat btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>\n        <span id="sFiles">Ningun archivo seleccionado</span>\n                    <ul class="preloader-file" id="DownloadfileList">\n                    <li id="li0">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename0"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar0"></div>\n                                <div class="percent" id="percent0"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li1">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename1"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar1"></div>\n                                <div class="percent" id="percent1"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li2">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename2"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar2"></div>\n                                <div class="percent" id="percent2"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li3">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename3"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar3"></div>\n                                <div class="percent" id="percent3"></div>\n                            </div>\n                        </div>\n                    </li>\n                    <li id="li4">\n                        <div class="li-content">\n                            <div class="li-filename" id="li-filename4"></div>\n                            <div class="progress-content">\n                                <div class="progress-bar" id="progress-bar4"></div>\n                                <div class="percent" id="percent4"></div>\n                            </div>\n                        </div>\n                    </li>\n                </ul>';
-        var htmlContent = '<div id="modal-header">\n                            <h5>' + ModalTitle + '</h5>\n                            <a class="modal_close" id="modalClose" href="#"></a>\n                          </div>\n                          <div class="modal-content">\n                            <p>' + ModalContent + '</p>\n                          </div>\n                          <div class="modal-footer">\n                              <input type="text" hidden id="destPath" name="destPath" value=""/>  \n                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>\n                          </div>    ';
+        var htmlContent = '<div id="modal-header">\n                            <h5>' + ModalTitle + '</h5>\n                            <a class="modal_close" id="modalClose" href="#"></a>\n                          </div>\n                          <div class="modal-content">\n                            <p>' + ModalContent + '</p>\n                          </div>\n                          <div class="modal-footer">\n                              <input type="text" hidden id="destPath" name="destPath" value=""/>  \n                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Cerrar</a>\n                          </div>    ';
 
-        $('#waiting').addClass('active');
+        $('#upload').removeClass('disabled').addClass('disabled');
         function fnUploadFile(formData, nFile, fileName) {
             $('#li' + nFile).show();
             $('#li-filename' + nFile).show();
@@ -156,13 +188,15 @@ $(document).ready(function () {
                 data: formData,
                 processData: false,
                 contentType: false,
+                timeout: 270000,
                 beforeSend: function beforeSend(xhrObj) {
                     xhrObj.setRequestHeader('Authorization', 'Bearer ' + Token);
                     xhrObj.setRequestHeader("destPath", realpath);
                 },
                 success: function success(data) {
                     console.log(fileName + 'upload successful!\n' + data);
-                    $('#waiting').removeClass('active');
+                    $('.toast').removeClass('success').addClass('success');
+                    M.toast({ html: fileName + ' uploaded sucessfully' });
                 },
                 xhr: function xhr() {
                     var xhr = new XMLHttpRequest();
@@ -185,24 +219,23 @@ $(document).ready(function () {
         $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
         //$('.modal-content').css('width: 350px;');
         $('.modal').css('width: 40% !important');
+        $('.file-input').show();
         $('#modal').show();
-        $('#btnCloseDownload').on('click', function (e) {
-            $('#download').removeClass('disabled');
+        $('#btnCloseUpload').on('click', function (e) {
+            $('#upload').removeClass('disabled');
             $('#modal').hide();
         });
         $('#modalClose').on('click', function (e) {
-            $('#download').removeClass('disabled');
+            $('#upload').removeClass('disabled');
             $('#modal').hide();
         });
         $('#upload-input').on('change', function () {
-
             var files = $(this).get(0).files;
             files.length > 0 ? $('#sFiles').html(files.length + ' archivos seleccionados.') : $('#sFiles').html(files[0]);
             console.log(files.length);
-            if (files.length > 0 && files.length < 5) {
-                // create a FormData object which will be sent as the data payload in the
-                // AJAX request
-                // loop through all the selected files and add them to the formData object
+            $('.file-input').hide();
+            if (files.length > 0 && files.length <= 5) {
+                $('#btnCloseUpload').removeClass('disabled').addClass('disabled');
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     var formData = new FormData();
@@ -211,6 +244,7 @@ $(document).ready(function () {
                     formData.append('uploads[]', file, file.name);
                     fnUploadFile(formData, i, file.name);
                 }
+                $('#btnCloseUpload').removeClass('disabled');
             } else {
                 M.toast({
                     html: 'No se pueden descargar más de 5 archivos a la vez'
@@ -228,7 +262,8 @@ $(document).ready(function () {
             headers: headers,
             body: JSON.stringify({ "path": currentPath,
                 "folderName": folderName
-            })
+            }),
+            timeout: 720000
         }).then(FetchHandleErrors).then(function (r) {
             return r.json();
         }).then(function (data) {
@@ -240,6 +275,27 @@ $(document).ready(function () {
             }
         }).catch(function (err) {
             console.log(err);
+        });
+    };
+
+    var showDialogYesNo = function showDialogYesNo(title, content, cb) {
+        var w = 32;
+        var h = 440;
+        var htmlContent = '<div id="modal-header">\n                            <h5>' + title + '</h5>\n                            <a class="modal_close" id="logoutModalClose" href="#hola"></a>\n                        </div>\n                        <div class="modal-content">\n                            <p>' + content + '</p>\n                        </div>\n                        <div class="modal-footer">\n                            <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnYes" href="#">Yes</a>\n                            <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnNO" href="#">NO</a>\n                        </div>';
+
+        $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
+        //$('.modal-content').css('width: 350px;');
+        $('.modal').css('width: 40% !important');
+        $('#modal').show();
+        $('#btnYes').on('click', function (e) {
+            e.preventDefault();
+            $('#modal').hide();
+            return cb('YES');
+        });
+        $('#btnNo').on('click', function (e) {
+            e.preventDefault();
+            $('#modal').hide();
+            return cb('No');
         });
     };
 
@@ -259,19 +315,23 @@ $(document).ready(function () {
                 headers: headers,
                 body: JSON.stringify({ "path": path,
                     "fileName": aF[x]
-                })
+                }),
+                timeout: 720000
             }).then(FetchHandleErrors).then(function (r) {
                 return r.json();
             }).then(function (data) {
                 console.log(data);
                 if (data.status == 'OK') {
-                    M.toast('Archivo ' + data.data.fileName + ' borrado', 3000, 'blue');
+                    aSelectedFiles.shift();
+                    $('.toast').removeClass('success').addClass('success');
+                    M.toast({ html: 'Archivo ' + data.data.fileName + ' borrado' });
                     $('#refresh').trigger('click');
                 }
             }).catch(function (err) {
                 console.log(err);
+                $('.toast').removeClass('err').addClass('err');
+                M.toast({ html: err });
             });
-            aSelectedFiles.splice(x, 1);
         }
         $('#waiting').removeClass('active');
     };
@@ -292,7 +352,8 @@ $(document).ready(function () {
                 headers: headers,
                 body: JSON.stringify({ "path": path,
                     "fileName": aF[x]
-                })
+                }),
+                timeout: 720000
             }).then(FetchHandleErrors).then(function (r) {
                 return r.json();
             }).then(function (data) {
@@ -492,7 +553,8 @@ $(document).ready(function () {
         console.log('realRootPath: ' + realRootPath + ' realpath:' + realpath);
         fetch('/files?path=' + encodeURI(realpath), {
             method: 'GET',
-            headers: headers
+            headers: headers,
+            timeout: 720000
         }).then(FetchHandleErrors).then(function (r) {
             return r.json();
         }).then(function (data) {
@@ -900,8 +962,7 @@ $(document).ready(function () {
                     showNewFolder(32, 440, 'New Folder');
                     break;
                 case 'delete':
-                    deleteFile(currentPath);
-                    deleteFolder(currentPath);
+                    deleteSelected();
                     break;
                 case 'upload':
                     upload();
