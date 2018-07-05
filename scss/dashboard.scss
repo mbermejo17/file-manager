@@ -136,7 +136,7 @@ body {
 
 .footer-unify {
   height: 70px;
-  bottom: 0px;
+  /*bottom: 0px;*/
   width: 100%;
   background-color: $background_color_1;
 }
@@ -144,6 +144,12 @@ body {
 .unify-text {
   font-size: 13px;
   color: $color_4;
+}
+
+.wrapper {
+  min-height: 100%;
+  margin-bottom: -70px;
+  padding-bottom: 70px;
 }
 
 .main-container {
@@ -551,4 +557,23 @@ table {
 div .progress-content .modal_close {
   top: 8px !important;
   right: -28px !important;
+}
+
+.userForm {
+  top: 125px;
+  width: 60%;
+  height: auto;
+  position: absolute;
+  text-align: center;
+  display: none;
+}
+.switch-container {
+  width: 50%;
+  text-align: right;
+}
+.switch-container.left {
+  float: left;
+}
+.switch-container.right {
+  float: right;
 }

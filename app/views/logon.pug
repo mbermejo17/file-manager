@@ -38,7 +38,6 @@ html(lang="es")
             .row
               br
               .input-field.col.s6.m6
-                #waiting.spinner-layer.spinner-green(style="display:none")
               .input-field.col.s12.m12
                 button#login-button.waves-effect.waves-teal.btn-flat.btn2-unify.right(type="submit" name="action")
                   | Logon
@@ -48,6 +47,14 @@ html(lang="es")
           // <img src="img/logo_brand.png" alt="">
         .col.m6.right
           // <h5 class="unify-text right">© Unify Inc. 2018</h5>
-    #loader(style="display:none")      
+    #loader(style="display:none")
+    #waiting.preloader-wrapper
+      .spinner-layer.spinner-blue-only
+        .circle-clipper.left
+          .circle
+        .gap-patch
+          .circle
+        .circle-clipper.right
+          .circle      
     script(type="text/javascript" src="js/materialize.min.js")
     script(type="text/javascript" src="js/logon.js")

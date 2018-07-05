@@ -29,7 +29,117 @@ $(document).ready(function () {
   let aFolders = [];
   let aFiles = [];
 
-  let htmlContentTemplate = `<ul class="preloader-file" id="DownloadfileList">
+  let htmlUserFormTemplate = `<div class="card-panel">
+    <h4 class="header2">New User</h4>
+    <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="mdi-action-account-circle prefix"></i>
+            <input id="name3" type="text">
+            <label for="first_name">Name</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="mdi-communication-business prefix"></i>
+            <input id="companyName" type="text">
+            <label for="companyName">Company Name</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="mdi-action-lock-outline prefix"></i>
+            <input id="password3" type="password">
+            <label for="password3">Password</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="mdi-action-lock-outline prefix"></i>
+            <input id="repeatpassword3" type="password">
+            <label for="repeatpassword3">Repeat Password</label>
+          </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+              <i class="mdi-file-folder prefix"></i>
+              <input id="rootPath" type="text">
+              <label for="rootPath">Root Path</label>
+            </div>
+        </div> 
+        <div class="row">
+        <div class="switch-container left">
+          <!-- Switch -->
+          <div class="switch">
+            Allow Download : 
+            <label>
+              Off
+              <input type="checkbox">
+              <span class="lever"></span> On
+            </label>
+          </div>
+          <br>
+          <div class="switch">
+            Allow New Folder : 
+            <label>
+              Off
+              <input type="checkbox">
+              <span class="lever"></span> On
+            </label>
+          </div>
+          <br>
+          <div class="switch">
+            Allow Delete Folder: 
+            <label>
+              Off
+              <input type="checkbox">
+              <span class="lever"></span> On
+            </label>
+          </div>
+          </div>
+          <div class="switch-container right">
+          <div class="switch">
+            Allow Upload : 
+            <label>
+              Off
+              <input type="checkbox">
+              <span class="lever"></span> On
+            </label>
+          </div>
+          <br>
+          <div class="switch">
+            Allow Rename : 
+            <label>
+              Off
+              <input type="checkbox">
+              <span class="lever"></span> On
+            </label>
+          </div>
+          <br>
+          <div class="switch">
+            Allow Delete File: 
+            <label>
+              Off
+              <input type="checkbox">
+              <span class="lever"></span> On
+            </label>
+          </div>
+          
+          </div>
+        </div>   
+        <div class="row">
+            <div class="input-field col s12">
+              <button class="btn cyan waves-effect waves-light right" type="submit" name="action">Add User
+                <i class="mdi-action-done right"></i>
+              </button>
+            </div>
+        </div>
+      </form>
+    </div>
+  </div>`;
+
+  let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileList">
             <li id="li0">
                 <div class="li-content">
                     <div class="li-filename" id="li-filename0"></div>
@@ -116,6 +226,10 @@ $(document).ready(function () {
     refreshBarMenu();
   };
 
+  const showAddUserForm = () => {
+    $("#userForm").html(htmlUserFormTemplate).show();
+  };
+
   const deleteSelected = () => {
     if (aSelectedFolders.length > 0) {
       showDialogYesNo('Delete foldes', 'Delete selected folders?', (result) => {
@@ -155,12 +269,12 @@ $(document).ready(function () {
   const upload = () => {
     let w = 32;
     let h = 440;
-    let aListHandler =[];
+    let aListHandler = [];
     let handlerCounter = 0;
     let ModalTitle = "Subida de archivos";
     let ModalContent = `<label class="file-input waves-effect waves-teal btn-flat btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>
                         <span id="sFiles">Ningun archivo seleccionado</span>`;
-    ModalContent += htmlContentTemplate;                   
+    ModalContent += htmlUploadDownloadTemplate;
     let htmlContent = `<div id="modal-header">
                           <h5>${ModalTitle}</h5>
                           <a class="modal_close" id="modalClose" href="#"></a>
@@ -228,7 +342,7 @@ $(document).ready(function () {
         }
       });
     }
-    
+
     $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
     //$('.modal-content').css('width: 350px;');
     $('.modal-container').css('width: 40% !important');
@@ -455,7 +569,7 @@ $(document).ready(function () {
     let w = 32;
     let h = 440;
     let ModalTitle = "Descarga de archivos seleccionados";
-    let ModalContent = htmlContentTemplate;
+    let ModalContent = htmlUploadDownloadTemplate;
     let htmlContent = `<div id="modal-header">
                           <h5>${ModalTitle}</h5>
                           <a class="modal_close" id="modalClose" href="#"></a>
@@ -565,7 +679,7 @@ $(document).ready(function () {
           $('#btnCancelAll').removeClass('disabled').addClass('disabled');
           $('#refresh').trigger('click');
         }
-        console.log('File '+handlerCount+' downloaded');
+        console.log('File ' + handlerCount + ' downloaded');
       };
       reqList[i].onloadstart = function () {
         handlerCount = handlerCount + 1;
@@ -695,18 +809,18 @@ $(document).ready(function () {
   };
 
   const selectAll = (e) => {
-    console.log('selectAll:e ',e);
+    console.log('selectAll:e ', e);
     var allCkeckbox = document.querySelectorAll('.check');
     let v = document
       .querySelector("#selectAllFiles")
       .checked;
-      $(this).prop('checked', !($(this).is(':checked')));
+    $(this).prop('checked', !($(this).is(':checked')));
     console.log($(this).is(':checked'));
     allCkeckbox.forEach(function (element, i) {
       if (!allCkeckbox[i].disabled) {
         if (v === true) {
           $(element).trigger('click');
-        } 
+        }
       }
     });
     console.log(getCheckedFiles());
@@ -716,8 +830,8 @@ $(document).ready(function () {
     var checkedFiles = [];
     var allElements = document.querySelectorAll('.typeFile');
     allElements.forEach(function (element, i) {
-      console.log('element: ',element);
-      console.log('children: ',element.parentElement.parentElement.children[0].children[0].checked);
+      console.log('element: ', element);
+      console.log('children: ', element.parentElement.parentElement.children[0].children[0].checked);
       if (element.parentElement.parentElement.children[0].children[0].checked) {
         checkedFiles.push(currentPath + '/' + element.innerHTML);
         // c(element.children[1].innerHTML)
@@ -1130,14 +1244,14 @@ $(document).ready(function () {
 
   $('#selectAllFiles').on('click', (e) => {
     e.preventDefault();
-    console.log('isChecked: ',$(e).is(':checked'));
-    $(e).prop('checked',$(e).is(':checked') ? null:'checked');
+    console.log('isChecked: ', $(e).is(':checked'));
+    $(e).prop('checked', $(e).is(':checked') ? null : 'checked');
     if (document.querySelector("#selectAllFiles").checked === false) {
       document.querySelector("#selectAllFiles").setAttribute('checked', 'checked');
     } else {
       document.querySelector("#selectAllFiles").removeAttribute('checked');
     }
-    console.log('selectAllFiles:click ',document.querySelector("#selectAllFiles").checked);
+    console.log('selectAllFiles:click ', document.querySelector("#selectAllFiles").checked);
     selectAll(e.target.htmlFor);
   });
 
@@ -1147,6 +1261,9 @@ $(document).ready(function () {
 
     if (!$(this).hasClass('disabled')) {
       switch (this.id) {
+        case 'userAdd':
+          showAddUserForm();
+          break;
         case 'settings':
           break;
         case 'usertrigger':
@@ -1223,8 +1340,8 @@ $(document).ready(function () {
     .attr('title', 'Empresa: ' + CompanyName);
 
   $('#settings').on('click', (e) => {
-    console.log('setting left:',$(e.target).position().left);
-    console.log('settingdropdown left:',$('#Settingdropdown').css('left'));
+    console.log('setting left:', $(e.target).position().left);
+    console.log('settingdropdown left:', $('#Settingdropdown').css('left'));
     console.log($('#Settingdropdown').css('display'));
     let position = parseInt($(e.target).position().left);
     if ($('#Settingdropdown').css('display') === 'block') {
@@ -1233,7 +1350,7 @@ $(document).ready(function () {
     } else {
       $('#settings').addClass('selected');
       $('#Settingdropdown').addClass('setting').show();
-      $('#Settingdropdown').css('left', position );
+      $('#Settingdropdown').css('left', position);
     }
   });
   $('#Usersdropdown').on('mouseleave', () => {
