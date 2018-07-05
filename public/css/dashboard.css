@@ -103,7 +103,6 @@ body {
 .footer-unify {
   height: 70px;
   bottom: 0px;
-  position: fixed;
   width: 100%;
   background-color: #293037; }
 
@@ -113,7 +112,9 @@ body {
 
 .main-container {
   height: auto;
-  background-color: #FFF; }
+  min-height: 60vh;
+  background-color: #FFF;
+  overflow-y: auto; }
 
 .path li {
   display: inline-block;
@@ -242,7 +243,6 @@ table tbody {
   background-color: #293037 !important; }
 
 .setting {
-  left: 230px !important;
   top: 30px !important; }
 
 .selected {
@@ -394,21 +394,22 @@ table tbody {
 .toast {
   background: #3A4349;
   color: #95c857;
-  border-radius: 4px;
-  font-size: 1.5em; }
+  border-radius: 5px !important;
+  font-size: 1em; }
 
 .toast.err {
-  border: 2px solid red; }
+  border: 2px solid red !important; }
 
 .toast.info {
-  border: 2px solid blue; }
+  border: 2px solid blue !important; }
 
 .toast.success {
-  border: 2px solid green; }
+  border: 2px solid green !important; }
 
 .modal-overlay {
   opacity: 0.5 !important;
-  transition: opacity 500ms !important; }
+  /*transition: opacity 500ms !important;*/
+  transition: all 500ms !important; }
 
 div .progress-content .modal_close {
   top: 8px !important;

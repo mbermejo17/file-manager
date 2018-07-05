@@ -29,6 +29,58 @@ $(document).ready(function () {
   let aFolders = [];
   let aFiles = [];
 
+  let htmlContentTemplate = `<ul class="preloader-file" id="DownloadfileList">
+            <li id="li0">
+                <div class="li-content">
+                    <div class="li-filename" id="li-filename0"></div>
+                    <div class="progress-content">
+                        <div class="progress-bar" id="progress-bar0"></div>
+                        <div class="percent" id="percent0"></div>
+                        <a class="modal_close" id="abort0" href="#"></a>
+                    </div>
+                </div>
+            </li>
+            <li id="li1">
+                <div class="li-content">
+                    <div class="li-filename" id="li-filename1"></div>
+                    <div class="progress-content">
+                        <div class="progress-bar" id="progress-bar1"></div>
+                        <div class="percent" id="percent1"></div>
+                        <a class="modal_close" id="abort1" href="#"></a>
+                    </div>
+                </div>
+            </li>
+            <li id="li2">
+                <div class="li-content">
+                    <div class="li-filename" id="li-filename2"></div>
+                    <div class="progress-content">
+                        <div class="progress-bar" id="progress-bar2"></div>
+                        <div class="percent" id="percent2"></div>
+                        <a class="modal_close" id="abort2" href="#"></a>
+                    </div>   
+                </div>
+            </li>
+            <li id="li3">
+                <div class="li-content">
+                    <div class="li-filename" id="li-filename3"></div>
+                    <div class="progress-content">
+                        <div class="progress-bar" id="progress-bar3"></div>
+                        <div class="percent" id="percent3"></div>
+                        <a class="modal_close" id="abort3" href="#"></a>
+                    </div>   
+                </div>
+            </li>
+            <li id="li4">
+                <div class="li-content">
+                    <div class="li-filename" id="li-filename4"></div>
+                    <div class="progress-content">
+                        <div class="progress-bar" id="progress-bar4"></div>
+                        <div class="percent" id="percent4"></div>
+                        <a class="modal_close" id="abort4" href="#"></a>
+                    </div>
+                </div>
+            </li>
+        </ul>`;
 
   const logout = () => {
     Cookies.remove('UserName');
@@ -66,12 +118,12 @@ $(document).ready(function () {
 
   const deleteSelected = () => {
     if (aSelectedFolders.length > 0) {
-      showDialogYesNo('Borrar carpetas', '¿Quiere borrar las carpetas seleccionadas?', (result) => {
+      showDialogYesNo('Delete foldes', 'Delete selected folders?', (result) => {
         if (result == 'YES') {
           $.when(deleteFolder(currentPath))
             .then(() => {
               if (aSelectedFiles.length > 0) {
-                showDialogYesNo('Borrar archivos', '¿Quiere borrar los archivos seleccionados?', (result) => {
+                showDialogYesNo('Delete Files', 'Delete selected files?', (result) => {
                   console.log('yesNo', result);
                   if (result == 'YES') deleteFile(currentPath);
                 });
@@ -81,7 +133,7 @@ $(document).ready(function () {
       });
     } else {
       if (aSelectedFiles.length > 0) {
-        showDialogYesNo('Borrar archivos', '¿Quiere borrar los archivos seleccionados?', (result) => {
+        showDialogYesNo('Delete Files', 'Delete selected files?', (result) => {
           console.log('yesNo', result);
           if (result == 'YES') deleteFile(currentPath, (result) => {
             return;
@@ -103,67 +155,24 @@ $(document).ready(function () {
   const upload = () => {
     let w = 32;
     let h = 440;
+    let aListHandler =[];
+    let handlerCounter = 0;
     let ModalTitle = "Subida de archivos";
     let ModalContent = `<label class="file-input waves-effect waves-teal btn-flat btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>
-        <span id="sFiles">Ningun archivo seleccionado</span>
-                    <ul class="preloader-file" id="DownloadfileList">
-                    <li id="li0">
-                        <div class="li-content">
-                            <div class="li-filename" id="li-filename0"></div>
-                            <div class="progress-content">
-                                <div class="progress-bar" id="progress-bar0"></div>
-                                <div class="percent" id="percent0"></div>
-                            </div>
-                        </div>
-                    </li>
-                    <li id="li1">
-                        <div class="li-content">
-                            <div class="li-filename" id="li-filename1"></div>
-                            <div class="progress-content">
-                                <div class="progress-bar" id="progress-bar1"></div>
-                                <div class="percent" id="percent1"></div>
-                            </div>
-                        </div>
-                    </li>
-                    <li id="li2">
-                        <div class="li-content">
-                            <div class="li-filename" id="li-filename2"></div>
-                            <div class="progress-content">
-                                <div class="progress-bar" id="progress-bar2"></div>
-                                <div class="percent" id="percent2"></div>
-                            </div>
-                        </div>
-                    </li>
-                    <li id="li3">
-                        <div class="li-content">
-                            <div class="li-filename" id="li-filename3"></div>
-                            <div class="progress-content">
-                                <div class="progress-bar" id="progress-bar3"></div>
-                                <div class="percent" id="percent3"></div>
-                            </div>
-                        </div>
-                    </li>
-                    <li id="li4">
-                        <div class="li-content">
-                            <div class="li-filename" id="li-filename4"></div>
-                            <div class="progress-content">
-                                <div class="progress-bar" id="progress-bar4"></div>
-                                <div class="percent" id="percent4"></div>
-                            </div>
-                        </div>
-                    </li>
-                </ul>`;
+                        <span id="sFiles">Ningun archivo seleccionado</span>`;
+    ModalContent += htmlContentTemplate;                   
     let htmlContent = `<div id="modal-header">
-                            <h5>${ModalTitle}</h5>
-                            <a class="modal_close" id="modalClose" href="#"></a>
-                          </div>
-                          <div class="modal-content">
-                            <p>${ModalContent}</p>
-                          </div>
-                          <div class="modal-footer">
-                              <input type="text" hidden id="destPath" name="destPath" value=""/>  
-                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Cerrar</a>
-                          </div>    `;
+                          <h5>${ModalTitle}</h5>
+                          <a class="modal_close" id="modalClose" href="#"></a>
+                        </div>
+                        <div class="modal-content">
+                          <p>${ModalContent}</p>
+                      </div>
+                      <div class="modal-footer">
+                              <input type="text" hidden id="destPath" name="destPath" value=""/>
+                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel uploads</a>  
+                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Close</a>
+                      </div>`;
 
     $('#upload').removeClass('disabled').addClass('disabled');
 
@@ -194,25 +203,32 @@ $(document).ready(function () {
           M.toast({
             html: fileName + ' uploaded sucessfully'
           });
+          $('#abort' + nFile).hide();
+          $('#refresh').trigger('click');
+          handlerCounter = handlerCounter - 1;
+          if (handlerCounter == 0) {
+            $('#btnCancelAll').removeClass('disabled').addClass('disabled');
+          }
         },
         xhr: function () {
-          let xhr = new XMLHttpRequest();
+          aListHandler[nFile] = new XMLHttpRequest();
           let percentComplete = 0;
-          xhr.upload.addEventListener('progress', function (evt) {
+          aListHandler[nFile].upload.addEventListener('progress', function (evt) {
             if (evt.lengthComputable) {
               percentComplete = evt.loaded / evt.total;
               percentComplete = parseInt(percentComplete * 100);
               $('#percent' + nFile).text(percentComplete + '%');
               $('#progress-bar' + nFile).width(percentComplete + '%');
-              if (percentComplete === 100) {
+              /* if (percentComplete === 100) {
                 $('#refresh').trigger('click');
-              }
+              } */
             }
           }, false);
-          return xhr;
+          return aListHandler[nFile];
         }
       });
     }
+    
     $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
     //$('.modal-content').css('width: 350px;');
     $('.modal-container').css('width: 40% !important');
@@ -229,8 +245,37 @@ $(document).ready(function () {
       $('#modal').hide();
       $('#lean-overlay').hide();
     });
+    $('#btnCancelAll').removeClass('disabled');
+    $('.modal_close').on('click', (e) => {
+      e.preventDefault();
+      console.log(e);
+      let n = parseInt(e.target.id.slice(-1));
+      aListHandler[n].abort();
+      let percentLabel = document.querySelector('#percent' + n);
+      let progressBar = document.querySelector('#progress-bar' + n);
+      progressBar.innerHTML = 'Canceled by user';
+      percentLabel.innerHTML = '';
+      progressBar.style.color = 'red';
+      progressBar.style.width = '100%';
+      progressBar.style.backgroundColor = 'white';
+      $(e.target).hide();
+    });
+    $('#btnCancelAll').on('click', (e) => {
+      for (let x = 0; x < 4; x++) {
+        aListHandler[x].abort();
+        let percentLabel = document.querySelector('#percent' + x);
+        let progressBar = document.querySelector('#progress-bar' + x);
+        progressBar.innerHTML = 'Canceled by user';
+        percentLabel.innerHTML = '';
+        progressBar.style.color = 'red';
+        progressBar.style.width = '100%';
+        progressBar.style.backgroundColor = 'white';
+      }
+      $('#btnCancelAll').addClass('disabled');
+    });
     $('#upload-input').on('change', function () {
       var files = $(this).get(0).files;
+      handlerCounter = files.length;
       (files.length > 0) ? $('#sFiles').html(files.length + ' archivos seleccionados.'): $('#sFiles').html(files[0]);
       console.log(files.length);
       $('.file-input').hide();
@@ -310,7 +355,7 @@ $(document).ready(function () {
       $('#lean-overlay').hide();
       return cb('YES');
     });
-    $('#btnNo').on('click', (e) => {
+    $('#btnNO').on('click', (e) => {
       e.preventDefault();
       $('#modal').hide();
       $('#lean-overlay').hide();
@@ -410,69 +455,18 @@ $(document).ready(function () {
     let w = 32;
     let h = 440;
     let ModalTitle = "Descarga de archivos seleccionados";
-    let ModalContent = `<ul class="preloader-file" id="DownloadfileList">
-            <li id="li0">
-                <div class="li-content">
-                    <div class="li-filename" id="li-filename0"></div>
-                    <div class="progress-content">
-                        <div class="progress-bar" id="progress-bar0"></div>
-                        <div class="percent" id="percent0"></div>
-                        <a class="modal_close" id="abort0" href="#"></a>
-                    </div>
-                </div>
-            </li>
-            <li id="li1">
-                <div class="li-content">
-                    <div class="li-filename" id="li-filename1"></div>
-                    <div class="progress-content">
-                        <div class="progress-bar" id="progress-bar1"></div>
-                        <div class="percent" id="percent1"></div>
-                        <a class="modal_close" id="abort1" href="#"></a>
-                    </div>
-                </div>
-            </li>
-            <li id="li2">
-                <div class="li-content">
-                    <div class="li-filename" id="li-filename2"></div>
-                    <div class="progress-content">
-                        <div class="progress-bar" id="progress-bar2"></div>
-                        <div class="percent" id="percent2"></div>
-                        <a class="modal_close" id="abort2" href="#"></a>
-                    </div>   
-                </div>
-            </li>
-            <li id="li3">
-                <div class="li-content">
-                    <div class="li-filename" id="li-filename3"></div>
-                    <div class="progress-content">
-                        <div class="progress-bar" id="progress-bar3"></div>
-                        <div class="percent" id="percent3"></div>
-                        <a class="modal_close" id="abort3" href="#"></a>
-                    </div>   
-                </div>
-            </li>
-            <li id="li4">
-                <div class="li-content">
-                    <div class="li-filename" id="li-filename4"></div>
-                    <div class="progress-content">
-                        <div class="progress-bar" id="progress-bar4"></div>
-                        <div class="percent" id="percent4"></div>
-                        <a class="modal_close" id="abort4" href="#"></a>
-                    </div>
-                </div>
-            </li>
-        </ul>`;
+    let ModalContent = htmlContentTemplate;
     let htmlContent = `<div id="modal-header">
-                            <h5>${ModalTitle}</h5>
-                            <a class="modal_close" id="modalClose" href="#"></a>
-                          </div>
-                          <div class="modal-content">
-                            <p>${ModalContent}</p>
-                          </div>
-                          <div class="modal-footer">
-                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancelar descargas</a>
-                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>
-                          </div>    `;
+                          <h5>${ModalTitle}</h5>
+                          <a class="modal_close" id="modalClose" href="#"></a>
+                      </div>
+                      <div class="modal-content">
+                          <p>${ModalContent}</p>
+                      </div>
+                      <div class="modal-footer">
+                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel downloads</a>
+                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>
+                      </div>`;
     $('#modal').html(htmlContent).css('width: ' + w + '%;height: ' + h + 'px;text-align: center;');
     //$('.modal-content').css('width: 350px;');
     $('.modal').css('width: 40% !important');
@@ -519,6 +513,7 @@ $(document).ready(function () {
       progressBar.style.width = '100%';
       progressBar.style.backgroundColor = 'white';
     });
+    $('#btnCancelAll').removeClass('disabled');
     let _loop = (i) => {
       let fName = fileList[i];
       let liNumber = document.querySelector('#li' + i);
@@ -567,7 +562,10 @@ $(document).ready(function () {
         }
         if (handlerCount === 0) {
           $("#download-end").show();
+          $('#btnCancelAll').removeClass('disabled').addClass('disabled');
+          $('#refresh').trigger('click');
         }
+        console.log('File '+handlerCount+' downloaded');
       };
       reqList[i].onloadstart = function () {
         handlerCount = handlerCount + 1;
@@ -636,6 +634,7 @@ $(document).ready(function () {
     let newHtmlContent = `<li><label id="currentpath">Path:</label></li>
                               <li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>`;
     console.log('cPath lenght:', cPath.length);
+    $('#waiting').addClass('active');
     if (cPath.length > 1) {
       $('#waiting').addClass('active');
       let cPathArray = cPath.split('/');
@@ -687,30 +686,27 @@ $(document).ready(function () {
       .then((data) => {
         console.log(data);
         refreshFilesTable(data);
+        $('#waiting').removeClass('active');
       })
       .catch((err) => {
         console.log(err);
+        $('#waiting').removeClass('active');
       });
   };
 
   const selectAll = (e) => {
+    console.log('selectAll:e ',e);
     var allCkeckbox = document.querySelectorAll('.check');
     let v = document
       .querySelector("#selectAllFiles")
       .checked;
-    console.log(v);
+      $(this).prop('checked', !($(this).is(':checked')));
+    console.log($(this).is(':checked'));
     allCkeckbox.forEach(function (element, i) {
       if (!allCkeckbox[i].disabled) {
         if (v === true) {
-          console.log(element);
-
-          //allCkeckbox[i].setAttribute('checked', 'checked');
-        } else {
-          console.log(element);
-          //allCkeckbox[i].trigger('click');
-          //allCkeckbox[i].removeAttribute('checked');
-        }
-        $('#' + element.id).trigger('click');
+          $(element).trigger('click');
+        } 
       }
     });
     console.log(getCheckedFiles());
@@ -720,9 +716,10 @@ $(document).ready(function () {
     var checkedFiles = [];
     var allElements = document.querySelectorAll('.typeFile');
     allElements.forEach(function (element, i) {
-      // c(element.children[0].children[0].checked)
-      if (element.children[0].children[0].checked) {
-        checkedFiles.push(currentPath + '/' + element.children[1].innerHTML);
+      console.log('element: ',element);
+      console.log('children: ',element.parentElement.parentElement.children[0].children[0].checked);
+      if (element.parentElement.parentElement.children[0].children[0].checked) {
+        checkedFiles.push(currentPath + '/' + element.innerHTML);
         // c(element.children[1].innerHTML)
       }
     });
@@ -1133,12 +1130,14 @@ $(document).ready(function () {
 
   $('#selectAllFiles').on('click', (e) => {
     e.preventDefault();
+    console.log('isChecked: ',$(e).is(':checked'));
+    $(e).prop('checked',$(e).is(':checked') ? null:'checked');
     if (document.querySelector("#selectAllFiles").checked === false) {
       document.querySelector("#selectAllFiles").setAttribute('checked', 'checked');
     } else {
       document.querySelector("#selectAllFiles").removeAttribute('checked');
     }
-    console.log(document.querySelector("#selectAllFiles").checked);
+    console.log('selectAllFiles:click ',document.querySelector("#selectAllFiles").checked);
     selectAll(e.target.htmlFor);
   });
 
@@ -1224,13 +1223,17 @@ $(document).ready(function () {
     .attr('title', 'Empresa: ' + CompanyName);
 
   $('#settings').on('click', (e) => {
+    console.log('setting left:',$(e.target).position().left);
+    console.log('settingdropdown left:',$('#Settingdropdown').css('left'));
     console.log($('#Settingdropdown').css('display'));
+    let position = parseInt($(e.target).position().left);
     if ($('#Settingdropdown').css('display') === 'block') {
       $('#settings').removeClass('selected');
       $('#Settingdropdown').removeClass('setting').hide();
     } else {
       $('#settings').addClass('selected');
       $('#Settingdropdown').addClass('setting').show();
+      $('#Settingdropdown').css('left', position );
     }
   });
   $('#Usersdropdown').on('mouseleave', () => {
