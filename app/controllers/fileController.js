@@ -136,6 +136,7 @@ class FileController {
      // every time a file has been uploaded successfully,
      // rename it to it's orignal name
      form.on('file', function(field, file) {
+         console.log(file);
          fs.rename(file.path, path.join(form.uploadDir, file.name))
      });
 

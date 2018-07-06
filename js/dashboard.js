@@ -212,6 +212,17 @@ $(document).ready(function () {
      await M.toast({html: msg}); 
   };
 
+  const validateSize = (f) => {
+    let FileSize = f.files[0].size / 1024 / 1024; // in MB
+    console.log(file);
+    console.log(FileSize);
+    if (FileSize > 700) {
+        return false;
+    } else {
+        return true;
+    }
+};
+
   const serializeObject = (dataObject) => {
     var stringResult = '',
       value = void 0;
@@ -407,9 +418,10 @@ $(document).ready(function () {
     });
     $('#upload-input').on('change', function () {
       var files = $(this).get(0).files;
-      handlerCounter = files.length;
-      (files.length > 0) ? $('#sFiles').html(files.length + ' archivos seleccionados.'): $('#sFiles').html(files[0]);
-      console.log(files.length);
+      if (validateSize(this) == true) {
+          handlerCounter = files.length;
+          (files.length > 0) ? $('#sFiles').html(files.length + ' archivos seleccionados.'): $('#sFiles').html(files[0]);
+          console.log(files.length);
       $('.file-input').hide();
       if (files.length > 0 && files.length <= 5) {
         $('#btnCloseUpload').removeClass('disabled').addClass('disabled');
@@ -427,8 +439,12 @@ $(document).ready(function () {
           html: 'No se pueden descargar más de 5 archivos a la vez'
         });
       }
+    } else {
+      showToast("Error: maxFileSize 700MB exceeded",'err');
+    }
+  
     });
-
+ 
   };
 
   const newFolder = (folderName) => {
