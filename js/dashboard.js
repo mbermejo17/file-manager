@@ -30,115 +30,52 @@ $(document).ready(function () {
   let aFolders = [];
   let aFiles = [];
 
-  let htmlUserFormTemplate = `<div class="card-panel">
-    <h4 class="header2">New User</h4>
-    <div class="row">
-      <form class="col s12">
-        <div class="row">
-          <div class="input-field col s12">
-            <i class="mdi-action-account-circle prefix"></i>
-            <input id="name3" type="text">
-            <label for="first_name">Name</label>
+  let htmlUserFormTemplate = `<div class="add-User-container">
+  <div class="row add-User-Form">
+      <div class="card-panel">
+          <h4 class="header2">New User</h4>
+          <div class="row">
+              <form class="col s12 m12 l12" id="formLogon">
+                  <div class="row">
+                      <div class="input-field col s6"><input id="username" type="text" /><label for="username">Name</label></div>
+                      <div class="input-field col s6"><input id="username" type="text" /><label for="username">Company Name</label></div>
+                  </div>
+                  <div class="row">
+                      <div class="input-field col s6"><input id="password" type="password" autocomplete="off" /><label for="password">Password</label></div>
+                      <div class="input-field col s6"><input id="password" type="password" autocomplete="off" /><label for="password">Repeat Password                   </label></div>
+                  </div>
+                  <div class="row">
+                      <div class="input-field col s4"><input id="username" type="text" /><label for="username">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
+                      <div class="input-field col s6 right"><input class="datepicker" id="expirationDate" type="date" /><label for="expirationDate">Expiration Date </label></div>
+                  </div>
+                  <div class="row">
+                      <div class="rights">Access Rights</div>
+                  </div>
+                  <div class="row">
+                      <div class="input-field col s12 m12"><select class="validate" id="options" name="optionsname" required="" onchange="changeOption()"><option value="opt1">User</option><option value="opt2">Admin</option><option value="opt3">Advanced User</option><option value="opt4">Custom</option></select><label>User Role</label></div>
+                  </div><br/>
+                  <div class="row"><span class="label-switch col s2">Download</span>
+                      <div class="switch col s3"><label>Off<input type="checkbox"/><span class="lever"></span>On</label></div><span class="col s2">   </span><span class="label-switch col s2">Upload</span>
+                      <div class="switch col s3"><label>Off<input type="checkbox"/><span class="lever"></span>On</label></div>
+                  </div>
+                  <div class="row"><span class="label-switch col s2">Delete File</span>
+                      <div class="switch col s3"><label>Off<input type="checkbox"/><span class="lever"></span>On</label></div><span class="col s2">   </span><span class="label-switch col s2">Delete Folder</span>
+                      <div class="switch col s3"><label>Off<input type="checkbox"/><span class="lever"></span>On</label></div>
+                  </div>
+                  <div class="row"><span class="label-switch col s2">Add Folder</span>
+                      <div class="switch col s3"><label>Off<input type="checkbox"/><span class="lever"></span>On</label></div><span class="col s2">   </span><span class="label-switch col s2">Rename</span>
+                      <div class="switch col s3"><label>Off<input type="checkbox"/><span class="lever"></span>On       </label></div>
+                  </div>
+                  <div class="row"><br/>
+                      <div class="input-field col s6 m6"></div>
+                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="login-button" type="submit" name="action">Cancel</button></div>
+                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="login-button" type="submit" name="action">Accept</button></div>
+                  </div>
+              </form>
           </div>
-        </div>
-        <div class="row">
-          <div class="input-field col s12">
-            <i class="mdi-communication-business prefix"></i>
-            <input id="companyName" type="text">
-            <label for="companyName">Company Name</label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="input-field col s12">
-            <i class="mdi-action-lock-outline prefix"></i>
-            <input id="password3" type="password">
-            <label for="password3">Password</label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="input-field col s12">
-            <i class="mdi-action-lock-outline prefix"></i>
-            <input id="repeatpassword3" type="password">
-            <label for="repeatpassword3">Repeat Password</label>
-          </div>
-        </div>
-        <div class="row">
-            <div class="input-field col s12">
-              <i class="mdi-file-folder prefix"></i>
-              <input id="rootPath" type="text">
-              <label for="rootPath">Root Path</label>
-            </div>
-        </div> 
-        <div class="row">
-        <div class="switch-container left">
-          <!-- Switch -->
-          <div class="switch">
-          &nbsp;&nbsp;&nbsp;&nbsp;Download : 
-            <label>
-              Off
-              <input type="checkbox">
-              <span class="lever"></span> On
-            </label>
-          </div>
-          <br>
-          <div class="switch">
-            &nbsp;&nbsp;&nbsp;Add Folder : 
-            <label>
-              Off
-              <input type="checkbox">
-              <span class="lever"></span> On
-            </label>
-          </div>
-          <br>
-          <div class="switch">
-            Delete Folder: 
-            <label>
-              Off
-              <input type="checkbox">
-              <span class="lever"></span> On
-            </label>
-          </div>
-          </div>
-          <div class="switch-container right">
-          <div class="switch">
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Upload : 
-            <label>
-              Off
-              <input type="checkbox">
-              <span class="lever"></span> On
-            </label>
-          </div>
-          <br>
-          <div class="switch">
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rename : 
-            <label>
-              Off
-              <input type="checkbox">
-              <span class="lever"></span> On
-            </label>
-          </div>
-          <br>
-          <div class="switch">
-            Delete File: 
-            <label>
-              Off
-              <input type="checkbox">
-              <span class="lever"></span> On
-            </label>
-          </div>
-          
-          </div>
-        </div>   
-        <div class="row">
-            <div class="input-field col s12">
-              <button class="btn waves-effect waves-light right btn2-unify" type="submit" name="action">Add User
-                <i class="mdi-action-done right"></i>
-              </button>
-            </div>
-        </div>
-      </form>
-    </div>
-  </div>`;
+      </div>
+  </div>
+</div>`;
 
   let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileList">
             <li id="li0">
@@ -205,11 +142,13 @@ $(document).ready(function () {
     document.location.href = '/';
   };
 
-  const showToast = async function(msg,type) {
-     // types: info, success, err
-     $('.toast').removeClass('success').removeClass("info").removeClass("err");
-     $('.toast').addClass(type);
-     await M.toast({html: msg}); 
+  const showToast = async function (msg, type) {
+    // types: info, success, err
+    $('.toast').removeClass('success').removeClass("info").removeClass("err");
+    $('.toast').addClass(type);
+    await M.toast({
+      html: msg
+    });
   };
 
   const validateSize = (f) => {
@@ -217,11 +156,11 @@ $(document).ready(function () {
     console.log(file);
     console.log(FileSize);
     if (FileSize > 700) {
-        return false;
+      return false;
     } else {
-        return true;
+      return true;
     }
-};
+  };
 
   const serializeObject = (dataObject) => {
     var stringResult = '',
@@ -246,8 +185,8 @@ $(document).ready(function () {
   };
 
   const getRealPath = (p) => {
-    let rPath ='';
-    if ( p == '/' && realRootPath == '/') {
+    let rPath = '';
+    if (p == '/' && realRootPath == '/') {
       rPath = p;
     } else {
       if (p == '/') {
@@ -329,9 +268,9 @@ $(document).ready(function () {
       $('#li-filename' + nFile).show();
       $('#li-filename' + nFile).html(fileName);
       let realpath = getRealPath(currentPath);
-      console.log('Upload:currentPath '+currentPath);  
-      console.log('Upload:realRootPath '+realRootPath);
-      console.log('Upload:realPath '+ realpath);
+      console.log('Upload:currentPath ' + currentPath);
+      console.log('Upload:realRootPath ' + realRootPath);
+      console.log('Upload:realPath ' + realpath);
       $.ajax({
         url: '/files/upload?destPath=' + realpath,
         type: 'POST',
@@ -345,7 +284,7 @@ $(document).ready(function () {
         },
         success: function (data) {
           console.log(fileName + 'upload successful!\n' + data);
-          showToast(fileName + ' uploaded sucessfully','success');
+          showToast(fileName + ' uploaded sucessfully', 'success');
           $('#abort' + nFile).hide();
           $('#refresh').trigger('click');
           handlerCounter = handlerCounter - 1;
@@ -419,32 +358,32 @@ $(document).ready(function () {
     $('#upload-input').on('change', function () {
       var files = $(this).get(0).files;
       if (validateSize(this) == true) {
-          handlerCounter = files.length;
-          (files.length > 0) ? $('#sFiles').html(files.length + ' archivos seleccionados.'): $('#sFiles').html(files[0]);
-          console.log(files.length);
-      $('.file-input').hide();
-      if (files.length > 0 && files.length <= 5) {
-        $('#btnCloseUpload').removeClass('disabled').addClass('disabled');
-        for (var i = 0; i < files.length; i++) {
-          var file = files[i];
-          var formData = new FormData();
-          // add the files to formData object for the data payload
+        handlerCounter = files.length;
+        (files.length > 0) ? $('#sFiles').html(files.length + ' archivos seleccionados.'): $('#sFiles').html(files[0]);
+        console.log(files.length);
+        $('.file-input').hide();
+        if (files.length > 0 && files.length <= 5) {
+          $('#btnCloseUpload').removeClass('disabled').addClass('disabled');
+          for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var formData = new FormData();
+            // add the files to formData object for the data payload
 
-          formData.append('uploads[]', file, file.name);
-          fnUploadFile(formData, i, file.name);
+            formData.append('uploads[]', file, file.name);
+            fnUploadFile(formData, i, file.name);
+          }
+          $('#btnCloseUpload').removeClass('disabled');
+        } else {
+          M.toast({
+            html: 'No se pueden descargar más de 5 archivos a la vez'
+          });
         }
-        $('#btnCloseUpload').removeClass('disabled');
       } else {
-        M.toast({
-          html: 'No se pueden descargar más de 5 archivos a la vez'
-        });
+        showToast("Error: maxFileSize 700MB exceeded", 'err');
       }
-    } else {
-      showToast("Error: maxFileSize 700MB exceeded",'err');
-    }
-  
+
     });
- 
+
   };
 
   const newFolder = (folderName) => {
@@ -1398,4 +1337,24 @@ $(document).ready(function () {
   refreshPath(currentPath);
   refreshBarMenu();
   console.log(document.querySelector("#selectAllFiles").checked);
+
+  $('select').material_select();
+  $('.datepicker').pickadate({
+    selectMonths: true, // Creates a dropdown to control month
+    selectYears: 15 // Creates a dropdown of 15 years to control year
+  });
+
+  $("input").change(function () {
+    if ($(this).is(":checked")) {
+      console.log("Is checked");
+    } else {
+      console.log("Is Not checked");
+    }
+  })
+
+  const changeOption= () => {
+    $('.all-options').hide();
+    $('#' + $('#options').val()).show();
+    console.log($('#options').val());
+  }
 });

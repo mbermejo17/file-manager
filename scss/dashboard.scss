@@ -560,22 +560,22 @@ div .progress-content .modal_close {
   right: -28px !important;
 }
 
-.userForm {
-  top: 5px;
-  width: 60%;
-  height: auto;
-  position: absolute;
+.add-User-container {
+  width: 680px;
+  margin:0 auto;
+}
+.add-User-Form {
+  
+}
+.rights {
+  margin: 0 auto;
   text-align: center;
-  display: none;
-  font-size: .8em;
+  font-weight:bold;
 }
-.switch-container {
-  width: 50%;
-  text-align: left;
+.label-switch {
+  font-size: .85em;
 }
-.switch-container.left {
-  float: left;
-}
-.switch-container.right {
-  float: right;
+#FindPath {
+  width:auto;
+  border: 1px solid red;
 }
