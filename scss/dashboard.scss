@@ -530,6 +530,7 @@ table {
 }
 
 .toast {
+  margin-top:45px !important;
   background: #3A4349;
   color: #95c857;
   border-radius: 5px !important;
@@ -537,15 +538,15 @@ table {
 }
 
 .toast.err {
-  border: 2px solid red !important;
+  border: 3px solid red !important;
 }
 
 .toast.info {
-  border: 2px solid blue !important;
+  border: 3px solid blue !important;
 }
 
 .toast.success {
-  border: 2px solid green !important;
+  border: 3px solid green !important;
 }
 
 .modal-overlay {

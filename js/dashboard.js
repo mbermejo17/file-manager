@@ -1,4 +1,5 @@
 'use sctrict';
+import "babel-polyfill";
 import ajax from './vendor/ajax';
 import {
   Base64
@@ -204,6 +205,13 @@ $(document).ready(function () {
     document.location.href = '/';
   };
 
+  const showToast = async function(msg,type) {
+     // types: info, success, err
+     $('.toast').removeClass('success').removeClass("info").removeClass("err");
+     $('.toast').addClass(type);
+     await M.toast({html: msg}); 
+  };
+
   const serializeObject = (dataObject) => {
     var stringResult = '',
       value = void 0;
@@ -226,6 +234,20 @@ $(document).ready(function () {
     refreshBarMenu();
   };
 
+  const getRealPath = (p) => {
+    let rPath ='';
+    if ( p == '/' && realRootPath == '/') {
+      rPath = currentPath;
+    } else {
+      if (p == '/') {
+        rPath = realRootPath;
+      } else {
+        rPath = realRootPath + '/' + p;
+      }
+      return rPath;
+    }
+  };
+
   const showAddUserForm = () => {
     $("#userForm").html(htmlUserFormTemplate).show();
   };
@@ -242,6 +264,7 @@ $(document).ready(function () {
                   if (result == 'YES') deleteFile(currentPath);
                 });
               }
+              $('#refresh').trigger('click');
             })
         }
       });
@@ -283,7 +306,7 @@ $(document).ready(function () {
                           <p>${ModalContent}</p>
                       </div>
                       <div class="modal-footer">
-                              <input type="text" hidden id="destPath" name="destPath" value=""/>
+                              <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
                               <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel uploads</a>  
                               <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Close</a>
                       </div>`;
@@ -294,29 +317,24 @@ $(document).ready(function () {
       $('#li' + nFile).show();
       $('#li-filename' + nFile).show();
       $('#li-filename' + nFile).html(fileName);
-      let realpath = '';
-      if (currentPath == '/') {
-        realpath = currentPath;
-      } else {
-        realpath = realRootPath + currentPath;
-      }
+      let realpath = getRealPath(currentPath);
+      console.log('Upload:currentPath '+currentPath);  
+      console.log('Upload:realRootPath '+realRootPath);
+      console.log('Upload:realPath '+ realpath);
       $.ajax({
         url: '/files/upload?destPath=' + realpath,
         type: 'POST',
         data: formData,
         processData: false,
         contentType: false,
-        timeout: 270000,
+        timeout: 290000,
         beforeSend: function (xhrObj) {
           xhrObj.setRequestHeader('Authorization', 'Bearer ' + Token);
           xhrObj.setRequestHeader("destPath", realpath);
         },
         success: function (data) {
           console.log(fileName + 'upload successful!\n' + data);
-          $('.toast').removeClass('success').addClass('success');
-          M.toast({
-            html: fileName + ' uploaded sucessfully'
-          });
+          showToast(fileName + ' uploaded sucessfully','success');
           $('#abort' + nFile).hide();
           $('#refresh').trigger('click');
           handlerCounter = handlerCounter - 1;
@@ -421,7 +439,7 @@ $(document).ready(function () {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({
-          "path": currentPath,
+          "path": getRealPath(currentPath),
           "folderName": folderName
         }),
         timeout: 10000
@@ -491,7 +509,7 @@ $(document).ready(function () {
           method: 'POST',
           headers: headers,
           body: JSON.stringify({
-            "path": path,
+            "path": getRealPath(path),
             "fileName": aF[x]
           }),
           timeout: 720000
@@ -534,7 +552,7 @@ $(document).ready(function () {
           method: 'POST',
           headers: headers,
           body: JSON.stringify({
-            "path": path,
+            "path": getRealPath(path),
             "fileName": aF[x]
           }),
           timeout: 720000
@@ -732,9 +750,9 @@ $(document).ready(function () {
         }
       };
       reqList[i].setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      console.log(currentPath + '/' + fileList[i]);
+      console.log(getRealPath(currentPath) + '/' + fileList[i]);
       reqList[i].send(serializeObject({
-        'filename': currentPath + '/' + fileList[i]
+        'filename': getRealPath(currentPath) + '/' + fileList[i]
       }));
     };
     for (var i = 0; i < fileList.length; i++) {

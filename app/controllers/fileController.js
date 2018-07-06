@@ -43,10 +43,11 @@ class FileController {
     console.log('fileController::getFiles:userData: ', userData)
     let rPath = userData.RootPath
     console.log('getFiles:dirPath.indexOf(rPath) ', dirPath.indexOf(rPath))
-    if (dirPath.indexOf(rPath) != 0) {
+    if (dirPath.indexOf(rPath) != 1 && rPath != '/') {
       return res.send(JSON.stringify({}))
     }
     dirPath = normalize(pathPrefix + dirPath)
+    console.log('fileController::getFiles:realPath '+ dirPath)
     response = (dirPath) => {
       return fs.readdirSync(dirPath)
         .reduce((list, file) => {
@@ -131,7 +132,7 @@ class FileController {
      form.uploadDir = normalize(pathPrefix + repoPath)
      
      
-     console.log(form.uploadDir)
+     console.log('upload:repoPath '+form.uploadDir)
      // every time a file has been uploaded successfully,
      // rename it to it's orignal name
      form.on('file', function(field, file) {

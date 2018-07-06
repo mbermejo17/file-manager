@@ -4,8 +4,8 @@
     "description": "Fielle Manager",
     "main": "server.js",
     "scripts": {
-        "sass2": "node-sass ./scss/style.scss -o ./public/css && npx ./node_modules/postcss-cli/bin/postcss ./public/css/style.css  --use autoprefixer -d public/css",
-        "sass3": "node-sass ./scss/dashboard.scss -o ./public/css && npx ./node_modules/postcss-cli/bin/postcss ./public/css/dashboard.css  --use autoprefixer -d public/css",
+        "sass2": "node-sass scss/style.scss -o public/css && npx postcss public/css/style.css  --use autoprefixer -d public/css",
+        "sass3": "node-sass scss/dashboard.scss -o public/css && npx postcss public/css/dashboard.css  --use autoprefixer -d public/css",
         "sass": "node-sass -o ./public/css/ ./scss/",
         "pug": "pug -w -P -p ./app/pug/includes/ ./src/pug/pages/ -o ./public/",
         "babel": "babel -w ./js/ -d ./public/js/",
@@ -19,7 +19,7 @@
     "author": "Manuel Bermejo <mbermejo17@gmail.com>",
     "license": "MIT",
     "devDependencies": {
-        "autoprefixer": "^8.6.4",
+        "autoprefixer": "^8.6.5",
         "babel-cli": "^6.26.0",
         "babel-preset-env": "^1.7.0",
         "babel-preset-es2015": "^6.24.1",
@@ -38,6 +38,7 @@
         "mkdirp": "^0.5.1",
         "node-sass": "^4.9.0",
         "node-sass-package-importer": "^5.1.3",
+        "npx": "^10.2.0",
         "parallelshell": "^3.0.2",
         "postcss": "^6.0.23",
         "postcss-cli": "^5.0.1",
@@ -50,6 +51,7 @@
         "watchify": "^3.11.0"
     },
     "dependencies": {
+        "babel-polyfill": "^6.26.0",
         "cookie-parser": "^1.4.3",
         "express": "^4.16.3",
         "formidable": "^1.2.1",
