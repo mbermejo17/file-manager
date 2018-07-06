@@ -560,12 +560,18 @@ div .progress-content .modal_close {
   right: -28px !important;
 }
 
+
+#userForm {
+  position: absolute;
+  top: 108px;
+  width: 100%;
+}
+#add-User-container {
+  margin: 0 auto;
+}
 .add-User-container {
   width: 680px;
   margin:0 auto;
-}
-.add-User-Form {
-  
 }
 .rights {
   margin: 0 auto;

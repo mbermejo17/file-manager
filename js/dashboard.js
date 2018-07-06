@@ -37,15 +37,15 @@ $(document).ready(function () {
           <div class="row">
               <form class="col s12 m12 l12" id="formLogon">
                   <div class="row">
-                      <div class="input-field col s6"><input id="username" type="text" /><label for="username">Name</label></div>
-                      <div class="input-field col s6"><input id="username" type="text" /><label for="username">Company Name</label></div>
+                      <div class="input-field col s6"><input id="addusername" type="text" /><label for="addusername">Name</label></div>
+                      <div class="input-field col s6"><input id="companyName" type="text" /><label for="companyName">Company Name</label></div>
                   </div>
                   <div class="row">
-                      <div class="input-field col s6"><input id="password" type="password" autocomplete="off" /><label for="password">Password</label></div>
-                      <div class="input-field col s6"><input id="password" type="password" autocomplete="off" /><label for="password">Repeat Password                   </label></div>
+                      <div class="input-field col s6"><input id="addpassword" type="password" autocomplete="off" /><label for="addpassword">Password</label></div>
+                      <div class="input-field col s6"><input id="repeataddpassword" type="password" autocomplete="off" /><label for="repeataddpassword">Repeat Password</label></div>
                   </div>
                   <div class="row">
-                      <div class="input-field col s4"><input id="username" type="text" /><label for="username">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
+                      <div class="input-field col s4"><input id="rootpath" type="text" /><label for="rootpath">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
                       <div class="input-field col s6 right"><input class="datepicker" id="expirationDate" type="date" /><label for="expirationDate">Expiration Date </label></div>
                   </div>
                   <div class="row">
@@ -68,8 +68,8 @@ $(document).ready(function () {
                   </div>
                   <div class="row"><br/>
                       <div class="input-field col s6 m6"></div>
-                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="login-button" type="submit" name="action">Cancel</button></div>
-                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="login-button" type="submit" name="action">Accept</button></div>
+                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserCancel" type="submit" name="action">Cancel</button></div>
+                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserAcept" type="submit" name="action">Accept</button></div>
                   </div>
               </form>
           </div>
