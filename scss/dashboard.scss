@@ -561,16 +561,17 @@ div .progress-content .modal_close {
 }
 
 .userForm {
-  top: 125px;
+  top: 5px;
   width: 60%;
   height: auto;
   position: absolute;
   text-align: center;
   display: none;
+  font-size: .8em;
 }
 .switch-container {
   width: 50%;
-  text-align: right;
+  text-align: left;
 }
 .switch-container.left {
   float: left;

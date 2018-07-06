@@ -73,7 +73,7 @@ $(document).ready(function () {
         <div class="switch-container left">
           <!-- Switch -->
           <div class="switch">
-            Allow Download : 
+          &nbsp;&nbsp;&nbsp;&nbsp;Download : 
             <label>
               Off
               <input type="checkbox">
@@ -82,7 +82,7 @@ $(document).ready(function () {
           </div>
           <br>
           <div class="switch">
-            Allow New Folder : 
+            &nbsp;&nbsp;&nbsp;Add Folder : 
             <label>
               Off
               <input type="checkbox">
@@ -91,7 +91,7 @@ $(document).ready(function () {
           </div>
           <br>
           <div class="switch">
-            Allow Delete Folder: 
+            Delete Folder: 
             <label>
               Off
               <input type="checkbox">
@@ -101,7 +101,7 @@ $(document).ready(function () {
           </div>
           <div class="switch-container right">
           <div class="switch">
-            Allow Upload : 
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Upload : 
             <label>
               Off
               <input type="checkbox">
@@ -110,7 +110,7 @@ $(document).ready(function () {
           </div>
           <br>
           <div class="switch">
-            Allow Rename : 
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rename : 
             <label>
               Off
               <input type="checkbox">
@@ -119,7 +119,7 @@ $(document).ready(function () {
           </div>
           <br>
           <div class="switch">
-            Allow Delete File: 
+            Delete File: 
             <label>
               Off
               <input type="checkbox">
@@ -131,7 +131,7 @@ $(document).ready(function () {
         </div>   
         <div class="row">
             <div class="input-field col s12">
-              <button class="btn cyan waves-effect waves-light right" type="submit" name="action">Add User
+              <button class="btn waves-effect waves-light right btn2-unify" type="submit" name="action">Add User
                 <i class="mdi-action-done right"></i>
               </button>
             </div>
@@ -237,15 +237,15 @@ $(document).ready(function () {
   const getRealPath = (p) => {
     let rPath ='';
     if ( p == '/' && realRootPath == '/') {
-      rPath = currentPath;
+      rPath = p;
     } else {
       if (p == '/') {
         rPath = realRootPath;
       } else {
         rPath = realRootPath + '/' + p;
       }
-      return rPath;
     }
+    return rPath;
   };
 
   const showAddUserForm = () => {
