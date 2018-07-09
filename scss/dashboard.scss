@@ -556,6 +556,20 @@ table {
   border: 3px solid green !important;
 }
 
+.container-overlay {
+  position: fixed;
+  display: none;
+  width: 100%; 
+  height: 100%; 
+  top: 0; 
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5); 
+  z-index: 12000; 
+  cursor: pointer;
+}
+
 .modal-overlay {
   opacity: 0.5 !important;
   /*transition: opacity 500ms !important;*/
@@ -572,20 +586,31 @@ div .progress-content .modal_close {
   position: absolute;
   top: 108px;
   width: 100%;
+  opacity: 0;
+  padding: 1em;
 }
-#add-User-container {
-  margin: 0 auto;
+#AddUserModal {
+  padding: 1em;
+  h4 {
+    text-align: center;
+  }
 }
-.add-User-container {
-  width: 620px;
-    position: absolute;
-    top: -100px;
-    z-index: 16000;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
-    right: 0;
+#AddUserModalContent {
+  width: 680px;
+  height: 780px;
+  background-color:#FFF;
+  position: absolute;
+  top: 80px;
+  z-index: 12001;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  border-radius:3px;
+  box-shadow: 0 16px 28px 0 rgba(0,0,0,0.22),
+  0 25px 55px 0 rgba(0,0,0,0.21);
 }
+
 .rights {
   margin: 0 auto;
   text-align: center;
@@ -600,6 +625,18 @@ div .progress-content .modal_close {
   padding-top: 26px;
 }
 
-.datepicker {
-  font-size: .8em !important;
+
+input[type="date"]::-webkit-inner-spin-button {
+  display: none;
+    -webkit-appearance: none;
+}
+input {
+  height: 2.5em !important;
+}
+
+#RoleOptions {
+  display: block !important;
+  width: 60%;
+  float: right;
+  height: 2em;
 }

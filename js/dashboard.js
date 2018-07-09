@@ -1,11 +1,13 @@
 "use sctrict";
 import "babel-polyfill";
 import ajax from "./vendor/ajax";
-import { Base64 } from "js-base64";
+import {
+  Base64
+} from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
 
-$(document).ready(function() {
+$(document).ready(function () {
   const UserName = Cookies.get("UserName");
   const UserRole = Cookies.get("UserRole");
   const CompanyName = Cookies.get("CompanyName");
@@ -28,9 +30,8 @@ $(document).ready(function() {
   let aFolders = [];
   let aFiles = [];
 
-  let htmlUserFormTemplate = `<div class="add-User-container">
-  <div class="row add-User-Form">
-      <div class="card-panel">
+  let htmlUserFormTemplate = `
+      <div id="AddUserModal">
           <h4 class="header2">New User</h4>
           <div class="row">
               <form class="col s12 m12 l12" id="formLogon">
@@ -44,14 +45,18 @@ $(document).ready(function() {
                   </div>
                   <div class="row">
                       <div class="input-field col s4"><input id="rootpath" type="text" /><label for="rootpath">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
-                      <div class="input-field col s6 right"><input class="datepicker" id="expirationDate" type="date" /><label for="expirationDate">Expiration Date </label></div>
+                      <div class="input-field col s6 right">
+                        <input class="datepicker" id="expirationDate" type="date"/>
+                        <label for="expirationDate">Expiration Date</label>
+                      </div>
                   </div>
                   <div class="row">
                       <div class="rights">Access Rights</div>
                   </div>
                   <div class="row">
-                      <div class="input-field col s12 m12">
-                        <select class="validate" id="RoleOptions" name="optionsname" required="" onchange="changeOption()">
+                      <div class="input-field col s2 m2"></div>
+                      <div class="input-field col s8 m8" style="line-height: .9em;" >
+                        <select id="RoleOptions" name="optionsname" required="">
                           <option value="opt1">User</option>
                           <option value="opt2">Admin</option>
                           <option value="opt3">Advanced User</option>
@@ -59,18 +64,45 @@ $(document).ready(function() {
                         </select>
                         <label>User Role</label>
                       </div>
-                  </div><br/>
-                  <div class="row"><span class="label-switch col s2">Download</span>
-                      <div class="switch col s3"><label>Off<input type="checkbox" class="AccessRightsSwitch"/><span class="lever"></span>On</label></div><span class="col s2">   </span><span class="label-switch col s2">Upload</span>
-                      <div class="switch col s3"><label>Off<input type="checkbox"/><span class="lever"></span>On</label></div>
+                      <div class="input-field col s2 m2"></div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                      <span class="label-switch col s2">Download</span>
+                      <div class="switch col s3">
+                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                        <span class="lever"></span>On</label>
+                      </div>
+                      <span class="col s2"></span>
+                      <span class="label-switch col s2">Upload</span>
+                      <div class="switch col s3">
+                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                        <span class="lever"></span>On</label>
+                      </div>
                   </div>
                   <div class="row"><span class="label-switch col s2">Delete File</span>
-                      <div class="switch col s3"><label>Off<input type="checkbox" class="AccessRightsSwitch"/><span class="lever"></span>On</label></div><span class="col s2">   </span><span class="label-switch col s2">Delete Folder</span>
-                      <div class="switch col s3"><label>Off<input type="checkbox" class="AccessRightsSwitch"/><span class="lever"></span>On</label></div>
+                      <div class="switch col s3">
+                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                        <span class="lever"></span>On</label>
+                      </div>
+                      <span class="col s2">   </span>
+                      <span class="label-switch col s2">Delete Folder</span>
+                      <div class="switch col s3">
+                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                        <span class="lever"></span>On</label>
+                      </div>
                   </div>
-                  <div class="row"><span class="label-switch col s2">Add Folder</span>
-                      <div class="switch col s3"><label>Off<input type="checkbox" class="AccessRightsSwitch"/><span class="lever"></span>On</label></div><span class="col s2">   </span><span class="label-switch col s2">Rename</span>
-                      <div class="switch col s3"><label>Off<input type="checkbox" class="AccessRightsSwitch"/><span class="lever"></span>On       </label></div>
+                  <div class="row">
+                    <span class="label-switch col s2">Add Folder</span>
+                    <div class="switch col s3">
+                      <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                      <span class="lever"></span>On</label>
+                    </div>
+                    <span class="col s2">   </span>
+                    <span class="label-switch col s2">Rename</span>
+                    <div class="switch col s3">
+                      <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                      <span class="lever"></span>On       </label></div>
                   </div>
                   <div class="row"><br/>
                       <div class="input-field col s6 m6"></div>
@@ -79,9 +111,7 @@ $(document).ready(function() {
                   </div>
               </form>
           </div>
-      </div>
-  </div>
-</div>`;
+      </div>`;
 
   let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileList">
             <li id="li0">
@@ -148,15 +178,15 @@ $(document).ready(function() {
     document.location.href = "/";
   };
 
-  const showToast = async function(msg, type) {
+  const showToast = async function (msg, type) {
+    let toast = document.querySelector('.toast');
     // types: info, success, err
 
-    $(".toast")
-      .removeClass("success")
-      .removeClass("info")
-      .removeClass("err");
-    $(".toast").addClass(type);
-    await M.toast({
+    toast.classList.remove('success'); 
+    toast.classList.remove('info');
+    toast.classList.remove('err'); 
+    toast.classList.add(type);    
+    M.toast({
       html: msg
     });
   };
@@ -208,42 +238,65 @@ $(document).ready(function() {
     return rPath;
   };
 
-  const showAddUserForm = () => {
-    let userForm = document.querySelector("#userForm");
+  const changeAccessRights = (AccessSwitch,opt) =>{
+     for(let x=0; x < AccessSwitch.length ; x++) {
+      AccessSwitch[x].disabled = false;
+     }
+      switch (opt) {
+        case 'opt1':
+          AccessSwitch[0].checked = true;
+          AccessSwitch[1].checked = true;
+          AccessSwitch[2].checked = false;
+          AccessSwitch[3].checked = false;
+          AccessSwitch[4].checked = false;
+          AccessSwitch[5].checked = false;
+          AccessSwitch[2].disabled = true;
+          AccessSwitch[3].disabled = true;
+          AccessSwitch[4].disabled = true;
+          AccessSwitch[5].disabled = true;
+          break;
+        case 'opt2':
+          AccessSwitch[0].checked = true;
+          AccessSwitch[1].checked = true;
+          AccessSwitch[2].checked = true;
+          AccessSwitch[3].checked = true;
+          AccessSwitch[4].checked = true;
+          AccessSwitch[5].checked = true;
+          break;
+        case 'opt3':
+          AccessSwitch[0].checked = true;
+          AccessSwitch[1].checked = true;
+          AccessSwitch[2].checked = false;
+          AccessSwitch[2].disabled = true;
+          AccessSwitch[3].checked = false;
+          AccessSwitch[3].disabled = true;
+          AccessSwitch[4].checked = true;
+          AccessSwitch[5].checked = false;
+          AccessSwitch[5].disabled = true;
+          break;
+        case 'opt4':
+          AccessSwitch[0].checked = false;
+          AccessSwitch[1].checked = false;
+          AccessSwitch[2].checked = false;
+          AccessSwitch[3].checked = false;
+          AccessSwitch[4].checked = false;
+          AccessSwitch[5].checked = false;
+          break;
+      }      
+  };
 
-    userForm.innerHTML = htmlUserFormTemplate;
-    userForm.style.display = "block";
-    userForm.classList.add('modal-overlay');
+  const showAddUserForm = () => {
+    let AddUserModalContent = document.querySelector("#AddUserModalContent");
+    let containerOverlay = document.querySelector(".container-overlay");
+
+
+    AddUserModalContent.innerHTML = htmlUserFormTemplate;
+    containerOverlay.style.display = "block";
+    //AddUserModalContent.style.display = "block";
 
     let sel = document.querySelector("select");
 
-    M.FormSelect.init(sel);
-
-    let instances = M.Datepicker.init(
-      document.querySelectorAll(".datepicker"),
-      {
-        selectMonths: true,
-        selectYears: 15,
-        format: "dd/mm/yyyy",
-        firstDay: 1,
-        i18n: {
-          monthsFull: [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre' ],
-          monthsShort: [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
-          weekdaysFull: [ 'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado' ],
-          weekdaysShort: [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab' ],  
-          weekdaysLetter: [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
-          today: "Hoy",
-          clear: "Borrar",
-          close: "Cerrar",
-          labelMonthNext: "Sig. mes",
-          labelMonthPrev: "Anterior mes",
-          labelMonthSelect: "Seleccionar mes",
-          labelYearSelect: "Seleccionar Año"
-          }
-      }
-    );
-
-    $(".AccessRightsSwitch").change(function() {
+    $(".AccessRightsSwitch").change(function () {
       if ($(this).is(":checked")) {
         console.log("Is checked");
       } else {
@@ -251,11 +304,41 @@ $(document).ready(function() {
       }
     });
 
-    const changeOption = () => {
-      $(".all-options").hide();
-      $("#" + $("#options").val()).show();
-      console.log($("#options").val());
-    };
+    changeAccessRights(document.querySelectorAll('.AccessRightsSwitch'),'opt1');
+
+    sel.addEventListener('change',(e)=>{
+      let opt = e.target[e.target.selectedIndex].value;
+      let AccessSwitch = document.querySelectorAll('.AccessRightsSwitch');
+      changeAccessRights(AccessSwitch,opt); 
+    });
+    
+    document.querySelector('#btn-addUserAcept').addEventListener('click',(e)=>{
+      e.preventDefault();
+      let AccessSwitch = document.querySelectorAll('.AccessRightsSwitch')
+      console.log('User Name: '+document.querySelector('#addusername').value);
+      console.log('Company Name: '+document.querySelector('#companyName').value);
+      console.log('Password: '+ document.querySelector('#addpassword').value);
+      console.log('Repeat password: '+ document.querySelector('#repeataddpassword').value);
+      console.log('Root Path: ' + document.querySelector('#rootpath').value);
+      console.log('Expirate Date: ' + document.querySelector('#expirationDate').value);
+      console.log('Role: ' + sel[sel.selectedIndex].innerHTML);
+         let result = '';
+         let v = 0;
+         for(let x=0 ; x < AccessSwitch.length; x++) {
+           if (AccessSwitch[x].checked) {
+             v = 1;
+            } else {
+              v = 0;
+            }
+             if (x !=0) {
+              result += ',' + v;
+             } else {
+              result += v;
+             }  
+           }
+           console.log('Access Rights: ' + result);
+    });
+
   };
 
   const deleteSelected = () => {
@@ -290,7 +373,7 @@ $(document).ready(function() {
     }
   };
 
-  const FetchHandleErrors = function(response) {
+  const FetchHandleErrors = function (response) {
     if (!response.ok) {
       //throw Error(response.statusText);
       if (response.statusCode == 401) {
@@ -340,11 +423,11 @@ $(document).ready(function() {
         processData: false,
         contentType: false,
         timeout: 290000,
-        beforeSend: function(xhrObj) {
+        beforeSend: function (xhrObj) {
           xhrObj.setRequestHeader("Authorization", "Bearer " + Token);
           xhrObj.setRequestHeader("destPath", realpath);
         },
-        success: function(data) {
+        success: function (data) {
           console.log(fileName + "upload successful!\n" + data);
           showToast(fileName + " uploaded sucessfully", "success");
           $("#abort" + nFile).hide();
@@ -356,12 +439,12 @@ $(document).ready(function() {
               .addClass("disabled");
           }
         },
-        xhr: function() {
+        xhr: function () {
           aListHandler[nFile] = new XMLHttpRequest();
           let percentComplete = 0;
           aListHandler[nFile].upload.addEventListener(
             "progress",
-            function(evt) {
+            function (evt) {
               if (evt.lengthComputable) {
                 percentComplete = evt.loaded / evt.total;
                 percentComplete = parseInt(percentComplete * 100);
@@ -425,13 +508,13 @@ $(document).ready(function() {
       }
       $("#btnCancelAll").addClass("disabled");
     });
-    $("#upload-input").on("change", function() {
+    $("#upload-input").on("change", function () {
       var files = $(this).get(0).files;
       if (validateSize(this) == true) {
         handlerCounter = files.length;
-        files.length > 0
-          ? $("#sFiles").html(files.length + " archivos seleccionados.")
-          : $("#sFiles").html(files[0]);
+        files.length > 0 ?
+          $("#sFiles").html(files.length + " archivos seleccionados.") :
+          $("#sFiles").html(files[0]);
         console.log(files.length);
         $(".file-input").hide();
         if (files.length > 0 && files.length <= 5) {
@@ -463,14 +546,14 @@ $(document).ready(function() {
     headers.append("Authorization", "Bearer " + Token);
     headers.append("Content-Type", "application/json");
     fetch("/files/newfolder", {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        path: getRealPath(currentPath),
-        folderName: folderName
-      }),
-      timeout: 10000
-    })
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          path: getRealPath(currentPath),
+          folderName: folderName
+        }),
+        timeout: 10000
+      })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
@@ -535,14 +618,14 @@ $(document).ready(function() {
     for (x = 0; x < aF.length; x++) {
       console.log("Deleting file " + aF[x] + " ...");
       fetch("/files/delete", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          path: getRealPath(path),
-          fileName: aF[x]
-        }),
-        timeout: 720000
-      })
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            path: getRealPath(path),
+            fileName: aF[x]
+          }),
+          timeout: 720000
+        })
         .then(FetchHandleErrors)
         .then(r => r.json())
         .then(data => {
@@ -582,14 +665,14 @@ $(document).ready(function() {
     for (x = 0; x < aF.length; x++) {
       console.log("Deleting folder " + aF[x] + " ...");
       fetch("/files/delete", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          path: getRealPath(path),
-          fileName: aF[x]
-        }),
-        timeout: 720000
-      })
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            path: getRealPath(path),
+            fileName: aF[x]
+          }),
+          timeout: 720000
+        })
         .then(FetchHandleErrors)
         .then(r => r.json())
         .then(data => {
@@ -699,14 +782,14 @@ $(document).ready(function() {
       liNumber.style.display = "block";
       liFilename.innerHTML = fName;
       reqList[i].timeout = 36000;
-      reqList[i].ontimeout = function() {
+      reqList[i].ontimeout = function () {
         console.log(
           "** Timeout error ->File:" +
-            fName +
-            " " +
-            reqList[i].status +
-            " " +
-            reqList[i].statusText
+          fName +
+          " " +
+          reqList[i].status +
+          " " +
+          reqList[i].statusText
         );
         // handlerCount = handlerCount - 1
         progressBar.innerHTML = "Timeout Error";
@@ -717,28 +800,28 @@ $(document).ready(function() {
         progressBar.classList.add("blink");
         responseTimeout[i] = true;
       };
-      reqList[i].onprogress = function(evt) {
+      reqList[i].onprogress = function (evt) {
         if (evt.lengthComputable) {
           var percentComplete = parseInt((evt.loaded / evt.total) * 100);
           progressBar.style.width = percentComplete + "%";
           percentLabel.innerHTML = percentComplete + "%";
         }
       };
-      reqList[i].onerror = function() {
+      reqList[i].onerror = function () {
         console.log(
           "** An error occurred during the transaction ->File:" +
-            fName +
-            " " +
-            req.status +
-            " " +
-            req.statusText
+          fName +
+          " " +
+          req.status +
+          " " +
+          req.statusText
         );
         handlerCount = handlerCount - 1;
         percentLabel.innerHTML = "Error";
         percentLabel.style.color = "red";
         $("#abort" + i).hide();
       };
-      reqList[i].onloadend = function() {
+      reqList[i].onloadend = function () {
         handlerCount = handlerCount - 1;
         if (!responseTimeout[i]) {
           progressBar.style.width = "100%";
@@ -754,12 +837,12 @@ $(document).ready(function() {
         }
         console.log("File " + handlerCount + " downloaded");
       };
-      reqList[i].onloadstart = function() {
+      reqList[i].onloadstart = function () {
         handlerCount = handlerCount + 1;
         progressBar.style.width = "0";
         percentLabel.innerHTML = "0%";
       };
-      reqList[i].onload = function() {
+      reqList[i].onload = function () {
         if (reqList[i].readyState === 4 && reqList[i].status === 200) {
           var filename = "";
           var disposition = reqList[i].getResponseHeader("Content-Disposition");
@@ -799,7 +882,7 @@ $(document).ready(function() {
               // preloader.style.display = 'none'
             }
 
-            setTimeout(function() {
+            setTimeout(function () {
               URL.revokeObjectURL(downloadUrl);
             }, 100); // cleanup
           }
@@ -869,10 +952,10 @@ $(document).ready(function() {
     }
     console.log("realRootPath: " + realRootPath + " realpath:" + realpath);
     fetch("/files?path=" + encodeURI(realpath), {
-      method: "GET",
-      headers: headers,
-      timeout: 720000
-    })
+        method: "GET",
+        headers: headers,
+        timeout: 720000
+      })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
@@ -892,7 +975,7 @@ $(document).ready(function() {
     let v = document.querySelector("#selectAllFiles").checked;
     $(this).prop("checked", !$(this).is(":checked"));
     console.log($(this).is(":checked"));
-    allCkeckbox.forEach(function(element, i) {
+    allCkeckbox.forEach(function (element, i) {
       if (!allCkeckbox[i].disabled) {
         if (v === true) {
           $(element).trigger("click");
@@ -902,10 +985,10 @@ $(document).ready(function() {
     console.log(getCheckedFiles());
   };
 
-  const getCheckedFiles = function() {
+  const getCheckedFiles = function () {
     var checkedFiles = [];
     var allElements = document.querySelectorAll(".typeFile");
-    allElements.forEach(function(element, i) {
+    allElements.forEach(function (element, i) {
       console.log("element: ", element);
       console.log(
         "children: ",
@@ -922,8 +1005,8 @@ $(document).ready(function() {
   const getCheckedFolder = function getCheckedFolder() {
     var checkedFolders = [];
     var allElements = document.querySelectorAll(".dashboard-path");
-    allElements.forEach(function(v, i) {
-      v.children[0].childNodes.forEach(function(l, idx) {
+    allElements.forEach(function (v, i) {
+      v.children[0].childNodes.forEach(function (l, idx) {
         if (l.children[0].checked) {
           checkedFolders.push(currentPath + "/" + l.children[2].text);
           // c(currentPath + l.children[2].text)
@@ -984,9 +1067,9 @@ $(document).ready(function() {
       }
       console.log(
         "goBackFolder:lastFolder-> " +
-          lastFolder +
-          " goBackFolder:newPath->" +
-          newPath
+        lastFolder +
+        " goBackFolder:newPath->" +
+        newPath
       );
       changePath(newPath.trim());
     }
@@ -1229,7 +1312,10 @@ $(document).ready(function() {
         },
         success: data => {
           //console.log(JSON.parse(data))
-          let { status, message } = JSON.parse(data);
+          let {
+            status,
+            message
+          } = JSON.parse(data);
           console.log("status", status);
           if (status === "FAIL") {
             M.toast({
@@ -1336,7 +1422,7 @@ $(document).ready(function() {
     selectAll(e.target.htmlFor);
   });
 
-  $("a").on("click", function(e) {
+  $("a").on("click", function (e) {
     console.log(this.id);
     console.log($(this).hasClass("disabled"));
 
