@@ -182,10 +182,10 @@ $(document).ready(function () {
     let toast = document.querySelector('.toast');
     // types: info, success, err
 
-    toast.classList.remove('success'); 
+    toast.classList.remove('success');
     toast.classList.remove('info');
-    toast.classList.remove('err'); 
-    toast.classList.add(type);    
+    toast.classList.remove('err');
+    toast.classList.add(type);
     M.toast({
       html: msg
     });
@@ -238,51 +238,51 @@ $(document).ready(function () {
     return rPath;
   };
 
-  const changeAccessRights = (AccessSwitch,opt) =>{
-     for(let x=0; x < AccessSwitch.length ; x++) {
+  const changeAccessRights = (AccessSwitch, opt) => {
+    for (let x = 0; x < AccessSwitch.length; x++) {
       AccessSwitch[x].disabled = false;
-     }
-      switch (opt) {
-        case 'opt1':
-          AccessSwitch[0].checked = true;
-          AccessSwitch[1].checked = true;
-          AccessSwitch[2].checked = false;
-          AccessSwitch[3].checked = false;
-          AccessSwitch[4].checked = false;
-          AccessSwitch[5].checked = false;
-          AccessSwitch[2].disabled = true;
-          AccessSwitch[3].disabled = true;
-          AccessSwitch[4].disabled = true;
-          AccessSwitch[5].disabled = true;
-          break;
-        case 'opt2':
-          AccessSwitch[0].checked = true;
-          AccessSwitch[1].checked = true;
-          AccessSwitch[2].checked = true;
-          AccessSwitch[3].checked = true;
-          AccessSwitch[4].checked = true;
-          AccessSwitch[5].checked = true;
-          break;
-        case 'opt3':
-          AccessSwitch[0].checked = true;
-          AccessSwitch[1].checked = true;
-          AccessSwitch[2].checked = false;
-          AccessSwitch[2].disabled = true;
-          AccessSwitch[3].checked = false;
-          AccessSwitch[3].disabled = true;
-          AccessSwitch[4].checked = true;
-          AccessSwitch[5].checked = false;
-          AccessSwitch[5].disabled = true;
-          break;
-        case 'opt4':
-          AccessSwitch[0].checked = false;
-          AccessSwitch[1].checked = false;
-          AccessSwitch[2].checked = false;
-          AccessSwitch[3].checked = false;
-          AccessSwitch[4].checked = false;
-          AccessSwitch[5].checked = false;
-          break;
-      }      
+    }
+    switch (opt) {
+      case 'opt1':
+        AccessSwitch[0].checked = true;
+        AccessSwitch[1].checked = true;
+        AccessSwitch[2].checked = false;
+        AccessSwitch[3].checked = false;
+        AccessSwitch[4].checked = false;
+        AccessSwitch[5].checked = false;
+        AccessSwitch[2].disabled = true;
+        AccessSwitch[3].disabled = true;
+        AccessSwitch[4].disabled = true;
+        AccessSwitch[5].disabled = true;
+        break;
+      case 'opt2':
+        AccessSwitch[0].checked = true;
+        AccessSwitch[1].checked = true;
+        AccessSwitch[2].checked = true;
+        AccessSwitch[3].checked = true;
+        AccessSwitch[4].checked = true;
+        AccessSwitch[5].checked = true;
+        break;
+      case 'opt3':
+        AccessSwitch[0].checked = true;
+        AccessSwitch[1].checked = true;
+        AccessSwitch[2].checked = false;
+        AccessSwitch[2].disabled = true;
+        AccessSwitch[3].checked = false;
+        AccessSwitch[3].disabled = true;
+        AccessSwitch[4].checked = true;
+        AccessSwitch[5].checked = false;
+        AccessSwitch[5].disabled = true;
+        break;
+      case 'opt4':
+        AccessSwitch[0].checked = false;
+        AccessSwitch[1].checked = false;
+        AccessSwitch[2].checked = false;
+        AccessSwitch[3].checked = false;
+        AccessSwitch[4].checked = false;
+        AccessSwitch[5].checked = false;
+        break;
+    }
   };
 
   const showAddUserForm = () => {
@@ -304,39 +304,39 @@ $(document).ready(function () {
       }
     });
 
-    changeAccessRights(document.querySelectorAll('.AccessRightsSwitch'),'opt1');
+    changeAccessRights(document.querySelectorAll('.AccessRightsSwitch'), 'opt1');
 
-    sel.addEventListener('change',(e)=>{
+    sel.addEventListener('change', (e) => {
       let opt = e.target[e.target.selectedIndex].value;
       let AccessSwitch = document.querySelectorAll('.AccessRightsSwitch');
-      changeAccessRights(AccessSwitch,opt); 
+      changeAccessRights(AccessSwitch, opt);
     });
-    
-    document.querySelector('#btn-addUserAcept').addEventListener('click',(e)=>{
+
+    document.querySelector('#btn-addUserAcept').addEventListener('click', (e) => {
       e.preventDefault();
       let AccessSwitch = document.querySelectorAll('.AccessRightsSwitch')
-      console.log('User Name: '+document.querySelector('#addusername').value);
-      console.log('Company Name: '+document.querySelector('#companyName').value);
-      console.log('Password: '+ document.querySelector('#addpassword').value);
-      console.log('Repeat password: '+ document.querySelector('#repeataddpassword').value);
+      console.log('User Name: ' + document.querySelector('#addusername').value);
+      console.log('Company Name: ' + document.querySelector('#companyName').value);
+      console.log('Password: ' + document.querySelector('#addpassword').value);
+      console.log('Repeat password: ' + document.querySelector('#repeataddpassword').value);
       console.log('Root Path: ' + document.querySelector('#rootpath').value);
       console.log('Expirate Date: ' + document.querySelector('#expirationDate').value);
       console.log('Role: ' + sel[sel.selectedIndex].innerHTML);
-         let result = '';
-         let v = 0;
-         for(let x=0 ; x < AccessSwitch.length; x++) {
-           if (AccessSwitch[x].checked) {
-             v = 1;
-            } else {
-              v = 0;
-            }
-             if (x !=0) {
-              result += ',' + v;
-             } else {
-              result += v;
-             }  
-           }
-           console.log('Access Rights: ' + result);
+      let result = '';
+      let v = 0;
+      for (let x = 0; x < AccessSwitch.length; x++) {
+        if (AccessSwitch[x].checked) {
+          v = 1;
+        } else {
+          v = 0;
+        }
+        if (x != 0) {
+          result += ',' + v;
+        } else {
+          result += v;
+        }
+      }
+      console.log('Access Rights: ' + result);
     });
 
   };
