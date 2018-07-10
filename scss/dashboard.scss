@@ -1,3 +1,8 @@
+:root {
+  --snackbarCurrentTop: 30px;
+  --snackbarTop: 0;
+}
+
 /* fallback */
 
 @font-face {
@@ -210,7 +215,7 @@ table.highlight {
   }
 }
 
-.checkbox {
+.checkbox.filled-in {
   margin-left: 10px;
 }
 
@@ -536,23 +541,16 @@ table {
   margin: 0.82rem 0 0.656rem 0.9rem !important;
 }
 
-.toast {
-  margin-top:45px !important;
-  background: #3A4349;
-  color: #95c857;
-  border-radius: 5px !important;
-  font-size: 1em;
-}
 
-.toast.err {
+#snackbar.err {
   border: 3px solid red !important;
 }
 
-.toast.info {
+#snackbar.info {
   border: 3px solid blue !important;
 }
 
-.toast.success {
+#snackbar.success {
   border: 3px solid green !important;
 }
 
@@ -639,4 +637,46 @@ input {
   width: 60%;
   float: right;
   height: 2em;
+}
+
+#snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 20000;
+  left: 50%;
+  top: var(--snackbarCurrentTop);
+  font-size: 17px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: var(--snackbarTop); opacity: 0;} 
+  to {bottom: var(--snackbarCurrentTop); opacity: 1;}
+}
+
+@keyframes fadein {
+  from {top: var(--snackbarTop); opacity: 0;}
+  to {top: var(--snackbarCurrentTop); opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {top: var(--snackbarCurrentTop); opacity: 1;} 
+  to {top: var(--snackbarTop); opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {top: var(--snackbarCurrentTop); opacity: 1;}
+  to {top: var(--snackbarTop); opacity: 0;}
 }

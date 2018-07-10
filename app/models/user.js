@@ -2,16 +2,20 @@ const path = require('path')
 const config = require('../config/config.json');
 const dbPath = path.resolve(config.dbPath, config.dbName);
 const sqlite3 = require('sqlite3').verbose();
+const Base64 = require('js-base64').Base64;
 
 let UserModel = {};
 let db;
 
 let dbOpen = function () {
   console.log(dbPath);
+  console.log('db handler:',db);
   db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) {
+      return false;
       console.error(err.message);
     }
+    return true;
     console.log(`Connected to ${config.dbName} database.`);
   });
 };
@@ -117,14 +121,14 @@ UserModel.FindByName = function (userName, callback) {
     if (err) {
       console.error(err.message);
       dbClose();
-      callback(err.message, null);
+      callback({ status: 'FAIL',message: err.message, data: null });
     } else {
       if (row) {
         dbClose();
         callback(null, row);
       } else {
         dbClose();
-        callback(`Usuario ${userName} no encontrado`, null);
+        callback({ status: 'FAIL',message: `Usuario ${userName} no encontrado`, data: null });
       }
     }
   });
@@ -146,9 +150,9 @@ UserModel.ChangePasswd = function (userData, callback) {
     //dbClose();
     if(this.changes === 1 ) {
         console.log(`Row(s) updated: ${this.changes}`);
-        callback(null,{ msg: `Se ha cambiado la clave del usuario ${userData.userName}` });
+        callback({ status: 'OK',message: `Se ha cambiado la clave del usuario ${userData.userName}`, data: null });
     } else {
-       callback({ msg: `Usuario ${userData.userName} no encontrado` },null);
+        callback({ status: 'FAIL',message: `Usuario ${userData.userName} no encontrado`, data: null });
     }    
   });
 };
@@ -196,28 +200,30 @@ UserModel.All = function (callback) {
 
 UserModel.Add = function (userData, callback) {
   let response = {};
-  dbOpen();
+  if ( db == undefined ) dbOpen();
+  console.log('db handler: ',db);
   let stmt = db.prepare("SELECT * FROM Users WHERE UserName = ?");
-  console.log('PASSWD:', userData.password);
-  stmt.bind(userData.username);
+  console.log('PASSWD:', userData.userPassword);
+  stmt.bind(userData.userName);
   stmt.get(function (error, rows) {
-    //console.log(JSON.stringify(error)); return;
+    console.log('error: ',error);
     if (error) {
       dbClose();
       throw err;
     } else {
       if (rows) {
-        dbClose();
-        callback({ msg: `El usuario ${userData.username} ya existe` });
+        console.log('rows: ',rows);
+        //dbClose();
+        callback({ status: 'FAIL',msg: `El usuario ${userData.userName} ya existe`,data: null });
       } else {
-        stmt = db.prepare("INSERT INTO Users VALUES (?,?,?,?)");
-        stmt.bind(null, userData.username, userData.password, userData.userrole);
+        stmt = db.prepare("INSERT INTO Users VALUES (?,?,?,?,?,?,?,?)");
+        stmt.bind(null, userData.userName,  Base64.decode(userData.userPassword), userData.userRole, userData.companyName, userData.rootPath, userData.accessRights, userData.expirationDate);
         stmt.run(function (err, result) {
-          dbClose();
+          //dbClose();
           if (err) {
             throw err;
           } else {
-            callback({ msg: `Usuario ${userData.username} añadido` });
+            callback({ status: 'OK',message: `Usuario ${userData.userName} añadido`, data: null });
           }
         });
       }

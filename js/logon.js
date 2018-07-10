@@ -50,7 +50,7 @@ import Cookies from './vendor/js-cookie';
   }
 
   let showDashboard = function (data) {
-    console.log("hola");
+    console.log("data::showDashboard: ",data);
     Cookies.set('token', data.Token);
     Cookies.set('UserName', data.UserName);
     Cookies.set('UserRole', data.Role);
@@ -83,20 +83,17 @@ import Cookies from './vendor/js-cookie';
         addClass(waiting, 'active')
       },
       success: (data) => {
+        console.log(data);
         //console.log(JSON.parse(data))
-        let {
-          status,
-          message
-        } = JSON.parse(data)
-        console.log('status', status)
+        let dataJSON = JSON.parse(data)
+        console.log('status', dataJSON.status)
         if (status === 'FAIL') {
           M.toast({
-            html: message
+            html: dataJSON.message
           })
-          d.querySelector('#message').innerHTML = message
+          document.querySelector('#message').innerHTML = dataJSON.message
         } else {
-          showDashboard(message)
-          console.log(message)
+          showDashboard(dataJSON.data)
         }
       },
       complete: (xhr, status) => {

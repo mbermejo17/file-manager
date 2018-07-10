@@ -1,13 +1,11 @@
 "use sctrict";
 import "babel-polyfill";
 import ajax from "./vendor/ajax";
-import {
-  Base64
-} from "js-base64";
+import { Base64 } from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded',function() {
   const UserName = Cookies.get("UserName");
   const UserRole = Cookies.get("UserRole");
   const CompanyName = Cookies.get("CompanyName");
@@ -15,13 +13,12 @@ $(document).ready(function () {
   const Token = Cookies.get("token");
   const AccessString = Cookies.get("AccessString");
   const [
-    AllowNewFolder,
-    AllowRenameFolder,
-    AllowRenameFile,
-    AllowDeleteFolder,
-    AllowDeleteFile,
+    AllowDownload,
     AllowUpload,
-    AllowDownload
+    AllowDeleteFile,
+    AllowDeleteFolder,
+    AllowNewFolder,
+    AllowRename
   ] = AccessString.split(",");
   let RootPath = "/";
   let currentPath = RootPath;
@@ -29,12 +26,16 @@ $(document).ready(function () {
   let aSelectedFolders = [];
   let aFolders = [];
   let aFiles = [];
+  let AllowRenameFolder = AllowRename;
+  let AllowRenameFile = AllowRename;
+  let currentTopToast = 30;
+  let topToast = 0;
 
   let htmlUserFormTemplate = `
       <div id="AddUserModal">
           <h4 class="header2">New User</h4>
           <div class="row">
-              <form class="col s12 m12 l12" id="formLogon">
+              <form class="col s12 m12 l12" id="formAddUser">
                   <div class="row">
                       <div class="input-field col s6"><input id="addusername" type="text" /><label for="addusername">Name</label></div>
                       <div class="input-field col s6"><input id="companyName" type="text" /><label for="companyName">Company Name</label></div>
@@ -178,28 +179,56 @@ $(document).ready(function () {
     document.location.href = "/";
   };
 
-  const showToast = async function (msg, type) {
-    let toast = document.querySelector('.toast');
-    // types: info, success, err
 
-    toast.classList.remove('success');
-    toast.classList.remove('info');
-    toast.classList.remove('err');
-    toast.classList.add(type);
-    M.toast({
-      html: msg
-    });
-  };
+  const execFetch = async (uri, met, data) => {
+    const header = new Headers()
+    header.append('Content-Type', 'application/json');
+    header.append("Authorization", "Bearer " + Token);
+
+    const initData = {
+        method : met,
+        headers : header,
+        body : JSON.stringify(data)
+    };
+
+    const resp = await fetch(uri, initData);
+    const json = await resp.json();
+    return json;
+}
+
+  const showToast = (msg,type) => {
+      let newTopToast = 0;
+      let newCurrentTopToast = 0;
+      if( topToast == 0) {
+          newTopToast = topToast;
+          newCurrentTopToast = currentTopToast;
+      } else {
+        newTopToast = topToast + 5;
+        newCurrentTopToast = currentTopToast + 35;
+        topToast = newTopToast;
+        currentTopToast = newCurrentTopToast;
+      }
+
+      let x = document.getElementById("snackbar");
+      x.innerHTML = msg;
+      x.className = "show";
+      x.classList.remove(type);
+      x.classList.add(type);
+      x.style.setProperty('--snackbarTop',newTopToast + 'px');
+      x.style.setProperty('--snackbarCurrentTop',newCurrentTopToast + 'px');
+      setTimeout(function(){ 
+        x.className = x.className.replace("show", ""); 
+        if(topToast !== 0 && topToast > 5) {
+          topToast = topToast -5
+        }
+        if(currentTopToast !== 30 && currentTopToast >35) {
+          currentTopToast = currentTopToast -35;
+        }
+      }, 3000);
+}
 
   const validateSize = f => {
-    let FileSize = f.files[0].size / 1024 / 1024; // in MB
-    console.log(file);
-    console.log(FileSize);
-    if (FileSize > 700) {
-      return false;
-    } else {
       return true;
-    }
   };
 
   const serializeObject = dataObject => {
@@ -243,7 +272,7 @@ $(document).ready(function () {
       AccessSwitch[x].disabled = false;
     }
     switch (opt) {
-      case 'opt1':
+      case "opt1":
         AccessSwitch[0].checked = true;
         AccessSwitch[1].checked = true;
         AccessSwitch[2].checked = false;
@@ -255,7 +284,7 @@ $(document).ready(function () {
         AccessSwitch[4].disabled = true;
         AccessSwitch[5].disabled = true;
         break;
-      case 'opt2':
+      case "opt2":
         AccessSwitch[0].checked = true;
         AccessSwitch[1].checked = true;
         AccessSwitch[2].checked = true;
@@ -263,7 +292,7 @@ $(document).ready(function () {
         AccessSwitch[4].checked = true;
         AccessSwitch[5].checked = true;
         break;
-      case 'opt3':
+      case "opt3":
         AccessSwitch[0].checked = true;
         AccessSwitch[1].checked = true;
         AccessSwitch[2].checked = false;
@@ -274,7 +303,7 @@ $(document).ready(function () {
         AccessSwitch[5].checked = false;
         AccessSwitch[5].disabled = true;
         break;
-      case 'opt4':
+      case "opt4":
         AccessSwitch[0].checked = false;
         AccessSwitch[1].checked = false;
         AccessSwitch[2].checked = false;
@@ -289,14 +318,13 @@ $(document).ready(function () {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let containerOverlay = document.querySelector(".container-overlay");
 
-
     AddUserModalContent.innerHTML = htmlUserFormTemplate;
     containerOverlay.style.display = "block";
     //AddUserModalContent.style.display = "block";
 
     let sel = document.querySelector("select");
 
-    $(".AccessRightsSwitch").change(function () {
+    $(".AccessRightsSwitch").change(function() {
       if ($(this).is(":checked")) {
         console.log("Is checked");
       } else {
@@ -304,26 +332,35 @@ $(document).ready(function () {
       }
     });
 
-    changeAccessRights(document.querySelectorAll('.AccessRightsSwitch'), 'opt1');
+    changeAccessRights(
+      document.querySelectorAll(".AccessRightsSwitch"),
+      "opt1"
+    );
 
-    sel.addEventListener('change', (e) => {
+    sel.addEventListener("change", e => {
       let opt = e.target[e.target.selectedIndex].value;
-      let AccessSwitch = document.querySelectorAll('.AccessRightsSwitch');
+      let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
       changeAccessRights(AccessSwitch, opt);
     });
 
-    document.querySelector('#btn-addUserAcept').addEventListener('click', (e) => {
+
+    document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
       e.preventDefault();
-      let AccessSwitch = document.querySelectorAll('.AccessRightsSwitch')
-      console.log('User Name: ' + document.querySelector('#addusername').value);
-      console.log('Company Name: ' + document.querySelector('#companyName').value);
-      console.log('Password: ' + document.querySelector('#addpassword').value);
-      console.log('Repeat password: ' + document.querySelector('#repeataddpassword').value);
-      console.log('Root Path: ' + document.querySelector('#rootpath').value);
-      console.log('Expirate Date: ' + document.querySelector('#expirationDate').value);
-      console.log('Role: ' + sel[sel.selectedIndex].innerHTML);
-      let result = '';
+      containerOverlay.style.display = "none";
+    }); 
+
+    document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
+      e.preventDefault();
+      let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
+      let userName = document.querySelector("#addusername").value;
+      let companyName = document.querySelector("#companyName").value;
+      let userPassword = document.querySelector("#addpassword").value;
+      let userRole = sel[sel.selectedIndex].innerHTML;
+      let userRootPath = document.querySelector("#rootpath").value;
+      let expirationDate = document.querySelector("#expirationDate").value;
+      let result ='';
       let v = 0;
+
       for (let x = 0; x < AccessSwitch.length; x++) {
         if (AccessSwitch[x].checked) {
           v = 1;
@@ -331,14 +368,43 @@ $(document).ready(function () {
           v = 0;
         }
         if (x != 0) {
-          result += ',' + v;
+          result += "," + v;
         } else {
           result += v;
         }
       }
-      console.log('Access Rights: ' + result);
+      console.log("User Name: " + userName);
+      console.log(
+        "Company Name: " + companyName
+      );
+      console.log("Password: " + userPassword);
+      console.log("Root Path: " + userRootPath);
+      console.log(
+        "Expirate Date: " + expirationDate
+      );
+      console.log("Role: " + userRole);
+      console.log("Access Rights: " + result);
+      let data = {
+        userName: userName,
+        userPassword: Base64.encode(md5(userPassword)),
+        companyName: companyName,
+        userRole: userRole,
+        expirationDate: expirationDate,
+        rootPath: userRootPath,
+        accessRights: result
+      }
+      execFetch('/adduser','POST',data)
+      .then((d)=>{
+        console.log(d);
+        showToast('Usuario '+ data.userName +' añadido.','success');
+        document.querySelector('#formAddUser').reset();
+        changeAccessRights(document.querySelectorAll(".AccessRightsSwitch"),"opt1");  
+      })
+      .catch((e)=>{
+        showToast('Error al añadir usuario '+ data.userName +'.<br>Err:' + e,'err');
+        console.log(e);
+      });
     });
-
   };
 
   const deleteSelected = () => {
@@ -373,7 +439,7 @@ $(document).ready(function () {
     }
   };
 
-  const FetchHandleErrors = function (response) {
+  const FetchHandleErrors = function(response) {
     if (!response.ok) {
       //throw Error(response.statusText);
       if (response.statusCode == 401) {
@@ -423,11 +489,11 @@ $(document).ready(function () {
         processData: false,
         contentType: false,
         timeout: 290000,
-        beforeSend: function (xhrObj) {
+        beforeSend: function(xhrObj) {
           xhrObj.setRequestHeader("Authorization", "Bearer " + Token);
           xhrObj.setRequestHeader("destPath", realpath);
         },
-        success: function (data) {
+        success: function(data) {
           console.log(fileName + "upload successful!\n" + data);
           showToast(fileName + " uploaded sucessfully", "success");
           $("#abort" + nFile).hide();
@@ -439,12 +505,12 @@ $(document).ready(function () {
               .addClass("disabled");
           }
         },
-        xhr: function () {
+        xhr: function() {
           aListHandler[nFile] = new XMLHttpRequest();
           let percentComplete = 0;
           aListHandler[nFile].upload.addEventListener(
             "progress",
-            function (evt) {
+            function(evt) {
               if (evt.lengthComputable) {
                 percentComplete = evt.loaded / evt.total;
                 percentComplete = parseInt(percentComplete * 100);
@@ -508,13 +574,13 @@ $(document).ready(function () {
       }
       $("#btnCancelAll").addClass("disabled");
     });
-    $("#upload-input").on("change", function () {
+    $("#upload-input").on("change", function() {
       var files = $(this).get(0).files;
       if (validateSize(this) == true) {
         handlerCounter = files.length;
-        files.length > 0 ?
-          $("#sFiles").html(files.length + " archivos seleccionados.") :
-          $("#sFiles").html(files[0]);
+        files.length > 0
+          ? $("#sFiles").html(files.length + " archivos seleccionados.")
+          : $("#sFiles").html(files[0]);
         console.log(files.length);
         $(".file-input").hide();
         if (files.length > 0 && files.length <= 5) {
@@ -531,9 +597,7 @@ $(document).ready(function () {
           }
           $("#btnCloseUpload").removeClass("disabled");
         } else {
-          M.toast({
-            html: "No se pueden descargar más de 5 archivos a la vez"
-          });
+          showToast('No se pueden descargar más de 5 archivos a la vez','err');
         }
       } else {
         showToast("Error: maxFileSize 700MB exceeded", "err");
@@ -546,14 +610,14 @@ $(document).ready(function () {
     headers.append("Authorization", "Bearer " + Token);
     headers.append("Content-Type", "application/json");
     fetch("/files/newfolder", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          path: getRealPath(currentPath),
-          folderName: folderName
-        }),
-        timeout: 10000
-      })
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        path: getRealPath(currentPath),
+        folderName: folderName
+      }),
+      timeout: 10000
+    })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
@@ -562,9 +626,7 @@ $(document).ready(function () {
           $("#modal").hide();
           $("#lean-overlay").hide();
           $("#refresh").trigger("click");
-          M.toast({
-            html: "Creada nueva carpeta " + data.data.folderName
-          });
+          showToast('Creada nueva carpeta '+ data.data.folderName,'success');
         }
       })
       .catch(err => {
@@ -618,14 +680,14 @@ $(document).ready(function () {
     for (x = 0; x < aF.length; x++) {
       console.log("Deleting file " + aF[x] + " ...");
       fetch("/files/delete", {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify({
-            path: getRealPath(path),
-            fileName: aF[x]
-          }),
-          timeout: 720000
-        })
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          path: getRealPath(path),
+          fileName: aF[x]
+        }),
+        timeout: 720000
+      })
         .then(FetchHandleErrors)
         .then(r => r.json())
         .then(data => {
@@ -635,9 +697,7 @@ $(document).ready(function () {
             $(".toast")
               .removeClass("success")
               .addClass("success");
-            M.toast({
-              html: "Archivo " + data.data.fileName + " borrado"
-            });
+            showToast("Archivo " + data.data.fileName + " borrado",'success');  
             $("#refresh").trigger("click");
           }
         })
@@ -646,9 +706,7 @@ $(document).ready(function () {
           $(".toast")
             .removeClass("err")
             .addClass("err");
-          M.toast({
-            html: err
-          });
+          showToast(err,'err');  
         });
     }
     $("#waiting").removeClass("active");
@@ -665,14 +723,14 @@ $(document).ready(function () {
     for (x = 0; x < aF.length; x++) {
       console.log("Deleting folder " + aF[x] + " ...");
       fetch("/files/delete", {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify({
-            path: getRealPath(path),
-            fileName: aF[x]
-          }),
-          timeout: 720000
-        })
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          path: getRealPath(path),
+          fileName: aF[x]
+        }),
+        timeout: 720000
+      })
         .then(FetchHandleErrors)
         .then(r => r.json())
         .then(data => {
@@ -681,9 +739,7 @@ $(document).ready(function () {
             $(".toast")
               .removeClass("success")
               .addClass("success");
-            M.toast({
-              html: "Carpeta " + data.data.fileName + " borrada"
-            });
+            showToast("Carpeta " + data.data.fileName + " borrada",'success');  
             aSelectedFolders.shift();
           }
         })
@@ -782,14 +838,14 @@ $(document).ready(function () {
       liNumber.style.display = "block";
       liFilename.innerHTML = fName;
       reqList[i].timeout = 36000;
-      reqList[i].ontimeout = function () {
+      reqList[i].ontimeout = function() {
         console.log(
           "** Timeout error ->File:" +
-          fName +
-          " " +
-          reqList[i].status +
-          " " +
-          reqList[i].statusText
+            fName +
+            " " +
+            reqList[i].status +
+            " " +
+            reqList[i].statusText
         );
         // handlerCount = handlerCount - 1
         progressBar.innerHTML = "Timeout Error";
@@ -800,28 +856,28 @@ $(document).ready(function () {
         progressBar.classList.add("blink");
         responseTimeout[i] = true;
       };
-      reqList[i].onprogress = function (evt) {
+      reqList[i].onprogress = function(evt) {
         if (evt.lengthComputable) {
           var percentComplete = parseInt((evt.loaded / evt.total) * 100);
           progressBar.style.width = percentComplete + "%";
           percentLabel.innerHTML = percentComplete + "%";
         }
       };
-      reqList[i].onerror = function () {
+      reqList[i].onerror = function() {
         console.log(
           "** An error occurred during the transaction ->File:" +
-          fName +
-          " " +
-          req.status +
-          " " +
-          req.statusText
+            fName +
+            " " +
+            req.status +
+            " " +
+            req.statusText
         );
         handlerCount = handlerCount - 1;
         percentLabel.innerHTML = "Error";
         percentLabel.style.color = "red";
         $("#abort" + i).hide();
       };
-      reqList[i].onloadend = function () {
+      reqList[i].onloadend = function() {
         handlerCount = handlerCount - 1;
         if (!responseTimeout[i]) {
           progressBar.style.width = "100%";
@@ -837,12 +893,12 @@ $(document).ready(function () {
         }
         console.log("File " + handlerCount + " downloaded");
       };
-      reqList[i].onloadstart = function () {
+      reqList[i].onloadstart = function() {
         handlerCount = handlerCount + 1;
         progressBar.style.width = "0";
         percentLabel.innerHTML = "0%";
       };
-      reqList[i].onload = function () {
+      reqList[i].onload = function() {
         if (reqList[i].readyState === 4 && reqList[i].status === 200) {
           var filename = "";
           var disposition = reqList[i].getResponseHeader("Content-Disposition");
@@ -882,7 +938,7 @@ $(document).ready(function () {
               // preloader.style.display = 'none'
             }
 
-            setTimeout(function () {
+            setTimeout(function() {
               URL.revokeObjectURL(downloadUrl);
             }, 100); // cleanup
           }
@@ -952,10 +1008,10 @@ $(document).ready(function () {
     }
     console.log("realRootPath: " + realRootPath + " realpath:" + realpath);
     fetch("/files?path=" + encodeURI(realpath), {
-        method: "GET",
-        headers: headers,
-        timeout: 720000
-      })
+      method: "GET",
+      headers: headers,
+      timeout: 720000
+    })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
@@ -975,7 +1031,7 @@ $(document).ready(function () {
     let v = document.querySelector("#selectAllFiles").checked;
     $(this).prop("checked", !$(this).is(":checked"));
     console.log($(this).is(":checked"));
-    allCkeckbox.forEach(function (element, i) {
+    allCkeckbox.forEach(function(element, i) {
       if (!allCkeckbox[i].disabled) {
         if (v === true) {
           $(element).trigger("click");
@@ -985,10 +1041,10 @@ $(document).ready(function () {
     console.log(getCheckedFiles());
   };
 
-  const getCheckedFiles = function () {
+  const getCheckedFiles = function() {
     var checkedFiles = [];
     var allElements = document.querySelectorAll(".typeFile");
-    allElements.forEach(function (element, i) {
+    allElements.forEach(function(element, i) {
       console.log("element: ", element);
       console.log(
         "children: ",
@@ -1005,8 +1061,8 @@ $(document).ready(function () {
   const getCheckedFolder = function getCheckedFolder() {
     var checkedFolders = [];
     var allElements = document.querySelectorAll(".dashboard-path");
-    allElements.forEach(function (v, i) {
-      v.children[0].childNodes.forEach(function (l, idx) {
+    allElements.forEach(function(v, i) {
+      v.children[0].childNodes.forEach(function(l, idx) {
         if (l.children[0].checked) {
           checkedFolders.push(currentPath + "/" + l.children[2].text);
           // c(currentPath + l.children[2].text)
@@ -1067,9 +1123,9 @@ $(document).ready(function () {
       }
       console.log(
         "goBackFolder:lastFolder-> " +
-        lastFolder +
-        " goBackFolder:newPath->" +
-        newPath
+          lastFolder +
+          " goBackFolder:newPath->" +
+          newPath
       );
       changePath(newPath.trim());
     }
@@ -1312,20 +1368,13 @@ $(document).ready(function () {
         },
         success: data => {
           //console.log(JSON.parse(data))
-          let {
-            status,
-            message
-          } = JSON.parse(data);
+          let { status, message } = JSON.parse(data);
           console.log("status", status);
           if (status === "FAIL") {
-            M.toast({
-              html: message
-            });
+            showToast(message,'err');
             d.querySelector("#message").innerHTML = message;
           } else {
-            M.toast({
-              html: message
-            });
+            showToast(message,'success');
             console.log(message);
           }
           $("#modal").hide();
@@ -1337,9 +1386,7 @@ $(document).ready(function () {
           $("#lean-overlay").hide();
         },
         error: (xhr, err) => {
-          M.toast({
-            html: "Wrong password"
-          });
+          showToast('Wrong password','err');
           if (err === "timeout") {
             console.log("Timeout Error");
           } else {
@@ -1360,9 +1407,10 @@ $(document).ready(function () {
 
   let refreshBarMenu = () => {
     if (AllowNewFolder === "1") {
-      $("#NewFolder").removeClass("disabled");
+      $("#newFolder").removeClass("disabled");
     } else {
-      $("#NewFolder").addClass("disabled");
+      $("#newFolder").removeClass("disabled");
+      $("#newFolder").addClass("disabled");
     }
     if (AllowDeleteFolder === "1" && AllowDeleteFile === "1") {
       $("#delete").removeClass("disabled");
@@ -1422,7 +1470,7 @@ $(document).ready(function () {
     selectAll(e.target.htmlFor);
   });
 
-  $("a").on("click", function (e) {
+  $("a").on("click", function(e) {
     console.log(this.id);
     console.log($(this).hasClass("disabled"));
 
@@ -1483,23 +1531,17 @@ $(document).ready(function () {
         case "download":
           if (aSelectedFiles.length > 0) {
             if (aSelectedFiles.length > 5) {
-              M.toast({
-                html: "No se pueden descargar más de 5 archivos a la vez"
-              });
+              showToast('No se pueden descargar más de 5 archivos a la vez','err');
               break;
             }
             download(aSelectedFiles, "File");
           } else {
-            M.toast({
-              html: "No se han seleccionado archivos para descargar"
-            });
+            showToast('No se han seleccionado archivos para descargar','err');
           }
           break;
       }
     } else {
-      M.toast({
-        html: "Opcion no permitida"
-      });
+      showToast('Opcion no permitida','err');
     }
   });
   $("#usertrigger")
