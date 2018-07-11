@@ -14,7 +14,6 @@ import Cookies from './vendor/js-cookie';
   const main = d.querySelector('#main')
   const loginbutton = d.querySelector('#login-button')
 
-
   const hasClass = (el, className) => {
     if (el.classList)
       return el.classList.contains(className)
@@ -114,4 +113,26 @@ import Cookies from './vendor/js-cookie';
   }
   loader.style.display = 'none'
   loginbutton.addEventListener('click', submit)
+  document.getElementById("password-field").addEventListener('click',(e)=> {
+    let cName = e.className;
+    if(cName.indexOf("fa-eye") >-1) {
+      e.removeClass("fa-eye");
+    } else {
+      e.addClass("fa-eye");
+    }
+    if(cName.indexOf("fa-eye-slash") >-1) {
+      e.removeClass("fa-eye-slash");
+    }else {
+      e.addClass("fa-eye-slash");
+    }
+   
+    var input =  d.querySelector((e.getAttribute("toggle")));
+    console.log(input);
+    if (input.attr("type") == "password") {
+      input.attr("type", "text");
+    } else {
+      input.attr("type", "password");
+    }
+  });
+  
 })(console.log, document)

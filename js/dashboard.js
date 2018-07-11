@@ -5,7 +5,7 @@ import { Base64 } from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
 
-document.addEventListener('DOMContentLoaded',function() {
+document.addEventListener("DOMContentLoaded", function() {
   const UserName = Cookies.get("UserName");
   const UserRole = Cookies.get("UserRole");
   const CompanyName = Cookies.get("CompanyName");
@@ -179,56 +179,55 @@ document.addEventListener('DOMContentLoaded',function() {
     document.location.href = "/";
   };
 
-
   const execFetch = async (uri, met, data) => {
-    const header = new Headers()
-    header.append('Content-Type', 'application/json');
+    const header = new Headers();
+    header.append("Content-Type", "application/json");
     header.append("Authorization", "Bearer " + Token);
 
     const initData = {
-        method : met,
-        headers : header,
-        body : JSON.stringify(data)
+      method: met,
+      headers: header,
+      body: JSON.stringify(data)
     };
 
     const resp = await fetch(uri, initData);
     const json = await resp.json();
     return json;
-}
+  };
 
-  const showToast = (msg,type) => {
-      let newTopToast = 0;
-      let newCurrentTopToast = 0;
-      if( topToast == 0) {
-          newTopToast = topToast;
-          newCurrentTopToast = currentTopToast;
-      } else {
-        newTopToast = topToast + 5;
-        newCurrentTopToast = currentTopToast + 35;
-        topToast = newTopToast;
-        currentTopToast = newCurrentTopToast;
+  const showToast = (msg, type) => {
+    let newTopToast = 0;
+    let newCurrentTopToast = 0;
+    if (topToast == 0) {
+      newTopToast = topToast;
+      newCurrentTopToast = currentTopToast;
+    } else {
+      newTopToast = topToast + 5;
+      newCurrentTopToast = currentTopToast + 35;
+      topToast = newTopToast;
+      currentTopToast = newCurrentTopToast;
+    }
+
+    let x = document.getElementById("snackbar");
+    x.innerHTML = msg;
+    x.className = "show";
+    x.classList.remove(type);
+    x.classList.add(type);
+    x.style.setProperty("--snackbarTop", newTopToast + "px");
+    x.style.setProperty("--snackbarCurrentTop", newCurrentTopToast + "px");
+    setTimeout(function() {
+      x.className = x.className.replace("show", "");
+      if (topToast !== 0 && topToast > 5) {
+        topToast = topToast - 5;
       }
-
-      let x = document.getElementById("snackbar");
-      x.innerHTML = msg;
-      x.className = "show";
-      x.classList.remove(type);
-      x.classList.add(type);
-      x.style.setProperty('--snackbarTop',newTopToast + 'px');
-      x.style.setProperty('--snackbarCurrentTop',newCurrentTopToast + 'px');
-      setTimeout(function(){ 
-        x.className = x.className.replace("show", ""); 
-        if(topToast !== 0 && topToast > 5) {
-          topToast = topToast -5
-        }
-        if(currentTopToast !== 30 && currentTopToast >35) {
-          currentTopToast = currentTopToast -35;
-        }
-      }, 3000);
-}
+      if (currentTopToast !== 30 && currentTopToast > 35) {
+        currentTopToast = currentTopToast - 35;
+      }
+    }, 3000);
+  };
 
   const validateSize = f => {
-      return true;
+    return true;
   };
 
   const serializeObject = dataObject => {
@@ -255,15 +254,18 @@ document.addEventListener('DOMContentLoaded',function() {
 
   const getRealPath = p => {
     let rPath = "";
-    if (p == "/" && realRootPath == "/") {
+    console.log('getRealPath:p ',p);
+    console.log('getRealPath:realRootPath ',realRootPath);
+    if (p == "/" && (realRootPath === "/" || realRootPath.trim() === "") ) {
       rPath = p;
     } else {
       if (p == "/") {
-        rPath = realRootPath;
+        rPath = "/" + realRootPath;
       } else {
-        rPath = realRootPath + "/" + p;
+        rPath =  "/" + realRootPath + p;
       }
     }
+    console.log('getRealPath:rPath ',rPath);
     return rPath;
   };
 
@@ -343,11 +345,12 @@ document.addEventListener('DOMContentLoaded',function() {
       changeAccessRights(AccessSwitch, opt);
     });
 
-
-    document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
-      e.preventDefault();
-      containerOverlay.style.display = "none";
-    }); 
+    document
+      .querySelector("#btn-addUserCancel")
+      .addEventListener("click", e => {
+        e.preventDefault();
+        containerOverlay.style.display = "none";
+      });
 
     document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
       e.preventDefault();
@@ -358,7 +361,7 @@ document.addEventListener('DOMContentLoaded',function() {
       let userRole = sel[sel.selectedIndex].innerHTML;
       let userRootPath = document.querySelector("#rootpath").value;
       let expirationDate = document.querySelector("#expirationDate").value;
-      let result ='';
+      let result = "";
       let v = 0;
 
       for (let x = 0; x < AccessSwitch.length; x++) {
@@ -374,14 +377,10 @@ document.addEventListener('DOMContentLoaded',function() {
         }
       }
       console.log("User Name: " + userName);
-      console.log(
-        "Company Name: " + companyName
-      );
+      console.log("Company Name: " + companyName);
       console.log("Password: " + userPassword);
       console.log("Root Path: " + userRootPath);
-      console.log(
-        "Expirate Date: " + expirationDate
-      );
+      console.log("Expirate Date: " + expirationDate);
       console.log("Role: " + userRole);
       console.log("Access Rights: " + result);
       let data = {
@@ -392,51 +391,60 @@ document.addEventListener('DOMContentLoaded',function() {
         expirationDate: expirationDate,
         rootPath: userRootPath,
         accessRights: result
-      }
-      execFetch('/adduser','POST',data)
-      .then((d)=>{
-        console.log(d);
-        showToast('Usuario '+ data.userName +' añadido.','success');
-        document.querySelector('#formAddUser').reset();
-        changeAccessRights(document.querySelectorAll(".AccessRightsSwitch"),"opt1");  
-      })
-      .catch((e)=>{
-        showToast('Error al añadir usuario '+ data.userName +'.<br>Err:' + e,'err');
-        console.log(e);
-      });
+      };
+      execFetch("/adduser", "POST", data)
+        .then(d => {
+          console.log(d);
+          showToast("Usuario " + data.userName + " añadido.", "success");
+          document.querySelector("#formAddUser").reset();
+          changeAccessRights(
+            document.querySelectorAll(".AccessRightsSwitch"),
+            "opt1"
+          );
+        })
+        .catch(e => {
+          showToast(
+            "Error al añadir usuario " + data.userName + ".<br>Err:" + e,
+            "err"
+          );
+          console.log(e);
+        });
     });
   };
 
   const deleteSelected = () => {
+    console.log("aSelectedFolders: ", aSelectedFolders.length);
     if (aSelectedFolders.length > 0) {
-      showDialogYesNo("Delete foldes", "Delete selected folders?", result => {
-        if (result == "YES") {
-          $.when(deleteFolder(currentPath)).then(() => {
-            if (aSelectedFiles.length > 0) {
-              showDialogYesNo(
-                "Delete Files",
-                "Delete selected files?",
-                result => {
-                  console.log("yesNo", result);
-                  if (result == "YES") deleteFile(currentPath);
-                }
-              );
-            }
-            $("#refresh").trigger("click");
+      showDialogYesNo("Delete foldes", "Delete selected folders?", (y)=>{
+        $.when(deleteFolder(currentPath))
+        .then((result) =>{
+          if (aSelectedFiles.length > 0) {
+          showDialogYesNo("Delete Files","Delete selected files?",(y)=>{
+            deleteFile(currentPath);
+          },(n)=>{
+            console.log('Delete Files Canceled');
           });
         }
+        });
+      },(n)=>{
+        console.log('Delete Folder Canceled');
+        if (aSelectedFiles.length > 0) {
+        showDialogYesNo("Delete Files","Delete selected files?",(y)=>{
+          deleteFile(currentPath);
+        },(n)=>{
+          console.log('Delete Files Canceled');
+        });
+      }
       });
     } else {
       if (aSelectedFiles.length > 0) {
-        showDialogYesNo("Delete Files", "Delete selected files?", result => {
-          console.log("yesNo", result);
-          if (result == "YES")
-            deleteFile(currentPath, result => {
-              return;
-            });
-        });
-      }
+      showDialogYesNo("Delete Files","Delete selected files?",(y)=>{
+        deleteFile(currentPath);
+      },(n)=>{
+        console.log('Delete Files Canceled');
+      });
     }
+    } 
   };
 
   const FetchHandleErrors = function(response) {
@@ -597,7 +605,7 @@ document.addEventListener('DOMContentLoaded',function() {
           }
           $("#btnCloseUpload").removeClass("disabled");
         } else {
-          showToast('No se pueden descargar más de 5 archivos a la vez','err');
+          showToast("No se pueden descargar más de 5 archivos a la vez", "err");
         }
       } else {
         showToast("Error: maxFileSize 700MB exceeded", "err");
@@ -626,7 +634,7 @@ document.addEventListener('DOMContentLoaded',function() {
           $("#modal").hide();
           $("#lean-overlay").hide();
           $("#refresh").trigger("click");
-          showToast('Creada nueva carpeta '+ data.data.folderName,'success');
+          showToast("Creada nueva carpeta " + data.data.folderName, "success");
         }
       })
       .catch(err => {
@@ -634,9 +642,10 @@ document.addEventListener('DOMContentLoaded',function() {
       });
   };
 
-  const showDialogYesNo = (title, content, cb) => {
+  const showDialogYesNo =  (title, content, yesCb, noCb) => {
     let w = 32;
     let h = 440;
+    let result= null;
     let htmlContent = `<div id="modal-header">
                             <h5>${title}</h5>
                             <a class="modal_close" id="logoutModalClose" href="#hola"></a>
@@ -659,13 +668,13 @@ document.addEventListener('DOMContentLoaded',function() {
       e.preventDefault();
       $("#modal").hide();
       $("#lean-overlay").hide();
-      return cb("YES");
+      yesCb("YES");
     });
     $("#btnNO").on("click", e => {
       e.preventDefault();
       $("#modal").hide();
       $("#lean-overlay").hide();
-      return cb("NO");
+      noCb("NO");
     });
   };
 
@@ -697,7 +706,7 @@ document.addEventListener('DOMContentLoaded',function() {
             $(".toast")
               .removeClass("success")
               .addClass("success");
-            showToast("Archivo " + data.data.fileName + " borrado",'success');  
+            showToast("Archivo " + data.data.fileName + " borrado", "success");
             $("#refresh").trigger("click");
           }
         })
@@ -706,7 +715,7 @@ document.addEventListener('DOMContentLoaded',function() {
           $(".toast")
             .removeClass("err")
             .addClass("err");
-          showToast(err,'err');  
+          showToast(err, "err");
         });
     }
     $("#waiting").removeClass("active");
@@ -739,7 +748,7 @@ document.addEventListener('DOMContentLoaded',function() {
             $(".toast")
               .removeClass("success")
               .addClass("success");
-            showToast("Carpeta " + data.data.fileName + " borrada",'success');  
+            showToast("Carpeta " + data.data.fileName + " borrada", "success");
             aSelectedFolders.shift();
           }
         })
@@ -996,16 +1005,8 @@ document.addEventListener('DOMContentLoaded',function() {
 
     const headers = new Headers();
     headers.append("Authorization", "Bearer " + Token);
-    let realpath = "";
-    if (realRootPath !== "/") {
-      realpath = "/" + realRootPath + cPath;
-    } else {
-      if (cPath == "/") {
-        realpath = cPath;
-      } else {
-        realpath = realRootPath + cPath;
-      }
-    }
+    let realpath = getRealPath(cPath);
+   
     console.log("realRootPath: " + realRootPath + " realpath:" + realpath);
     fetch("/files?path=" + encodeURI(realpath), {
       method: "GET",
@@ -1082,10 +1083,12 @@ document.addEventListener('DOMContentLoaded',function() {
               <td><i class="fas fa-folder"></i><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>
               <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`;
     aFol.forEach((val, idx, array) => {
-      newHtmlContent += `<tr><td><input class="filled-in checkFolder check" id="${
+      newHtmlContent += `<tr><td><div class="md-checkbox"><input class="checkFolder check" id="${
         val.name
       }" type="checkbox">
-              <label class="checkbox left" for="${val.name}"></label></td>`;
+              <label class="checkbox left" for="${
+                val.name
+              }"></label></div></td>`;
       newHtmlContent += `<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">${
         val.name
       }</a></td>`;
@@ -1096,10 +1099,10 @@ document.addEventListener('DOMContentLoaded',function() {
 
     aFil.forEach((val, idx, array) => {
       let fileSize = parseInt(val.size / 1024);
-      newHtmlContent += `<tr><td><input class="filled-in checkFile check" id="${
+      newHtmlContent += `<tr><td><div class="md-checkbox"><input class="checkFile check" id="${
         val.name
       }" type="checkbox">
-            <label class="checkbox left" for="${val.name}"></label></td>`;
+            <label class="checkbox left" for="${val.name}"></label></div></td>`;
       newHtmlContent += `<td><i class="far fa-file"></i><span class="typeFile">${
         val.name
       }</span></td>`;
@@ -1371,10 +1374,10 @@ document.addEventListener('DOMContentLoaded',function() {
           let { status, message } = JSON.parse(data);
           console.log("status", status);
           if (status === "FAIL") {
-            showToast(message,'err');
+            showToast(message, "err");
             d.querySelector("#message").innerHTML = message;
           } else {
-            showToast(message,'success');
+            showToast(message, "success");
             console.log(message);
           }
           $("#modal").hide();
@@ -1386,7 +1389,7 @@ document.addEventListener('DOMContentLoaded',function() {
           $("#lean-overlay").hide();
         },
         error: (xhr, err) => {
-          showToast('Wrong password','err');
+          showToast("Wrong password", "err");
           if (err === "timeout") {
             console.log("Timeout Error");
           } else {
@@ -1523,7 +1526,11 @@ document.addEventListener('DOMContentLoaded',function() {
           showNewFolder(32, 440, "New Folder");
           break;
         case "delete":
+          if(aSelectedFolders.length >0 || aSelectedFiles.length >0  ) {
           deleteSelected();
+          } else {
+            showToast('No se han seleccionado archivos o carpetas','err');
+          }
           break;
         case "upload":
           upload();
@@ -1531,17 +1538,20 @@ document.addEventListener('DOMContentLoaded',function() {
         case "download":
           if (aSelectedFiles.length > 0) {
             if (aSelectedFiles.length > 5) {
-              showToast('No se pueden descargar más de 5 archivos a la vez','err');
+              showToast(
+                "No se pueden descargar más de 5 archivos a la vez",
+                "err"
+              );
               break;
             }
             download(aSelectedFiles, "File");
           } else {
-            showToast('No se han seleccionado archivos para descargar','err');
+            showToast("No se han seleccionado archivos para descargar", "err");
           }
           break;
       }
     } else {
-      showToast('Opcion no permitida','err');
+      showToast("Opcion no permitida", "err");
     }
   });
   $("#usertrigger")
