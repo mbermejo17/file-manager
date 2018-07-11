@@ -50,9 +50,13 @@ $background_color_4: rgb(93,
   height: 70px;
   background-image: url(../img/bg_header.png);
 }
-
+html {
+  min-width: 240px;
+}
 body {
-  overflow: auto;
+  background: url(../img/bg_content.png) 0 0 repeat-x transparent;
+  height: 100vh;
+  overflow-y: auto;
 }
 .logo {
   padding-left: 10px;
@@ -87,12 +91,6 @@ body {
   padding-left: 10px;
   color: $color_2;
 }
-
-body {
-  background: url(../img/bg_content.png) 0 0 repeat-x transparent;
-  height: 100vh;
-}
-
 .btn-unify {
   color: $color_2 !important;
   margin-left: 5px !important;
@@ -387,8 +385,11 @@ table {
 }
 
 .fas,
-.far {
-  padding-right: 5px !important;
+.far,
+.fa {
+  padding-right: 15px !important;
+  font-size: 1.2em;
+  color: #5da407;
 }
 
 .typeFolder:hover {
@@ -618,11 +619,11 @@ input {
   background-color: #333;
   color: #fff;
   text-align: center;
-  border-radius: 2px;
+  border-radius: 3px;
   padding: 16px;
   position: fixed;
   z-index: 20000;
-  left: 50%;
+  left: 75%;
   top: var(--snackbarCurrentTop);
   font-size: 17px;
 }
@@ -674,7 +675,7 @@ $md-checkmark-color: #fff;
   margin: $md-checkbox-margin;
   text-align: left;
   padding-right: 10px;
-  top: -15px;
+  top: -18px;
 
   &.md-checkbox-inline {
     display: inline-block;

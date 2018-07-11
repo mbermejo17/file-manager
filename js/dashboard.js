@@ -1027,19 +1027,16 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   const selectAll = e => {
-    console.log("selectAll:e ", e);
     var allCkeckbox = document.querySelectorAll(".check");
     let v = document.querySelector("#selectAllFiles").checked;
-    $(this).prop("checked", !$(this).is(":checked"));
-    console.log($(this).is(":checked"));
+    console.log('selectAllFiles :',v);
     allCkeckbox.forEach(function(element, i) {
       if (!allCkeckbox[i].disabled) {
-        if (v === true) {
-          $(element).trigger("click");
-        }
+          allCkeckbox[i].checked = v;
       }
     });
     console.log(getCheckedFiles());
+    console.log(getCheckedFolder());
   };
 
   const getCheckedFiles = function() {
@@ -1049,27 +1046,39 @@ document.addEventListener("DOMContentLoaded", function() {
       console.log("element: ", element);
       console.log(
         "children: ",
-        element.parentElement.parentElement.children[0].children[0].checked
+        element.parentElement.parentElement.children[0].children[0].children[0].checked
       );
-      if (element.parentElement.parentElement.children[0].children[0].checked) {
-        checkedFiles.push(currentPath + "/" + element.innerHTML);
+      if (element.parentElement.parentElement.children[0].children[0].children[0].checked) {
+        aSelectedFiles.push(element.innerHTML);
+        checkedFiles.push(element.innerHTML);
         // c(element.children[1].innerHTML)
+      }else {
+        const idx = aSelectedFiles.indexOf(element.innerHTML);
+        if (idx > -1) {
+          aSelectedFiles.splice(idx, 1);
+        }
       }
     });
     return checkedFiles;
   };
 
-  const getCheckedFolder = function getCheckedFolder() {
+  const getCheckedFolder = function() {
     var checkedFolders = [];
     var allElements = document.querySelectorAll(".dashboard-path");
     allElements.forEach(function(v, i) {
-      v.children[0].childNodes.forEach(function(l, idx) {
-        if (l.children[0].checked) {
-          checkedFolders.push(currentPath + "/" + l.children[2].text);
-          // c(currentPath + l.children[2].text)
+      console.log("element v: ", v);
+      console.log("check ",v.children[0].checked);
+      console.log("text ",v.parentElement.parentElement.children[1].children[1].text);
+        if (v.children[0].checked) {
+          aSelectedFolders.push(v.parentElement.parentElement.children[1].children[1].text);
+          checkedFolders.push(v.parentElement.parentElement.children[1].children[1].text);
+        }else{
+          const idx = aSelectedFolders.indexOf(v.parentElement.parentElement.children[1].children[1].text);
+        if (idx > -1) {
+          aSelectedFolders.splice(idx, 1);
+        }
         }
       });
-    });
     return checkedFolders;
   };
 
@@ -1080,16 +1089,16 @@ document.addEventListener("DOMContentLoaded", function() {
       .getElementsByTagName("tbody")[0];
 
     newHtmlContent += `<tr><td><span>&nbsp;</span></td>
-              <td><i class="fas fa-folder"></i><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>
+              <td><i class="fa fa-folder"></i><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>
               <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`;
     aFol.forEach((val, idx, array) => {
-      newHtmlContent += `<tr><td><div class="md-checkbox"><input class="checkFolder check" id="${
+      newHtmlContent += `<tr><td><div class="md-checkbox dashboard-path"><input class="checkFolder check" id="${
         val.name
       }" type="checkbox">
               <label class="checkbox left" for="${
                 val.name
               }"></label></div></td>`;
-      newHtmlContent += `<td><i class="fas fa-folder"></i><a href="#" class="file-Name typeFolder">${
+      newHtmlContent += `<td><i class="fa fa-folder"></i><a href="#" class="file-Name typeFolder">${
         val.name
       }</a></td>`;
       newHtmlContent += `<td>&nbsp;</td><td>&nbsp;</td><td>${
@@ -1103,7 +1112,7 @@ document.addEventListener("DOMContentLoaded", function() {
         val.name
       }" type="checkbox">
             <label class="checkbox left" for="${val.name}"></label></div></td>`;
-      newHtmlContent += `<td><i class="far fa-file"></i><span class="typeFile">${
+      newHtmlContent += `<td><i class="fa fa-file"></i><span class="typeFile">${
         val.name
       }</span></td>`;
       newHtmlContent += `<td>${fileSize} KB</td><td>&nbsp;</td><td>${
@@ -1456,20 +1465,6 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   $("#selectAllFiles").on("click", e => {
-    e.preventDefault();
-    console.log("isChecked: ", $(e).is(":checked"));
-    $(e).prop("checked", $(e).is(":checked") ? null : "checked");
-    if (document.querySelector("#selectAllFiles").checked === false) {
-      document
-        .querySelector("#selectAllFiles")
-        .setAttribute("checked", "checked");
-    } else {
-      document.querySelector("#selectAllFiles").removeAttribute("checked");
-    }
-    console.log(
-      "selectAllFiles:click ",
-      document.querySelector("#selectAllFiles").checked
-    );
     selectAll(e.target.htmlFor);
   });
 
@@ -1526,7 +1521,7 @@ document.addEventListener("DOMContentLoaded", function() {
           showNewFolder(32, 440, "New Folder");
           break;
         case "delete":
-          if(aSelectedFolders.length >0 || aSelectedFiles.length >0  ) {
+          if(aSelectedFolders.length > 0 || aSelectedFiles.length >0  ) {
           deleteSelected();
           } else {
             showToast('No se han seleccionado archivos o carpetas','err');

@@ -113,25 +113,32 @@ import Cookies from './vendor/js-cookie';
   }
   loader.style.display = 'none'
   loginbutton.addEventListener('click', submit)
-  document.getElementById("password-field").addEventListener('click',(e)=> {
-    let cName = e.className;
-    if(cName.indexOf("fa-eye") >-1) {
-      e.removeClass("fa-eye");
+  
+  d.getElementById("password-field").addEventListener('mouseout',(e)=>{
+    d.querySelector("#password").setAttribute("type","password")
+  })
+
+  d.getElementById("password-field").addEventListener('click',(e)=> {
+    c('password-field click',e)
+
+    let cName = d.getElementById("password-field").className;
+    if(cName.indexOf("fa-eye") > -1) {
+      e.target.classList.add("fa-eye")
     } else {
-      e.addClass("fa-eye");
+      e.target.classList.remove("fa-eye")
     }
     if(cName.indexOf("fa-eye-slash") >-1) {
-      e.removeClass("fa-eye-slash");
+      e.target.classList.add("fa-eye-slash")
     }else {
-      e.addClass("fa-eye-slash");
+      e.target.classList.remove("fa-eye-sl")
     }
    
-    var input =  d.querySelector((e.getAttribute("toggle")));
-    console.log(input);
-    if (input.attr("type") == "password") {
-      input.attr("type", "text");
+    var input =  d.querySelector("#password");
+    console.log(input)
+    if (input.getAttribute("type") == "password") {
+      input.setAttribute("type","text")
     } else {
-      input.attr("type", "password");
+      input.setAttribute("type","password")
     }
   });
   
