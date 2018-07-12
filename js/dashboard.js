@@ -179,6 +179,28 @@ document.addEventListener("DOMContentLoaded", function() {
     document.location.href = "/";
   };
 
+
+  const hasClass = (el,className) =>{
+    console.log(el);
+    return (' ' + el.className + ' ').indexOf(' ' + className + ' ') > -1;
+   };
+  
+  
+  const addClass = (el, className) => {
+    if (el.hasOwnProperty('classList'))
+      el.classList.add(className)
+    else if (!hasClass(el, className)) el.className += " " + className
+  };
+  
+  const removeClass = (el, className) => {
+    if (el.hasOwnProperty('classList'))
+      el.classList.remove(className)
+    else if (hasClass(el, className)) {
+      var reg = new RegExp('(\\s|^)' + className + '(\\s|$)')
+      el.className=el.className.replace(reg, ' ')
+    }
+  };
+
   const execFetch = async (uri, met, data) => {
     const header = new Headers();
     header.append("Content-Type", "application/json");
@@ -785,8 +807,10 @@ document.addEventListener("DOMContentLoaded", function() {
       .css("width: " + w + "%;height: " + h + "px;text-align: center;");
     //$('.modal-content').css('width: 350px;');
     $(".modal").css("width: 40% !important");
-    $("#modal").show();
-    $("#lean-overlay").show();
+    document.querySelector("#modal").style.display='block';
+    document.querySelector("#lean-overlay").style.display='block';
+    document.querySelector('#btnCancelAll').classList.add('disabled');
+
     $("#download").addClass("disabled");
     $("#btnCloseDownload").on("click", e => {
       $("#download").removeClass("disabled");
@@ -971,35 +995,33 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   const refreshPath = cPath => {
+    let newLinePath = []; 
     console.log("init path: ", cPath);
     let newHtmlContent = `<li><label id="currentpath">Path:</label></li>
-                              <li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">/</a></li>`;
+                              <li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">/</a></li>`;
     console.log("cPath lenght:", cPath.length);
     $("#waiting").addClass("active");
     if (cPath.length > 1) {
-      $("#waiting").addClass("active");
       let cPathArray = cPath.split("/");
       console.log("refreshPath:cPathArray ", cPathArray);
       cPathArray.forEach((val, idx, array) => {
-        console.log(val);
-        if (val.trim() == "") {
-          if (idx == 0) {
-            newHtmlContent += `<li><a class="breadcrumb" href="#!">${val}</a></li>`;
-          }
-        } else {
-          if (idx == 1) {
-            newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb" href="#!">${val}</a></li>`;
-          } else {
-            newHtmlContent += `<li><spand>/&nbsp;</spand><a class="breadcrumb" href="#!">${val}</a></li>`;
-          }
-        }
+         if (val.trim() != "") newLinePath.push(val);
       });
+      console.log('newLinePath: ',newLinePath);
+      for(let x=0; x < newLinePath.length; x++) {
+        if(x ==0 ){
+          newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${newLinePath[x]}</a></li>`;
+        } else {
+          newHtmlContent += `<li><spand>/&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${newLinePath[x]}</a></li>`;
+        }
+        
+      }
       $("#waiting").removeClass("active");
     }
 
     $("#currentPath").html(newHtmlContent);
 
-    $(".breadcrumb").on("click", e => {
+    $(".breadcrumb-line-path").on("click", e => {
       changePath(e.target.innerText);
     });
 
@@ -1482,11 +1504,18 @@ document.addEventListener("DOMContentLoaded", function() {
         case "usertrigger":
           e.stopPropagation();
           console.log($("#Usersdropdown").css("display"));
+          let position1 = document.getElementById('usertrigger').offsetLeft;  
+          let position2 = document.getElementById('usertrigger').offsetWidth;
+          console.log('position1: ',position1);
+          console.log('position2: ',position2);
+          let newPosition = parseInt(position1 + position2)  + 'px';
+          console.log('newPosition: ',newPosition);
           if ($("#Usersdropdown").css("display") === "block") {
             $("#usertrigger").removeClass("selected");
             $("#Usersdropdown").hide();
           } else {
             $("#usertrigger").addClass("selected");
+            document.getElementById('Usersdropdown').style.right = newPosition;
             $("#Usersdropdown").show();
           }
           break;
@@ -1557,18 +1586,24 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("setting left:", $(e.target).position().left);
     console.log("settingdropdown left:", $("#Settingdropdown").css("left"));
     console.log($("#Settingdropdown").css("display"));
-    let position = parseInt($(e.target).position().left);
+    let position = document.querySelector('#settings').offsetLeft;
+    console.log('position: ',position);
+    let newPosition = position + 'px';
     if ($("#Settingdropdown").css("display") === "block") {
-      $("#settings").removeClass("selected");
-      $("#Settingdropdown")
-        .removeClass("setting")
-        .hide();
+      (document.getElementById('settings').classList) 
+      ? document.getElementById('settings').classList.remove('selected')
+      : document.getElementById('settings').className ='';
+      //document.getElementById('Settingdropdown').classList.remove('setting');
+      document.getElementById('Settingdropdown').style.display = 'none';   
     } else {
-      $("#settings").addClass("selected");
-      $("#Settingdropdown")
-        .addClass("setting")
-        .show();
-      $("#Settingdropdown").css("left", position);
+      if  (hasClass(document.getElementById('settings'),'selected') != true) {  
+        addClass( document.getElementById('settings'),'selected');
+      }
+      //addClass(document.getElementById('Settingdropdown'),'setting');  
+      document.getElementById('Settingdropdown').style.left = newPosition;
+      document.getElementById('Settingdropdown').style.display = 'block'; 
+      console.log('newPosition: ',newPosition);
+      console.log('Settingdropdown new position',document.getElementById('Settingdropdown').style.left); 
     }
   });
   $("#Usersdropdown").on("mouseleave", () => {
@@ -1579,6 +1614,7 @@ document.addEventListener("DOMContentLoaded", function() {
     $("#Settingdropdown").hide();
     $("#settings").removeClass("selected");
   });
+  document.querySelector('#bar-preloader').style.Display='none';
   refreshPath(currentPath);
   refreshBarMenu();
   console.log(document.querySelector("#selectAllFiles").checked);

@@ -141,5 +141,5 @@ import Cookies from './vendor/js-cookie';
       input.setAttribute("type","password")
     }
   });
-  
+  document.querySelector('#bar-preloader').style.Display='none';
 })(console.log, document)

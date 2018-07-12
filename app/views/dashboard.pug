@@ -10,6 +10,8 @@ html(lang="es")
     link(type="text/css" rel="stylesheet" href="css/font-awesome.min.css" media="screen,projection")
     link(type="text/css" rel="stylesheet" href="css/dashboard.css" media="screen,projection")
   body
+    #bar-preloader.bar-preloader-container
+      .bar-preloader
     .wrapper
       .row.head-container
         .container
@@ -19,8 +21,9 @@ html(lang="es")
             | File Manager
           .col.m3.status.right
             i.material-icons person
-            a#usertrigger.dropdown-menu.user-link.btn-unify(href="#!",data-activates="Usersdropdown") 
-            ul#Usersdropdown.dropdown-content.dropdown-horizontal-list(style="display: none;")
+            a#usertrigger.dropdown-menu.user-link.btn-unify(href="#!")
+          #Usersdropdown.dropdown-User-content
+            ul
               li
                 a#userProfile.btn-unify(href="#") User Profile
               li
@@ -29,13 +32,14 @@ html(lang="es")
                 a#userLogout.btn-unify(href="#") Logout  
       .row.nav-unify
         i#settings.material-icons.btn-flat settings
-        ul#Settingdropdown.dropdown-content.dropdown-horizontal-list(style="display: none;")
-          li
-            a#userAdd.btn-unify(href="#") Add User
-          li
-            a#userMod.btn-unify(href="#") Modify User  
-          li
-            a#monitoring.btn-unify(href="#") Monitoring  
+        #Settingdropdown.dropdown-setting-content
+          ul
+            li
+              a#userAdd.btn-unify(href="#") Add User
+            li
+              a#userMod.btn-unify(href="#") Modify User  
+            li
+              a#monitoring.btn-unify(href="#") Monitoring  
         a#home.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Home
         a#newFolder.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") New Folder
         a#rename.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Rename
@@ -49,15 +53,15 @@ html(lang="es")
             li
               label#currentpath Path:
             li
-              a.breadcrumb(href="#!") Root
+              a.breadcrumb-line-path(href="#!") Root
             li
               | \
             li
-              a.breadcrumb(href="#!") Firts
+              a.breadcrumb-line-path(href="#!") Firts
             li
               | \
             li
-              a.breadcrumb(href="#!") Seconds
+              a.breadcrumb-line-path(href="#!") Seconds
             li
               | \
           ul.path.right

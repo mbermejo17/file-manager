@@ -152,3 +152,48 @@ body {
     z-index: 2;
     cursor: pointer;
   }  
+
+  .bar-preloader-container{
+	position: relative;
+	height: 5px;
+	width: 100%;
+	background-color: #bdbdbd;
+}
+			
+.bar-preloader{
+	content: "";
+	display: inline;
+	position: absolute;
+	height: 100%;
+	width: 0;
+	right: 0;
+}
+
+.bar:nth-child(1) {
+  background-color: #006495;
+  animation: linear_loader 3s linear 1s infinite;
+}
+
+
+@keyframes linear_loader {
+    0% {
+    	right: 100%; 
+    	width: 10%;
+    }
+    30% {
+    	right: 0%; 
+    	width: 40%;
+    }
+    50% {
+    	right: 0%; 
+    	width: 0%;
+    }
+    80% {
+    	right: 0%; 
+    	width: 0%;
+    }
+    100% {
+    	right: 0%; 
+    	width: 0%;
+    }
+}		
