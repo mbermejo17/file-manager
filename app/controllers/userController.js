@@ -85,6 +85,39 @@ exports.UserAdd = (req, res) => {
   });
 };
 
+exports.UserFindByName = (req, res, next) => {
+  User.Find(
+    `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate FROM Users WHERE UPPER(UserName) = '${req.query.userName.toUpperCase()}'`,
+    (status, data) => {
+      if (status) {
+        console.log(status);
+        res.status(500).json({ status: "FAIL", message: status });
+      } else {
+        if (data) {
+            console.log(data);
+            return res.status(200).json({
+              status: "OK",
+              message: "User found",
+              data: {
+                UserName: data.UserName,
+                Role: data.UserRole,
+                UserPasswd: Base64.encode(data.UserPasswd),
+                CompanyName: data.CompanyName,
+                RootPath: data.UserRole === "admin" ? "/" : data.RootPath,
+                AccessString: data.AccessString,
+                ExpirateDate: data.ExpirateDate
+              }
+            });
+          } else {
+            return res
+              .status(401)
+              .json({ status: "FAIL", message: "Auth failed", data: null });
+          }
+        } 
+      }
+  );
+}
+
 exports.UserLogin = (req, res, next) => {
   User.Find(
     `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`,

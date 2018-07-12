@@ -30,10 +30,29 @@ document.addEventListener("DOMContentLoaded", function() {
   let AllowRenameFile = AllowRename;
   let currentTopToast = 30;
   let topToast = 0;
-
+  let htmlSearchUserTemplate = `<div id="searchUserModal">
+                          <div class="row"> 
+                            <div class="input-field col s12 m12"></div>
+                          </div>
+                          <div class="row" id="searchUser">
+                          <div class="input-field col s1 m1"></div>
+                            <div class="input-field col s5"><input id="searchUserName" type="text" autocomplete="off" />
+                            <label for="searchUserName">Search User</label></div>
+                            <div class="input-field col s2">
+                              <i class="fa fa-search" id="btnSearchUser"></i>
+                            </div>
+                            <div class="input-field col s4 m4"></div>
+                            <div class="row"> 
+                            <div class="input-field col s9 m9"></div>
+                            <div class="input-field col s2 m2">
+                              <button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-SearchUserCancel" type="submit" name="action">Cancel</button></div>
+                            </div>
+                            <div class="input-field col s1 m1"></div>
+                            </div>
+                        </div>`;
   let htmlUserFormTemplate = `
       <div id="AddUserModal">
-          <h4 class="header2">New User</h4>
+          <h4 id ="userFormTitle" class="header2">New User</h4>
           <div class="row">
               <form class="col s12 m12 l12" id="formAddUser">
                   <div class="row">
@@ -203,13 +222,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
   const execFetch = async (uri, met, data) => {
     const header = new Headers();
+    const bodyData = (data) ? JSON.stringify(data) : null;
     header.append("Content-Type", "application/json");
     header.append("Authorization", "Bearer " + Token);
 
     const initData = {
       method: met,
       headers: header,
-      body: JSON.stringify(data)
+      body: bodyData
     };
 
     const resp = await fetch(uri, initData);
@@ -291,6 +311,33 @@ document.addEventListener("DOMContentLoaded", function() {
     return rPath;
   };
 
+  const checkAccessRights = (AccessSwitch,role,accessRights) =>{
+    let opt = '';
+    let aAccessRights = split(accessRights,',');
+    if( role !== 'Custom') {
+      switch(role) {
+        case "User":
+            opt = "opt1";
+            break;
+        case "Admin":
+            opt = "opt2";
+            break;
+        case "Advanced User":
+            opt = "opt3";
+            break;
+      }
+      changeAccessRights(AccessSwitch,opt);
+    } else {
+      for (let x = 0; x < AccessSwitch.length; x++) {
+        if (aAccessRights[x] == 1) {
+          AccessSwitch[x].checked = true;
+        } else {
+          AccessSwitch[x].checked = false;
+        }    
+      }
+    }
+  };
+
   const changeAccessRights = (AccessSwitch, opt) => {
     for (let x = 0; x < AccessSwitch.length; x++) {
       AccessSwitch[x].disabled = false;
@@ -338,11 +385,56 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   };
 
-  const showAddUserForm = () => {
+  const searchUserName = (userName) =>{
+    console.log(userName);
+ 
+    execFetch("/searchuser?userName=" + userName, "GET", null)
+      .then(d => {
+        console.log(d);       
+      })
+      .catch(e => {
+        showToast(
+          "Error al buscar usuario " + userName + ".<br>Err:" + e,
+          "err"
+        );
+        console.log(e);
+      });
+  };
+
+  const editUser = ()=>{
+    let AddUserModalContent = document.querySelector("#AddUserModalContent");
+    let SearchUserModalContent = document.querySelector("#searchUserModalContent");
+    
+    let containerOverlay = document.querySelector(".container-overlay");
+    AddUserModalContent.style.display = "none";
+    SearchUserModalContent.innerHTML = htmlSearchUserTemplate;
+    SearchUserModalContent.style.display = "block";
+    containerOverlay.style.display = "block";
+    document.querySelector("#btnSearchUser").addEventListener('click',(e)=>{
+      e.preventDefault();
+      searchUserName(document.getElementById("searchUserName").value);
+    });
+  };
+
+  const showAddUserForm = (title,data) => {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let containerOverlay = document.querySelector(".container-overlay");
+    let SearchUserModalContent = document.querySelector("#searchUserModalContent");
+    SearchUserModalContent.style.display = "none";
 
     AddUserModalContent.innerHTML = htmlUserFormTemplate;
+    if(data){
+      document.querySelector("#userFormTitle").innerHTML = title;
+      document.querySelector("#addusername").innerHTML = data.newusername;
+      document.querySelector("#companyName").innerHTML = data.companyName;
+      document.querySelector("#addpassword").innerHTML = data.password;
+      document.querySelector("#repeataddpassword").innerHTML = data.password;
+      document.querySelector("#rootpath").innerHTML = data.rootPath;
+      document.querySelector("#expirationDate").innerHTML = data.expirationDate;
+      selectRole(document.querySelector("#RoleOptions"),data.userRole);
+      checkAccessRights(data.accessRights);
+    }
+
     containerOverlay.style.display = "block";
     //AddUserModalContent.style.display = "block";
 
@@ -1497,8 +1589,11 @@ document.addEventListener("DOMContentLoaded", function() {
     if (!$(this).hasClass("disabled")) {
       switch (this.id) {
         case "userAdd":
-          showAddUserForm();
+          showAddUserForm('New User',null);
           break;
+        case "userMod":
+          editUser();
+          break;  
         case "settings":
           break;
         case "usertrigger":
