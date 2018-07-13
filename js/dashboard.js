@@ -186,6 +186,27 @@ document.addEventListener("DOMContentLoaded", function() {
             </li>
         </ul>`;
 
+
+const loadModule = (url, callback) =>{
+  var script = document.createElement('script');
+ 
+  if (script.readyState) { // IE
+    script.onreadystatechange = function () {
+      if (script.readyState === 'loaded' || script.readyState === 'complete') {
+        script.onreadystatechange = null;
+        callback();
+      }
+    };
+  } else { // Others Browsers
+    script.onload = function() {
+      callback();
+    };
+  }
+ 
+  script.src = url;
+  document.getElementsByTagName('head')[0].appendChild(script);
+};
+
   const logout = () => {
     Cookies.remove("UserName");
     Cookies.remove("UserRole");
@@ -204,17 +225,23 @@ document.addEventListener("DOMContentLoaded", function() {
     return (' ' + el.className + ' ').indexOf(' ' + className + ' ') > -1;
    };
   
+  const getClass = ( elem ) =>{
+    return elem.getAttribute && elem.getAttribute( "class" ) || "";
+  }
   
+
   const addClass = (el, className) => {
-    if (el.hasOwnProperty('classList'))
+    if (el.classList) 
       el.classList.add(className)
     else if (!hasClass(el, className)) el.className += " " + className
   };
   
   const removeClass = (el, className) => {
-    if (el.hasOwnProperty('classList'))
-      el.classList.remove(className)
-    else if (hasClass(el, className)) {
+    if (el.classList) {
+      console.log("el class",el.className('active'));
+      el.classList.remove(className);
+      console.log("el class after",el.className('active'));
+    } else if (hasClass(el, className)) {
       var reg = new RegExp('(\\s|^)' + className + '(\\s|$)')
       el.className=el.className.replace(reg, ' ')
     }
@@ -389,8 +416,13 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log(userName);
  
     execFetch("/searchuser?userName=" + userName, "GET", null)
-      .then(d => {
-        console.log(d);       
+      .then((d) => {
+        console.log(d);
+        if(d.status == 'OK') {
+          showAddUserForm('Edit User',d.data);       
+        } else {
+          showToast(d.message,'err');
+        }
       })
       .catch(e => {
         showToast(
@@ -410,34 +442,92 @@ document.addEventListener("DOMContentLoaded", function() {
     SearchUserModalContent.innerHTML = htmlSearchUserTemplate;
     SearchUserModalContent.style.display = "block";
     containerOverlay.style.display = "block";
+    SearchUserModalContent.addEventListener('keyup',(e)=>{
+      e.preventDefault();
+      if (e.keyCode === 13) {
+        searchUserName(document.getElementById("searchUserName").value);
+      }
+    });
     document.querySelector("#btnSearchUser").addEventListener('click',(e)=>{
       e.preventDefault();
       searchUserName(document.getElementById("searchUserName").value);
     });
+    document.querySelector("#btn-SearchUserCancel").addEventListener('click',(e)=>{
+      e.preventDefault();
+      SearchUserModalContent.style.display = "none";
+      containerOverlay.style.display = "none";
+    });
+  };
+
+  const selectRole = (element,role) =>{
+    console.log(role);
+    for(let x=0; x < element.options.length; x++) {
+      console.log('option: ',element.options[x].text);
+      if(element.options[x].text.toUpperCase() === role.toUpperCase() ) {
+        element.options[x].selected ='selected';
+        element.selectedIndex = x;
+        console.log('option selected: ',element.options[x].text);
+        if( role.toUpperCase() !== 'CUSTOM') {
+          changeAccessRights(document.querySelectorAll(".AccessRightsSwitch"),element.options[x].value);
+        }
+        break;
+      } 
+    }
   };
 
   const showAddUserForm = (title,data) => {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let containerOverlay = document.querySelector(".container-overlay");
     let SearchUserModalContent = document.querySelector("#searchUserModalContent");
+    let mode = data ? 'edit' : 'add';
     SearchUserModalContent.style.display = "none";
 
     AddUserModalContent.innerHTML = htmlUserFormTemplate;
     if(data){
+      console.log(data);
+      let oldData = Object.assign({},data);
       document.querySelector("#userFormTitle").innerHTML = title;
-      document.querySelector("#addusername").innerHTML = data.newusername;
-      document.querySelector("#companyName").innerHTML = data.companyName;
-      document.querySelector("#addpassword").innerHTML = data.password;
-      document.querySelector("#repeataddpassword").innerHTML = data.password;
-      document.querySelector("#rootpath").innerHTML = data.rootPath;
-      document.querySelector("#expirationDate").innerHTML = data.expirationDate;
-      selectRole(document.querySelector("#RoleOptions"),data.userRole);
-      checkAccessRights(data.accessRights);
+      document.querySelector("#addusername").value = data.UserName;
+      document.querySelector("#companyName").value = data.CompanyName;
+      document.querySelector("#addpassword").value = data.UserPasswd;
+      document.querySelector("#repeataddpassword").value = data.UserPasswd;
+      document.querySelector("#rootpath").value = data.RootPath;
+      document.querySelector("#expirationDate").value = data.ExpirationDate
+      //document.querySelector("#expirationDate")
+      selectRole(document.querySelector("#RoleOptions"),data.Role);
+      if(data.Role.toUpperCase() === 'CUSTOM') checkAccessRights(data.AccessString);
+      containerOverlay.style.display = "block";
+      AddUserModalContent.style.display = "block";
+      document.querySelector("label[for=addusername]").classList.add('active');
+      document.querySelector("label[for=companyName]").classList.add('active');
+      document.querySelector("label[for=addpassword]").classList.add('active');
+      document.querySelector("label[for=repeataddpassword]").classList.add('active');
+      document.querySelector("label[for=rootpath]").classList.add('active');
+      document.querySelector("#addusername").disabled = true;
+
+      document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
+        e.preventDefault();
+        //containerOverlay.style.display = "none";
+        AddUserModalContent.style.display = 'none';
+        SearchUserModalContent.style.display = "block";
+      });
+
+    } else {
+      containerOverlay.style.display = "block";
+      AddUserModalContent.style.display = "block";
+      changeAccessRights(
+        document.querySelectorAll(".AccessRightsSwitch"),
+        "opt1"
+      );
+      document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
+        e.preventDefault();
+        containerOverlay.style.display = "none";
+        AddUserModalContent.style.display = 'none';
+      });
+
     }
 
-    containerOverlay.style.display = "block";
-    //AddUserModalContent.style.display = "block";
-
+    
     let sel = document.querySelector("select");
 
     $(".AccessRightsSwitch").change(function() {
@@ -448,24 +538,13 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
 
-    changeAccessRights(
-      document.querySelectorAll(".AccessRightsSwitch"),
-      "opt1"
-    );
-
     sel.addEventListener("change", e => {
       let opt = e.target[e.target.selectedIndex].value;
       let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
       changeAccessRights(AccessSwitch, opt);
     });
 
-    document
-      .querySelector("#btn-addUserCancel")
-      .addEventListener("click", e => {
-        e.preventDefault();
-        containerOverlay.style.display = "none";
-      });
-
+   
     document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
       e.preventDefault();
       let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
@@ -1440,6 +1519,12 @@ document.addEventListener("DOMContentLoaded", function() {
     $("#ModalClose").on("click", () => {
       $("#modal").hide();
       $("#lean-overlay").hide();
+    });
+    document.getElementById('newFolderName').addEventListener('keyup',(e)=>{
+      e.preventDefault();
+      if(e.keyCode === 13) {
+        document.getElementById('AcceptNewFolder').click();
+      }
     });
   };
 
