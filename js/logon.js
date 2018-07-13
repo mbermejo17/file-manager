@@ -8,7 +8,7 @@ import Cookies from './vendor/js-cookie';
 ((c, d) => {
   console.log(navigator.userAgent.indexOf("MSIE"));
   console.log(navigator.userAgent.indexOf("Edge"));
-  if(navigator.userAgent.indexOf("MSIE")!=-1 || navigator.userAgent.indexOf("Edge") !=-1) {
+  if(navigator.userAgent.indexOf("MSIE")!=-1 || navigator.userAgent.indexOf("Edge") !=-1 || navigator.userAgent.indexOf("rv:11")!=-1) {
     document.getElementById("password-field").style.display ="none"; 
   }
 
