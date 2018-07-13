@@ -6,6 +6,12 @@ import md5 from './vendor/md5.min';
 import Cookies from './vendor/js-cookie';
 
 ((c, d) => {
+  console.log(navigator.userAgent.indexOf("MSIE"));
+  console.log(navigator.userAgent.indexOf("Edge"));
+  if(navigator.userAgent.indexOf("MSIE")!=-1 || navigator.userAgent.indexOf("Edge") !=-1) {
+    document.getElementById("password-field").style.display ="none"; 
+  }
+
   let waiting = d.querySelector('#waiting')
   const READY_STATE_COMPLETE = 4
   const OK = 200
@@ -141,5 +147,6 @@ import Cookies from './vendor/js-cookie';
       input.setAttribute("type","password")
     }
   });
-  document.querySelector('#bar-preloader').style.Display='none';
+  document.querySelector('#bar-preloader').style.display='none';
+  
 })(console.log, document)
