@@ -589,6 +589,7 @@ const loadModule = (url, callback) =>{
         .then(d => {
           console.log(d);
           showToast("Usuario " + data.userName + " añadido.", "success");
+          document.getElementById('refresh').click();
           document.querySelector("#formAddUser").reset();
           changeAccessRights(
             document.querySelectorAll(".AccessRightsSwitch"),
@@ -618,6 +619,7 @@ const loadModule = (url, callback) =>{
             console.log('Delete Files Canceled');
           });
         }
+        document.getElementById("refresh").click();
         });
       },(n)=>{
         console.log('Delete Folder Canceled');
@@ -798,7 +800,7 @@ const loadModule = (url, callback) =>{
           }
           $("#btnCloseUpload").removeClass("disabled");
         } else {
-          showToast("No se pueden descargar más de 5 archivos a la vez", "err");
+          showToast("No se pueden subir más de 5 archivos a la vez", "err");
         }
       } else {
         showToast("Error: maxFileSize 700MB exceeded", "err");

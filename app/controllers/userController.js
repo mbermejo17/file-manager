@@ -72,12 +72,18 @@ exports.UserAdd = (req, res) => {
   let rootPath = data.rootPath;
   let expirationDate = data.expirationDate;
   let accessRights = data.accessRights;
+  let response = [];
   User.Add(data, d => {
+    response.push(d);
     console.log("d : ", d);
     if (d.status === 'OK') {
     makeUserPathIfNotExist(rootPath, result => {
-        return res.status(200).json(d);
+       if(!result) {
+        return res.status(200).json(response[0]);
         console.log(result);
+       } else {
+        return res.status(200).json({"status":"FAIL","message":response[0].message +".<br>Error al crear Carpeta.","data":null });
+       } 
     });
     } else {
         return res.status(200).json(d); 
