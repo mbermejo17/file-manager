@@ -65,7 +65,7 @@ UserModel.Find = function (queryString, callback) {
 };
 
 UserModel.FindById = function (userId, callback) {
-  let sql = `SELECT UserName, UserId, UserPasswd, UserRole
+  let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate
                FROM Users
                WHERE UserId  = ?`;
   dbOpen();
@@ -113,7 +113,7 @@ UserModel.Remove = function (userId, callback) {
 
 UserModel.FindByName = function (userName, callback) {
   console.log(userName);
-  let sql = `SELECT UserName, UserId, UserPasswd, UserRole
+  let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate
                FROM Users
                WHERE UPPER(UserName)  = ?`;
   dbOpen();
@@ -217,7 +217,7 @@ UserModel.Add = function (userData, callback) {
         callback({ status: 'FAIL',msg: `El usuario ${userData.userName} ya existe`,data: null });
       } else {
         stmt = db.prepare("INSERT INTO Users VALUES (?,?,?,?,?,?,?,?)");
-        stmt.bind(null, userData.userName,  Base64.decode(userData.userPassword), userData.userRole, userData.companyName, userData.rootPath, userData.accessRights, userData.expirationDate);
+        stmt.bind(null, userData.userName,  Base64.decode(userData.userPassword), userData.userRole, userData.companyName, userData.rootPath, userData.accessRights, userData.expirateDate);
         stmt.run(function (err, result) {
           //dbClose();
           if (err) {

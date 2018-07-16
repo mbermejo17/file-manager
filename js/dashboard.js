@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const realRootPath = Cookies.get("RootPath");
   const Token = Cookies.get("token");
   const AccessString = Cookies.get("AccessString");
+  const RunMode = Cookies.get("RunMode");
   const [
     AllowDownload,
     AllowUpload,
@@ -56,18 +57,23 @@ document.addEventListener("DOMContentLoaded", function() {
           <div class="row">
               <form class="col s12 m12 l12" id="formAddUser">
                   <div class="row">
-                      <div class="input-field col s6"><input id="addusername" type="text" /><label for="addusername">Name</label></div>
-                      <div class="input-field col s6"><input id="companyName" type="text" /><label for="companyName">Company Name</label></div>
+                      <div class="input-field col s6"><input id="UserName" type="text" />
+                      <label for="UserName">Name</label></div>
+                      <div class="input-field col s6"><input id="CompanyName" type="text" />
+                      <label for="CompanyName">Company Name</label></div>
                   </div>
                   <div class="row">
-                      <div class="input-field col s6"><input id="addpassword" type="password" autocomplete="off" /><label for="addpassword">Password</label></div>
-                      <div class="input-field col s6"><input id="repeataddpassword" type="password" autocomplete="off" /><label for="repeataddpassword">Repeat Password</label></div>
+                      <div class="input-field col s6"><input id="UserPasswd" type="password" autocomplete="off" />
+                      <label for="UserPasswd">Password</label></div>
+                      <div class="input-field col s6"><input id="repeatUserPasswd" type="password" autocomplete="off" />
+                      <label for="repeatUserPasswd">Repeat Password</label></div>
                   </div>
                   <div class="row">
-                      <div class="input-field col s4"><input id="rootpath" type="text" /><label for="rootpath">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
+                      <div class="input-field col s4"><input id="RootPath" type="text" />
+                      <label for="RootPath">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
                       <div class="input-field col s6 right">
-                        <input class="datepicker" id="expirationDate" type="date"/>
-                        <label for="expirationDate">Expiration Date</label>
+                        <input class="datepicker" id="ExpirateDate" type="date"/>
+                        <label for="ExpirateDate">Expiration Date</label>
                       </div>
                   </div>
                   <div class="row">
@@ -76,6 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
                   <div class="row">
                       <div class="input-field col s2 m2"></div>
                       <div class="input-field col s8 m8" style="line-height: .9em;" >
+                        <input id="Role" type="hidden" value="" />
                         <select id="RoleOptions" name="optionsname" required="">
                           <option value="opt1">User</option>
                           <option value="opt2">Admin</option>
@@ -186,26 +193,30 @@ document.addEventListener("DOMContentLoaded", function() {
             </li>
         </ul>`;
 
+  const loadModule = (url, callback) => {
+    var script = document.createElement("script");
 
-const loadModule = (url, callback) =>{
-  var script = document.createElement('script');
- 
-  if (script.readyState) { // IE
-    script.onreadystatechange = function () {
-      if (script.readyState === 'loaded' || script.readyState === 'complete') {
-        script.onreadystatechange = null;
+    if (script.readyState) {
+      // IE
+      script.onreadystatechange = function() {
+        if (
+          script.readyState === "loaded" ||
+          script.readyState === "complete"
+        ) {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else {
+      // Others Browsers
+      script.onload = function() {
         callback();
-      }
-    };
-  } else { // Others Browsers
-    script.onload = function() {
-      callback();
-    };
-  }
- 
-  script.src = url;
-  document.getElementsByTagName('head')[0].appendChild(script);
-};
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  };
 
   const logout = () => {
     Cookies.remove("UserName");
@@ -219,37 +230,35 @@ const loadModule = (url, callback) =>{
     document.location.href = "/";
   };
 
+  const hasClass = (el, className) => {
+    if (RunMode === "DEBUG") console.log(el);
+    return (" " + el.className + " ").indexOf(" " + className + " ") > -1;
+  };
 
-  const hasClass = (el,className) =>{
-    console.log(el);
-    return (' ' + el.className + ' ').indexOf(' ' + className + ' ') > -1;
-   };
-  
-  const getClass = ( elem ) =>{
-    return elem.getAttribute && elem.getAttribute( "class" ) || "";
-  }
-  
+  const getClass = elem => {
+    return (elem.getAttribute && elem.getAttribute("class")) || "";
+  };
 
   const addClass = (el, className) => {
-    if (el.classList) 
-      el.classList.add(className)
-    else if (!hasClass(el, className)) el.className += " " + className
+    if (el.classList) el.classList.add(className);
+    else if (!hasClass(el, className)) el.className += " " + className;
   };
-  
+
   const removeClass = (el, className) => {
     if (el.classList) {
-      console.log("el class",el.className('active'));
+      if (RunMode === "DEBUG") console.log("el class", el.className("active"));
       el.classList.remove(className);
-      console.log("el class after",el.className('active'));
+      if (RunMode === "DEBUG")
+        console.log("el class after", el.className("active"));
     } else if (hasClass(el, className)) {
-      var reg = new RegExp('(\\s|^)' + className + '(\\s|$)')
-      el.className=el.className.replace(reg, ' ')
+      var reg = new RegExp("(\\s|^)" + className + "(\\s|$)");
+      el.className = el.className.replace(reg, " ");
     }
   };
 
   const execFetch = async (uri, met, data) => {
     const header = new Headers();
-    const bodyData = (data) ? JSON.stringify(data) : null;
+    const bodyData = data ? JSON.stringify(data) : null;
     header.append("Content-Type", "application/json");
     header.append("Authorization", "Bearer " + Token);
 
@@ -303,7 +312,7 @@ const loadModule = (url, callback) =>{
     var stringResult = "",
       value = void 0;
     for (var key in dataObject) {
-      console.log(dataObject[key], key);
+      if (RunMode === "DEBUG") console.log(dataObject[key], key);
       value = dataObject[key];
       if (stringResult !== "") {
         stringResult += "&" + key + "=" + value;
@@ -315,7 +324,7 @@ const loadModule = (url, callback) =>{
   };
 
   const changePath = newPath => {
-    console.log("changePath:newPath ", newPath);
+    if (RunMode === "DEBUG") console.log("changePath:newPath ", newPath);
     currentPath = newPath.trim();
     refreshPath(currentPath);
     refreshBarMenu();
@@ -323,44 +332,45 @@ const loadModule = (url, callback) =>{
 
   const getRealPath = p => {
     let rPath = "";
-    console.log('getRealPath:p ',p);
-    console.log('getRealPath:realRootPath ',realRootPath);
-    if (p == "/" && (realRootPath === "/" || realRootPath.trim() === "") ) {
+    if (RunMode === "DEBUG") console.log("getRealPath:p ", p);
+    if (RunMode === "DEBUG")
+      console.log("getRealPath:realRootPath ", realRootPath);
+    if (p == "/" && (realRootPath === "/" || realRootPath.trim() === "")) {
       rPath = p;
     } else {
       if (p == "/") {
         rPath = "/" + realRootPath;
       } else {
-        rPath =  "/" + realRootPath + p;
+        rPath = "/" + realRootPath + p;
       }
     }
-    console.log('getRealPath:rPath ',rPath);
+    if (RunMode === "DEBUG") console.log("getRealPath:rPath ", rPath);
     return rPath;
   };
 
-  const checkAccessRights = (AccessSwitch,role,accessRights) =>{
-    let opt = '';
-    let aAccessRights = split(accessRights,',');
-    if( role !== 'Custom') {
-      switch(role) {
+  const checkAccessRights = (AccessSwitch, role, accessRights) => {
+    let opt = "";
+    let aAccessRights = split(accessRights, ",");
+    if (role !== "Custom") {
+      switch (role) {
         case "User":
-            opt = "opt1";
-            break;
+          opt = "opt1";
+          break;
         case "Admin":
-            opt = "opt2";
-            break;
+          opt = "opt2";
+          break;
         case "Advanced User":
-            opt = "opt3";
-            break;
+          opt = "opt3";
+          break;
       }
-      changeAccessRights(AccessSwitch,opt);
+      changeAccessRights(AccessSwitch, opt);
     } else {
       for (let x = 0; x < AccessSwitch.length; x++) {
         if (aAccessRights[x] == 1) {
           AccessSwitch[x].checked = true;
         } else {
           AccessSwitch[x].checked = false;
-        }    
+        }
       }
     }
   };
@@ -412,16 +422,16 @@ const loadModule = (url, callback) =>{
     }
   };
 
-  const searchUserName = (userName) =>{
-    console.log(userName);
- 
+  const searchUserName = userName => {
+    if (RunMode === "DEBUG") console.log(userName);
+
     execFetch("/searchuser?userName=" + userName, "GET", null)
-      .then((d) => {
-        console.log(d);
-        if(d.status == 'OK') {
-          showAddUserForm('Edit User',d.data);       
+      .then(d => {
+        if (RunMode === "DEBUG") console.log(d);
+        if (d.status == "OK") {
+          showAddUserForm("Edit User", d.data);
         } else {
-          showToast(d.message,'err');
+          showToast(d.message, "err");
         }
       })
       .catch(e => {
@@ -429,89 +439,110 @@ const loadModule = (url, callback) =>{
           "Error al buscar usuario " + userName + ".<br>Err:" + e,
           "err"
         );
-        console.log(e);
+        if (RunMode === "DEBUG") console.log(e);
       });
   };
 
-  const editUser = ()=>{
+  const editUser = () => {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
-    let SearchUserModalContent = document.querySelector("#searchUserModalContent");
-    
+    let SearchUserModalContent = document.querySelector(
+      "#searchUserModalContent"
+    );
+
     let containerOverlay = document.querySelector(".container-overlay");
     AddUserModalContent.style.display = "none";
     SearchUserModalContent.innerHTML = htmlSearchUserTemplate;
     SearchUserModalContent.style.display = "block";
     containerOverlay.style.display = "block";
-    SearchUserModalContent.addEventListener('keyup',(e)=>{
+    SearchUserModalContent.addEventListener("keyup", e => {
       e.preventDefault();
       if (e.keyCode === 13) {
         searchUserName(document.getElementById("searchUserName").value);
       }
     });
-    document.querySelector("#btnSearchUser").addEventListener('click',(e)=>{
+    document.querySelector("#btnSearchUser").addEventListener("click", e => {
       e.preventDefault();
       searchUserName(document.getElementById("searchUserName").value);
     });
-    document.querySelector("#btn-SearchUserCancel").addEventListener('click',(e)=>{
-      e.preventDefault();
-      SearchUserModalContent.style.display = "none";
-      containerOverlay.style.display = "none";
-    });
+    document
+      .querySelector("#btn-SearchUserCancel")
+      .addEventListener("click", e => {
+        e.preventDefault();
+        SearchUserModalContent.style.display = "none";
+        containerOverlay.style.display = "none";
+      });
   };
 
-  const selectRole = (element,role) =>{
-    console.log(role);
-    for(let x=0; x < element.options.length; x++) {
-      console.log('option: ',element.options[x].text);
-      if(element.options[x].text.toUpperCase() === role.toUpperCase() ) {
-        element.options[x].selected ='selected';
+  const selectRole = (element, role) => {
+    if (RunMode === "DEBUG") console.log(role);
+    for (let x = 0; x < element.options.length; x++) {
+      if (RunMode === "DEBUG") console.log("option: ", element.options[x].text);
+      if (element.options[x].text.toUpperCase() === role.toUpperCase()) {
+        element.options[x].selected = "selected";
         element.selectedIndex = x;
-        console.log('option selected: ',element.options[x].text);
-        if( role.toUpperCase() !== 'CUSTOM') {
-          changeAccessRights(document.querySelectorAll(".AccessRightsSwitch"),element.options[x].value);
+        if (RunMode === "DEBUG")
+          console.log("option selected: ", element.options[x].text);
+        if (role.toUpperCase() !== "CUSTOM") {
+          changeAccessRights(
+            document.querySelectorAll(".AccessRightsSwitch"),
+            element.options[x].value
+          );
         }
         break;
-      } 
+      }
     }
   };
 
-  const showAddUserForm = (title,data) => {
+  const showAddUserForm = (title, data) => {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let containerOverlay = document.querySelector(".container-overlay");
-    let SearchUserModalContent = document.querySelector("#searchUserModalContent");
-    let mode = data ? 'edit' : 'add';
+    let SearchUserModalContent = document.querySelector(
+      "#searchUserModalContent"
+    );
+    let mode = data ? "edit" : "add";
+    let oldData = null;
     SearchUserModalContent.style.display = "none";
 
     AddUserModalContent.innerHTML = htmlUserFormTemplate;
-    if(data){
-      console.log(data);
-      let oldData = Object.assign({},data);
+    if (data) {
+      if (RunMode === "DEBUG") console.log(data);
+      oldData = Object.assign({}, data);
       document.querySelector("#userFormTitle").innerHTML = title;
-      document.querySelector("#addusername").value = data.UserName;
-      document.querySelector("#companyName").value = data.CompanyName;
-      document.querySelector("#addpassword").value = data.UserPasswd;
-      document.querySelector("#repeataddpassword").value = data.UserPasswd;
-      document.querySelector("#rootpath").value = data.RootPath;
-      document.querySelector("#expirationDate").value = data.ExpirationDate
+      document.querySelector("#UserName").value = data.UserName;
+      document.querySelector("#CompanyName").value = data.CompanyName;
+      document.querySelector("#UserPasswd").value = data.UserPasswd;
+      document.querySelector("#repeatUserPasswd").value = data.UserPasswd;
+      document.querySelector("#RootPath").value = data.RootPath;
+      document.querySelector("#ExpirateDate").value = data.ExpirateDate;
       //document.querySelector("#expirationDate")
-      selectRole(document.querySelector("#RoleOptions"),data.Role);
-      if(data.Role.toUpperCase() === 'CUSTOM') checkAccessRights(data.AccessString);
+      selectRole(document.querySelector("#RoleOptions"), data.Role);
+      if (data.Role.toUpperCase() === "CUSTOM")
+        checkAccessRights(data.AccessString);
       containerOverlay.style.display = "block";
       AddUserModalContent.style.display = "block";
-      document.querySelector("label[for=addusername]").classList.add('active');
-      document.querySelector("label[for=companyName]").classList.add('active');
-      document.querySelector("label[for=addpassword]").classList.add('active');
-      document.querySelector("label[for=repeataddpassword]").classList.add('active');
-      document.querySelector("label[for=rootpath]").classList.add('active');
-      document.querySelector("#addusername").disabled = true;
+      document.querySelector("label[for=UserName]").classList.add("active");
+      document.querySelector("label[for=CompanyName]").classList.add("active");
+      document.querySelector("label[for=UserPasswd]").classList.add("active");
+      document
+        .querySelector("label[for=repeatUserPasswd]")
+        .classList.add("active");
+      document.querySelector("label[for=RootPath]").classList.add("active");
+      document.querySelector("#UserName").disabled = true;
 
-      document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
-        e.preventDefault();
-        //containerOverlay.style.display = "none";
-        AddUserModalContent.style.display = 'none';
-        SearchUserModalContent.style.display = "block";
-      });
-
+      document
+        .querySelector("#btn-addUserCancel")
+        .addEventListener("click", e => {
+          e.preventDefault();
+          //containerOverlay.style.display = "none";
+          AddUserModalContent.style.display = "none";
+          SearchUserModalContent.style.display = "block";
+        });
+      document
+        .querySelector("#btn-addUserAcept")
+        .addEventListener("click", e => {
+          e.preventDefault();
+          _updateUser(oldData);
+        });
     } else {
       containerOverlay.style.display = "block";
       AddUserModalContent.style.display = "block";
@@ -519,22 +550,28 @@ const loadModule = (url, callback) =>{
         document.querySelectorAll(".AccessRightsSwitch"),
         "opt1"
       );
-      document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
-        e.preventDefault();
-        containerOverlay.style.display = "none";
-        AddUserModalContent.style.display = 'none';
-      });
-
+      document
+        .querySelector("#btn-addUserCancel")
+        .addEventListener("click", e => {
+          e.preventDefault();
+          containerOverlay.style.display = "none";
+          AddUserModalContent.style.display = "none";
+        });
+      document
+        .querySelector("#btn-addUserAcept")
+        .addEventListener("click", e => {
+          e.preventDefault();
+          _addUser();
+        });
     }
 
-    
     let sel = document.querySelector("select");
 
     $(".AccessRightsSwitch").change(function() {
       if ($(this).is(":checked")) {
-        console.log("Is checked");
+        if (RunMode === "DEBUG") console.log("Is checked");
       } else {
-        console.log("Is Not checked");
+        if (RunMode === "DEBUG") console.log("Is Not checked");
       }
     });
 
@@ -544,16 +581,73 @@ const loadModule = (url, callback) =>{
       changeAccessRights(AccessSwitch, opt);
     });
 
-   
-    document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
-      e.preventDefault();
+    const _getUserRole = () => {
+      return sel.options[sel.selectedIndex].text;
+    };
+
+    const _getChanges = () => {
       let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
-      let userName = document.querySelector("#addusername").value;
-      let companyName = document.querySelector("#companyName").value;
-      let userPassword = document.querySelector("#addpassword").value;
-      let userRole = sel[sel.selectedIndex].innerHTML;
-      let userRootPath = document.querySelector("#rootpath").value;
-      let expirationDate = document.querySelector("#expirationDate").value;
+      let accessString = _getAccessString(AccessSwitch);
+      let userRole = _getUserRole();
+      if (RunMode === "DEBUG") console.log(oldData);
+      for (let prop in oldData) {
+        if (hasOwnProperty.call(oldData, prop)) {
+          console.log(prop);
+          if (prop === "Role") {
+            if (oldData[prop] !== userRole) {
+              console.warn(oldData[prop], userRole);
+            } else {
+              console.log(oldData[prop], userRole);
+            }
+          } else {
+            if (prop === "AccessString") {
+              if (oldData[prop] !== accessString) {
+                console.warn(oldData[prop], accessString);
+              } else {
+                console.log(oldData[prop], accessString);
+              }
+            } else {
+              if (oldData[prop] !== document.getElementById(prop).value) {
+                console.warn(oldData[prop], document.getElementById(prop).value);
+              }else {
+                console.log(oldData[prop], document.getElementById(prop).value);
+              }
+            }
+          }
+        }
+      }
+    };
+
+    const _updateUser = () => {
+      let changesString = _getChanges();
+      if (changesString) {
+        let data = {
+          userName: userName,
+          queryString: changesString
+        };
+        execFetch("/updateuser", "POST", data)
+          .then(d => {
+            if (RunMode === "DEBUG") console.log(d);
+            showToast(
+              "Datos usuario " + data.userName + " actualizados.",
+              "success"
+            );
+            document.getElementById("refresh").click();
+          })
+          .catch(e => {
+            showToast(
+              "Error al grabar los cambios para el usuario " +
+                data.userName +
+                ".<br>Err:" +
+                e,
+              "err"
+            );
+            if (RunMode === "DEBUG") console.log(e);
+          });
+      }
+    };
+
+    const _getAccessString = AccessSwitch => {
       let result = "";
       let v = 0;
 
@@ -569,27 +663,40 @@ const loadModule = (url, callback) =>{
           result += v;
         }
       }
-      console.log("User Name: " + userName);
-      console.log("Company Name: " + companyName);
-      console.log("Password: " + userPassword);
-      console.log("Root Path: " + userRootPath);
-      console.log("Expirate Date: " + expirationDate);
-      console.log("Role: " + userRole);
-      console.log("Access Rights: " + result);
+      return result;
+    };
+
+    const _addUser = () => {
+      let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
+      let userName = document.querySelector("#UserName").value;
+      let companyName = document.querySelector("#CompanyName").value;
+      let userPassword = document.querySelector("#UserPasswd").value;
+      let userRole = sel[sel.selectedIndex].innerHTML;
+      let userRootPath = document.querySelector("#RootPath").value;
+      let expirateDate = document.querySelector("#ExpirateDate").value;
+      let result = _getAccessString(AccessSwitch);
+
+      if (RunMode === "DEBUG") console.log("User Name: " + userName);
+      if (RunMode === "DEBUG") console.log("Company Name: " + companyName);
+      if (RunMode === "DEBUG") console.log("Password: " + userPassword);
+      if (RunMode === "DEBUG") console.log("Root Path: " + userRootPath);
+      if (RunMode === "DEBUG") console.log("Expirate Date: " + expirateDate);
+      if (RunMode === "DEBUG") console.log("Role: " + userRole);
+      if (RunMode === "DEBUG") console.log("Access Rights: " + result);
       let data = {
         userName: userName,
         userPassword: Base64.encode(md5(userPassword)),
         companyName: companyName,
         userRole: userRole,
-        expirationDate: expirationDate,
+        expirateDate: expirateDate,
         rootPath: userRootPath,
         accessRights: result
       };
       execFetch("/adduser", "POST", data)
         .then(d => {
-          console.log(d);
+          if (RunMode === "DEBUG") console.log(d);
           showToast("Usuario " + data.userName + " añadido.", "success");
-          document.getElementById('refresh').click();
+          document.getElementById("refresh").click();
           document.querySelector("#formAddUser").reset();
           changeAccessRights(
             document.querySelectorAll(".AccessRightsSwitch"),
@@ -601,45 +708,65 @@ const loadModule = (url, callback) =>{
             "Error al añadir usuario " + data.userName + ".<br>Err:" + e,
             "err"
           );
-          console.log(e);
+          if (RunMode === "DEBUG") console.log(e);
         });
-    });
+    };
   };
 
   const deleteSelected = () => {
-    console.log("aSelectedFolders: ", aSelectedFolders.length);
+    if (RunMode === "DEBUG")
+      console.log("aSelectedFolders: ", aSelectedFolders.length);
     if (aSelectedFolders.length > 0) {
-      showDialogYesNo("Delete foldes", "Delete selected folders?", (y)=>{
-        $.when(deleteFolder(currentPath))
-        .then((result) =>{
-          if (aSelectedFiles.length > 0) {
-          showDialogYesNo("Delete Files","Delete selected files?",(y)=>{
-            deleteFile(currentPath);
-          },(n)=>{
-            console.log('Delete Files Canceled');
+      showDialogYesNo(
+        "Delete foldes",
+        "Delete selected folders?",
+        y => {
+          $.when(deleteFolder(currentPath)).then(result => {
+            if (aSelectedFiles.length > 0) {
+              showDialogYesNo(
+                "Delete Files",
+                "Delete selected files?",
+                y => {
+                  deleteFile(currentPath);
+                },
+                n => {
+                  if (RunMode === "DEBUG") console.log("Delete Files Canceled");
+                }
+              );
+            }
+            document.getElementById("refresh").click();
           });
+        },
+        n => {
+          if (RunMode === "DEBUG") console.log("Delete Folder Canceled");
+          if (aSelectedFiles.length > 0) {
+            showDialogYesNo(
+              "Delete Files",
+              "Delete selected files?",
+              y => {
+                deleteFile(currentPath);
+              },
+              n => {
+                if (RunMode === "DEBUG") console.log("Delete Files Canceled");
+              }
+            );
+          }
         }
-        document.getElementById("refresh").click();
-        });
-      },(n)=>{
-        console.log('Delete Folder Canceled');
-        if (aSelectedFiles.length > 0) {
-        showDialogYesNo("Delete Files","Delete selected files?",(y)=>{
-          deleteFile(currentPath);
-        },(n)=>{
-          console.log('Delete Files Canceled');
-        });
-      }
-      });
+      );
     } else {
       if (aSelectedFiles.length > 0) {
-      showDialogYesNo("Delete Files","Delete selected files?",(y)=>{
-        deleteFile(currentPath);
-      },(n)=>{
-        console.log('Delete Files Canceled');
-      });
+        showDialogYesNo(
+          "Delete Files",
+          "Delete selected files?",
+          y => {
+            deleteFile(currentPath);
+          },
+          n => {
+            if (RunMode === "DEBUG") console.log("Delete Files Canceled");
+          }
+        );
+      }
     }
-    } 
   };
 
   const FetchHandleErrors = function(response) {
@@ -682,9 +809,10 @@ const loadModule = (url, callback) =>{
       $("#li-filename" + nFile).show();
       $("#li-filename" + nFile).html(fileName);
       let realpath = getRealPath(currentPath);
-      console.log("Upload:currentPath " + currentPath);
-      console.log("Upload:realRootPath " + realRootPath);
-      console.log("Upload:realPath " + realpath);
+      if (RunMode === "DEBUG") console.log("Upload:currentPath " + currentPath);
+      if (RunMode === "DEBUG")
+        console.log("Upload:realRootPath " + realRootPath);
+      if (RunMode === "DEBUG") console.log("Upload:realPath " + realpath);
       $.ajax({
         url: "/files/upload?destPath=" + realpath,
         type: "POST",
@@ -697,7 +825,8 @@ const loadModule = (url, callback) =>{
           xhrObj.setRequestHeader("destPath", realpath);
         },
         success: function(data) {
-          console.log(fileName + "upload successful!\n" + data);
+          if (RunMode === "DEBUG")
+            console.log(fileName + "upload successful!\n" + data);
           showToast(fileName + " uploaded sucessfully", "success");
           $("#abort" + nFile).hide();
           $("#refresh").trigger("click");
@@ -752,7 +881,7 @@ const loadModule = (url, callback) =>{
     $("#btnCancelAll").removeClass("disabled");
     $(".modal_close").on("click", e => {
       e.preventDefault();
-      console.log(e);
+      if (RunMode === "DEBUG") console.log(e);
       let n = parseInt(e.target.id.slice(-1));
       aListHandler[n].abort();
       let percentLabel = document.querySelector("#percent" + n);
@@ -784,7 +913,7 @@ const loadModule = (url, callback) =>{
         files.length > 0
           ? $("#sFiles").html(files.length + " archivos seleccionados.")
           : $("#sFiles").html(files[0]);
-        console.log(files.length);
+        if (RunMode === "DEBUG") console.log(files.length);
         $(".file-input").hide();
         if (files.length > 0 && files.length <= 5) {
           $("#btnCloseUpload")
@@ -824,7 +953,7 @@ const loadModule = (url, callback) =>{
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
-        console.log(data);
+        if (RunMode === "DEBUG") console.log(data);
         if (data.status == "OK") {
           $("#modal").hide();
           $("#lean-overlay").hide();
@@ -833,14 +962,14 @@ const loadModule = (url, callback) =>{
         }
       })
       .catch(err => {
-        console.log(err);
+        if (RunMode === "DEBUG") console.log(err);
       });
   };
 
-  const showDialogYesNo =  (title, content, yesCb, noCb) => {
+  const showDialogYesNo = (title, content, yesCb, noCb) => {
     let w = 32;
     let h = 440;
-    let result= null;
+    let result = null;
     let htmlContent = `<div id="modal-header">
                             <h5>${title}</h5>
                             <a class="modal_close" id="logoutModalClose" href="#hola"></a>
@@ -877,12 +1006,12 @@ const loadModule = (url, callback) =>{
     const headers = new Headers();
     let x = 0;
     let aF = aSelectedFiles.slice();
-    console.log(aF);
+    if (RunMode === "DEBUG") console.log(aF);
     headers.append("Authorization", "Bearer " + Token);
     headers.append("Content-Type", "application/json");
     $("#waiting").addClass("active");
     for (x = 0; x < aF.length; x++) {
-      console.log("Deleting file " + aF[x] + " ...");
+      if (RunMode === "DEBUG") console.log("Deleting file " + aF[x] + " ...");
       fetch("/files/delete", {
         method: "POST",
         headers: headers,
@@ -895,7 +1024,7 @@ const loadModule = (url, callback) =>{
         .then(FetchHandleErrors)
         .then(r => r.json())
         .then(data => {
-          console.log(data);
+          if (RunMode === "DEBUG") console.log(data);
           if (data.status == "OK") {
             aSelectedFiles.shift();
             $(".toast")
@@ -906,7 +1035,7 @@ const loadModule = (url, callback) =>{
           }
         })
         .catch(err => {
-          console.log(err);
+          if (RunMode === "DEBUG") console.log(err);
           $(".toast")
             .removeClass("err")
             .addClass("err");
@@ -920,12 +1049,12 @@ const loadModule = (url, callback) =>{
     const headers = new Headers();
     let x = 0;
     let aF = aSelectedFolders.slice();
-    console.log(aF);
+    if (RunMode === "DEBUG") console.log(aF);
     headers.append("Authorization", "Bearer " + Token);
     headers.append("Content-Type", "application/json");
     $("#waiting").addClass("active");
     for (x = 0; x < aF.length; x++) {
-      console.log("Deleting folder " + aF[x] + " ...");
+      if (RunMode === "DEBUG") console.log("Deleting folder " + aF[x] + " ...");
       fetch("/files/delete", {
         method: "POST",
         headers: headers,
@@ -938,7 +1067,7 @@ const loadModule = (url, callback) =>{
         .then(FetchHandleErrors)
         .then(r => r.json())
         .then(data => {
-          console.log(data);
+          if (RunMode === "DEBUG") console.log(data);
           if (data.status == "OK") {
             $(".toast")
               .removeClass("success")
@@ -948,7 +1077,7 @@ const loadModule = (url, callback) =>{
           }
         })
         .catch(err => {
-          console.log(err);
+          if (RunMode === "DEBUG") console.log(err);
         });
     }
     $("#waiting").removeClass("active");
@@ -980,9 +1109,9 @@ const loadModule = (url, callback) =>{
       .css("width: " + w + "%;height: " + h + "px;text-align: center;");
     //$('.modal-content').css('width: 350px;');
     $(".modal").css("width: 40% !important");
-    document.querySelector("#modal").style.display='block';
-    document.querySelector("#lean-overlay").style.display='block';
-    document.querySelector('#btnCancelAll').classList.add('disabled');
+    document.querySelector("#modal").style.display = "block";
+    document.querySelector("#lean-overlay").style.display = "block";
+    document.querySelector("#btnCancelAll").classList.add("disabled");
 
     $("#download").addClass("disabled");
     $("#btnCloseDownload").on("click", e => {
@@ -1045,14 +1174,15 @@ const loadModule = (url, callback) =>{
       liFilename.innerHTML = fName;
       reqList[i].timeout = 36000;
       reqList[i].ontimeout = function() {
-        console.log(
-          "** Timeout error ->File:" +
-            fName +
-            " " +
-            reqList[i].status +
-            " " +
-            reqList[i].statusText
-        );
+        if (RunMode === "DEBUG")
+          console.log(
+            "** Timeout error ->File:" +
+              fName +
+              " " +
+              reqList[i].status +
+              " " +
+              reqList[i].statusText
+          );
         // handlerCount = handlerCount - 1
         progressBar.innerHTML = "Timeout Error";
         percentLabel.innerHTML = "";
@@ -1070,14 +1200,15 @@ const loadModule = (url, callback) =>{
         }
       };
       reqList[i].onerror = function() {
-        console.log(
-          "** An error occurred during the transaction ->File:" +
-            fName +
-            " " +
-            req.status +
-            " " +
-            req.statusText
-        );
+        if (RunMode === "DEBUG")
+          console.log(
+            "** An error occurred during the transaction ->File:" +
+              fName +
+              " " +
+              req.status +
+              " " +
+              req.statusText
+          );
         handlerCount = handlerCount - 1;
         percentLabel.innerHTML = "Error";
         percentLabel.style.color = "red";
@@ -1097,7 +1228,8 @@ const loadModule = (url, callback) =>{
             .addClass("disabled");
           $("#refresh").trigger("click");
         }
-        console.log("File " + handlerCount + " downloaded");
+        if (RunMode === "DEBUG")
+          console.log("File " + handlerCount + " downloaded");
       };
       reqList[i].onloadstart = function() {
         handlerCount = handlerCount + 1;
@@ -1154,7 +1286,8 @@ const loadModule = (url, callback) =>{
         "Content-type",
         "application/x-www-form-urlencoded"
       );
-      console.log(getRealPath(currentPath) + "/" + fileList[i]);
+      if (RunMode === "DEBUG")
+        console.log(getRealPath(currentPath) + "/" + fileList[i]);
       reqList[i].send(
         serializeObject({
           filename: getRealPath(currentPath) + "/" + fileList[i]
@@ -1168,26 +1301,30 @@ const loadModule = (url, callback) =>{
   };
 
   const refreshPath = cPath => {
-    let newLinePath = []; 
-    console.log("init path: ", cPath);
+    let newLinePath = [];
+    if (RunMode === "DEBUG") console.log("init path: ", cPath);
     let newHtmlContent = `<li><label id="currentpath">Path:</label></li>
                               <li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">/</a></li>`;
-    console.log("cPath lenght:", cPath.length);
+    if (RunMode === "DEBUG") console.log("cPath lenght:", cPath.length);
     $("#waiting").addClass("active");
     if (cPath.length > 1) {
       let cPathArray = cPath.split("/");
-      console.log("refreshPath:cPathArray ", cPathArray);
+      if (RunMode === "DEBUG")
+        console.log("refreshPath:cPathArray ", cPathArray);
       cPathArray.forEach((val, idx, array) => {
-         if (val.trim() != "") newLinePath.push(val);
+        if (val.trim() != "") newLinePath.push(val);
       });
-      console.log('newLinePath: ',newLinePath);
-      for(let x=0; x < newLinePath.length; x++) {
-        if(x ==0 ){
-          newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${newLinePath[x]}</a></li>`;
+      if (RunMode === "DEBUG") console.log("newLinePath: ", newLinePath);
+      for (let x = 0; x < newLinePath.length; x++) {
+        if (x == 0) {
+          newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${
+            newLinePath[x]
+          }</a></li>`;
         } else {
-          newHtmlContent += `<li><spand>/&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${newLinePath[x]}</a></li>`;
+          newHtmlContent += `<li><spand>/&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${
+            newLinePath[x]
+          }</a></li>`;
         }
-        
       }
       $("#waiting").removeClass("active");
     }
@@ -1201,8 +1338,9 @@ const loadModule = (url, callback) =>{
     const headers = new Headers();
     headers.append("Authorization", "Bearer " + Token);
     let realpath = getRealPath(cPath);
-   
-    console.log("realRootPath: " + realRootPath + " realpath:" + realpath);
+
+    if (RunMode === "DEBUG")
+      console.log("realRootPath: " + realRootPath + " realpath:" + realpath);
     fetch("/files?path=" + encodeURI(realpath), {
       method: "GET",
       headers: headers,
@@ -1211,12 +1349,12 @@ const loadModule = (url, callback) =>{
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
-        console.log(data);
+        if (RunMode === "DEBUG") console.log(data);
         refreshFilesTable(data);
         $("#waiting").removeClass("active");
       })
       .catch(err => {
-        console.log(err);
+        if (RunMode === "DEBUG") console.log(err);
         $("#waiting").removeClass("active");
       });
   };
@@ -1224,30 +1362,35 @@ const loadModule = (url, callback) =>{
   const selectAll = e => {
     var allCkeckbox = document.querySelectorAll(".check");
     let v = document.querySelector("#selectAllFiles").checked;
-    console.log('selectAllFiles :',v);
+    if (RunMode === "DEBUG") console.log("selectAllFiles :", v);
     allCkeckbox.forEach(function(element, i) {
       if (!allCkeckbox[i].disabled) {
-          allCkeckbox[i].checked = v;
+        allCkeckbox[i].checked = v;
       }
     });
-    console.log(getCheckedFiles());
-    console.log(getCheckedFolder());
+    if (RunMode === "DEBUG") console.log(getCheckedFiles());
+    if (RunMode === "DEBUG") console.log(getCheckedFolder());
   };
 
   const getCheckedFiles = function() {
     var checkedFiles = [];
     var allElements = document.querySelectorAll(".typeFile");
     allElements.forEach(function(element, i) {
-      console.log("element: ", element);
-      console.log(
-        "children: ",
-        element.parentElement.parentElement.children[0].children[0].children[0].checked
-      );
-      if (element.parentElement.parentElement.children[0].children[0].children[0].checked) {
+      if (RunMode === "DEBUG") console.log("element: ", element);
+      if (RunMode === "DEBUG")
+        console.log(
+          "children: ",
+          element.parentElement.parentElement.children[0].children[0]
+            .children[0].checked
+        );
+      if (
+        element.parentElement.parentElement.children[0].children[0].children[0]
+          .checked
+      ) {
         aSelectedFiles.push(element.innerHTML);
         checkedFiles.push(element.innerHTML);
         // c(element.children[1].innerHTML)
-      }else {
+      } else {
         const idx = aSelectedFiles.indexOf(element.innerHTML);
         if (idx > -1) {
           aSelectedFiles.splice(idx, 1);
@@ -1261,19 +1404,29 @@ const loadModule = (url, callback) =>{
     var checkedFolders = [];
     var allElements = document.querySelectorAll(".dashboard-path");
     allElements.forEach(function(v, i) {
-      console.log("element v: ", v);
-      console.log("check ",v.children[0].checked);
-      console.log("text ",v.parentElement.parentElement.children[1].children[1].text);
-        if (v.children[0].checked) {
-          aSelectedFolders.push(v.parentElement.parentElement.children[1].children[1].text);
-          checkedFolders.push(v.parentElement.parentElement.children[1].children[1].text);
-        }else{
-          const idx = aSelectedFolders.indexOf(v.parentElement.parentElement.children[1].children[1].text);
+      if (RunMode === "DEBUG") console.log("element v: ", v);
+      if (RunMode === "DEBUG") console.log("check ", v.children[0].checked);
+      if (RunMode === "DEBUG")
+        console.log(
+          "text ",
+          v.parentElement.parentElement.children[1].children[1].text
+        );
+      if (v.children[0].checked) {
+        aSelectedFolders.push(
+          v.parentElement.parentElement.children[1].children[1].text
+        );
+        checkedFolders.push(
+          v.parentElement.parentElement.children[1].children[1].text
+        );
+      } else {
+        const idx = aSelectedFolders.indexOf(
+          v.parentElement.parentElement.children[1].children[1].text
+        );
         if (idx > -1) {
           aSelectedFolders.splice(idx, 1);
         }
-        }
-      });
+      }
+    });
     return checkedFolders;
   };
 
@@ -1319,8 +1472,9 @@ const loadModule = (url, callback) =>{
 
   const goBackFolder = folder => {
     let newPath = "";
-    console.log("goBackFolder:folder ", folder);
-    console.log("goBackFolder:currentPath ", currentPath);
+    if (RunMode === "DEBUG") console.log("goBackFolder:folder ", folder);
+    if (RunMode === "DEBUG")
+      console.log("goBackFolder:currentPath ", currentPath);
     if (currentPath !== "/" && folder == "..") {
       let lastFolder = currentPath.lastIndexOf("/");
       if (lastFolder == 0) {
@@ -1328,12 +1482,13 @@ const loadModule = (url, callback) =>{
       } else {
         newPath = currentPath.substr(0, lastFolder);
       }
-      console.log(
-        "goBackFolder:lastFolder-> " +
-          lastFolder +
-          " goBackFolder:newPath->" +
-          newPath
-      );
+      if (RunMode === "DEBUG")
+        console.log(
+          "goBackFolder:lastFolder-> " +
+            lastFolder +
+            " goBackFolder:newPath->" +
+            newPath
+        );
       changePath(newPath.trim());
     }
   };
@@ -1342,7 +1497,7 @@ const loadModule = (url, callback) =>{
       .getElementById("tbl-files")
       .getElementsByTagName("tbody")[0];
 
-    console.log(data);
+    if (RunMode === "DEBUG") console.log(data);
     aFolders = [];
     aFiles = [];
     if (data.message) return null;
@@ -1371,8 +1526,8 @@ const loadModule = (url, callback) =>{
     renderFilesTable(aFolders, aFiles);
 
     $(".file-Name").on("click", e => {
-      console.log(e);
-      console.log("Current Path: ", currentPath);
+      if (RunMode === "DEBUG") console.log(e);
+      if (RunMode === "DEBUG") console.log("Current Path: ", currentPath);
       let newPath = "";
       if (e.target.innerText != "..") {
         if (currentPath.trim() == "/") {
@@ -1381,7 +1536,7 @@ const loadModule = (url, callback) =>{
           newPath = currentPath.trim() + "/" + e.target.innerText;
         }
 
-        console.log("New Path: ", newPath.trim());
+        if (RunMode === "DEBUG") console.log("New Path: ", newPath.trim());
         refreshPath(newPath.trim());
         currentPath = newPath.trim();
         refreshBarMenu();
@@ -1391,10 +1546,13 @@ const loadModule = (url, callback) =>{
     });
     $(".check").on("click", e => {
       selectDeselect(e);
-      console.log(e.target.checked);
-      console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
-      console.log(e.target.parentNode.parentNode.rowIndex);
-      console.log(e.target.parentNode.children[1].htmlFor);
+      if (RunMode === "DEBUG") console.log(e.target.checked);
+      if (RunMode === "DEBUG")
+        console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
+      if (RunMode === "DEBUG")
+        console.log(e.target.parentNode.parentNode.rowIndex);
+      if (RunMode === "DEBUG")
+        console.log(e.target.parentNode.children[1].htmlFor);
     });
     $("#goBackFolder").on("click", e => {
       e.preventDefault();
@@ -1426,7 +1584,7 @@ const loadModule = (url, callback) =>{
         }
       }
     }
-    console.log(aSelectedFiles, aSelectedFolders);
+    if (RunMode === "DEBUG") console.log(aSelectedFiles, aSelectedFolders);
   };
 
   const showUserProfile = (w, h, t) => {
@@ -1511,7 +1669,7 @@ const loadModule = (url, callback) =>{
     $("#AcceptNewFolder").on("click", e => {
       e.preventDefault();
       let newFolderName = $("#newFolderName").val();
-      console.log(newFolderName);
+      if (RunMode === "DEBUG") console.log(newFolderName);
       newFolder(newFolderName);
     });
     $("#modalClose").on("click", () => {
@@ -1522,10 +1680,10 @@ const loadModule = (url, callback) =>{
       $("#modal").hide();
       $("#lean-overlay").hide();
     });
-    document.getElementById('newFolderName').addEventListener('keyup',(e)=>{
+    document.getElementById("newFolderName").addEventListener("keyup", e => {
       e.preventDefault();
-      if(e.keyCode === 13) {
-        document.getElementById('AcceptNewFolder').click();
+      if (e.keyCode === 13) {
+        document.getElementById("AcceptNewFolder").click();
       }
     });
   };
@@ -1564,7 +1722,7 @@ const loadModule = (url, callback) =>{
       e.preventDefault();
       let username = UserName;
       let newpassword = $("#newpassword").val();
-      console.log(username, newpassword);
+      if (RunMode === "DEBUG") console.log(username, newpassword);
       ajax({
         type: "POST",
         url: "/changepasswd",
@@ -1580,20 +1738,20 @@ const loadModule = (url, callback) =>{
                                                       .add('active') */
         },
         success: data => {
-          //console.log(JSON.parse(data))
+          //if (RunMode === 'DEBUG' ) console.log(JSON.parse(data))
           let { status, message } = JSON.parse(data);
-          console.log("status", status);
+          if (RunMode === "DEBUG") console.log("status", status);
           if (status === "FAIL") {
             showToast(message, "err");
             d.querySelector("#message").innerHTML = message;
           } else {
             showToast(message, "success");
-            console.log(message);
+            if (RunMode === "DEBUG") console.log(message);
           }
           $("#modal").hide();
         },
         complete: (xhr, status) => {
-          console.log(xhr, status);
+          if (RunMode === "DEBUG") console.log(xhr, status);
           //waiting.style.display = 'none'
           $("#modal").hide();
           $("#lean-overlay").hide();
@@ -1601,9 +1759,9 @@ const loadModule = (url, callback) =>{
         error: (xhr, err) => {
           showToast("Wrong password", "err");
           if (err === "timeout") {
-            console.log("Timeout Error");
+            if (RunMode === "DEBUG") console.log("Timeout Error");
           } else {
-            console.log(xhr, err);
+            if (RunMode === "DEBUG") console.log(xhr, err);
           }
         }
       });
@@ -1670,34 +1828,35 @@ const loadModule = (url, callback) =>{
   });
 
   $("a").on("click", function(e) {
-    console.log(this.id);
-    console.log($(this).hasClass("disabled"));
+    if (RunMode === "DEBUG") console.log(this.id);
+    if (RunMode === "DEBUG") console.log($(this).hasClass("disabled"));
 
     if (!$(this).hasClass("disabled")) {
       switch (this.id) {
         case "userAdd":
-          showAddUserForm('New User',null);
+          showAddUserForm("New User", null);
           break;
         case "userMod":
           editUser();
-          break;  
+          break;
         case "settings":
           break;
         case "usertrigger":
           e.stopPropagation();
-          console.log($("#Usersdropdown").css("display"));
-          let position1 = document.getElementById('usertrigger').offsetLeft;  
-          let position2 = document.getElementById('usertrigger').offsetWidth;
-          console.log('position1: ',position1);
-          console.log('position2: ',position2);
-          let newPosition = parseInt(position1 + position2)  + 'px';
-          console.log('newPosition: ',newPosition);
+          if (RunMode === "DEBUG")
+            console.log($("#Usersdropdown").css("display"));
+          let position1 = document.getElementById("usertrigger").offsetLeft;
+          let position2 = document.getElementById("usertrigger").offsetWidth;
+          if (RunMode === "DEBUG") console.log("position1: ", position1);
+          if (RunMode === "DEBUG") console.log("position2: ", position2);
+          let newPosition = parseInt(position1 + position2) + "px";
+          if (RunMode === "DEBUG") console.log("newPosition: ", newPosition);
           if ($("#Usersdropdown").css("display") === "block") {
             $("#usertrigger").removeClass("selected");
             $("#Usersdropdown").hide();
           } else {
             $("#usertrigger").addClass("selected");
-            document.getElementById('Usersdropdown').style.right = newPosition;
+            document.getElementById("Usersdropdown").style.right = newPosition;
             $("#Usersdropdown").show();
           }
           break;
@@ -1732,10 +1891,10 @@ const loadModule = (url, callback) =>{
           showNewFolder(32, 440, "New Folder");
           break;
         case "delete":
-          if(aSelectedFolders.length > 0 || aSelectedFiles.length >0  ) {
-          deleteSelected();
+          if (aSelectedFolders.length > 0 || aSelectedFiles.length > 0) {
+            deleteSelected();
           } else {
-            showToast('No se han seleccionado archivos o carpetas','err');
+            showToast("No se han seleccionado archivos o carpetas", "err");
           }
           break;
         case "upload":
@@ -1765,27 +1924,33 @@ const loadModule = (url, callback) =>{
     .attr("title", "Empresa: " + CompanyName);
 
   $("#settings").on("click", e => {
-    console.log("setting left:", $(e.target).position().left);
-    console.log("settingdropdown left:", $("#Settingdropdown").css("left"));
-    console.log($("#Settingdropdown").css("display"));
-    let position = document.querySelector('#settings').offsetLeft;
-    console.log('position: ',position);
-    let newPosition = position + 'px';
+    if (RunMode === "DEBUG")
+      console.log("setting left:", $(e.target).position().left);
+    if (RunMode === "DEBUG")
+      console.log("settingdropdown left:", $("#Settingdropdown").css("left"));
+    if (RunMode === "DEBUG") console.log($("#Settingdropdown").css("display"));
+    let position = document.querySelector("#settings").offsetLeft;
+    if (RunMode === "DEBUG") console.log("position: ", position);
+    let newPosition = position + "px";
     if ($("#Settingdropdown").css("display") === "block") {
-      (document.getElementById('settings').classList) 
-      ? document.getElementById('settings').classList.remove('selected')
-      : document.getElementById('settings').className ='';
+      document.getElementById("settings").classList
+        ? document.getElementById("settings").classList.remove("selected")
+        : (document.getElementById("settings").className = "");
       //document.getElementById('Settingdropdown').classList.remove('setting');
-      document.getElementById('Settingdropdown').style.display = 'none';   
+      document.getElementById("Settingdropdown").style.display = "none";
     } else {
-      if  (hasClass(document.getElementById('settings'),'selected') != true) {  
-        addClass( document.getElementById('settings'),'selected');
+      if (hasClass(document.getElementById("settings"), "selected") != true) {
+        addClass(document.getElementById("settings"), "selected");
       }
-      //addClass(document.getElementById('Settingdropdown'),'setting');  
-      document.getElementById('Settingdropdown').style.left = newPosition;
-      document.getElementById('Settingdropdown').style.display = 'block'; 
-      console.log('newPosition: ',newPosition);
-      console.log('Settingdropdown new position',document.getElementById('Settingdropdown').style.left); 
+      //addClass(document.getElementById('Settingdropdown'),'setting');
+      document.getElementById("Settingdropdown").style.left = newPosition;
+      document.getElementById("Settingdropdown").style.display = "block";
+      if (RunMode === "DEBUG") console.log("newPosition: ", newPosition);
+      if (RunMode === "DEBUG")
+        console.log(
+          "Settingdropdown new position",
+          document.getElementById("Settingdropdown").style.left
+        );
     }
   });
   $("#Usersdropdown").on("mouseleave", () => {
@@ -1796,8 +1961,9 @@ const loadModule = (url, callback) =>{
     $("#Settingdropdown").hide();
     $("#settings").removeClass("selected");
   });
-  document.querySelector('#bar-preloader').style.Display='none';
+  document.querySelector("#bar-preloader").style.Display = "none";
   refreshPath(currentPath);
   refreshBarMenu();
-  console.log(document.querySelector("#selectAllFiles").checked);
+  if (RunMode === "DEBUG")
+    console.log(document.querySelector("#selectAllFiles").checked);
 });

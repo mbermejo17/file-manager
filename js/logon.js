@@ -63,6 +63,7 @@ import Cookies from './vendor/js-cookie';
     Cookies.set('CompanyName', data.CompanyName);
     Cookies.set('RootPath', data.RootPath);
     Cookies.set('AccessString', data.AccessString);
+    Cookies.set('RunMode', data.RunMode);
     window.location.href = '/dashboard';
   };
 

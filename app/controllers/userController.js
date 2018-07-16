@@ -70,7 +70,7 @@ exports.UserAdd = (req, res) => {
   let userPassword = Base64.decode(data.userPassword);
   let userRole = data.userRole;
   let rootPath = data.rootPath;
-  let expirationDate = data.expirationDate;
+  let expirationDate = data.expirateDate;
   let accessRights = data.accessRights;
   let response = [];
   User.Add(data, d => {
@@ -97,7 +97,7 @@ exports.UserFindByName = (req, res, next) => {
     (status, data) => {
       if (status) {
         console.log(status);
-        res.status(500).json({ status: "FAIL", message: status });
+        res.status(500).json({ status: "FAIL", message: status, data: null });
       } else {
         if (data) {
             console.log(data);
@@ -172,7 +172,8 @@ exports.UserLogin = (req, res, next) => {
                 wssURL: wsPath,
                 CompanyName: data.CompanyName,
                 RootPath: data.UserRole === "admin" ? "/" : data.RootPath,
-                AccessString: data.AccessString
+                AccessString: data.AccessString,
+                RunMode: 'DEBUG'
               }
             });
           } else {
