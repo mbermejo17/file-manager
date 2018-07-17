@@ -77,7 +77,7 @@ exports.UserAdd = (req, res) => {
     response.push(d);
     console.log("d : ", d);
     if (d.status === 'OK') {
-    makeUserPathIfNotExist(rootPath, result => {
+      makeUserPathIfNotExist(rootPath, result => {
        if(!result) {
         return res.status(200).json(response[0]);
         console.log(result);
@@ -95,20 +95,24 @@ exports.UserUpdate = (req, res) => {
   let data = req.body;
   let userName = data.userName;
   let queryString = data.queryString;
+  let accessString = '';
   let response = [];
-  let newData = '';
+  let newData = {};
 
   for(var propertyName in queryString) {
-    newData += `${propertyName} = '${queryString[propertyName]}',`;
+    accessString += `${propertyName} = '${queryString[propertyName]}',`;
   }
+ 
+  console.log('before:', accessString);
+  accessString   = accessString.slice(0,-1);
+  console.log('after:', accessString);
+  newData = {"userName":userName, "queryString": accessString};
 
-  newData   = newData.slice(1,-1);
-  
-  User.Update(newData, d => {
+  User.Update(newData, (d) => {
     response.push(d);
     console.log("d : ", d);
     if (d.status === 'OK') {
-    makeUserPathIfNotExist(rootPath, result => {
+       makeUserPathIfNotExist(rootPath, result => {
        if(!result) {
         return res.status(200).json(response[0]);
         console.log(result);
@@ -141,7 +145,7 @@ exports.UserFindByName = (req, res, next) => {
                 Role: data.UserRole,
                 UserPasswd: Base64.encode(data.UserPasswd),
                 CompanyName: data.CompanyName,
-                RootPath: data.UserRole === "admin" ? "/" : data.RootPath,
+                RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
                 AccessString: data.AccessString,
                 ExpirateDate: data.ExpirateDate
               }
@@ -184,7 +188,7 @@ exports.UserLogin = (req, res, next) => {
                 UserId: data._id,
                 Role: data.UserRole,
                 wssURL: wsPath,
-                RootPath: data.UserRole === "admin" ? "/" : data.RootPath,
+                RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
                 AccessString: data.AccessString
               },
               JWT_KEY,
@@ -203,7 +207,7 @@ exports.UserLogin = (req, res, next) => {
                 Role: data.UserRole,
                 wssURL: wsPath,
                 CompanyName: data.CompanyName,
-                RootPath: data.UserRole === "admin" ? "/" : data.RootPath,
+                RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
                 AccessString: data.AccessString,
                 RunMode: 'DEBUG'
               }

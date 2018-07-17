@@ -92,23 +92,28 @@ UserModel.FindById = function(userId, callback) {
 };
 
 UserModel.Update = function(data, callback) {
+  console.log(data);
   let sql = "UPDATE Users SET "+ data.queryString +" WHERE UPPER(UserName) = '"+ data.userName.toUpperCase() + "';";
   console.log(sql);
   dbOpen();
   db.run(sql, (err, row) => {
+    console.log('err',err);
+    console.log('row',row);
     if (err) {
       dbClose();
       console.error(err.message);
-      callback(err.message, null);
+      callback({
+        status: "FAIL",
+        message: err.message,
+        data: null
+      });
     } else {
-      if (row) {
-        dbClose();
-        console.log(row);
-        callback(null, row);
-      } else {
-        dbClose();
-        callback(`Usuario ${data.userName} no encontrado`, null);
-      }
+      dbClose();
+      callback({
+        status: "OK",
+        message: 'Usuario ' + data.userName + 'actualizado',
+        data: null
+      });
     }
   });
 };
@@ -240,7 +245,7 @@ UserModel.All = function(callback) {
 
 UserModel.Add = function(userData, callback) {
   let response = {};
-  if (db == undefined) dbOpen();
+  if (!db) dbOpen();
   console.log("db handler: ", db);
   let stmt = db.prepare("SELECT * FROM Users WHERE UserName = ?");
   console.log("PASSWD:", userData.userPassword);
