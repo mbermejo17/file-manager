@@ -9,6 +9,8 @@ import Cookies from './vendor/js-cookie';
   console.log(navigator.userAgent.indexOf("MSIE"));
   console.log(navigator.userAgent.indexOf("Edge"));
   if(navigator.userAgent.indexOf("MSIE")!=-1 || navigator.userAgent.indexOf("Edge") !=-1 || navigator.userAgent.indexOf("rv:11")!=-1) {
+    document.body.removeChild(document.getElementById("password-field")); 
+  } else {
     document.getElementById("password-field").style.display ="none"; 
   }
 
@@ -125,9 +127,17 @@ import Cookies from './vendor/js-cookie';
     d.querySelector("#password").setAttribute("type","password")
   })
 
+  d.getElementById('passwdLabel').addEventListener('change',(e)=>{
+    if (e.target.htmlFor == '' && hasClass(e.target,'active')) {
+      if (d.getElementById("password-field")) {
+        d.getElementById("password-field").style.display='block';
+      }
+    } 
+  });
+
   d.getElementById("password-field").addEventListener('click',(e)=> {
     c('password-field click',e)
-
+  
     let cName = d.getElementById("password-field").className;
     if(cName.indexOf("fa-eye") > -1) {
       e.target.classList.add("fa-eye")

@@ -352,14 +352,14 @@ document.addEventListener("DOMContentLoaded", function() {
     let opt = "";
     let aAccessRights = split(accessRights, ",");
     if (role !== "Custom") {
-      switch (role) {
-        case "User":
+      switch (role.toUpperCase()) {
+        case "USER":
           opt = "opt1";
           break;
-        case "Admin":
+        case "ADMIN":
           opt = "opt2";
           break;
-        case "Advanced User":
+        case "ADVANCED USER":
           opt = "opt3";
           break;
       }
@@ -589,12 +589,14 @@ document.addEventListener("DOMContentLoaded", function() {
       let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
       let accessString = _getAccessString(AccessSwitch);
       let userRole = _getUserRole();
+      let queryString = {};
       if (RunMode === "DEBUG") console.log(oldData);
       for (let prop in oldData) {
         if (hasOwnProperty.call(oldData, prop)) {
           console.log(prop);
           if (prop === "Role") {
-            if (oldData[prop] !== userRole) {
+            if (oldData[prop].toUpperCase() !== userRole.toUpperCase()) {
+              queryString.Role = userRole;
               console.warn(oldData[prop], userRole);
             } else {
               console.log(oldData[prop], userRole);
@@ -603,27 +605,42 @@ document.addEventListener("DOMContentLoaded", function() {
             if (prop === "AccessString") {
               if (oldData[prop] !== accessString) {
                 console.warn(oldData[prop], accessString);
+                queryString.AccessString = accessString;
               } else {
                 console.log(oldData[prop], accessString);
               }
             } else {
-              if (oldData[prop] !== document.getElementById(prop).value) {
-                console.warn(oldData[prop], document.getElementById(prop).value);
-              }else {
-                console.log(oldData[prop], document.getElementById(prop).value);
+              if (prop === 'ExpirateDate') {
+                if(oldData[prop] === null) oldData[prop] = '';
+                if ( oldData[prop] !==   document.getElementById(prop).value ) {
+                  queryString.ExpirateDate = document.getElementById(prop).value
+                  console.warn(oldData[prop], document.getElementById(prop).value);
+                } else {
+                  console.log(oldData[prop], document.getElementById(prop).value);
+                } 
+
+              } else {
+                if (oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
+                  queryString[prop] = document.getElementById(prop).value; 
+                  console.warn(oldData[prop], document.getElementById(prop).value);
+                }else {
+                  console.log(oldData[prop], document.getElementById(prop).value);
+                }
               }
-            }
+            } 
           }
         }
       }
+      if (RunMode === 'DEBUG') console.log(queryString);
+      return queryString;
     };
 
-    const _updateUser = () => {
-      let changesString = _getChanges();
-      if (changesString) {
+    const _updateUser = (oData) => {
+      let queryString = _getChanges();
+      if (queryString) {
         let data = {
-          userName: userName,
-          queryString: changesString
+          userName: oData.UserName,
+          queryString: queryString
         };
         execFetch("/updateuser", "POST", data)
           .then(d => {
@@ -1810,7 +1827,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .removeClass("disabled")
         .addClass("disabled");
     }
-    if (UserRole == "admin") {
+    if (UserRol.toUpperCase() == "ADMIN") {
       $("#settings").show();
     } else {
       $("#settings").hide();

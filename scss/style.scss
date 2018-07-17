@@ -173,7 +173,9 @@ body {
   background-color: #006495;
   animation: linear_loader 3s linear 1s infinite;
 }
-
+#password-field + .input-field label .active{
+  display: block;
+}
 
 @keyframes linear_loader {
     0% {

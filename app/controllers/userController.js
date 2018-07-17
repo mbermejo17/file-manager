@@ -91,6 +91,38 @@ exports.UserAdd = (req, res) => {
   });
 };
 
+exports.UserUpdate = (req, res) => {
+  let data = req.body;
+  let userName = data.userName;
+  let queryString = data.queryString;
+  let response = [];
+  let newData = '';
+
+  for(var propertyName in queryString) {
+    newData += `${propertyName} = '${queryString[propertyName]}',`;
+  }
+
+  newData   = newData.slice(1,-1);
+  
+  User.Update(newData, d => {
+    response.push(d);
+    console.log("d : ", d);
+    if (d.status === 'OK') {
+    makeUserPathIfNotExist(rootPath, result => {
+       if(!result) {
+        return res.status(200).json(response[0]);
+        console.log(result);
+       } else {
+        return res.status(200).json({"status":"FAIL","message":response[0].message +".<br>Error al crear Carpeta.","data":null });
+       } 
+    });
+    } else {
+        return res.status(200).json(d); 
+    }
+  });
+};
+
+
 exports.UserFindByName = (req, res, next) => {
   User.Find(
     `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate FROM Users WHERE UPPER(UserName) = '${req.query.userName.toUpperCase()}'`,
