@@ -12,6 +12,7 @@ const checkUser = require('../middleware/check-user');
 router.get("/", checkUser,UserController.Index);
 
 router.get("/dashboard", checkUser,UserController.Dashboard);
+router.get("/users", UserController.UserGetAll);
 
 //router.get("/id/:userId", UserController.GetUserById);
 

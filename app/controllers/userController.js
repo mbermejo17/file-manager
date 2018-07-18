@@ -125,7 +125,23 @@ exports.UserUpdate = (req, res) => {
     }
   });
 };
-
+exports.UserGetAll = (req, res, next) => {
+  User.All(
+    (data) => {
+      if (data.status == 'FAIL') {
+        console.log(status);
+        res.status(500).json({ status: "FAIL", message: status, data: null });
+      } else {
+            console.log(data);
+            return res.status(200).json({
+              status: "OK",
+              message: "Users found",
+              data: data.data
+            });
+        } 
+      }
+  );
+};
 
 exports.UserFindByName = (req, res, next) => {
   User.Find(

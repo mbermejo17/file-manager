@@ -863,3 +863,15 @@ $md-checkmark-color: #fff;
   box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22), 0 25px 55px 0 rgba(0, 0, 0, 0.21);
   cursor: default;
 }
+
+.md-select {
+  display: inline-block; 
+  font-family: inherit;
+  background-color: transparent;
+  width: 150px;
+  padding-left: 5px;
+  font-size: 1em;
+  color: rgba(0,0,0, 0.26);
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0, 0.12);
+}

@@ -37,8 +37,11 @@ document.addEventListener("DOMContentLoaded", function() {
                           </div>
                           <div class="row" id="searchUser">
                           <div class="input-field col s1 m1"></div>
-                            <div class="input-field col s5"><input id="searchUserName" type="text" autocomplete="off" />
-                            <label for="searchUserName">Search User</label></div>
+                            <div class="input-field col s5">
+                            <input id="searchUserName" type="hidden" autocomplete="off" />
+                            <label for="usersList">Search User</label></div>
+                            <select id="usersList" class="md-select">
+                            </select>  
                             <div class="input-field col s2">
                               <i class="fa fa-search" id="btnSearchUser"></i>
                             </div>
@@ -443,15 +446,38 @@ document.addEventListener("DOMContentLoaded", function() {
       });
   };
 
+
+  const LoadUsersList = (el) =>{
+    execFetch("/users", "GET")
+          .then(d => {
+            if (RunMode === "DEBUG") console.log(d);
+            let users = d.data;
+            let options = '';
+            for(let x=0 ; x < users.length ; x++) {
+              options += `<option id="${users[x].UserId}">${users[x].UserName}</option>`;
+            }
+            el.innerHTML = options;
+          })
+          .catch(e => {
+            showToast("Error al grabar los cambios para el usuario " + data.userName + ".<br>Err:" + e,"err");
+            if (RunMode === "DEBUG") console.log(e);
+          });
+  };
+  
+
+
+
   const editUser = () => {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let SearchUserModalContent = document.querySelector(
       "#searchUserModalContent"
     );
 
+    
     let containerOverlay = document.querySelector(".container-overlay");
     AddUserModalContent.style.display = "none";
     SearchUserModalContent.innerHTML = htmlSearchUserTemplate;
+    LoadUsersList(document.getElementById('usersList'));
     SearchUserModalContent.style.display = "block";
     containerOverlay.style.display = "block";
     SearchUserModalContent.addEventListener("keyup", e => {

@@ -93,12 +93,17 @@ UserModel.FindById = function(userId, callback) {
 
 UserModel.Update = function(data, callback) {
   console.log(data);
-  let sql = "UPDATE Users SET "+ data.queryString +" WHERE UPPER(UserName) = '"+ data.userName.toUpperCase() + "';";
+  let sql =
+    "UPDATE Users SET " +
+    data.queryString +
+    " WHERE UPPER(UserName) = '" +
+    data.userName.toUpperCase() +
+    "';";
   console.log(sql);
   dbOpen();
   db.run(sql, (err, row) => {
-    console.log('err',err);
-    console.log('row',row);
+    console.log("err", err);
+    console.log("row", row);
     if (err) {
       dbClose();
       console.error(err.message);
@@ -111,7 +116,7 @@ UserModel.Update = function(data, callback) {
       dbClose();
       callback({
         status: "OK",
-        message: 'Usuario ' + data.userName + 'actualizado',
+        message: "Usuario " + data.userName + "actualizado",
         data: null
       });
     }
@@ -209,7 +214,11 @@ UserModel.All = function(callback) {
       if (err) {
         dbClose();
         console.error(err.message);
-        callback(err.message, null);
+        callback({
+          status: "FAIL",
+          message: err.message,
+          data: null
+        });
       } else {
         allRows.push(row);
       }
@@ -218,10 +227,18 @@ UserModel.All = function(callback) {
       if (allRows.length >= 1) {
         dbClose();
         console.log(allRows);
-        callback(null, allRows);
+        callback({
+          status: "OK",
+          message: `${allRows.length} registros encontrados`,
+          data: allRows
+        });
       } else {
         dbClose();
-        callback(`No se encuentran registros`, null);
+        callback({
+          status: "FAIL",
+          message: err.message,
+          data: null
+        });
       }
     }
   );
