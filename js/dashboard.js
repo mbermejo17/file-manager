@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
     AllowDeleteFile,
     AllowDeleteFolder,
     AllowNewFolder,
-    AllowRename
+    AllowShareFile
   ] = AccessString.split(",");
   let RootPath = "/";
   let currentPath = RootPath;
@@ -27,8 +27,6 @@ document.addEventListener("DOMContentLoaded", function() {
   let aSelectedFolders = [];
   let aFolders = [];
   let aFiles = [];
-  let AllowRenameFolder = AllowRename;
-  let AllowRenameFile = AllowRename;
   let currentTopToast = 30;
   let topToast = 0;
   let htmlSearchUserTemplate = `<div id="searchUserModal">
@@ -129,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
                       <span class="lever"></span>On</label>
                     </div>
                     <span class="col s2">   </span>
-                    <span class="label-switch col s2">Rename</span>
+                    <span class="label-switch col s2>Share</span>
                     <div class="switch col s3">
                       <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
                       <span class="lever"></span>On       </label></div>
@@ -1640,11 +1638,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     <tr><td>Allow new Folder:</td><td>`;
     ModalContent += AllowNewFolder == "1" ? "Allow" : "Deny";
     ModalContent += `</td></tr>
-                    <tr><td>Allow rename Folder:</td><td>`;
-    ModalContent += AllowRenameFolder == "1" ? "Allow" : "Deny";
-    ModalContent += `</td></tr>
-                    <tr><td>Allow rename File:</td><td>`;
-    ModalContent += AllowRenameFile == "1" ? "Allow" : "Deny";
+                    <tr><td>Allow Share Files:</td><td>`;
+    ModalContent += AllowShareFile == "1" ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow delete Folder:</td><td>`;
     ModalContent += AllowDeleteFolder == "1" ? "Allow" : "Deny";
@@ -1832,11 +1827,11 @@ document.addEventListener("DOMContentLoaded", function() {
       $("#delete").removeClass("disabled");
       $("#delete").addClass("disabled");
     }
-    if (AllowRenameFolder === "1" && AllowRenameFile === "1") {
-      $("#rename").removeClass("disabled");
+    if (AllowShareFile === "1") {
+      $("#share").removeClass("disabled");
     } else {
-      $("#rename").removeClass("disabled");
-      $("#rename").addClass("disabled");
+      $("#share").removeClass("disabled");
+      $("#share").addClass("disabled");
     }
     if (AllowUpload == "1") {
       $("#upload").removeClass("disabled");

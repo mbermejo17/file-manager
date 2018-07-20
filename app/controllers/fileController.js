@@ -6,7 +6,9 @@ const fs = require('fs'),
   pathPrefix = '.\\repository\\',
   platform = require('os').platform,
   normalize = require('normalize-path'),
-  formidable = require('formidable')
+  formidable = require('formidable'),
+  uuidv4 = require('uuid/v4'),
+  Util = require('../models/util')
 
 let _getStats = (p) => {
   fs.stat(p, (err, stats) => {
@@ -20,6 +22,12 @@ let _getStats = (p) => {
     }
   })
 }
+
+
+let _getUID = () => {
+  let uid = uuidv4();
+  return uid.replace('-',':');
+};
 
 /* const read = (dir) =>
 fs.readdirSync(dir)
@@ -163,6 +171,35 @@ class FileController {
     console.log(normalize(pathPrefix + '\\' + fileName))
     res.download(normalize(pathPrefix + '\\' + fileName), fileName)
   }
+
+  shareFile( req, res, next ) {
+    let fileName = req.body.filename
+    let fileSize = req.body.fileSize
+    let path = req.body.path
+    let userName = req.body.userName
+    let destUserName = req.body.destUserName
+    let expirationDate = req.body.expirationDate
+    let uid = _getUID()
+    let data = {
+      UrlCode: uid,
+      User: userName,
+      DestUser: destUserName,
+      RealPath: path,
+      FileName: fielName,
+      Size: fileSize,
+      ExpirationDate: expirationDate,
+      State: 'Pending'
+    }
+    ModelUtil.Add(data,(d)=>{
+      console.log("d : ", d);
+      if (d.status === 'FAIL') {
+          return res.status(200).json({"status":"FAIL","message":d.message +".<br>Error al crear enlace compartido.","data":null });
+      } else {
+          return res.status(200).json(d); 
+      }
+    })
+  }
+  
 }
 
 module.exports = new FileController()
