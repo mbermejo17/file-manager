@@ -52,6 +52,38 @@ document.addEventListener("DOMContentLoaded", function() {
                             <div class="input-field col s1 m1"></div>
                             </div>
                         </div>`;
+
+let htmlShareFile = `<div id="shareFileModal">
+                        <div class="row"> 
+                          <div class="input-field col s12 m12"></div>
+                        </div>
+                        <div class="row" id="">
+                          <div class="input-field col s1 m1">
+                          </div>
+                          <div class="input-field col s5">
+                            <input id="destUserName" type="email" autocomplete="off" requidred/>
+                            <label for="destUserName">Enviar a</label>
+                          </div>
+                          <div class="input-field col s3 m3">
+                              <input class="datepicker" id="FileExpirateDate" type="date"/>
+                              <label for="FileExpirateDate">Expiration Date</label>
+                          </div>
+                          <div class="input-field col s3 m3">
+                          </div>
+                        </div>  
+                        <div class="row"> 
+                          <div class="input-field col s5 m5">
+                          </div>
+                          <div class="input-field col s3 m3">
+                            <button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-ShareFileCancel" type="submit" name="action">Cancel</button>
+                          </div>
+                          <div class="input-field col s3 m3">  
+                            <button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-ShareFileAccept" type="submit" name="action">Send</button>
+                          </div>
+                          <div class="input-field col s1 m1">
+                          </div>
+                        </div>    
+                      </div>`;                        
   let htmlUserFormTemplate = `
       <div id="AddUserModal">
           <h4 id ="userFormTitle" class="header2">New User</h4>
@@ -442,6 +474,48 @@ document.addEventListener("DOMContentLoaded", function() {
         );
         if (RunMode === "DEBUG") console.log(e);
       });
+  };
+
+  const shareFile = ()=>{
+    let searchUserModalContent = document.getElementById('searchUserModalContent');
+    let AddUserModalContent = document.getElementById('AddUserModalContent');
+    let containerOverlay = document.querySelector(".container-overlay");
+
+    /**/
+    searchUserModalContent.innerHTML= htmlShareFile;
+    AddUserModalContent.style.display = "none";
+    searchUserModalContent.style.display = "block";
+    containerOverlay.style.display = "block";
+    document.getElementById('btn-ShareFileCancel').addEventListener('click',(e)=>{
+      e.preventDefault();
+      searchUserModalContent.style.display = "none";
+      containerOverlay.style.display = "none";
+    });
+    document.getElementById('btn-ShareFileAccept').addEventListener('click',(e)=>{
+      e.preventDefault();
+      if (RunMode === 'DEBUG') console.log(document.getElementById('destUserName').value);
+      if (RunMode === 'DEBUG') console.log(document.getElementById('FileExpirateDate').value);
+      let data = {
+        fileName: aSelectedFiles[0],
+        fileSize: null,
+        path: getRealPath(currentPath),
+        userName: UserName,
+        destUserName: document.getElementById('destUserName').value,
+        expirationDate: document.getElementById('FileExpirateDate').value
+      } 
+      execFetch("/files/share", "POST", data)
+      .then((d) => {
+        if (RunMode === "DEBUG") console.log(d);
+        if(d.status === 'OK') {
+          searchUserModalContent.style.display = "none";
+          containerOverlay.style.display = "none";
+        }
+      })
+      .catch(e => {
+        showToast("Error al compartir archivo " + data.fileName + ".<br>Err:" + e,"err");
+        if (RunMode === "DEBUG") console.log(e);
+      });
+    });
   };
 
 
@@ -1901,6 +1975,20 @@ document.addEventListener("DOMContentLoaded", function() {
         case "refresh":
           refreshPath(currentPath);
           break;
+        case "share":
+        if (aSelectedFiles.length > 0) {
+          if (aSelectedFiles.length > 1) {
+            showToast(
+              "No pueden seleccionarse más de un archivo",
+              "err"
+            );
+            break;
+          }
+          shareFile();
+        } else {
+          showToast("No se han seleccionado archivo para compartir", "err");
+        }
+          break;   
         case "userLogout":
           $("#Usersdropdown").hide();
           $("#logoutmodal").show();

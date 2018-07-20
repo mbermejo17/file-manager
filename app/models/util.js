@@ -49,201 +49,22 @@ UtilModel.Close = function() {
   dbClose();
 };
 
-UtilModel.Find = function(queryString, callback) {
-  dbOpen();
-
-  db.get(queryString, (err, row) => {
-    if (err) {
-      dbClose();
-      console.error(err.message);
-      callback(err.message, null);
-    } else {
-      if (row) {
-        dbClose();
-        callback(null, row);
-      } else {
-        dbClose();
-        callback(`No se encuentran registros`, null);
-      }
-    }
-  });
-};
-
-UtilModel.FindById = function(userId, callback) {
-  let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate
-               FROM Users
-               WHERE UserId  = ?`;
-  dbOpen();
-  db.get(sql, [userId], (err, row) => {
-    if (err) {
-      dbClose();
-      console.error(err.message);
-      callback(err.message, null);
-    } else {
-      if (row) {
-        dbClose();
-        callback(null, row);
-      } else {
-        dbClose();
-        callback(`Usuario con id ${userId} no encontrado`, null);
-      }
-    }
-  });
-};
-
-UtilModel.Update = function(data, callback) {
-  console.log(data);
-  let sql =
-    "UPDATE Users SET " +
-    data.queryString +
-    " WHERE UPPER(UserName) = '" +
-    data.userName.toUpperCase() +
-    "';";
-  console.log(sql);
-  dbOpen();
-  db.run(sql, (err, row) => {
-    console.log("err", err);
-    console.log("row", row);
-    if (err) {
-      dbClose();
-      console.error(err.message);
-      callback({
-        status: "FAIL",
-        message: err.message,
-        data: null
-      });
-    } else {
-      dbClose();
-      callback({
-        status: "OK",
-        message: "Usuario " + data.userName + "actualizado",
-        data: null
-      });
-    }
-  });
-};
-
-UtilModel.Remove = function(userId, callback) {
-  let sql = `DELETE *
-             FROM Users
-             WHERE UserId  = ?`;
-  dbOpen();
-  db.get(sql, [userId], (err, row) => {
-    if (err) {
-      dbClose();
-      console.error(err.message);
-      callback(err.message, null);
-    } else {
-      if (row) {
-        dbClose();
-        console.log(row);
-        callback(null, row);
-      } else {
-        dbClose();
-        callback(`Usuario con id ${userId} no encontrado`, null);
-      }
-    }
-  });
-};
-
-UtilModel.FindByName = function(userName, callback) {
-  console.log(userName);
-  let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate
-               FROM Users
-               WHERE UPPER(UserName)  = ?`;
-  dbOpen();
-  db.get(sql, [userName.toUpperCase()], (err, row) => {
-    if (err) {
-      console.error(err.message);
-      dbClose();
-      callback({ status: "FAIL", message: err.message, data: null });
-    } else {
-      if (row) {
-        dbClose();
-        callback(null, row);
-      } else {
-        dbClose();
-        callback({
-          status: "FAIL",
-          message: `Usuario ${userName} no encontrado`,
-          data: null
-        });
-      }
-    }
-  });
-};
-
-UtilModel.All = function(callback) {
-  let sql = `SELECT UserName, UserId, UserPasswd, UserRole 
-               FROM Users`;
-  dbOpen();
-  let allRows = [];
-  db.each(
-    sql,
-    (err, row) => {
-      if (err) {
-        dbClose();
-        console.error(err.message);
-        callback({
-          status: "FAIL",
-          message: err.message,
-          data: null
-        });
-      } else {
-        allRows.push(row);
-      }
-    },
-    (err, count) => {
-      if (allRows.length >= 1) {
-        dbClose();
-        console.log(allRows);
-        callback({
-          status: "OK",
-          message: `${allRows.length} registros encontrados`,
-          data: allRows
-        });
-      } else {
-        dbClose();
-        callback({
-          status: "FAIL",
-          message: err.message,
-          data: null
-        });
-      }
-    }
-  );
-
-  /* db.get(sql, (err, row) => {
-      if (err) {
-          dbClose();
-          console.error(err.message);
-          callback(err.message, null);
-      } else {
-          dbClose();
-          console.log(row);
-          if (row) {
-              callback(null, row);
-          } else {
-              callback('No se encuentran registros', null);
-          }
-      }
-  }); */
-};
 
 UtilModel.Add = function(shareData, callback) {
   let response = {};
   if (!db) dbOpen();
   console.log("db handler: ", db);
-  stmt = db.prepare("INSERT INTO share VALUES (?,?,?,?,?,?,?,?)");
+  stmt = db.prepare("INSERT INTO Shared VALUES (?,?,?,?,?,?,?,?,?)");
   stmt.bind(
           null,
-          userData.userName,
-          Base64.decode(userData.userPassword),
-          userData.userRole,
-          userData.companyName,
-          userData.rootPath,
-          userData.accessRights,
-          userData.expirateDate
+          shareData.UrlCode,
+          shareData.User,
+          shareData.DestUser,
+          shareData.RealPath,
+          shareData.FileName,
+          shareData.Size,
+          shareData.ExpirationDate,
+          shareData.State
         );
         stmt.run(function(err, result) {
           //dbClose();
@@ -252,13 +73,13 @@ UtilModel.Add = function(shareData, callback) {
           } else {
             callback({
               status: "OK",
-              message: `Usuario ${userData.userName} añadido`,
-              data: null
+              message: `Se ha compartido el archivo ${shareData.FileName} con el usuario ${ shareData.DestUser}`,
+              data: {DestUser:  shareData.DestUser,
+                     UrlCode:  shareData.UrlCode
+                    }
             });
           }
         });
-      }
-  });
-};
+  };
 
 module.exports = UtilModel;
