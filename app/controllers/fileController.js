@@ -172,7 +172,26 @@ class FileController {
     res.download(normalize(pathPrefix + '\\' + fileName), fileName)
   }
 
+  shareFileDownload(req, res, next) {
+    let fileId = req.params.id
+    let fileRealPath = ''
+    let fileName = ''
+    console.log(fileId) 
+    Util.getById(fileId, (d) =>{
+      if(d.status == 'OK'){
+        console.log(d)
+        fileRealPath = d.data.RealPath
+        fileName = d.data.FileName
+        res.download(normalize(pathPrefix + fileRealPath +'/' +fileName), fileName)
+      } else {
+        return res.status(200).json({"status":"FAIL","message":d.message +".<br>Enlace no disponible.","data":null });
+      }
+    })
+    
+  }
+
   shareFile( req, res, next ) {
+    console.log(req.get('host'));
     let fileName = req.body.fileName
     let fileSize = req.body.fileSize
     let path = req.body.path
@@ -195,6 +214,7 @@ class FileController {
       if (d.status === 'FAIL') {
           return res.status(200).json({"status":"FAIL","message":d.message +".<br>Error al crear enlace compartido.","data":null });
       } else {
+          d.data.hostServer = req.get('host');
           return res.status(200).json(d); 
       }
     })

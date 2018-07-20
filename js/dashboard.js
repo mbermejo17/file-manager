@@ -226,6 +226,13 @@ let htmlShareFile = `<div id="shareFileModal">
             </li>
         </ul>`;
 
+
+  const sendEmail = (toEmail, fromEmail, subject, body_message) =>{
+     let mailto_link = 'mailto:' + toEmail + '?subject=' + subject + '&body=' + body_message;
+     let win = window.open(mailto_link,'emailWindow');
+      if (win && window.open && !window.closed) window.close();
+  };      
+
   const loadModule = (url, callback) => {
     var script = document.createElement("script");
 
@@ -498,7 +505,7 @@ let htmlShareFile = `<div id="shareFileModal">
       let data = {
         fileName: aSelectedFiles[0],
         fileSize: null,
-        path: getRealPath(currentPath),
+        path: currentPath,
         userName: UserName,
         destUserName: document.getElementById('destUserName').value,
         expirationDate: document.getElementById('FileExpirateDate').value
@@ -509,6 +516,10 @@ let htmlShareFile = `<div id="shareFileModal">
         if(d.status === 'OK') {
           searchUserModalContent.style.display = "none";
           containerOverlay.style.display = "none";
+          sendEmail(d.data.DestUser,
+            "mbermejo17@gmail.com",
+            "URL para descarga de archivo",
+            `Descarga de archivo https://${d.data.hostServer}/files/share/${d.data.UrlCode}`);
         }
       })
       .catch(e => {

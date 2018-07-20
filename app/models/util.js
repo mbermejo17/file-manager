@@ -7,7 +7,7 @@ const Base64 = require("js-base64").Base64;
 let UtilModel = {};
 let db;
 
-let dbOpen = function() {
+let dbOpen = function () {
   console.log(dbPath);
   console.log("db handler:", db);
   db = new sqlite3.Database(
@@ -24,7 +24,7 @@ let dbOpen = function() {
   );
 };
 
-let dbClose = function() {
+let dbClose = function () {
   db.close(err => {
     if (err) {
       console.error(err.message);
@@ -33,11 +33,11 @@ let dbClose = function() {
   });
 };
 
-UtilModel.Open = function() {
+UtilModel.Open = function () {
   dbOpen();
 };
 
-UtilModel.CreateTable = function() {
+UtilModel.CreateTable = function () {
   db.run("DROP TABLE IF EXISTS share");
   db.run(
     "CREATE TABLE IF NOT EXISTS share (UserId INTEGER PRIMARY KEY AUTOINCREMENT, UserName NCHAR(55), UserPasswd NCHAR(55),  UserRole NCHAR(55))"
@@ -45,41 +45,78 @@ UtilModel.CreateTable = function() {
   console.log("La tabla share ha sido correctamente creada");
 };
 
-UtilModel.Close = function() {
+UtilModel.Close = function () {
   dbClose();
 };
 
 
-UtilModel.Add = function(shareData, callback) {
+UtilModel.getById = function (fileId, callback) {
+  let response = {};
+  let sql = `SELECT *
+               FROM Shared
+               WHERE UrlCode  = ?`;
+  if (!db) dbOpen();
+  console.log("db handler: ", db);
+  db.get(sql, [fileId], (err, row) => {
+    if (err) {
+      dbClose();
+      console.error(err.message);
+      callback({
+        status: 'FAIL',
+        message: `Error ${err.message}`,
+        data: null
+      });
+    } else {
+      if (row) {
+        dbClose();
+        callback({
+          status: "OK",
+          message: "Archivo " + fileId + "encontrado.",
+          data: row
+        });
+      } else {
+        dbClose();
+        callback({
+          status: 'FAIL',
+          message: `Archivo con id ${fileId} no encontrado`,
+          data: null
+        });
+      }
+    }
+  });
+}
+
+UtilModel.Add = function (shareData, callback) {
   let response = {};
   if (!db) dbOpen();
   console.log("db handler: ", db);
   stmt = db.prepare("INSERT INTO Shared VALUES (?,?,?,?,?,?,?,?,?)");
   stmt.bind(
-          null,
-          shareData.UrlCode,
-          shareData.User,
-          shareData.DestUser,
-          shareData.RealPath,
-          shareData.FileName,
-          shareData.Size,
-          shareData.ExpirationDate,
-          shareData.State
-        );
-        stmt.run(function(err, result) {
-          //dbClose();
-          if (err) {
-            throw err;
-          } else {
-            callback({
-              status: "OK",
-              message: `Se ha compartido el archivo ${shareData.FileName} con el usuario ${ shareData.DestUser}`,
-              data: {DestUser:  shareData.DestUser,
-                     UrlCode:  shareData.UrlCode
-                    }
-            });
-          }
-        });
-  };
+    null,
+    shareData.UrlCode,
+    shareData.User,
+    shareData.DestUser,
+    shareData.RealPath,
+    shareData.FileName,
+    shareData.Size,
+    shareData.ExpirationDate,
+    shareData.State
+  );
+  stmt.run(function (err, result) {
+    //dbClose();
+    if (err) {
+      throw err;
+    } else {
+      callback({
+        status: "OK",
+        message: `Se ha compartido el archivo ${shareData.FileName} con el usuario ${ shareData.DestUser}`,
+        data: {
+          DestUser: shareData.DestUser,
+          UrlCode: shareData.UrlCode
+        }
+      });
+    }
+  });
+};
 
 module.exports = UtilModel;

@@ -18,5 +18,6 @@ router.post('/delete', checkAuth,FileController.deleteFiles)
 router.post('/deletefolder', checkAuth,FileController.deleteFolder)
 router.post('/upload',FileController.upload)
 router.post('/share',FileController.shareFile)
+router.get('/share/:id',FileController.shareFileDownload)
 
 module.exports = router;
