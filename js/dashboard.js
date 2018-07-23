@@ -1,11 +1,13 @@
 "use sctrict";
 import "babel-polyfill";
 import ajax from "./vendor/ajax";
-import { Base64 } from "js-base64";
+import {
+  Base64
+} from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   const UserName = Cookies.get("UserName");
   const UserRole = Cookies.get("UserRole");
   const CompanyName = Cookies.get("CompanyName");
@@ -53,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             </div>
                         </div>`;
 
-let htmlShareFile = `<div id="shareFileModal">
+  let htmlShareFile = `<div id="shareFileModal">
                         <div class="row"> 
                           <div class="input-field col s12 m12"></div>
                         </div>
@@ -83,7 +85,7 @@ let htmlShareFile = `<div id="shareFileModal">
                           <div class="input-field col s1 m1">
                           </div>
                         </div>    
-                      </div>`;                        
+                      </div>`;
   let htmlUserFormTemplate = `
       <div id="AddUserModal">
           <h4 id ="userFormTitle" class="header2">New User</h4>
@@ -227,36 +229,12 @@ let htmlShareFile = `<div id="shareFileModal">
         </ul>`;
 
 
-  const sendEmail = (toEmail, fromEmail, subject, body_message) =>{
-     let mailto_link = 'mailto:' + toEmail + '?subject=' + subject + '&body=' + body_message;
-     let win = window.open(mailto_link,'emailWindow');
-      if (win && window.open && !window.closed) window.close();
-  };      
-
-  const loadModule = (url, callback) => {
-    var script = document.createElement("script");
-
-    if (script.readyState) {
-      // IE
-      script.onreadystatechange = function() {
-        if (
-          script.readyState === "loaded" ||
-          script.readyState === "complete"
-        ) {
-          script.onreadystatechange = null;
-          callback();
-        }
-      };
-    } else {
-      // Others Browsers
-      script.onload = function() {
-        callback();
-      };
-    }
-
-    script.src = url;
-    document.getElementsByTagName("head")[0].appendChild(script);
+  const sendEmail = (toEmail, fromEmail, subject, body_message) => {
+    let mailto_link = 'mailto:' + toEmail + '?subject=' + subject + '&body=' + body_message;
+    let win = window.open(mailto_link, 'emailWindow');
+    if (win && window.open && !window.closed) window.close();
   };
+
 
   const logout = () => {
     Cookies.remove("UserName");
@@ -269,6 +247,12 @@ let htmlShareFile = `<div id="shareFileModal">
     Cookies.remove("AccessString");
     document.location.href = "/";
   };
+
+
+
+  //////////////////////////////////
+  //  Tools module
+  //////////////////////////////////
 
   const hasClass = (el, className) => {
     if (RunMode === "DEBUG") console.log(el);
@@ -295,6 +279,14 @@ let htmlShareFile = `<div id="shareFileModal">
       el.className = el.className.replace(reg, " ");
     }
   };
+
+  const cleanArray = (arr) => {
+    let temp = [];
+    for (let i of arr)
+      i && temp.push(i);
+    return temp;
+  };
+
 
   const execFetch = async (uri, met, data) => {
     const header = new Headers();
@@ -333,7 +325,7 @@ let htmlShareFile = `<div id="shareFileModal">
     x.classList.add(type);
     x.style.setProperty("--snackbarTop", newTopToast + "px");
     x.style.setProperty("--snackbarCurrentTop", newCurrentTopToast + "px");
-    setTimeout(function() {
+    setTimeout(function () {
       x.className = x.className.replace("show", "");
       if (topToast !== 0 && topToast > 5) {
         topToast = topToast - 5;
@@ -363,30 +355,9 @@ let htmlShareFile = `<div id="shareFileModal">
     return stringResult;
   };
 
-  const changePath = newPath => {
-    if (RunMode === "DEBUG") console.log("changePath:newPath ", newPath);
-    currentPath = newPath.trim();
-    refreshPath(currentPath);
-    refreshBarMenu();
-  };
-
-  const getRealPath = p => {
-    let rPath = "";
-    if (RunMode === "DEBUG") console.log("getRealPath:p ", p);
-    if (RunMode === "DEBUG")
-      console.log("getRealPath:realRootPath ", realRootPath);
-    if (p == "/" && (realRootPath === "/" || realRootPath.trim() === "")) {
-      rPath = p;
-    } else {
-      if (p == "/") {
-        rPath = "/" + realRootPath;
-      } else {
-        rPath = "/" + realRootPath + p;
-      }
-    }
-    if (RunMode === "DEBUG") console.log("getRealPath:rPath ", rPath);
-    return rPath;
-  };
+  /////////////////////////////////
+  //  End Tools
+  ////////////////////////////////
 
   const checkAccessRights = (AccessSwitch, role, accessRights) => {
     let opt = "";
@@ -462,6 +433,615 @@ let htmlShareFile = `<div id="shareFileModal">
     }
   };
 
+  
+
+
+  ////////////////////////////////////
+  // Files and Folder module
+  ///////////////////////////////////
+
+
+
+  const shareFile = () => {
+    let searchUserModalContent = document.getElementById('searchUserModalContent');
+    let AddUserModalContent = document.getElementById('AddUserModalContent');
+    let containerOverlay = document.querySelector(".container-overlay");
+
+    /**/
+    searchUserModalContent.innerHTML = htmlShareFile;
+    AddUserModalContent.style.display = "none";
+    searchUserModalContent.style.display = "block";
+    containerOverlay.style.display = "block";
+    document.getElementById('btn-ShareFileCancel').addEventListener('click', (e) => {
+      e.preventDefault();
+      searchUserModalContent.style.display = "none";
+      containerOverlay.style.display = "none";
+    });
+    document.getElementById('btn-ShareFileAccept').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (RunMode === 'DEBUG') console.log(document.getElementById('destUserName').value);
+      if (RunMode === 'DEBUG') console.log(document.getElementById('FileExpirateDate').value);
+      let data = {
+        fileName: aSelectedFiles[0],
+        fileSize: null,
+        path: currentPath,
+        userName: UserName,
+        destUserName: document.getElementById('destUserName').value,
+        expirationDate: document.getElementById('FileExpirateDate').value
+      }
+      execFetch("/files/share", "POST", data)
+        .then((d) => {
+          if (RunMode === "DEBUG") console.log(d);
+          if (d.status === 'OK') {
+            searchUserModalContent.style.display = "none";
+            containerOverlay.style.display = "none";
+            sendEmail(d.data.DestUser,
+              "mbermejo17@gmail.com",
+              "URL para descarga de archivo",
+              `Descarga de archivo https://194.224.194.134/files/share/${d.data.UrlCode}`);
+          }
+        })
+        .catch(e => {
+          showToast("Error al compartir archivo " + data.fileName + ".<br>Err:" + e, "err");
+          if (RunMode === "DEBUG") console.log(e);
+        });
+    });
+  };
+
+
+  const deleteSelected = () => {
+    if (RunMode === "DEBUG")
+      console.log("aSelectedFolders: ", aSelectedFolders.length);
+    if (aSelectedFolders.length > 0) {
+      showDialogYesNo(
+        "Delete foldes",
+        "Delete selected folders?",
+        y => {
+          $.when(deleteFolder(currentPath)).then(result => {
+            if (aSelectedFiles.length > 0) {
+              showDialogYesNo(
+                "Delete Files",
+                "Delete selected files?",
+                y => {
+                  deleteFile(currentPath);
+                },
+                n => {
+                  if (RunMode === "DEBUG") console.log("Delete Files Canceled");
+                }
+              );
+            }
+            document.getElementById("refresh").click();
+          });
+        },
+        n => {
+          if (RunMode === "DEBUG") console.log("Delete Folder Canceled");
+          if (aSelectedFiles.length > 0) {
+            showDialogYesNo(
+              "Delete Files",
+              "Delete selected files?",
+              y => {
+                deleteFile(currentPath);
+              },
+              n => {
+                if (RunMode === "DEBUG") console.log("Delete Files Canceled");
+              }
+            );
+          }
+        }
+      );
+    } else {
+      if (aSelectedFiles.length > 0) {
+        showDialogYesNo(
+          "Delete Files",
+          "Delete selected files?",
+          y => {
+            deleteFile(currentPath);
+          },
+          n => {
+            if (RunMode === "DEBUG") console.log("Delete Files Canceled");
+          }
+        );
+      }
+    }
+  };
+
+  const upload = () => {
+    let w = 32;
+    let h = 440;
+    let aListHandler = [];
+    let handlerCounter = 0;
+    let ModalTitle = "Subida de archivos";
+    let ModalContent = `<label class="file-input waves-effect waves-teal btn-flat btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>
+                        <span id="sFiles">Ningun archivo seleccionado</span>`;
+    ModalContent += htmlUploadDownloadTemplate;
+    let htmlContent = `<div id="modal-header">
+                          <h5>${ModalTitle}</h5>
+                          <a class="modal_close" id="modalClose" href="#"></a>
+                        </div>
+                        <div class="modal-content">
+                          <p>${ModalContent}</p>
+                      </div>
+                      <div class="modal-footer">
+                              <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
+                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel uploads</a>  
+                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Close</a>
+                      </div>`;
+
+    $("#upload")
+      .removeClass("disabled")
+      .addClass("disabled");
+
+    function fnUploadFile(formData, nFile, fileName) {
+      $("#li" + nFile).show();
+      $("#li-filename" + nFile).show();
+      $("#li-filename" + nFile).html(fileName);
+      let realpath = getRealPath(currentPath);
+      if (RunMode === "DEBUG") console.log("Upload:currentPath " + currentPath);
+      if (RunMode === "DEBUG")
+        console.log("Upload:realRootPath " + realRootPath);
+      if (RunMode === "DEBUG") console.log("Upload:realPath " + realpath);
+      $.ajax({
+        url: "/files/upload?destPath=" + realpath,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        timeout: 290000,
+        beforeSend: function (xhrObj) {
+          xhrObj.setRequestHeader("Authorization", "Bearer " + Token);
+          xhrObj.setRequestHeader("destPath", realpath);
+        },
+        success: function (data) {
+          if (RunMode === "DEBUG")
+            console.log(fileName + "upload successful!\n" + data);
+          showToast(fileName + " uploaded sucessfully", "success");
+          $("#abort" + nFile).hide();
+          $("#refresh").trigger("click");
+          handlerCounter = handlerCounter - 1;
+          if (handlerCounter == 0) {
+            $("#btnCancelAll")
+              .removeClass("disabled")
+              .addClass("disabled");
+          }
+        },
+        xhr: function () {
+          aListHandler[nFile] = new XMLHttpRequest();
+          let percentComplete = 0;
+          aListHandler[nFile].upload.addEventListener(
+            "progress",
+            function (evt) {
+              if (evt.lengthComputable) {
+                percentComplete = evt.loaded / evt.total;
+                percentComplete = parseInt(percentComplete * 100);
+                $("#percent" + nFile).text(percentComplete + "%");
+                $("#progress-bar" + nFile).width(percentComplete + "%");
+                /* if (percentComplete === 100) {
+                $('#refresh').trigger('click');
+              } */
+              }
+            },
+            false
+          );
+          return aListHandler[nFile];
+        }
+      });
+    }
+
+    $("#modal")
+      .html(htmlContent)
+      .css("width: " + w + "%;height: " + h + "px;text-align: center;");
+    //$('.modal-content').css('width: 350px;');
+    $(".modal-container").css("width: 40% !important");
+    $(".file-input").show();
+    $("#modal").show();
+    $("#lean-overlay").show();
+    $("#btnCloseUpload").on("click", e => {
+      $("#upload").removeClass("disabled");
+      $("#modal").hide();
+      $("#lean-overlay").hide();
+    });
+    $("#modalClose").on("click", e => {
+      $("#upload").removeClass("disabled");
+      $("#modal").hide();
+      $("#lean-overlay").hide();
+    });
+    $("#btnCancelAll").removeClass("disabled");
+    $(".modal_close").on("click", e => {
+      e.preventDefault();
+      if (RunMode === "DEBUG") console.log(e);
+      let n = parseInt(e.target.id.slice(-1));
+      aListHandler[n].abort();
+      let percentLabel = document.querySelector("#percent" + n);
+      let progressBar = document.querySelector("#progress-bar" + n);
+      progressBar.innerHTML = "Canceled by user";
+      percentLabel.innerHTML = "";
+      progressBar.style.color = "red";
+      progressBar.style.width = "100%";
+      progressBar.style.backgroundColor = "white";
+      $(e.target).hide();
+    });
+    $("#btnCancelAll").on("click", e => {
+      for (let x = 0; x < 4; x++) {
+        aListHandler[x].abort();
+        let percentLabel = document.querySelector("#percent" + x);
+        let progressBar = document.querySelector("#progress-bar" + x);
+        progressBar.innerHTML = "Canceled by user";
+        percentLabel.innerHTML = "";
+        progressBar.style.color = "red";
+        progressBar.style.width = "100%";
+        progressBar.style.backgroundColor = "white";
+      }
+      $("#btnCancelAll").addClass("disabled");
+    });
+    $("#upload-input").on("change", function () {
+      var files = $(this).get(0).files;
+      if (validateSize(this) == true) {
+        handlerCounter = files.length;
+        files.length > 0 ?
+          $("#sFiles").html(files.length + " archivos seleccionados.") :
+          $("#sFiles").html(files[0]);
+        if (RunMode === "DEBUG") console.log(files.length);
+        $(".file-input").hide();
+        if (files.length > 0 && files.length <= 5) {
+          $("#btnCloseUpload")
+            .removeClass("disabled")
+            .addClass("disabled");
+          for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var formData = new FormData();
+            // add the files to formData object for the data payload
+
+            formData.append("uploads[]", file, file.name);
+            fnUploadFile(formData, i, file.name);
+          }
+          $("#btnCloseUpload").removeClass("disabled");
+        } else {
+          showToast("No se pueden subir más de 5 archivos a la vez", "err");
+        }
+      } else {
+        showToast("Error: maxFileSize 700MB exceeded", "err");
+      }
+    });
+  };
+
+  const newFolder = folderName => {
+    const headers = new Headers();
+    headers.append("Authorization", "Bearer " + Token);
+    headers.append("Content-Type", "application/json");
+    fetch("/files/newfolder", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          path: getRealPath(currentPath),
+          folderName: folderName
+        }),
+        timeout: 10000
+      })
+      .then(FetchHandleErrors)
+      .then(r => r.json())
+      .then(data => {
+        if (RunMode === "DEBUG") console.log(data);
+        if (data.status == "OK") {
+          $("#modal").hide();
+          $("#lean-overlay").hide();
+          $("#refresh").trigger("click");
+          showToast("Creada nueva carpeta " + data.data.folderName, "success");
+        }
+      })
+      .catch(err => {
+        if (RunMode === "DEBUG") console.log(err);
+      });
+  };
+  const deleteFile = path => {
+    const headers = new Headers();
+    let x = 0;
+    let aF = aSelectedFiles.slice();
+    if (RunMode === "DEBUG") console.log(aF);
+    headers.append("Authorization", "Bearer " + Token);
+    headers.append("Content-Type", "application/json");
+    $("#waiting").addClass("active");
+    for (x = 0; x < aF.length; x++) {
+      if (RunMode === "DEBUG") console.log("Deleting file " + aF[x] + " ...");
+      fetch("/files/delete", {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            path: getRealPath(path),
+            fileName: aF[x]
+          }),
+          timeout: 720000
+        })
+        .then(FetchHandleErrors)
+        .then(r => r.json())
+        .then(data => {
+          if (RunMode === "DEBUG") console.log(data);
+          if (data.status == "OK") {
+            aSelectedFiles.shift();
+            $(".toast")
+              .removeClass("success")
+              .addClass("success");
+            showToast("Archivo " + data.data.fileName + " borrado", "success");
+            $("#refresh").trigger("click");
+          }
+        })
+        .catch(err => {
+          if (RunMode === "DEBUG") console.log(err);
+          $(".toast")
+            .removeClass("err")
+            .addClass("err");
+          showToast(err, "err");
+        });
+    }
+    $("#waiting").removeClass("active");
+  };
+
+  const deleteFolder = path => {
+    const headers = new Headers();
+    let x = 0;
+    let aF = aSelectedFolders.slice();
+    if (RunMode === "DEBUG") console.log(aF);
+    headers.append("Authorization", "Bearer " + Token);
+    headers.append("Content-Type", "application/json");
+    $("#waiting").addClass("active");
+    for (x = 0; x < aF.length; x++) {
+      if (RunMode === "DEBUG") console.log("Deleting folder " + aF[x] + " ...");
+      fetch("/files/delete", {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            path: getRealPath(path),
+            fileName: aF[x]
+          }),
+          timeout: 720000
+        })
+        .then(FetchHandleErrors)
+        .then(r => r.json())
+        .then(data => {
+          if (RunMode === "DEBUG") console.log(data);
+          if (data.status == "OK") {
+            $(".toast")
+              .removeClass("success")
+              .addClass("success");
+            showToast("Carpeta " + data.data.fileName + " borrada", "success");
+            aSelectedFolders.shift();
+            $("#waiting").removeClass("active");
+          }
+        })
+        .catch(err => {
+          if (RunMode === "DEBUG") console.log(err);
+          $("#waiting").removeClass("active");
+        });
+    }
+    $("#waiting").removeClass("active");
+  };
+
+  //TODO: Optimizar renderizado de elementos li
+  //incorporando el contenido en el bucle _loop
+  const download = (fileList, text) => {
+    let reqList = [],
+      handlerCount = 0,
+      responseTimeout = [];
+    let w = 32;
+    let h = 440;
+    let ModalTitle = "Descarga de archivos seleccionados";
+    let ModalContent = htmlUploadDownloadTemplate;
+    let htmlContent = `<div id="modal-header">
+                          <h5>${ModalTitle}</h5>
+                          <a class="modal_close" id="modalClose" href="#"></a>
+                      </div>
+                      <div class="modal-content">
+                          <p>${ModalContent}</p>
+                      </div>
+                      <div class="modal-footer">
+                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel downloads</a>
+                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>
+                      </div>`;
+    $("#modal")
+      .html(htmlContent)
+      .css("width: " + w + "%;height: " + h + "px;text-align: center;");
+    //$('.modal-content').css('width: 350px;');
+    $(".modal").css("width: 40% !important");
+    document.querySelector("#modal").style.display = "block";
+    document.querySelector("#lean-overlay").style.display = "block";
+    document.querySelector("#btnCancelAll").classList.add("disabled");
+
+    $("#download").addClass("disabled");
+    $("#btnCloseDownload").on("click", e => {
+      $("#download").removeClass("disabled");
+      $("#modal").hide();
+      $("#lean-overlay").hide();
+      $("#refresh").trigger("click");
+      aSelectedFiles = [];
+    });
+    $("#modalClose").on("click", e => {
+      $("#download").removeClass("disabled");
+      $("#modal").hide();
+      $("#lean-overlay").hide();
+      $("#refresh").trigger("click");
+      aSelectedFiles = [];
+    });
+    $("#waiting").addClass("active");
+    $("#btnCancelAll").on("click", e => {
+      for (let x = 0; x < 4; x++) {
+        reqList[x].abort();
+        let percentLabel = document.querySelector("#percent" + x);
+        let progressBar = document.querySelector("#progress-bar" + x);
+        progressBar.innerHTML = "Canceled by user";
+        percentLabel.innerHTML = "";
+        progressBar.style.color = "red";
+        progressBar.style.width = "100%";
+        progressBar.style.backgroundColor = "white";
+      }
+      $("#btnCancelAll").addClass("disabled");
+    });
+    $(".modal_close").on("click", e => {
+      e.preventDefault();
+      let n = parseInt(e.target.id.slice(-1));
+      reqList[n].abort();
+      let percentLabel = document.querySelector("#percent" + n);
+      let progressBar = document.querySelector("#progress-bar" + n);
+      progressBar.innerHTML = "Canceled by user";
+      percentLabel.innerHTML = "";
+      progressBar.style.color = "red";
+      progressBar.style.width = "100%";
+      progressBar.style.backgroundColor = "white";
+    });
+
+    $("#btnCancelAll").removeClass("disabled");
+    let _loop = i => {
+      let fName = fileList[i];
+      let liNumber = document.querySelector("#li" + i);
+      let liFilename = document.querySelector("#li-filename" + i);
+      let progressBar = document.querySelector("#progress-bar" + i);
+      let percentLabel = document.querySelector("#percent" + i);
+      responseTimeout[i] = false;
+      fName = fName
+        .split("\\")
+        .pop()
+        .split("/")
+        .pop();
+      reqList[i] = new XMLHttpRequest();
+      reqList[i].open("POST", "/files/download", true);
+      reqList[i].responseType = "arraybuffer";
+      liNumber.style.display = "block";
+      liFilename.innerHTML = fName;
+      reqList[i].timeout = 36000;
+      reqList[i].ontimeout = function () {
+        if (RunMode === "DEBUG")
+          console.log(
+            "** Timeout error ->File:" +
+            fName +
+            " " +
+            reqList[i].status +
+            " " +
+            reqList[i].statusText
+          );
+        // handlerCount = handlerCount - 1
+        progressBar.innerHTML = "Timeout Error";
+        percentLabel.innerHTML = "";
+        progressBar.style.color = "red";
+        progressBar.style.width = "100%";
+        progressBar.style.backgroundColor = "white";
+        progressBar.classList.add("blink");
+        responseTimeout[i] = true;
+      };
+      reqList[i].onprogress = function (evt) {
+        if (evt.lengthComputable) {
+          var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+          progressBar.style.width = percentComplete + "%";
+          percentLabel.innerHTML = percentComplete + "%";
+        }
+      };
+      reqList[i].onerror = function () {
+        if (RunMode === "DEBUG")
+          console.log(
+            "** An error occurred during the transaction ->File:" +
+            fName +
+            " " +
+            req.status +
+            " " +
+            req.statusText
+          );
+        handlerCount = handlerCount - 1;
+        percentLabel.innerHTML = "Error";
+        percentLabel.style.color = "red";
+        $("#abort" + i).hide();
+      };
+      reqList[i].onloadend = function () {
+        handlerCount = handlerCount - 1;
+        if (!responseTimeout[i]) {
+          progressBar.style.width = "100%";
+          percentLabel.innerHTML = "100%";
+          $("#abort" + i).hide();
+        }
+        if (handlerCount === 0) {
+          $("#download-end").show();
+          $("#btnCancelAll")
+            .removeClass("disabled")
+            .addClass("disabled");
+          $("#refresh").trigger("click");
+        }
+        if (RunMode === "DEBUG")
+          console.log("File " + handlerCount + " downloaded");
+      };
+      reqList[i].onloadstart = function () {
+        handlerCount = handlerCount + 1;
+        progressBar.style.width = "0";
+        percentLabel.innerHTML = "0%";
+      };
+      reqList[i].onload = function () {
+        if (reqList[i].readyState === 4 && reqList[i].status === 200) {
+          var filename = "";
+          var disposition = reqList[i].getResponseHeader("Content-Disposition");
+          if (disposition && disposition.indexOf("attachment") !== -1) {
+            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            var matches = filenameRegex.exec(disposition);
+            if (matches != null && matches[1])
+              filename = matches[1].replace(/['"]/g, "");
+          }
+          var type = reqList[i].getResponseHeader("Content-Type");
+          var blob = new Blob([this.response], {
+            type: type
+          });
+          if (typeof window.navigator.msSaveBlob !== "undefined") {
+            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+            window.navigator.msSaveBlob(blob, filename);
+          } else {
+            var URL = window.URL || window.webkitURL;
+            var downloadUrl = URL.createObjectURL(blob);
+
+            if (filename) {
+              // use HTML5 a[download] attribute to specify filename
+              var a = document.createElement("a");
+              // safari doesn't support this yet
+              if (typeof a.download === "undefined") {
+                window.location = downloadUrl;
+                preloader.style.display = "none";
+              } else {
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                // preloader.style.display = 'none'
+              }
+            } else {
+              window.open = downloadUrl;
+              // preloader.style.display = 'none'
+            }
+
+            setTimeout(function () {
+              URL.revokeObjectURL(downloadUrl);
+            }, 100); // cleanup
+          }
+        }
+      };
+      reqList[i].setRequestHeader(
+        "Content-type",
+        "application/x-www-form-urlencoded"
+      );
+      if (RunMode === "DEBUG")
+        console.log(getRealPath(currentPath) + "/" + fileList[i]);
+      reqList[i].send(
+        serializeObject({
+          filename: getRealPath(currentPath) + "/" + fileList[i]
+        })
+      );
+    };
+    for (var i = 0; i < fileList.length; i++) {
+      _loop(i);
+    }
+    $("#waiting").removeClass("active");
+  };
+
+
+  ///////////////////////////////////
+  // End Files and fFolders module
+  //////////////////////////////////
+
+  ////////////////////////////////////
+  // Users manage module
+  ///////////////////////////////////
+
   const searchUserName = userName => {
     if (RunMode === "DEBUG") console.log(userName);
 
@@ -483,72 +1063,23 @@ let htmlShareFile = `<div id="shareFileModal">
       });
   };
 
-  const shareFile = ()=>{
-    let searchUserModalContent = document.getElementById('searchUserModalContent');
-    let AddUserModalContent = document.getElementById('AddUserModalContent');
-    let containerOverlay = document.querySelector(".container-overlay");
 
-    /**/
-    searchUserModalContent.innerHTML= htmlShareFile;
-    AddUserModalContent.style.display = "none";
-    searchUserModalContent.style.display = "block";
-    containerOverlay.style.display = "block";
-    document.getElementById('btn-ShareFileCancel').addEventListener('click',(e)=>{
-      e.preventDefault();
-      searchUserModalContent.style.display = "none";
-      containerOverlay.style.display = "none";
-    });
-    document.getElementById('btn-ShareFileAccept').addEventListener('click',(e)=>{
-      e.preventDefault();
-      if (RunMode === 'DEBUG') console.log(document.getElementById('destUserName').value);
-      if (RunMode === 'DEBUG') console.log(document.getElementById('FileExpirateDate').value);
-      let data = {
-        fileName: aSelectedFiles[0],
-        fileSize: null,
-        path: currentPath,
-        userName: UserName,
-        destUserName: document.getElementById('destUserName').value,
-        expirationDate: document.getElementById('FileExpirateDate').value
-      } 
-      execFetch("/files/share", "POST", data)
-      .then((d) => {
+  const LoadUsersList = (el) => {
+    execFetch("/users", "GET")
+      .then(d => {
         if (RunMode === "DEBUG") console.log(d);
-        if(d.status === 'OK') {
-          searchUserModalContent.style.display = "none";
-          containerOverlay.style.display = "none";
-          sendEmail(d.data.DestUser,
-            "mbermejo17@gmail.com",
-            "URL para descarga de archivo",
-            `Descarga de archivo https://${d.data.hostServer}/files/share/${d.data.UrlCode}`);
+        let users = d.data;
+        let options = '';
+        for (let x = 0; x < users.length; x++) {
+          options += `<option id="${users[x].UserId}">${users[x].UserName}</option>`;
         }
+        el.innerHTML = options;
       })
       .catch(e => {
-        showToast("Error al compartir archivo " + data.fileName + ".<br>Err:" + e,"err");
+        showToast("Error al grabar los cambios para el usuario " + data.userName + ".<br>Err:" + e, "err");
         if (RunMode === "DEBUG") console.log(e);
       });
-    });
   };
-
-
-  const LoadUsersList = (el) =>{
-    execFetch("/users", "GET")
-          .then(d => {
-            if (RunMode === "DEBUG") console.log(d);
-            let users = d.data;
-            let options = '';
-            for(let x=0 ; x < users.length ; x++) {
-              options += `<option id="${users[x].UserId}">${users[x].UserName}</option>`;
-            }
-            el.innerHTML = options;
-          })
-          .catch(e => {
-            showToast("Error al grabar los cambios para el usuario " + data.userName + ".<br>Err:" + e,"err");
-            if (RunMode === "DEBUG") console.log(e);
-          });
-  };
-  
-
-
 
   const editUser = () => {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
@@ -556,7 +1087,7 @@ let htmlShareFile = `<div id="shareFileModal">
       "#searchUserModalContent"
     );
 
-    
+
     let containerOverlay = document.querySelector(".container-overlay");
     AddUserModalContent.style.display = "none";
     SearchUserModalContent.innerHTML = htmlSearchUserTemplate;
@@ -581,6 +1112,7 @@ let htmlShareFile = `<div id="shareFileModal">
         containerOverlay.style.display = "none";
       });
   };
+
 
   const selectRole = (element, role) => {
     if (RunMode === "DEBUG") console.log(role);
@@ -676,7 +1208,7 @@ let htmlShareFile = `<div id="shareFileModal">
 
     let sel = document.querySelector("select");
 
-    $(".AccessRightsSwitch").change(function() {
+    $(".AccessRightsSwitch").change(function () {
       if ($(this).is(":checked")) {
         if (RunMode === "DEBUG") console.log("Is checked");
       } else {
@@ -720,23 +1252,23 @@ let htmlShareFile = `<div id="shareFileModal">
               }
             } else {
               if (prop === 'ExpirateDate') {
-                if(oldData[prop] === null) oldData[prop] = '';
-                if ( oldData[prop] !==   document.getElementById(prop).value ) {
+                if (oldData[prop] === null) oldData[prop] = '';
+                if (oldData[prop] !== document.getElementById(prop).value) {
                   queryString.ExpirateDate = document.getElementById(prop).value
                   console.warn(oldData[prop], document.getElementById(prop).value);
                 } else {
                   console.log(oldData[prop], document.getElementById(prop).value);
-                } 
+                }
 
               } else {
                 if (oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
-                  queryString[prop] = document.getElementById(prop).value; 
+                  queryString[prop] = document.getElementById(prop).value;
                   console.warn(oldData[prop], document.getElementById(prop).value);
-                }else {
+                } else {
                   console.log(oldData[prop], document.getElementById(prop).value);
                 }
               }
-            } 
+            }
           }
         }
       }
@@ -763,9 +1295,9 @@ let htmlShareFile = `<div id="shareFileModal">
           .catch(e => {
             showToast(
               "Error al grabar los cambios para el usuario " +
-                data.userName +
-                ".<br>Err:" +
-                e,
+              data.userName +
+              ".<br>Err:" +
+              e,
               "err"
             );
             if (RunMode === "DEBUG") console.log(e);
@@ -839,63 +1371,12 @@ let htmlShareFile = `<div id="shareFileModal">
     };
   };
 
-  const deleteSelected = () => {
-    if (RunMode === "DEBUG")
-      console.log("aSelectedFolders: ", aSelectedFolders.length);
-    if (aSelectedFolders.length > 0) {
-      showDialogYesNo(
-        "Delete foldes",
-        "Delete selected folders?",
-        y => {
-          $.when(deleteFolder(currentPath)).then(result => {
-            if (aSelectedFiles.length > 0) {
-              showDialogYesNo(
-                "Delete Files",
-                "Delete selected files?",
-                y => {
-                  deleteFile(currentPath);
-                },
-                n => {
-                  if (RunMode === "DEBUG") console.log("Delete Files Canceled");
-                }
-              );
-            }
-            document.getElementById("refresh").click();
-          });
-        },
-        n => {
-          if (RunMode === "DEBUG") console.log("Delete Folder Canceled");
-          if (aSelectedFiles.length > 0) {
-            showDialogYesNo(
-              "Delete Files",
-              "Delete selected files?",
-              y => {
-                deleteFile(currentPath);
-              },
-              n => {
-                if (RunMode === "DEBUG") console.log("Delete Files Canceled");
-              }
-            );
-          }
-        }
-      );
-    } else {
-      if (aSelectedFiles.length > 0) {
-        showDialogYesNo(
-          "Delete Files",
-          "Delete selected files?",
-          y => {
-            deleteFile(currentPath);
-          },
-          n => {
-            if (RunMode === "DEBUG") console.log("Delete Files Canceled");
-          }
-        );
-      }
-    }
-  };
+////////////////////////////////////
+// End user manage module
+///////////////////////////////////
+  
 
-  const FetchHandleErrors = function(response) {
+  const FetchHandleErrors = function (response) {
     if (!response.ok) {
       //throw Error(response.statusText);
       if (response.statusCode == 401) {
@@ -904,193 +1385,250 @@ let htmlShareFile = `<div id="shareFileModal">
     }
     return response;
   };
-  const upload = () => {
-    let w = 32;
-    let h = 440;
-    let aListHandler = [];
-    let handlerCounter = 0;
-    let ModalTitle = "Subida de archivos";
-    let ModalContent = `<label class="file-input waves-effect waves-teal btn-flat btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>
-                        <span id="sFiles">Ningun archivo seleccionado</span>`;
-    ModalContent += htmlUploadDownloadTemplate;
-    let htmlContent = `<div id="modal-header">
-                          <h5>${ModalTitle}</h5>
-                          <a class="modal_close" id="modalClose" href="#"></a>
-                        </div>
-                        <div class="modal-content">
-                          <p>${ModalContent}</p>
-                      </div>
-                      <div class="modal-footer">
-                              <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
-                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel uploads</a>  
-                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Close</a>
-                      </div>`;
+  
 
-    $("#upload")
-      .removeClass("disabled")
-      .addClass("disabled");
+ 
+  
+  ///////////////////////////////
+  // Path handler
+  //////////////////////////////
 
-    function fnUploadFile(formData, nFile, fileName) {
-      $("#li" + nFile).show();
-      $("#li-filename" + nFile).show();
-      $("#li-filename" + nFile).html(fileName);
-      let realpath = getRealPath(currentPath);
-      if (RunMode === "DEBUG") console.log("Upload:currentPath " + currentPath);
-      if (RunMode === "DEBUG")
-        console.log("Upload:realRootPath " + realRootPath);
-      if (RunMode === "DEBUG") console.log("Upload:realPath " + realpath);
-      $.ajax({
-        url: "/files/upload?destPath=" + realpath,
-        type: "POST",
-        data: formData,
-        processData: false,
-        contentType: false,
-        timeout: 290000,
-        beforeSend: function(xhrObj) {
-          xhrObj.setRequestHeader("Authorization", "Bearer " + Token);
-          xhrObj.setRequestHeader("destPath", realpath);
-        },
-        success: function(data) {
-          if (RunMode === "DEBUG")
-            console.log(fileName + "upload successful!\n" + data);
-          showToast(fileName + " uploaded sucessfully", "success");
-          $("#abort" + nFile).hide();
-          $("#refresh").trigger("click");
-          handlerCounter = handlerCounter - 1;
-          if (handlerCounter == 0) {
-            $("#btnCancelAll")
-              .removeClass("disabled")
-              .addClass("disabled");
-          }
-        },
-        xhr: function() {
-          aListHandler[nFile] = new XMLHttpRequest();
-          let percentComplete = 0;
-          aListHandler[nFile].upload.addEventListener(
-            "progress",
-            function(evt) {
-              if (evt.lengthComputable) {
-                percentComplete = evt.loaded / evt.total;
-                percentComplete = parseInt(percentComplete * 100);
-                $("#percent" + nFile).text(percentComplete + "%");
-                $("#progress-bar" + nFile).width(percentComplete + "%");
-                /* if (percentComplete === 100) {
-                $('#refresh').trigger('click');
-              } */
-              }
-            },
-            false
-          );
-          return aListHandler[nFile];
-        }
-      });
+  // change path event 
+  const changePath = (newPath) => {
+    let fullNewPath = '';
+    if (RunMode === "DEBUG") console.log("changePath:newPath ", newPath);
+    if (newPath !== '/') {
+      fullNewPath = getNewPath(newPath);
+    } else {
+      fullNewPath = newPath;
     }
-
-    $("#modal")
-      .html(htmlContent)
-      .css("width: " + w + "%;height: " + h + "px;text-align: center;");
-    //$('.modal-content').css('width: 350px;');
-    $(".modal-container").css("width: 40% !important");
-    $(".file-input").show();
-    $("#modal").show();
-    $("#lean-overlay").show();
-    $("#btnCloseUpload").on("click", e => {
-      $("#upload").removeClass("disabled");
-      $("#modal").hide();
-      $("#lean-overlay").hide();
-    });
-    $("#modalClose").on("click", e => {
-      $("#upload").removeClass("disabled");
-      $("#modal").hide();
-      $("#lean-overlay").hide();
-    });
-    $("#btnCancelAll").removeClass("disabled");
-    $(".modal_close").on("click", e => {
-      e.preventDefault();
-      if (RunMode === "DEBUG") console.log(e);
-      let n = parseInt(e.target.id.slice(-1));
-      aListHandler[n].abort();
-      let percentLabel = document.querySelector("#percent" + n);
-      let progressBar = document.querySelector("#progress-bar" + n);
-      progressBar.innerHTML = "Canceled by user";
-      percentLabel.innerHTML = "";
-      progressBar.style.color = "red";
-      progressBar.style.width = "100%";
-      progressBar.style.backgroundColor = "white";
-      $(e.target).hide();
-    });
-    $("#btnCancelAll").on("click", e => {
-      for (let x = 0; x < 4; x++) {
-        aListHandler[x].abort();
-        let percentLabel = document.querySelector("#percent" + x);
-        let progressBar = document.querySelector("#progress-bar" + x);
-        progressBar.innerHTML = "Canceled by user";
-        percentLabel.innerHTML = "";
-        progressBar.style.color = "red";
-        progressBar.style.width = "100%";
-        progressBar.style.backgroundColor = "white";
-      }
-      $("#btnCancelAll").addClass("disabled");
-    });
-    $("#upload-input").on("change", function() {
-      var files = $(this).get(0).files;
-      if (validateSize(this) == true) {
-        handlerCounter = files.length;
-        files.length > 0
-          ? $("#sFiles").html(files.length + " archivos seleccionados.")
-          : $("#sFiles").html(files[0]);
-        if (RunMode === "DEBUG") console.log(files.length);
-        $(".file-input").hide();
-        if (files.length > 0 && files.length <= 5) {
-          $("#btnCloseUpload")
-            .removeClass("disabled")
-            .addClass("disabled");
-          for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            var formData = new FormData();
-            // add the files to formData object for the data payload
-
-            formData.append("uploads[]", file, file.name);
-            fnUploadFile(formData, i, file.name);
-          }
-          $("#btnCloseUpload").removeClass("disabled");
-        } else {
-          showToast("No se pueden subir más de 5 archivos a la vez", "err");
-        }
-      } else {
-        showToast("Error: maxFileSize 700MB exceeded", "err");
-      }
-    });
+    if (RunMode === "DEBUG") console.log("changePath:fullNewPath ", fullNewPath);
+    currentPath = fullNewPath.trim();
+    refreshPath(currentPath);
+    refreshBarMenu();
   };
 
-  const newFolder = folderName => {
+  // get New path
+  const getNewPath = (pathSelected) => {
+    let splitPath = currentPath.split('/');
+    let newPath = '';
+    let temp = [];
+
+    splitPath = cleanArray(splitPath);
+
+    if (RunMode === 'DEBUG') console.log('Current Path: ', currentPath);
+    if (RunMode === 'DEBUG') console.log('Path Selected: ', pathSelected);
+    if (RunMode === 'DEBUG') console.log('splitPath : ', splitPath);
+    if (splitPath.length == 0) {
+      newPath += '/' + pathSelected;
+    } else {
+      for (let x = 0; x < splitPath.length; x++) {
+        if (splitPath[x] !== pathSelected) {
+          newPath += '/' + splitPath[x];
+        } else {
+          if (splitPath[x] === pathSelected) {
+            newPath += '/' + splitPath[x];
+            if (RunMode === 'DEBUG') console.log('New Path: ', newPath);
+            return newPath;
+          }
+        }
+      }
+      newPath += '/' + pathSelected
+    }
+    if (RunMode === 'DEBUG') console.log('New Path: ', newPath);
+    return newPath;
+  };
+
+
+  // go back Folder
+  const goBackFolder = (folder) => {
+    let newPath = '';
+    let splitPath = currentPath.split('/');
+
+    if (RunMode === "DEBUG") console.log("goBackFolder:folder ", folder);
+    if (RunMode === "DEBUG") console.log("goBackFolder:currentPath ", currentPath);
+
+    splitPath = cleanArray(splitPath);
+    splitPath.pop();
+
+    if (currentPath !== "/" && folder == "..") {
+      if (splitPath.length > 0) {
+        newPath += splitPath[splitPath.length - 1];
+      } else {
+        newPath = '/';
+      }
+    }
+
+    if (RunMode === "DEBUG") console.log("goBackFolder:newPath " + newPath);
+    changePath(newPath.trim());
+  };
+
+  // get real path
+  const getRealPath = p => {
+    let rPath = "";
+    if (RunMode === "DEBUG") console.log("getRealPath:p ", p);
+    if (RunMode === "DEBUG")
+      console.log("getRealPath:realRootPath ", realRootPath);
+    if (p == "/" && (realRootPath === "/" || realRootPath.trim() === "")) {
+      rPath = p;
+    } else {
+      if (p == "/") {
+        rPath = "/" + realRootPath;
+      } else {
+        //rPath = "/" + realRootPath + p;
+        rPath = p;
+      }
+    }
+    if (RunMode === "DEBUG") console.log("getRealPath:rPath ", rPath);
+    return rPath;
+  };
+
+  // refresh path
+  const refreshPath = cPath => {
+    let newLinePath = [];
+    let newHtmlContent = `<li><label id="currentpath">Path:</label></li>
+                              <li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">/</a></li>`;
+
+    if (RunMode === "DEBUG") console.log("init path: ", cPath);
+    if (RunMode === "DEBUG") console.log("cPath lenght:", cPath.length);
+    $("#waiting").addClass("active");
+
+    if (cPath.length > 1) {
+      let cPathArray = cPath.split("/");
+      cPathArray = cleanArray(cPathArray);
+
+      if (RunMode === "DEBUG")
+        console.log("refreshPath:cPathArray ", cPathArray);
+      /* cPathArray.forEach((val, idx, array) => {
+        if (val.trim() != "") newLinePath.push(val);
+      }); */
+      //if (RunMode === "DEBUG") console.log("newLinePath: ", newLinePath);
+      if (cPathArray.length > 0) {
+        for (let x = 0; x < cPathArray.length; x++) {
+          if (x == 0) {
+            newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${
+              cPathArray[x]
+            }</a></li>`;
+          } else {
+            newHtmlContent += `<li><spand>/&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${
+              cPathArray[x]
+            }</a></li>`;
+          }
+          if (cPathArray[x] === cPath) {
+            break;
+          }
+        }
+      }
+      $("#waiting").removeClass("active");
+    }
+
+    $("#currentPath").html(newHtmlContent);
+
+    $(".breadcrumb-line-path").on("click", e => {
+      changePath(e.target.innerText);
+    });
+
     const headers = new Headers();
     headers.append("Authorization", "Bearer " + Token);
-    headers.append("Content-Type", "application/json");
-    fetch("/files/newfolder", {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        path: getRealPath(currentPath),
-        folderName: folderName
-      }),
-      timeout: 10000
-    })
+    let realpath = getRealPath(cPath);
+
+    if (RunMode === "DEBUG")
+      console.log("realRootPath: " + realRootPath + " realpath:" + realpath);
+    fetch("/files?path=" + encodeURI(realpath), {
+        method: "GET",
+        headers: headers,
+        timeout: 720000
+      })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
         if (RunMode === "DEBUG") console.log(data);
-        if (data.status == "OK") {
-          $("#modal").hide();
-          $("#lean-overlay").hide();
-          $("#refresh").trigger("click");
-          showToast("Creada nueva carpeta " + data.data.folderName, "success");
-        }
+        refreshFilesTable(data);
+        $("#waiting").removeClass("active");
       })
       .catch(err => {
         if (RunMode === "DEBUG") console.log(err);
+        $("#waiting").removeClass("active");
       });
   };
+
+  
+
+  //////////////////////////////////
+  // User UI 
+  ///////////////////////////////// 
+
+  const selectAll = e => {
+    var allCkeckbox = document.querySelectorAll(".check");
+    let v = document.querySelector("#selectAllFiles").checked;
+    if (RunMode === "DEBUG") console.log("selectAllFiles :", v);
+    allCkeckbox.forEach(function (element, i) {
+      if (!allCkeckbox[i].disabled) {
+        allCkeckbox[i].checked = v;
+      }
+    });
+    if (RunMode === "DEBUG") console.log(getCheckedFiles());
+    if (RunMode === "DEBUG") console.log(getCheckedFolder());
+  };
+
+  const getCheckedFiles = function () {
+    var checkedFiles = [];
+    var allElements = document.querySelectorAll(".typeFile");
+    allElements.forEach(function (element, i) {
+      if (RunMode === "DEBUG") console.log("element: ", element);
+      if (RunMode === "DEBUG")
+        console.log(
+          "children: ",
+          element.parentElement.parentElement.children[0].children[0]
+          .children[0].checked
+        );
+      if (
+        element.parentElement.parentElement.children[0].children[0].children[0]
+        .checked
+      ) {
+        aSelectedFiles.push(element.innerHTML);
+        checkedFiles.push(element.innerHTML);
+        // c(element.children[1].innerHTML)
+      } else {
+        const idx = aSelectedFiles.indexOf(element.innerHTML);
+        if (idx > -1) {
+          aSelectedFiles.splice(idx, 1);
+        }
+      }
+    });
+    return checkedFiles;
+  };
+
+  const getCheckedFolder = function () {
+    var checkedFolders = [];
+    var allElements = document.querySelectorAll(".dashboard-path");
+    allElements.forEach(function (v, i) {
+      if (RunMode === "DEBUG") console.log("element v: ", v);
+      if (RunMode === "DEBUG") console.log("check ", v.children[0].checked);
+      if (RunMode === "DEBUG")
+        console.log(
+          "text ",
+          v.parentElement.parentElement.children[1].children[1].text
+        );
+      if (v.children[0].checked) {
+        aSelectedFolders.push(
+          v.parentElement.parentElement.children[1].children[1].text
+        );
+        checkedFolders.push(
+          v.parentElement.parentElement.children[1].children[1].text
+        );
+      } else {
+        const idx = aSelectedFolders.indexOf(
+          v.parentElement.parentElement.children[1].children[1].text
+        );
+        if (idx > -1) {
+          aSelectedFolders.splice(idx, 1);
+        }
+      }
+    });
+    return checkedFolders;
+  };
+
 
   const showDialogYesNo = (title, content, yesCb, noCb) => {
     let w = 32;
@@ -1128,433 +1666,6 @@ let htmlShareFile = `<div id="shareFileModal">
     });
   };
 
-  const deleteFile = path => {
-    const headers = new Headers();
-    let x = 0;
-    let aF = aSelectedFiles.slice();
-    if (RunMode === "DEBUG") console.log(aF);
-    headers.append("Authorization", "Bearer " + Token);
-    headers.append("Content-Type", "application/json");
-    $("#waiting").addClass("active");
-    for (x = 0; x < aF.length; x++) {
-      if (RunMode === "DEBUG") console.log("Deleting file " + aF[x] + " ...");
-      fetch("/files/delete", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          path: getRealPath(path),
-          fileName: aF[x]
-        }),
-        timeout: 720000
-      })
-        .then(FetchHandleErrors)
-        .then(r => r.json())
-        .then(data => {
-          if (RunMode === "DEBUG") console.log(data);
-          if (data.status == "OK") {
-            aSelectedFiles.shift();
-            $(".toast")
-              .removeClass("success")
-              .addClass("success");
-            showToast("Archivo " + data.data.fileName + " borrado", "success");
-            $("#refresh").trigger("click");
-          }
-        })
-        .catch(err => {
-          if (RunMode === "DEBUG") console.log(err);
-          $(".toast")
-            .removeClass("err")
-            .addClass("err");
-          showToast(err, "err");
-        });
-    }
-    $("#waiting").removeClass("active");
-  };
-
-  const deleteFolder = path => {
-    const headers = new Headers();
-    let x = 0;
-    let aF = aSelectedFolders.slice();
-    if (RunMode === "DEBUG") console.log(aF);
-    headers.append("Authorization", "Bearer " + Token);
-    headers.append("Content-Type", "application/json");
-    $("#waiting").addClass("active");
-    for (x = 0; x < aF.length; x++) {
-      if (RunMode === "DEBUG") console.log("Deleting folder " + aF[x] + " ...");
-      fetch("/files/delete", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          path: getRealPath(path),
-          fileName: aF[x]
-        }),
-        timeout: 720000
-      })
-        .then(FetchHandleErrors)
-        .then(r => r.json())
-        .then(data => {
-          if (RunMode === "DEBUG") console.log(data);
-          if (data.status == "OK") {
-            $(".toast")
-              .removeClass("success")
-              .addClass("success");
-            showToast("Carpeta " + data.data.fileName + " borrada", "success");
-            aSelectedFolders.shift();
-          }
-        })
-        .catch(err => {
-          if (RunMode === "DEBUG") console.log(err);
-        });
-    }
-    $("#waiting").removeClass("active");
-  };
-
-  //TODO: Optimizar renderizado de elementos li
-  //incorporando el contenido en el bucle _loop
-  const download = (fileList, text) => {
-    let reqList = [],
-      handlerCount = 0,
-      responseTimeout = [];
-    let w = 32;
-    let h = 440;
-    let ModalTitle = "Descarga de archivos seleccionados";
-    let ModalContent = htmlUploadDownloadTemplate;
-    let htmlContent = `<div id="modal-header">
-                          <h5>${ModalTitle}</h5>
-                          <a class="modal_close" id="modalClose" href="#"></a>
-                      </div>
-                      <div class="modal-content">
-                          <p>${ModalContent}</p>
-                      </div>
-                      <div class="modal-footer">
-                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel downloads</a>
-                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>
-                      </div>`;
-    $("#modal")
-      .html(htmlContent)
-      .css("width: " + w + "%;height: " + h + "px;text-align: center;");
-    //$('.modal-content').css('width: 350px;');
-    $(".modal").css("width: 40% !important");
-    document.querySelector("#modal").style.display = "block";
-    document.querySelector("#lean-overlay").style.display = "block";
-    document.querySelector("#btnCancelAll").classList.add("disabled");
-
-    $("#download").addClass("disabled");
-    $("#btnCloseDownload").on("click", e => {
-      $("#download").removeClass("disabled");
-      $("#modal").hide();
-      $("#lean-overlay").hide();
-      $("#refresh").trigger("click");
-      aSelectedFiles = [];
-    });
-    $("#modalClose").on("click", e => {
-      $("#download").removeClass("disabled");
-      $("#modal").hide();
-      $("#lean-overlay").hide();
-      $("#refresh").trigger("click");
-      aSelectedFiles = [];
-    });
-    $("#waiting").addClass("active");
-    $("#btnCancelAll").on("click", e => {
-      for (let x = 0; x < 4; x++) {
-        reqList[x].abort();
-        let percentLabel = document.querySelector("#percent" + x);
-        let progressBar = document.querySelector("#progress-bar" + x);
-        progressBar.innerHTML = "Canceled by user";
-        percentLabel.innerHTML = "";
-        progressBar.style.color = "red";
-        progressBar.style.width = "100%";
-        progressBar.style.backgroundColor = "white";
-      }
-      $("#btnCancelAll").addClass("disabled");
-    });
-    $(".modal_close").on("click", e => {
-      e.preventDefault();
-      let n = parseInt(e.target.id.slice(-1));
-      reqList[n].abort();
-      let percentLabel = document.querySelector("#percent" + n);
-      let progressBar = document.querySelector("#progress-bar" + n);
-      progressBar.innerHTML = "Canceled by user";
-      percentLabel.innerHTML = "";
-      progressBar.style.color = "red";
-      progressBar.style.width = "100%";
-      progressBar.style.backgroundColor = "white";
-    });
-    $("#btnCancelAll").removeClass("disabled");
-    let _loop = i => {
-      let fName = fileList[i];
-      let liNumber = document.querySelector("#li" + i);
-      let liFilename = document.querySelector("#li-filename" + i);
-      let progressBar = document.querySelector("#progress-bar" + i);
-      let percentLabel = document.querySelector("#percent" + i);
-      responseTimeout[i] = false;
-      fName = fName
-        .split("\\")
-        .pop()
-        .split("/")
-        .pop();
-      reqList[i] = new XMLHttpRequest();
-      reqList[i].open("POST", "/files/download", true);
-      reqList[i].responseType = "arraybuffer";
-      liNumber.style.display = "block";
-      liFilename.innerHTML = fName;
-      reqList[i].timeout = 36000;
-      reqList[i].ontimeout = function() {
-        if (RunMode === "DEBUG")
-          console.log(
-            "** Timeout error ->File:" +
-              fName +
-              " " +
-              reqList[i].status +
-              " " +
-              reqList[i].statusText
-          );
-        // handlerCount = handlerCount - 1
-        progressBar.innerHTML = "Timeout Error";
-        percentLabel.innerHTML = "";
-        progressBar.style.color = "red";
-        progressBar.style.width = "100%";
-        progressBar.style.backgroundColor = "white";
-        progressBar.classList.add("blink");
-        responseTimeout[i] = true;
-      };
-      reqList[i].onprogress = function(evt) {
-        if (evt.lengthComputable) {
-          var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-          progressBar.style.width = percentComplete + "%";
-          percentLabel.innerHTML = percentComplete + "%";
-        }
-      };
-      reqList[i].onerror = function() {
-        if (RunMode === "DEBUG")
-          console.log(
-            "** An error occurred during the transaction ->File:" +
-              fName +
-              " " +
-              req.status +
-              " " +
-              req.statusText
-          );
-        handlerCount = handlerCount - 1;
-        percentLabel.innerHTML = "Error";
-        percentLabel.style.color = "red";
-        $("#abort" + i).hide();
-      };
-      reqList[i].onloadend = function() {
-        handlerCount = handlerCount - 1;
-        if (!responseTimeout[i]) {
-          progressBar.style.width = "100%";
-          percentLabel.innerHTML = "100%";
-          $("#abort" + i).hide();
-        }
-        if (handlerCount === 0) {
-          $("#download-end").show();
-          $("#btnCancelAll")
-            .removeClass("disabled")
-            .addClass("disabled");
-          $("#refresh").trigger("click");
-        }
-        if (RunMode === "DEBUG")
-          console.log("File " + handlerCount + " downloaded");
-      };
-      reqList[i].onloadstart = function() {
-        handlerCount = handlerCount + 1;
-        progressBar.style.width = "0";
-        percentLabel.innerHTML = "0%";
-      };
-      reqList[i].onload = function() {
-        if (reqList[i].readyState === 4 && reqList[i].status === 200) {
-          var filename = "";
-          var disposition = reqList[i].getResponseHeader("Content-Disposition");
-          if (disposition && disposition.indexOf("attachment") !== -1) {
-            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-            var matches = filenameRegex.exec(disposition);
-            if (matches != null && matches[1])
-              filename = matches[1].replace(/['"]/g, "");
-          }
-          var type = reqList[i].getResponseHeader("Content-Type");
-          var blob = new Blob([this.response], {
-            type: type
-          });
-          if (typeof window.navigator.msSaveBlob !== "undefined") {
-            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-            window.navigator.msSaveBlob(blob, filename);
-          } else {
-            var URL = window.URL || window.webkitURL;
-            var downloadUrl = URL.createObjectURL(blob);
-
-            if (filename) {
-              // use HTML5 a[download] attribute to specify filename
-              var a = document.createElement("a");
-              // safari doesn't support this yet
-              if (typeof a.download === "undefined") {
-                window.location = downloadUrl;
-                preloader.style.display = "none";
-              } else {
-                a.href = downloadUrl;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                // preloader.style.display = 'none'
-              }
-            } else {
-              window.open = downloadUrl;
-              // preloader.style.display = 'none'
-            }
-
-            setTimeout(function() {
-              URL.revokeObjectURL(downloadUrl);
-            }, 100); // cleanup
-          }
-        }
-      };
-      reqList[i].setRequestHeader(
-        "Content-type",
-        "application/x-www-form-urlencoded"
-      );
-      if (RunMode === "DEBUG")
-        console.log(getRealPath(currentPath) + "/" + fileList[i]);
-      reqList[i].send(
-        serializeObject({
-          filename: getRealPath(currentPath) + "/" + fileList[i]
-        })
-      );
-    };
-    for (var i = 0; i < fileList.length; i++) {
-      _loop(i);
-    }
-    $("#waiting").removeClass("active");
-  };
-
-  const refreshPath = cPath => {
-    let newLinePath = [];
-    if (RunMode === "DEBUG") console.log("init path: ", cPath);
-    let newHtmlContent = `<li><label id="currentpath">Path:</label></li>
-                              <li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">/</a></li>`;
-    if (RunMode === "DEBUG") console.log("cPath lenght:", cPath.length);
-    $("#waiting").addClass("active");
-    if (cPath.length > 1) {
-      let cPathArray = cPath.split("/");
-      if (RunMode === "DEBUG")
-        console.log("refreshPath:cPathArray ", cPathArray);
-      cPathArray.forEach((val, idx, array) => {
-        if (val.trim() != "") newLinePath.push(val);
-      });
-      if (RunMode === "DEBUG") console.log("newLinePath: ", newLinePath);
-      for (let x = 0; x < newLinePath.length; x++) {
-        if (x == 0) {
-          newHtmlContent += `<li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${
-            newLinePath[x]
-          }</a></li>`;
-        } else {
-          newHtmlContent += `<li><spand>/&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${
-            newLinePath[x]
-          }</a></li>`;
-        }
-      }
-      $("#waiting").removeClass("active");
-    }
-
-    $("#currentPath").html(newHtmlContent);
-
-    $(".breadcrumb-line-path").on("click", e => {
-      changePath(e.target.innerText);
-    });
-
-    const headers = new Headers();
-    headers.append("Authorization", "Bearer " + Token);
-    let realpath = getRealPath(cPath);
-
-    if (RunMode === "DEBUG")
-      console.log("realRootPath: " + realRootPath + " realpath:" + realpath);
-    fetch("/files?path=" + encodeURI(realpath), {
-      method: "GET",
-      headers: headers,
-      timeout: 720000
-    })
-      .then(FetchHandleErrors)
-      .then(r => r.json())
-      .then(data => {
-        if (RunMode === "DEBUG") console.log(data);
-        refreshFilesTable(data);
-        $("#waiting").removeClass("active");
-      })
-      .catch(err => {
-        if (RunMode === "DEBUG") console.log(err);
-        $("#waiting").removeClass("active");
-      });
-  };
-
-  const selectAll = e => {
-    var allCkeckbox = document.querySelectorAll(".check");
-    let v = document.querySelector("#selectAllFiles").checked;
-    if (RunMode === "DEBUG") console.log("selectAllFiles :", v);
-    allCkeckbox.forEach(function(element, i) {
-      if (!allCkeckbox[i].disabled) {
-        allCkeckbox[i].checked = v;
-      }
-    });
-    if (RunMode === "DEBUG") console.log(getCheckedFiles());
-    if (RunMode === "DEBUG") console.log(getCheckedFolder());
-  };
-
-  const getCheckedFiles = function() {
-    var checkedFiles = [];
-    var allElements = document.querySelectorAll(".typeFile");
-    allElements.forEach(function(element, i) {
-      if (RunMode === "DEBUG") console.log("element: ", element);
-      if (RunMode === "DEBUG")
-        console.log(
-          "children: ",
-          element.parentElement.parentElement.children[0].children[0]
-            .children[0].checked
-        );
-      if (
-        element.parentElement.parentElement.children[0].children[0].children[0]
-          .checked
-      ) {
-        aSelectedFiles.push(element.innerHTML);
-        checkedFiles.push(element.innerHTML);
-        // c(element.children[1].innerHTML)
-      } else {
-        const idx = aSelectedFiles.indexOf(element.innerHTML);
-        if (idx > -1) {
-          aSelectedFiles.splice(idx, 1);
-        }
-      }
-    });
-    return checkedFiles;
-  };
-
-  const getCheckedFolder = function() {
-    var checkedFolders = [];
-    var allElements = document.querySelectorAll(".dashboard-path");
-    allElements.forEach(function(v, i) {
-      if (RunMode === "DEBUG") console.log("element v: ", v);
-      if (RunMode === "DEBUG") console.log("check ", v.children[0].checked);
-      if (RunMode === "DEBUG")
-        console.log(
-          "text ",
-          v.parentElement.parentElement.children[1].children[1].text
-        );
-      if (v.children[0].checked) {
-        aSelectedFolders.push(
-          v.parentElement.parentElement.children[1].children[1].text
-        );
-        checkedFolders.push(
-          v.parentElement.parentElement.children[1].children[1].text
-        );
-      } else {
-        const idx = aSelectedFolders.indexOf(
-          v.parentElement.parentElement.children[1].children[1].text
-        );
-        if (idx > -1) {
-          aSelectedFolders.splice(idx, 1);
-        }
-      }
-    });
-    return checkedFolders;
-  };
 
   const renderFilesTable = (aFol, aFil) => {
     let newHtmlContent = ``;
@@ -1596,28 +1707,7 @@ let htmlShareFile = `<div id="shareFileModal">
     tbodyContent.innerHTML = newHtmlContent;
   };
 
-  const goBackFolder = folder => {
-    let newPath = "";
-    if (RunMode === "DEBUG") console.log("goBackFolder:folder ", folder);
-    if (RunMode === "DEBUG")
-      console.log("goBackFolder:currentPath ", currentPath);
-    if (currentPath !== "/" && folder == "..") {
-      let lastFolder = currentPath.lastIndexOf("/");
-      if (lastFolder == 0) {
-        newPath = "/";
-      } else {
-        newPath = currentPath.substr(0, lastFolder);
-      }
-      if (RunMode === "DEBUG")
-        console.log(
-          "goBackFolder:lastFolder-> " +
-            lastFolder +
-            " goBackFolder:newPath->" +
-            newPath
-        );
-      changePath(newPath.trim());
-    }
-  };
+  
   const refreshFilesTable = data => {
     const tbodyContent = document
       .getElementById("tbl-files")
@@ -1656,12 +1746,7 @@ let htmlShareFile = `<div id="shareFileModal">
       if (RunMode === "DEBUG") console.log("Current Path: ", currentPath);
       let newPath = "";
       if (e.target.innerText != "..") {
-        if (currentPath.trim() == "/") {
-          newPath = currentPath.trim() + e.target.innerText;
-        } else {
-          newPath = currentPath.trim() + "/" + e.target.innerText;
-        }
-
+        newPath = getNewPath(e.target.innerText);
         if (RunMode === "DEBUG") console.log("New Path: ", newPath.trim());
         refreshPath(newPath.trim());
         currentPath = newPath.trim();
@@ -1670,6 +1755,7 @@ let htmlShareFile = `<div id="shareFileModal">
         if (currentPath !== RootPath) goBackFolder(e.target.innerText);
       }
     });
+
     $(".check").on("click", e => {
       selectDeselect(e);
       if (RunMode === "DEBUG") console.log(e.target.checked);
@@ -1686,6 +1772,8 @@ let htmlShareFile = `<div id="shareFileModal">
     });
   };
 
+  
+  
   const selectDeselect = e => {
     const isChecked = e.target.checked;
     const contentType = e.target.className.split(/\s+/).indexOf("checkFile");
@@ -1862,7 +1950,10 @@ let htmlShareFile = `<div id="shareFileModal">
         },
         success: data => {
           //if (RunMode === 'DEBUG' ) console.log(JSON.parse(data))
-          let { status, message } = JSON.parse(data);
+          let {
+            status,
+            message
+          } = JSON.parse(data);
           if (RunMode === "DEBUG") console.log("status", status);
           if (status === "FAIL") {
             showToast(message, "err");
@@ -1933,7 +2024,7 @@ let htmlShareFile = `<div id="shareFileModal">
         .removeClass("disabled")
         .addClass("disabled");
     }
-    if (UserRol.toUpperCase() == "ADMIN") {
+    if (UserRole.toUpperCase() == "ADMIN") {
       $("#settings").show();
     } else {
       $("#settings").hide();
@@ -1950,7 +2041,7 @@ let htmlShareFile = `<div id="shareFileModal">
     selectAll(e.target.htmlFor);
   });
 
-  $("a").on("click", function(e) {
+  $("a").on("click", function (e) {
     if (RunMode === "DEBUG") console.log(this.id);
     if (RunMode === "DEBUG") console.log($(this).hasClass("disabled"));
 
@@ -1987,19 +2078,19 @@ let htmlShareFile = `<div id="shareFileModal">
           refreshPath(currentPath);
           break;
         case "share":
-        if (aSelectedFiles.length > 0) {
-          if (aSelectedFiles.length > 1) {
-            showToast(
-              "No pueden seleccionarse más de un archivo",
-              "err"
-            );
-            break;
+          if (aSelectedFiles.length > 0) {
+            if (aSelectedFiles.length > 1) {
+              showToast(
+                "No pueden seleccionarse más de un archivo",
+                "err"
+              );
+              break;
+            }
+            shareFile();
+          } else {
+            showToast("No se han seleccionado archivo para compartir", "err");
           }
-          shareFile();
-        } else {
-          showToast("No se han seleccionado archivo para compartir", "err");
-        }
-          break;   
+          break;
         case "userLogout":
           $("#Usersdropdown").hide();
           $("#logoutmodal").show();
@@ -2070,9 +2161,9 @@ let htmlShareFile = `<div id="shareFileModal">
     if (RunMode === "DEBUG") console.log("position: ", position);
     let newPosition = position + "px";
     if ($("#Settingdropdown").css("display") === "block") {
-      document.getElementById("settings").classList
-        ? document.getElementById("settings").classList.remove("selected")
-        : (document.getElementById("settings").className = "");
+      document.getElementById("settings").classList ?
+        document.getElementById("settings").classList.remove("selected") :
+        (document.getElementById("settings").className = "");
       //document.getElementById('Settingdropdown').classList.remove('setting');
       document.getElementById("Settingdropdown").style.display = "none";
     } else {
