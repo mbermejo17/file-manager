@@ -1,9 +1,12 @@
-  ////////////////////////////////////
-  // Files and Folder module
-  ///////////////////////////////////
-  window.fileManager  = function() {
-  
-  window.htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileList">
+import Cookies from "../vendor/js-cookie";
+////////////////////////////////////
+// Files and Folder module
+///////////////////////////////////
+
+let RUNMODE = Cookies.get("RunMode");
+let REAL_ROOT_PATH = Cookies.get("RootPath");
+
+let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileList">
     <li id="li0">
         <div class="li-content">
             <div class="li-filename" id="li-filename0"></div>
@@ -56,82 +59,79 @@
     </li>
 </ul>`;
 
-    
-  return {
-    validateSize: f => {
-      return true;
-    },
-    shareFile:  () => {
-    let searchUserModalContent = document.getElementById('searchUserModalContent');
-    let AddUserModalContent = document.getElementById('AddUserModalContent');
-    let containerOverlay = document.querySelector(".container-overlay");
+let validateSize = f => {
+  return true;
+};
+export function shareFile() {
+  let searchUserModalContent = document.getElementById(
+    "searchUserModalContent"
+  );
+  let AddUserModalContent = document.getElementById("AddUserModalContent");
+  let containerOverlay = document.querySelector(".container-overlay");
 
-    /**/
-    searchUserModalContent.innerHTML = htmlShareFile;
-    AddUserModalContent.style.display = "none";
-    searchUserModalContent.style.display = "block";
-    containerOverlay.style.display = "block";
-    document.getElementById('btn-ShareFileCancel').addEventListener('click', (e) => {
+  /**/
+  searchUserModalContent.innerHTML = htmlShareFile;
+  AddUserModalContent.style.display = "none";
+  searchUserModalContent.style.display = "block";
+  containerOverlay.style.display = "block";
+  document
+    .getElementById("btn-ShareFileCancel")
+    .addEventListener("click", e => {
       e.preventDefault();
       searchUserModalContent.style.display = "none";
       containerOverlay.style.display = "none";
     });
-    document.getElementById('btn-ShareFileAccept').addEventListener('click', (e) => {
+  document
+    .getElementById("btn-ShareFileAccept")
+    .addEventListener("click", e => {
       e.preventDefault();
-      if (RUNMODE === 'DEBUG') console.log(document.getElementById('destUserName').value);
-      if (RUNMODE === 'DEBUG') console.log(document.getElementById('FileExpirateDate').value);
+      if (RUNMODE === "DEBUG")
+        console.log(document.getElementById("destUserName").value);
+      if (RUNMODE === "DEBUG")
+        console.log(document.getElementById("FileExpirateDate").value);
       let data = {
         fileName: aSelectedFiles[0],
         fileSize: null,
         path: CURRENT_PATH,
         userName: UserName,
-        destUserName: document.getElementById('destUserName').value,
-        expirationDate: document.getElementById('FileExpirateDate').value
-      }
+        destUserName: document.getElementById("destUserName").value,
+        expirationDate: document.getElementById("FileExpirateDate").value
+      };
       execFetch("/files/share", "POST", data)
-        .then((d) => {
+        .then(d => {
           if (RUNMODE === "DEBUG") console.log(d);
-          if (d.status === 'OK') {
+          if (d.status === "OK") {
             searchUserModalContent.style.display = "none";
             containerOverlay.style.display = "none";
-            sendEmail(d.data.DestUser,
+            sendEmail(
+              d.data.DestUser,
               "mbermejo17@gmail.com",
               "URL para descarga de archivo",
-              `Descarga de archivo https://194.224.194.134/files/share/${d.data.UrlCode}`);
+              `Descarga de archivo https://194.224.194.134/files/share/${
+                d.data.UrlCode
+              }`
+            );
           }
         })
         .catch(e => {
-          showToast("Error al compartir archivo " + data.fileName + ".<br>Err:" + e, "err");
+          showToast(
+            "Error al compartir archivo " + data.fileName + ".<br>Err:" + e,
+            "err"
+          );
           if (RUNMODE === "DEBUG") console.log(e);
         });
     });
-  },
- deleteSelected: () =>{
-    if (RUNMODE === "DEBUG")
-      console.log("aSelectedFolders: ", aSelectedFolders.length);
-    if (aSelectedFolders.length > 0) {
-      showDialogYesNo(
-        "Delete foldes",
-        "Delete selected folders?",
-        y => {
-          $.when(deleteFolder(CURRENT_PATH)).then(result => {
-            if (aSelectedFiles.length > 0) {
-              showDialogYesNo(
-                "Delete Files",
-                "Delete selected files?",
-                y => {
-                  deleteFile(CURRENT_PATH);
-                },
-                n => {
-                  if (RUNMODE === "DEBUG") console.log("Delete Files Canceled");
-                }
-              );
-            }
-            document.getElementById("refresh").click();
-          });
-        },
-        n => {
-          if (RUNMODE === "DEBUG") console.log("Delete Folder Canceled");
+}
+
+export function deleteSelected() {
+  if (RUNMODE === "DEBUG")
+    console.log("aSelectedFolders: ", aSelectedFolders.length);
+  if (aSelectedFolders.length > 0) {
+    showDialogYesNo(
+      "Delete foldes",
+      "Delete selected folders?",
+      y => {
+        $.when(deleteFolder(CURRENT_PATH)).then(result => {
           if (aSelectedFiles.length > 0) {
             showDialogYesNo(
               "Delete Files",
@@ -144,34 +144,51 @@
               }
             );
           }
+          document.getElementById("refresh").click();
+        });
+      },
+      n => {
+        if (RUNMODE === "DEBUG") console.log("Delete Folder Canceled");
+        if (aSelectedFiles.length > 0) {
+          showDialogYesNo(
+            "Delete Files",
+            "Delete selected files?",
+            y => {
+              deleteFile(CURRENT_PATH);
+            },
+            n => {
+              if (RUNMODE === "DEBUG") console.log("Delete Files Canceled");
+            }
+          );
+        }
+      }
+    );
+  } else {
+    if (aSelectedFiles.length > 0) {
+      showDialogYesNo(
+        "Delete Files",
+        "Delete selected files?",
+        y => {
+          deleteFile(CURRENT_PATH);
+        },
+        n => {
+          if (RUNMODE === "DEBUG") console.log("Delete Files Canceled");
         }
       );
-    } else {
-      if (aSelectedFiles.length > 0) {
-        showDialogYesNo(
-          "Delete Files",
-          "Delete selected files?",
-          y => {
-            deleteFile(CURRENT_PATH);
-          },
-          n => {
-            if (RUNMODE === "DEBUG") console.log("Delete Files Canceled");
-          }
-        );
-      }
     }
-  },
+  }
+}
 
-  upload: (Token) => {
-    let w = 32;
-    let h = 440;
-    let aListHandler = [];
-    let handlerCounter = 0;
-    let ModalTitle = "Subida de archivos";
-    let ModalContent = `<label class="file-input waves-effect waves-teal btn-flat btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>
+export function upload(Token) {
+  let w = 32;
+  let h = 440;
+  let aListHandler = [];
+  let handlerCounter = 0;
+  let ModalTitle = "Subida de archivos";
+  let ModalContent = `<label class="file-input waves-effect waves-teal btn-flat btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>
                         <span id="sFiles">Ningun archivo seleccionado</span>`;
-    ModalContent += htmlUploadDownloadTemplate;
-    let htmlContent = `<div id="modal-header">
+  ModalContent += htmlUploadDownloadTemplate;
+  let htmlContent = `<div id="modal-header">
                           <h5>${ModalTitle}</h5>
                           <a class="modal_close" id="modalClose" href="#"></a>
                         </div>
@@ -184,261 +201,262 @@
                               <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Close</a>
                       </div>`;
 
-    $("#upload")
-      .removeClass("disabled")
-      .addClass("disabled");
+  $("#upload")
+    .removeClass("disabled")
+    .addClass("disabled");
 
-    function fnUploadFile(formData, nFile, fileName) {
-      $("#li" + nFile).show();
-      $("#li-filename" + nFile).show();
-      $("#li-filename" + nFile).html(fileName);
-      let realpath = general.getRealPath(CURRENT_PATH);
-      if (RUNMODE === "DEBUG") console.log("Upload:CURRENT_PATH " + CURRENT_PATH);
-      if (RUNMODE === "DEBUG") console.log("Upload:REAL_ROOT_PATH " + REAL_ROOT_PATH);
-      if (RUNMODE === "DEBUG") console.log("Upload:realPath " + realpath);
-      $.ajax({
-        url: "/files/upload?destPath=" + realpath,
-        type: "POST",
-        data: formData,
-        processData: false,
-        contentType: false,
-        timeout: 290000,
-        beforeSend: function (xhrObj) {
-          xhrObj.setRequestHeader("Authorization", "Bearer " + Token);
-          xhrObj.setRequestHeader("destPath", realpath);
-        },
-        success: function (data) {
-          if (RUNMODE === "DEBUG")
-            console.log(fileName + "upload successful!\n" + data);
-          showToast(fileName + " uploaded sucessfully", "success");
-          $("#abort" + nFile).hide();
-          $("#refresh").trigger("click");
-          handlerCounter = handlerCounter - 1;
-          if (handlerCounter == 0) {
-            $("#btnCancelAll")
-              .removeClass("disabled")
-              .addClass("disabled");
-          }
-        },
-        xhr: function () {
-          aListHandler[nFile] = new XMLHttpRequest();
-          let percentComplete = 0;
-          aListHandler[nFile].upload.addEventListener(
-            "progress",
-            function (evt) {
-              if (evt.lengthComputable) {
-                percentComplete = evt.loaded / evt.total;
-                percentComplete = parseInt(percentComplete * 100);
-                $("#percent" + nFile).text(percentComplete + "%");
-                $("#progress-bar" + nFile).width(percentComplete + "%");
-                /* if (percentComplete === 100) {
+  function fnUploadFile(formData, nFile, fileName) {
+    $("#li" + nFile).show();
+    $("#li-filename" + nFile).show();
+    $("#li-filename" + nFile).html(fileName);
+    let realpath = getRealPath(CURRENT_PATH);
+    if (RUNMODE === "DEBUG") console.log("Upload:CURRENT_PATH " + CURRENT_PATH);
+    if (RUNMODE === "DEBUG")
+      console.log("Upload:REAL_ROOT_PATH " + REAL_ROOT_PATH);
+    if (RUNMODE === "DEBUG") console.log("Upload:realPath " + realpath);
+    $.ajax({
+      url: "/files/upload?destPath=" + realpath,
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      timeout: 290000,
+      beforeSend: function(xhrObj) {
+        xhrObj.setRequestHeader("Authorization", "Bearer " + Token);
+        xhrObj.setRequestHeader("destPath", realpath);
+      },
+      success: function(data) {
+        if (RUNMODE === "DEBUG")
+          console.log(fileName + "upload successful!\n" + data);
+        showToast(fileName + " uploaded sucessfully", "success");
+        $("#abort" + nFile).hide();
+        $("#refresh").trigger("click");
+        handlerCounter = handlerCounter - 1;
+        if (handlerCounter == 0) {
+          $("#btnCancelAll")
+            .removeClass("disabled")
+            .addClass("disabled");
+        }
+      },
+      xhr: function() {
+        aListHandler[nFile] = new XMLHttpRequest();
+        let percentComplete = 0;
+        aListHandler[nFile].upload.addEventListener(
+          "progress",
+          function(evt) {
+            if (evt.lengthComputable) {
+              percentComplete = evt.loaded / evt.total;
+              percentComplete = parseInt(percentComplete * 100);
+              $("#percent" + nFile).text(percentComplete + "%");
+              $("#progress-bar" + nFile).width(percentComplete + "%");
+              /* if (percentComplete === 100) {
                 $('#refresh').trigger('click');
               } */
-              }
-            },
-            false
-          );
-          return aListHandler[nFile];
-        }
-      });
-    }
+            }
+          },
+          false
+        );
+        return aListHandler[nFile];
+      }
+    });
+  }
 
-    $("#modal")
-      .html(htmlContent)
-      .css("width: " + w + "%;height: " + h + "px;text-align: center;");
-    //$('.modal-content').css('width: 350px;');
-    $(".modal-container").css("width: 40% !important");
-    $(".file-input").show();
-    $("#modal").show();
-    $("#lean-overlay").show();
-    $("#btnCloseUpload").on("click", e => {
-      $("#upload").removeClass("disabled");
-      $("#modal").hide();
-      $("#lean-overlay").hide();
-    });
-    $("#modalClose").on("click", e => {
-      $("#upload").removeClass("disabled");
-      $("#modal").hide();
-      $("#lean-overlay").hide();
-    });
-    $("#btnCancelAll").removeClass("disabled");
-    $(".modal_close").on("click", e => {
-      e.preventDefault();
-      if (RUNMODE === "DEBUG") console.log(e);
-      let n = parseInt(e.target.id.slice(-1));
-      aListHandler[n].abort();
-      let percentLabel = document.querySelector("#percent" + n);
-      let progressBar = document.querySelector("#progress-bar" + n);
+  $("#modal")
+    .html(htmlContent)
+    .css("width: " + w + "%;height: " + h + "px;text-align: center;");
+  //$('.modal-content').css('width: 350px;');
+  $(".modal-container").css("width: 40% !important");
+  $(".file-input").show();
+  $("#modal").show();
+  $("#lean-overlay").show();
+  $("#btnCloseUpload").on("click", e => {
+    $("#upload").removeClass("disabled");
+    $("#modal").hide();
+    $("#lean-overlay").hide();
+  });
+  $("#modalClose").on("click", e => {
+    $("#upload").removeClass("disabled");
+    $("#modal").hide();
+    $("#lean-overlay").hide();
+  });
+  $("#btnCancelAll").removeClass("disabled");
+  $(".modal_close").on("click", e => {
+    e.preventDefault();
+    if (RUNMODE === "DEBUG") console.log(e);
+    let n = parseInt(e.target.id.slice(-1));
+    aListHandler[n].abort();
+    let percentLabel = document.querySelector("#percent" + n);
+    let progressBar = document.querySelector("#progress-bar" + n);
+    progressBar.innerHTML = "Canceled by user";
+    percentLabel.innerHTML = "";
+    progressBar.style.color = "red";
+    progressBar.style.width = "100%";
+    progressBar.style.backgroundColor = "white";
+    $(e.target).hide();
+  });
+  $("#btnCancelAll").on("click", e => {
+    for (let x = 0; x < 4; x++) {
+      aListHandler[x].abort();
+      let percentLabel = document.querySelector("#percent" + x);
+      let progressBar = document.querySelector("#progress-bar" + x);
       progressBar.innerHTML = "Canceled by user";
       percentLabel.innerHTML = "";
       progressBar.style.color = "red";
       progressBar.style.width = "100%";
       progressBar.style.backgroundColor = "white";
-      $(e.target).hide();
-    });
-    $("#btnCancelAll").on("click", e => {
-      for (let x = 0; x < 4; x++) {
-        aListHandler[x].abort();
-        let percentLabel = document.querySelector("#percent" + x);
-        let progressBar = document.querySelector("#progress-bar" + x);
-        progressBar.innerHTML = "Canceled by user";
-        percentLabel.innerHTML = "";
-        progressBar.style.color = "red";
-        progressBar.style.width = "100%";
-        progressBar.style.backgroundColor = "white";
+    }
+    $("#btnCancelAll").addClass("disabled");
+  });
+  $("#upload-input").on("change", function(e) {
+    let files = $("#upload-input").get(0).files;
+    handlerCounter = files.length;
+    files.length > 0
+      ? $("#sFiles").html(files.length + " archivos seleccionados.")
+      : $("#sFiles").html(files[0]);
+    if (RUNMODE === "DEBUG") console.log(files.length);
+    $(".file-input").hide();
+    if (files.length > 0 && files.length <= 5) {
+      $("#btnCloseUpload")
+        .removeClass("disabled")
+        .addClass("disabled");
+      for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        let formData = new FormData();
+        // add the files to formData object for the data payload
+
+        formData.append("uploads[]", file, file.name);
+        fnUploadFile(formData, i, file.name);
       }
-      $("#btnCancelAll").addClass("disabled");
-    });
-    $("#upload-input").on("change", function (e) {
-      var files = $('#upload-input').get(0).files;
-        handlerCounter = files.length;
-        files.length > 0 ?
-          $("#sFiles").html(files.length + " archivos seleccionados.") :
-          $("#sFiles").html(files[0]);
-        if (RUNMODE === "DEBUG") console.log(files.length);
-        $(".file-input").hide();
-        if (files.length > 0 && files.length <= 5) {
-          $("#btnCloseUpload")
-            .removeClass("disabled")
-            .addClass("disabled");
-          for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            var formData = new FormData();
-            // add the files to formData object for the data payload
+      $("#btnCloseUpload").removeClass("disabled");
+    } else {
+      showToast("No se pueden subir más de 5 archivos a la vez", "err");
+    }
+  });
+}
 
-            formData.append("uploads[]", file, file.name);
-            fnUploadFile(formData, i, file.name);
-          }
-          $("#btnCloseUpload").removeClass("disabled");
-        } else {
-          showToast("No se pueden subir más de 5 archivos a la vez", "err");
-        }
+ export function newFolder(folderName) {
+  const headers = new Headers();
+  headers.append("Authorization", "Bearer " + Token);
+  headers.append("Content-Type", "application/json");
+  fetch("/files/newfolder", {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify({
+      path: getRealPath(CURRENT_PATH),
+      folderName: folderName
+    }),
+    timeout: 10000
+  })
+    .then(FetchHandleErrors)
+    .then(r => r.json())
+    .then(data => {
+      if (RUNMODE === "DEBUG") console.log(data);
+      if (data.status == "OK") {
+        $("#modal").hide();
+        $("#lean-overlay").hide();
+        $("#refresh").trigger("click");
+        showToast("Creada nueva carpeta " + data.data.folderName, "success");
+      }
+    })
+    .catch(err => {
+      if (RUNMODE === "DEBUG") console.log(err);
     });
-  },
+}
 
-  newFolder: (folderName) => {
-    const headers = new Headers();
-    headers.append("Authorization", "Bearer " + Token);
-    headers.append("Content-Type", "application/json");
-    fetch("/files/newfolder", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          path: general.getRealPath(CURRENT_PATH),
-          folderName: folderName
-        }),
-        timeout: 10000
-      })
+export function deleteFile(path) {
+  const headers = new Headers();
+  let x = 0;
+  let aF = aSelectedFiles.slice();
+  if (RUNMODE === "DEBUG") console.log(aF);
+  headers.append("Authorization", "Bearer " + Token);
+  headers.append("Content-Type", "application/json");
+  $("#waiting").addClass("active");
+  for (x = 0; x < aF.length; x++) {
+    if (RUNMODE === "DEBUG") console.log("Deleting file " + aF[x] + " ...");
+    fetch("/files/delete", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        path: getRealPath(path),
+        fileName: aF[x]
+      }),
+      timeout: 720000
+    })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
         if (RUNMODE === "DEBUG") console.log(data);
         if (data.status == "OK") {
-          $("#modal").hide();
-          $("#lean-overlay").hide();
+          aSelectedFiles.shift();
+          $(".toast")
+            .removeClass("success")
+            .addClass("success");
+          showToast("Archivo " + data.data.fileName + " borrado", "success");
           $("#refresh").trigger("click");
-          showToast("Creada nueva carpeta " + data.data.folderName, "success");
         }
       })
       .catch(err => {
         if (RUNMODE === "DEBUG") console.log(err);
+        $(".toast")
+          .removeClass("err")
+          .addClass("err");
+        showToast(err, "err");
       });
-  },
-  
-  deleteFile: (path) => {
-    const headers = new Headers();
-    let x = 0;
-    let aF = aSelectedFiles.slice();
-    if (RUNMODE === "DEBUG") console.log(aF);
-    headers.append("Authorization", "Bearer " + Token);
-    headers.append("Content-Type", "application/json");
-    $("#waiting").addClass("active");
-    for (x = 0; x < aF.length; x++) {
-      if (RUNMODE === "DEBUG") console.log("Deleting file " + aF[x] + " ...");
-      fetch("/files/delete", {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify({
-            path: general.getRealPath(path),
-            fileName: aF[x]
-          }),
-          timeout: 720000
-        })
-        .then(FetchHandleErrors)
-        .then(r => r.json())
-        .then(data => {
-          if (RUNMODE === "DEBUG") console.log(data);
-          if (data.status == "OK") {
-            aSelectedFiles.shift();
-            $(".toast")
-              .removeClass("success")
-              .addClass("success");
-            showToast("Archivo " + data.data.fileName + " borrado", "success");
-            $("#refresh").trigger("click");
-          }
-        })
-        .catch(err => {
-          if (RUNMODE === "DEBUG") console.log(err);
+  }
+  $("#waiting").removeClass("active");
+}
+
+export function deleteFolder(path) {
+  const headers = new Headers();
+  let x = 0;
+  let aF = aSelectedFolders.slice();
+  if (RUNMODE === "DEBUG") console.log(aF);
+  headers.append("Authorization", "Bearer " + Token);
+  headers.append("Content-Type", "application/json");
+  $("#waiting").addClass("active");
+  for (x = 0; x < aF.length; x++) {
+    if (RUNMODE === "DEBUG") console.log("Deleting folder " + aF[x] + " ...");
+    fetch("/files/delete", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        path: getRealPath(path),
+        fileName: aF[x]
+      }),
+      timeout: 720000
+    })
+      .then(FetchHandleErrors)
+      .then(r => r.json())
+      .then(data => {
+        if (RUNMODE === "DEBUG") console.log(data);
+        if (data.status == "OK") {
           $(".toast")
-            .removeClass("err")
-            .addClass("err");
-          showToast(err, "err");
-        });
-    }
-    $("#waiting").removeClass("active");
-  },
-
-  deleteFolder: (path)=> {
-    const headers = new Headers();
-    let x = 0;
-    let aF = aSelectedFolders.slice();
-    if (RUNMODE === "DEBUG") console.log(aF);
-    headers.append("Authorization", "Bearer " + Token);
-    headers.append("Content-Type", "application/json");
-    $("#waiting").addClass("active");
-    for (x = 0; x < aF.length; x++) {
-      if (RUNMODE === "DEBUG") console.log("Deleting folder " + aF[x] + " ...");
-      fetch("/files/delete", {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify({
-            path: general.getRealPath(path),
-            fileName: aF[x]
-          }),
-          timeout: 720000
-        })
-        .then(FetchHandleErrors)
-        .then(r => r.json())
-        .then(data => {
-          if (RUNMODE === "DEBUG") console.log(data);
-          if (data.status == "OK") {
-            $(".toast")
-              .removeClass("success")
-              .addClass("success");
-            showToast("Carpeta " + data.data.fileName + " borrada", "success");
-            aSelectedFolders.shift();
-            $("#waiting").removeClass("active");
-          }
-        })
-        .catch(err => {
-          if (RUNMODE === "DEBUG") console.log(err);
+            .removeClass("success")
+            .addClass("success");
+          showToast("Carpeta " + data.data.fileName + " borrada", "success");
+          aSelectedFolders.shift();
           $("#waiting").removeClass("active");
-        });
-    }
-    $("#waiting").removeClass("active");
-  },
+        }
+      })
+      .catch(err => {
+        if (RUNMODE === "DEBUG") console.log(err);
+        $("#waiting").removeClass("active");
+      });
+  }
+  $("#waiting").removeClass("active");
+}
 
-  //TODO: Optimizar renderizado de elementos li
-  //incorporando el contenido en el bucle _loop
-  download: (fileList, text) => {
-    let reqList = [],
-      handlerCount = 0,
-      responseTimeout = [];
-    let w = 32;
-    let h = 440;
-    let ModalTitle = "Descarga de archivos seleccionados";
-    let ModalContent = htmlUploadDownloadTemplate;
-    let htmlContent = `<div id="modal-header">
+//TODO: Optimizar renderizado de elementos li
+//incorporando el contenido en el bucle _loop
+export function download (fileList, text) {
+  let reqList = [],
+    handlerCount = 0,
+    responseTimeout = [];
+  let w = 32;
+  let h = 440;
+  let ModalTitle = "Descarga de archivos seleccionados";
+  let ModalContent = htmlUploadDownloadTemplate;
+  let htmlContent = `<div id="modal-header">
                           <h5>${ModalTitle}</h5>
                           <a class="modal_close" id="modalClose" href="#"></a>
                       </div>
@@ -449,205 +467,203 @@
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel downloads</a>
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>
                       </div>`;
-    $("#modal")
-      .html(htmlContent)
-      .css("width: " + w + "%;height: " + h + "px;text-align: center;");
-    //$('.modal-content').css('width: 350px;');
-    $(".modal").css("width: 40% !important");
-    document.querySelector("#modal").style.display = "block";
-    document.querySelector("#lean-overlay").style.display = "block";
-    document.querySelector("#btnCancelAll").classList.add("disabled");
+  $("#modal")
+    .html(htmlContent)
+    .css("width: " + w + "%;height: " + h + "px;text-align: center;");
+  //$('.modal-content').css('width: 350px;');
+  $(".modal").css("width: 40% !important");
+  document.querySelector("#modal").style.display = "block";
+  document.querySelector("#lean-overlay").style.display = "block";
+  document.querySelector("#btnCancelAll").classList.add("disabled");
 
-    $("#download").addClass("disabled");
-    $("#btnCloseDownload").on("click", e => {
-      $("#download").removeClass("disabled");
-      $("#modal").hide();
-      $("#lean-overlay").hide();
-      $("#refresh").trigger("click");
-      aSelectedFiles = [];
-    });
-    $("#modalClose").on("click", e => {
-      $("#download").removeClass("disabled");
-      $("#modal").hide();
-      $("#lean-overlay").hide();
-      $("#refresh").trigger("click");
-      aSelectedFiles = [];
-    });
-    $("#waiting").addClass("active");
-    $("#btnCancelAll").on("click", e => {
-      for (let x = 0; x < 4; x++) {
-        reqList[x].abort();
-        let percentLabel = document.querySelector("#percent" + x);
-        let progressBar = document.querySelector("#progress-bar" + x);
-        progressBar.innerHTML = "Canceled by user";
-        percentLabel.innerHTML = "";
-        progressBar.style.color = "red";
-        progressBar.style.width = "100%";
-        progressBar.style.backgroundColor = "white";
-      }
-      $("#btnCancelAll").addClass("disabled");
-    });
-    $(".modal_close").on("click", e => {
-      e.preventDefault();
-      let n = parseInt(e.target.id.slice(-1));
-      reqList[n].abort();
-      let percentLabel = document.querySelector("#percent" + n);
-      let progressBar = document.querySelector("#progress-bar" + n);
+  $("#download").addClass("disabled");
+  $("#btnCloseDownload").on("click", e => {
+    $("#download").removeClass("disabled");
+    $("#modal").hide();
+    $("#lean-overlay").hide();
+    $("#refresh").trigger("click");
+    aSelectedFiles = [];
+  });
+  $("#modalClose").on("click", e => {
+    $("#download").removeClass("disabled");
+    $("#modal").hide();
+    $("#lean-overlay").hide();
+    $("#refresh").trigger("click");
+    aSelectedFiles = [];
+  });
+  $("#waiting").addClass("active");
+  $("#btnCancelAll").on("click", e => {
+    for (let x = 0; x < 4; x++) {
+      reqList[x].abort();
+      let percentLabel = document.querySelector("#percent" + x);
+      let progressBar = document.querySelector("#progress-bar" + x);
       progressBar.innerHTML = "Canceled by user";
       percentLabel.innerHTML = "";
       progressBar.style.color = "red";
       progressBar.style.width = "100%";
       progressBar.style.backgroundColor = "white";
-    });
+    }
+    $("#btnCancelAll").addClass("disabled");
+  });
+  $(".modal_close").on("click", e => {
+    e.preventDefault();
+    let n = parseInt(e.target.id.slice(-1));
+    reqList[n].abort();
+    let percentLabel = document.querySelector("#percent" + n);
+    let progressBar = document.querySelector("#progress-bar" + n);
+    progressBar.innerHTML = "Canceled by user";
+    percentLabel.innerHTML = "";
+    progressBar.style.color = "red";
+    progressBar.style.width = "100%";
+    progressBar.style.backgroundColor = "white";
+  });
 
-    $("#btnCancelAll").removeClass("disabled");
-    let _loop = i => {
-      let fName = fileList[i];
-      let liNumber = document.querySelector("#li" + i);
-      let liFilename = document.querySelector("#li-filename" + i);
-      let progressBar = document.querySelector("#progress-bar" + i);
-      let percentLabel = document.querySelector("#percent" + i);
-      responseTimeout[i] = false;
-      fName = fName
-        .split("\\")
-        .pop()
-        .split("/")
-        .pop();
-      reqList[i] = new XMLHttpRequest();
-      reqList[i].open("POST", "/files/download", true);
-      reqList[i].responseType = "arraybuffer";
-      liNumber.style.display = "block";
-      liFilename.innerHTML = fName;
-      reqList[i].timeout = 36000;
-      reqList[i].ontimeout = function () {
-        if (RUNMODE === "DEBUG")
-          console.log(
-            "** Timeout error ->File:" +
+  $("#btnCancelAll").removeClass("disabled");
+  let _loop = i => {
+    let fName = fileList[i];
+    let liNumber = document.querySelector("#li" + i);
+    let liFilename = document.querySelector("#li-filename" + i);
+    let progressBar = document.querySelector("#progress-bar" + i);
+    let percentLabel = document.querySelector("#percent" + i);
+    responseTimeout[i] = false;
+    fName = fName
+      .split("\\")
+      .pop()
+      .split("/")
+      .pop();
+    reqList[i] = new XMLHttpRequest();
+    reqList[i].open("POST", "/files/download", true);
+    reqList[i].responseType = "arraybuffer";
+    liNumber.style.display = "block";
+    liFilename.innerHTML = fName;
+    reqList[i].timeout = 36000;
+    reqList[i].ontimeout = function() {
+      if (RUNMODE === "DEBUG")
+        console.log(
+          "** Timeout error ->File:" +
             fName +
             " " +
             reqList[i].status +
             " " +
             reqList[i].statusText
-          );
-        // handlerCount = handlerCount - 1
-        progressBar.innerHTML = "Timeout Error";
-        percentLabel.innerHTML = "";
-        progressBar.style.color = "red";
-        progressBar.style.width = "100%";
-        progressBar.style.backgroundColor = "white";
-        progressBar.classList.add("blink");
-        responseTimeout[i] = true;
-      };
-      reqList[i].onprogress = function (evt) {
-        if (evt.lengthComputable) {
-          var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-          progressBar.style.width = percentComplete + "%";
-          percentLabel.innerHTML = percentComplete + "%";
-        }
-      };
-      reqList[i].onerror = function () {
-        if (RUNMODE === "DEBUG")
-          console.log(
-            "** An error occurred during the transaction ->File:" +
+        );
+      // handlerCount = handlerCount - 1
+      progressBar.innerHTML = "Timeout Error";
+      percentLabel.innerHTML = "";
+      progressBar.style.color = "red";
+      progressBar.style.width = "100%";
+      progressBar.style.backgroundColor = "white";
+      progressBar.classList.add("blink");
+      responseTimeout[i] = true;
+    };
+    reqList[i].onprogress = function(evt) {
+      if (evt.lengthComputable) {
+        let percentComplete = parseInt((evt.loaded / evt.total) * 100);
+        progressBar.style.width = percentComplete + "%";
+        percentLabel.innerHTML = percentComplete + "%";
+      }
+    };
+    reqList[i].onerror = function() {
+      if (RUNMODE === "DEBUG")
+        console.log(
+          "** An error occurred during the transaction ->File:" +
             fName +
             " " +
             req.status +
             " " +
             req.statusText
-          );
-        handlerCount = handlerCount - 1;
-        percentLabel.innerHTML = "Error";
-        percentLabel.style.color = "red";
+        );
+      handlerCount = handlerCount - 1;
+      percentLabel.innerHTML = "Error";
+      percentLabel.style.color = "red";
+      $("#abort" + i).hide();
+    };
+    reqList[i].onloadend = function() {
+      handlerCount = handlerCount - 1;
+      if (!responseTimeout[i]) {
+        progressBar.style.width = "100%";
+        percentLabel.innerHTML = "100%";
         $("#abort" + i).hide();
-      };
-      reqList[i].onloadend = function () {
-        handlerCount = handlerCount - 1;
-        if (!responseTimeout[i]) {
-          progressBar.style.width = "100%";
-          percentLabel.innerHTML = "100%";
-          $("#abort" + i).hide();
+      }
+      if (handlerCount === 0) {
+        $("#download-end").show();
+        $("#btnCancelAll")
+          .removeClass("disabled")
+          .addClass("disabled");
+        $("#refresh").trigger("click");
+      }
+      if (RUNMODE === "DEBUG")
+        console.log("File " + handlerCount + " downloaded");
+    };
+    reqList[i].onloadstart = function() {
+      handlerCount = handlerCount + 1;
+      progressBar.style.width = "0";
+      percentLabel.innerHTML = "0%";
+    };
+    reqList[i].onload = function() {
+      if (reqList[i].readyState === 4 && reqList[i].status === 200) {
+        let filename = "";
+        let disposition = reqList[i].getResponseHeader("Content-Disposition");
+        if (disposition && disposition.indexOf("attachment") !== -1) {
+          let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+          let matches = filenameRegex.exec(disposition);
+          if (matches != null && matches[1])
+            filename = matches[1].replace(/['"]/g, "");
         }
-        if (handlerCount === 0) {
-          $("#download-end").show();
-          $("#btnCancelAll")
-            .removeClass("disabled")
-            .addClass("disabled");
-          $("#refresh").trigger("click");
-        }
-        if (RUNMODE === "DEBUG")
-          console.log("File " + handlerCount + " downloaded");
-      };
-      reqList[i].onloadstart = function () {
-        handlerCount = handlerCount + 1;
-        progressBar.style.width = "0";
-        percentLabel.innerHTML = "0%";
-      };
-      reqList[i].onload = function () {
-        if (reqList[i].readyState === 4 && reqList[i].status === 200) {
-          var filename = "";
-          var disposition = reqList[i].getResponseHeader("Content-Disposition");
-          if (disposition && disposition.indexOf("attachment") !== -1) {
-            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-            var matches = filenameRegex.exec(disposition);
-            if (matches != null && matches[1])
-              filename = matches[1].replace(/['"]/g, "");
-          }
-          var type = reqList[i].getResponseHeader("Content-Type");
-          var blob = new Blob([this.response], {
-            type: type
-          });
-          if (typeof window.navigator.msSaveBlob !== "undefined") {
-            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-            window.navigator.msSaveBlob(blob, filename);
-          } else {
-            var URL = window.URL || window.webkitURL;
-            var downloadUrl = URL.createObjectURL(blob);
+        let type = reqList[i].getResponseHeader("Content-Type");
+        let blob = new Blob([this.response], {
+          type: type
+        });
+        if (typeof window.navigator.msSaveBlob !== "undefined") {
+          // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+          window.navigator.msSaveBlob(blob, filename);
+        } else {
+          let URL = window.URL || window.webkitURL;
+          let downloadUrl = URL.createObjectURL(blob);
 
-            if (filename) {
-              // use HTML5 a[download] attribute to specify filename
-              var a = document.createElement("a");
-              // safari doesn't support this yet
-              if (typeof a.download === "undefined") {
-                window.location = downloadUrl;
-                preloader.style.display = "none";
-              } else {
-                a.href = downloadUrl;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                // preloader.style.display = 'none'
-              }
+          if (filename) {
+            // use HTML5 a[download] attribute to specify filename
+            let a = document.createElement("a");
+            // safari doesn't support this yet
+            if (typeof a.download === "undefined") {
+              window.location = downloadUrl;
+              preloader.style.display = "none";
             } else {
-              window.open = downloadUrl;
+              a.href = downloadUrl;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
               // preloader.style.display = 'none'
             }
-
-            setTimeout(function () {
-              URL.revokeObjectURL(downloadUrl);
-            }, 100); // cleanup
+          } else {
+            window.open = downloadUrl;
+            // preloader.style.display = 'none'
           }
+
+          setTimeout(function() {
+            URL.revokeObjectURL(downloadUrl);
+          }, 100); // cleanup
         }
-      };
-      reqList[i].setRequestHeader(
-        "Content-type",
-        "application/x-www-form-urlencoded"
-      );
-      if (RUNMODE === "DEBUG")
-        console.log(general.getRealPath(CURRENT_PATH) + "/" + fileList[i]);
-      reqList[i].send(
-        serializeObject({
-          filename: general.getRealPath(CURRENT_PATH) + "/" + fileList[i]
-        })
-      );
+      }
     };
-    for (var i = 0; i < fileList.length; i++) {
-      _loop(i);
-    }
-    $("#waiting").removeClass("active");
+    reqList[i].setRequestHeader(
+      "Content-type",
+      "application/x-www-form-urlencoded"
+    );
+    if (RUNMODE === "DEBUG")
+      console.log(getRealPath(CURRENT_PATH) + "/" + fileList[i]);
+    reqList[i].send(
+      serializeObject({
+        filename: getRealPath(CURRENT_PATH) + "/" + fileList[i]
+      })
+    );
+  };
+  for (let i = 0; i < fileList.length; i++) {
+    _loop(i);
   }
+  $("#waiting").removeClass("active");
 }
 
-  ///////////////////////////////////
-  // End Files and fFolders module
-  /////////////////////////////////
-}();
+///////////////////////////////////
+// End Files and fFolders module
+/////////////////////////////////

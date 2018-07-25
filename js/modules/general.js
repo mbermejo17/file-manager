@@ -1,8 +1,11 @@
-window.general = function () {
-  return {
-    // get real path
-    getRealPath: (p) => {
+import Cookies from "../vendor/js-cookie";
+
+
+ var getRealPath = module.exports = (p) => {
       let rPath = "";
+      let RUNMODE = Cookies.get("RunMode");
+      let REAL_ROOT_PATH = Cookies.get("RootPath");
+
       if (RUNMODE === "DEBUG") console.log("getRealPath:p ", p);
       if (RUNMODE === "DEBUG") console.log("getRealPath:REAL_ROOT_PATH ", REAL_ROOT_PATH);
       if (p == "/" && (REAL_ROOT_PATH === "/" || REAL_ROOT_PATH === "")) {
@@ -17,6 +20,4 @@ window.general = function () {
       }
       if (RUNMODE === "DEBUG") console.log("getRealPath:rPath ", rPath);
       return rPath;
-    }
-  };
-}();
+    };

@@ -1,36 +1,40 @@
 "use sctrict";
 import "babel-polyfill";
 import ajax from "./vendor/ajax";
-import {
-  Base64
-} from "js-base64";
+import { Base64 } from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
+import {shareFile} from "./modules/fileManager";
 
-document.addEventListener("DOMContentLoaded", function () {
-  const UserName = Cookies.get("UserName");
-  const UserRole = Cookies.get("UserRole");
-  const CompanyName = Cookies.get("CompanyName");
-  window.REAL_ROOT_PATH = Cookies.get("ROOTPATH");
-  const Token = Cookies.get("token");
-  const AccessString = Cookies.get("AccessString");
-  window.RUNMODE = Cookies.get("RunMode");
-  const [
-    AllowDownload,
-    AllowUpload,
-    AllowDeleteFile,
-    AllowDeleteFolder,
-    AllowNewFolder,
-    AllowShareFile
-  ] = AccessString.split(",");
-  window.ROOTPATH = "/";
-  window.CURRENT_PATH = ROOTPATH;
-  let aSelectedFiles = [];
-  let aSelectedFolders = [];
-  let aFolders = [];
-  let aFiles = [];
-  let currentTopToast = 30;
-  let topToast = 0;
+
+let UserName = Cookies.get("UserName");
+let UserRole = Cookies.get("UserRole");
+let CompanyName = Cookies.get("CompanyName");
+let REAL_ROOT_PATH = Cookies.get("RootPath");
+let Token = Cookies.get("token");
+let AccessString = Cookies.get("AccessString");
+let RUNMODE = Cookies.get("RunMode");
+let [
+  AllowDownload,
+  AllowUpload,
+  AllowDeleteFile,
+  AllowDeleteFolder,
+  AllowNewFolder,
+  AllowShareFile
+] = AccessString.split(",");
+let ROOTPATH = "/";
+let CURRENT_PATH = ROOTPATH;
+let aSelectedFiles = [];
+let aSelectedFolders = [];
+let aFolders = [];
+let aFiles = [];
+let currentTopToast = 30;
+let topToast = 0;
+
+import getRealPath from "./modules/general";
+
+document.addEventListener("DOMContentLoaded", function() {
+ 
   let htmlSearchUserTemplate = `<div id="searchUserModal">
                           <div class="row"> 
                             <div class="input-field col s12 m12"></div>
@@ -175,14 +179,12 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
       </div>`;
 
-  
-
   const sendEmail = (toEmail, fromEmail, subject, body_message) => {
-    let mailto_link = 'mailto:' + toEmail + '?subject=' + subject + '&body=' + body_message;
-    let win = window.open(mailto_link, 'emailWindow');
+    let mailto_link =
+      "mailto:" + toEmail + "?subject=" + subject + "&body=" + body_message;
+    let win = window.open(mailto_link, "emailWindow");
     if (win && window.open && !window.closed) window.close();
   };
-
 
   const logout = () => {
     Cookies.remove("UserName");
@@ -195,8 +197,6 @@ document.addEventListener("DOMContentLoaded", function () {
     Cookies.remove("AccessString");
     document.location.href = "/";
   };
-
-
 
   //////////////////////////////////
   //  Tools module
@@ -228,13 +228,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  const cleanArray = (arr) => {
+  const cleanArray = arr => {
     let temp = [];
-    for (let i of arr)
-      i && temp.push(i);
+    for (let i of arr) i && temp.push(i);
     return temp;
   };
-
 
   const execFetch = async (uri, met, data) => {
     const header = new Headers();
@@ -273,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
     x.classList.add(type);
     x.style.setProperty("--snackbarTop", newTopToast + "px");
     x.style.setProperty("--snackbarCurrentTop", newCurrentTopToast + "px");
-    setTimeout(function () {
+    setTimeout(function() {
       x.className = x.className.replace("show", "");
       if (topToast !== 0 && topToast > 5) {
         topToast = topToast - 5;
@@ -283,8 +281,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }, 3000);
   };
-
-  
 
   const serializeObject = dataObject => {
     var stringResult = "",
@@ -379,10 +375,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  
-
-
-  const FetchHandleErrors = function (response) {
+  const FetchHandleErrors = function(response) {
     if (!response.ok) {
       //throw Error(response.statusText);
       if (response.statusCode == 401) {
@@ -391,68 +384,66 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     return response;
   };
-  
 
- 
-  
   ///////////////////////////////
   // Path handler
   //////////////////////////////
 
-  // change path event 
-  const changePath = (newPath) => {
-    let fullNewPath = '';
+  // change path event
+  const changePath = newPath => {
+    let fullNewPath = "";
     if (RUNMODE === "DEBUG") console.log("changePath:newPath ", newPath);
-    if (newPath !== '/') {
+    if (newPath !== "/") {
       fullNewPath = getNewPath(newPath);
     } else {
       fullNewPath = newPath;
     }
-    if (RUNMODE === "DEBUG") console.log("changePath:fullNewPath ", fullNewPath);
+    if (RUNMODE === "DEBUG")
+      console.log("changePath:fullNewPath ", fullNewPath);
     CURRENT_PATH = fullNewPath.trim();
     refreshPath(CURRENT_PATH);
     refreshBarMenu();
   };
 
   // get New path
-  const getNewPath = (pathSelected) => {
-    let splitPath = CURRENT_PATH.split('/');
-    let newPath = '';
+  const getNewPath = pathSelected => {
+    let splitPath = CURRENT_PATH.split("/");
+    let newPath = "";
     let temp = [];
 
     splitPath = cleanArray(splitPath);
 
-    if (RUNMODE === 'DEBUG') console.log('Current Path: ', CURRENT_PATH);
-    if (RUNMODE === 'DEBUG') console.log('Path Selected: ', pathSelected);
-    if (RUNMODE === 'DEBUG') console.log('splitPath : ', splitPath);
+    if (RUNMODE === "DEBUG") console.log("Current Path: ", CURRENT_PATH);
+    if (RUNMODE === "DEBUG") console.log("Path Selected: ", pathSelected);
+    if (RUNMODE === "DEBUG") console.log("splitPath : ", splitPath);
     if (splitPath.length == 0) {
-      newPath += '/' + pathSelected;
+      newPath += "/" + pathSelected;
     } else {
       for (let x = 0; x < splitPath.length; x++) {
         if (splitPath[x] !== pathSelected) {
-          newPath += '/' + splitPath[x];
+          newPath += "/" + splitPath[x];
         } else {
           if (splitPath[x] === pathSelected) {
-            newPath += '/' + splitPath[x];
-            if (RUNMODE === 'DEBUG') console.log('New Path: ', newPath);
+            newPath += "/" + splitPath[x];
+            if (RUNMODE === "DEBUG") console.log("New Path: ", newPath);
             return newPath;
           }
         }
       }
-      newPath += '/' + pathSelected
+      newPath += "/" + pathSelected;
     }
-    if (RUNMODE === 'DEBUG') console.log('New Path: ', newPath);
+    if (RUNMODE === "DEBUG") console.log("New Path: ", newPath);
     return newPath;
   };
 
-
   // go back Folder
-  const goBackFolder = (folder) => {
-    let newPath = '';
-    let splitPath = CURRENT_PATH.split('/');
+  const goBackFolder = folder => {
+    let newPath = "";
+    let splitPath = CURRENT_PATH.split("/");
 
     if (RUNMODE === "DEBUG") console.log("goBackFolder:folder ", folder);
-    if (RUNMODE === "DEBUG") console.log("goBackFolder:CURRENT_PATH ", CURRENT_PATH);
+    if (RUNMODE === "DEBUG")
+      console.log("goBackFolder:CURRENT_PATH ", CURRENT_PATH);
 
     splitPath = cleanArray(splitPath);
     splitPath.pop();
@@ -461,15 +452,13 @@ document.addEventListener("DOMContentLoaded", function () {
       if (splitPath.length > 0) {
         newPath += splitPath[splitPath.length - 1];
       } else {
-        newPath = '/';
+        newPath = "/";
       }
     }
 
     if (RUNMODE === "DEBUG") console.log("goBackFolder:newPath " + newPath);
     changePath(newPath.trim());
   };
-
-  
 
   // refresh path
   const refreshPath = cPath => {
@@ -518,15 +507,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const headers = new Headers();
     headers.append("Authorization", "Bearer " + Token);
-    let realpath = general.getRealPath(cPath);
+    let realpath = getRealPath(cPath);
 
     if (RUNMODE === "DEBUG")
-      console.log("REAL_ROOT_PATH: " + REAL_ROOT_PATH + " realpath:" + realpath);
+      console.log(
+        "REAL_ROOT_PATH: " + REAL_ROOT_PATH + " realpath:" + realpath
+      );
     fetch("/files?path=" + encodeURI(realpath), {
-        method: "GET",
-        headers: headers,
-        timeout: 720000
-      })
+      method: "GET",
+      headers: headers,
+      timeout: 720000
+    })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
@@ -540,17 +531,15 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   };
 
-  
-
   //////////////////////////////////
-  // User UI 
-  ///////////////////////////////// 
+  // User UI
+  /////////////////////////////////
 
   const selectAll = e => {
     var allCkeckbox = document.querySelectorAll(".check");
     let v = document.querySelector("#selectAllFiles").checked;
     if (RUNMODE === "DEBUG") console.log("selectAllFiles :", v);
-    allCkeckbox.forEach(function (element, i) {
+    allCkeckbox.forEach(function(element, i) {
       if (!allCkeckbox[i].disabled) {
         allCkeckbox[i].checked = v;
       }
@@ -559,20 +548,20 @@ document.addEventListener("DOMContentLoaded", function () {
     if (RUNMODE === "DEBUG") console.log(getCheckedFolder());
   };
 
-  const getCheckedFiles = function () {
+  const getCheckedFiles = function() {
     var checkedFiles = [];
     var allElements = document.querySelectorAll(".typeFile");
-    allElements.forEach(function (element, i) {
+    allElements.forEach(function(element, i) {
       if (RUNMODE === "DEBUG") console.log("element: ", element);
       if (RUNMODE === "DEBUG")
         console.log(
           "children: ",
           element.parentElement.parentElement.children[0].children[0]
-          .children[0].checked
+            .children[0].checked
         );
       if (
         element.parentElement.parentElement.children[0].children[0].children[0]
-        .checked
+          .checked
       ) {
         aSelectedFiles.push(element.innerHTML);
         checkedFiles.push(element.innerHTML);
@@ -587,10 +576,10 @@ document.addEventListener("DOMContentLoaded", function () {
     return checkedFiles;
   };
 
-  const getCheckedFolder = function () {
+  const getCheckedFolder = function() {
     var checkedFolders = [];
     var allElements = document.querySelectorAll(".dashboard-path");
-    allElements.forEach(function (v, i) {
+    allElements.forEach(function(v, i) {
       if (RUNMODE === "DEBUG") console.log("element v: ", v);
       if (RUNMODE === "DEBUG") console.log("check ", v.children[0].checked);
       if (RUNMODE === "DEBUG")
@@ -616,7 +605,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     return checkedFolders;
   };
-
 
   const showDialogYesNo = (title, content, yesCb, noCb) => {
     let w = 32;
@@ -653,7 +641,6 @@ document.addEventListener("DOMContentLoaded", function () {
       noCb("NO");
     });
   };
-
 
   const renderFilesTable = (aFol, aFil) => {
     let newHtmlContent = ``;
@@ -695,7 +682,6 @@ document.addEventListener("DOMContentLoaded", function () {
     tbodyContent.innerHTML = newHtmlContent;
   };
 
-  
   const refreshFilesTable = data => {
     const tbodyContent = document
       .getElementById("tbl-files")
@@ -760,8 +746,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   };
 
-  
-  
   const selectDeselect = e => {
     const isChecked = e.target.checked;
     const contentType = e.target.className.split(/\s+/).indexOf("checkFile");
@@ -938,10 +922,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         success: data => {
           //if (RUNMODE === 'DEBUG' ) console.log(JSON.parse(data))
-          let {
-            status,
-            message
-          } = JSON.parse(data);
+          let { status, message } = JSON.parse(data);
           if (RUNMODE === "DEBUG") console.log("status", status);
           if (status === "FAIL") {
             showToast(message, "err");
@@ -1029,7 +1010,7 @@ document.addEventListener("DOMContentLoaded", function () {
     selectAll(e.target.htmlFor);
   });
 
-  $("a").on("click", function (e) {
+  $("a").on("click", function(e) {
     if (RUNMODE === "DEBUG") console.log(this.id);
     if (RUNMODE === "DEBUG") console.log($(this).hasClass("disabled"));
 
@@ -1068,10 +1049,7 @@ document.addEventListener("DOMContentLoaded", function () {
         case "share":
           if (aSelectedFiles.length > 0) {
             if (aSelectedFiles.length > 1) {
-              showToast(
-                "No pueden seleccionarse más de un archivo",
-                "err"
-              );
+              showToast("No pueden seleccionarse más de un archivo", "err");
               break;
             }
             shareFile();
@@ -1149,9 +1127,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (RUNMODE === "DEBUG") console.log("position: ", position);
     let newPosition = position + "px";
     if ($("#Settingdropdown").css("display") === "block") {
-      document.getElementById("settings").classList ?
-        document.getElementById("settings").classList.remove("selected") :
-        (document.getElementById("settings").className = "");
+      document.getElementById("settings").classList
+        ? document.getElementById("settings").classList.remove("selected")
+        : (document.getElementById("settings").className = "");
       //document.getElementById('Settingdropdown').classList.remove('setting');
       document.getElementById("Settingdropdown").style.display = "none";
     } else {
@@ -1182,5 +1160,5 @@ document.addEventListener("DOMContentLoaded", function () {
   refreshBarMenu();
   if (RUNMODE === "DEBUG")
     console.log(document.querySelector("#selectAllFiles").checked);
-    if (RUNMODE === "DEBUG") console.log();
+  if (RUNMODE === "DEBUG") console.log();
 });
