@@ -1,40 +1,51 @@
 "use sctrict";
 import "babel-polyfill";
 import ajax from "./vendor/ajax";
-import { Base64 } from "js-base64";
+import {
+  Base64
+} from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
-import {shareFile} from "./modules/fileManager";
 
 
-let UserName = Cookies.get("UserName");
-let UserRole = Cookies.get("UserRole");
-let CompanyName = Cookies.get("CompanyName");
-let REAL_ROOT_PATH = Cookies.get("RootPath");
-let Token = Cookies.get("token");
-let AccessString = Cookies.get("AccessString");
-let RUNMODE = Cookies.get("RunMode");
-let [
-  AllowDownload,
-  AllowUpload,
-  AllowDeleteFile,
-  AllowDeleteFolder,
-  AllowNewFolder,
-  AllowShareFile
-] = AccessString.split(",");
-let ROOTPATH = "/";
-let CURRENT_PATH = ROOTPATH;
-let aSelectedFiles = [];
-let aSelectedFolders = [];
-let aFolders = [];
-let aFiles = [];
-let currentTopToast = 30;
-let topToast = 0;
+import {getRealPath, serializeObject} from "./modules/general";
+import {
+  shareFile, 
+  deleteSelected,
+  download,
+  upload,
+  newFolder
+} from "./modules/fileManager";
 
-import getRealPath from "./modules/general";
 
-document.addEventListener("DOMContentLoaded", function() {
- 
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  window.UserName = Cookies.get("UserName");
+  let UserRole = Cookies.get("UserRole");
+  let CompanyName = Cookies.get("CompanyName");
+  let REAL_ROOT_PATH = Cookies.get("RootPath");
+  window.Token = Cookies.get("token");
+  let AccessString = Cookies.get("AccessString");
+  window.RUNMODE = Cookies.get("RunMode");
+  let [
+    AllowDownload,
+    AllowUpload,
+    AllowDeleteFile,
+    AllowDeleteFolder,
+    AllowNewFolder,
+    AllowShareFile
+  ] = AccessString.split(",");
+  window.ROOTPATH = "/";
+  window.CURRENT_PATH = ROOTPATH;
+  window.aSelectedFiles = [];
+  window.aSelectedFolders = [];
+  window.aFolders = [];
+  window.aFiles = [];
+  let currentTopToast = 30;
+  let topToast = 0;
+
+
   let htmlSearchUserTemplate = `<div id="searchUserModal">
                           <div class="row"> 
                             <div class="input-field col s12 m12"></div>
@@ -59,37 +70,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             </div>
                         </div>`;
 
-  let htmlShareFile = `<div id="shareFileModal">
-                        <div class="row"> 
-                          <div class="input-field col s12 m12"></div>
-                        </div>
-                        <div class="row" id="">
-                          <div class="input-field col s1 m1">
-                          </div>
-                          <div class="input-field col s5">
-                            <input id="destUserName" type="email" autocomplete="off" requidred/>
-                            <label for="destUserName">Enviar a</label>
-                          </div>
-                          <div class="input-field col s3 m3">
-                              <input class="datepicker" id="FileExpirateDate" type="date"/>
-                              <label for="FileExpirateDate">Expiration Date</label>
-                          </div>
-                          <div class="input-field col s3 m3">
-                          </div>
-                        </div>  
-                        <div class="row"> 
-                          <div class="input-field col s5 m5">
-                          </div>
-                          <div class="input-field col s3 m3">
-                            <button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-ShareFileCancel" type="submit" name="action">Cancel</button>
-                          </div>
-                          <div class="input-field col s3 m3">  
-                            <button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-ShareFileAccept" type="submit" name="action">Send</button>
-                          </div>
-                          <div class="input-field col s1 m1">
-                          </div>
-                        </div>    
-                      </div>`;
+
   let htmlUserFormTemplate = `
       <div id="AddUserModal">
           <h4 id ="userFormTitle" class="header2">New User</h4>
@@ -179,12 +160,7 @@ document.addEventListener("DOMContentLoaded", function() {
           </div>
       </div>`;
 
-  const sendEmail = (toEmail, fromEmail, subject, body_message) => {
-    let mailto_link =
-      "mailto:" + toEmail + "?subject=" + subject + "&body=" + body_message;
-    let win = window.open(mailto_link, "emailWindow");
-    if (win && window.open && !window.closed) window.close();
-  };
+  
 
   const logout = () => {
     Cookies.remove("UserName");
@@ -234,7 +210,17 @@ document.addEventListener("DOMContentLoaded", function() {
     return temp;
   };
 
-  const execFetch = async (uri, met, data) => {
+  window.FetchHandleErrors = function (response) {
+    if (!response.ok) {
+      //throw Error(response.statusText);
+      if (response.statusCode == 401) {
+        logout();
+      }
+    }
+    return response;
+  };
+
+  window.execFetch = async (uri, met, data) => {
     const header = new Headers();
     const bodyData = data ? JSON.stringify(data) : null;
     header.append("Content-Type", "application/json");
@@ -251,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return json;
   };
 
-  const showToast = (msg, type) => {
+  window.showToast = (msg, type) => {
     let newTopToast = 0;
     let newCurrentTopToast = 0;
     if (topToast == 0) {
@@ -271,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function() {
     x.classList.add(type);
     x.style.setProperty("--snackbarTop", newTopToast + "px");
     x.style.setProperty("--snackbarCurrentTop", newCurrentTopToast + "px");
-    setTimeout(function() {
+    setTimeout(function () {
       x.className = x.className.replace("show", "");
       if (topToast !== 0 && topToast > 5) {
         topToast = topToast - 5;
@@ -282,20 +268,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }, 3000);
   };
 
-  const serializeObject = dataObject => {
-    var stringResult = "",
-      value = void 0;
-    for (var key in dataObject) {
-      if (RUNMODE === "DEBUG") console.log(dataObject[key], key);
-      value = dataObject[key];
-      if (stringResult !== "") {
-        stringResult += "&" + key + "=" + value;
-      } else {
-        stringResult += key + "=" + value;
-      }
-    }
-    return stringResult;
-  };
+  
 
   /////////////////////////////////
   //  End Tools
@@ -375,22 +348,14 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   };
 
-  const FetchHandleErrors = function(response) {
-    if (!response.ok) {
-      //throw Error(response.statusText);
-      if (response.statusCode == 401) {
-        logout();
-      }
-    }
-    return response;
-  };
+  
 
   ///////////////////////////////
   // Path handler
   //////////////////////////////
 
   // change path event
-  const changePath = newPath => {
+  let changePath = newPath => {
     let fullNewPath = "";
     if (RUNMODE === "DEBUG") console.log("changePath:newPath ", newPath);
     if (newPath !== "/") {
@@ -406,7 +371,7 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   // get New path
-  const getNewPath = pathSelected => {
+  let getNewPath = pathSelected => {
     let splitPath = CURRENT_PATH.split("/");
     let newPath = "";
     let temp = [];
@@ -437,7 +402,7 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   // go back Folder
-  const goBackFolder = folder => {
+  let goBackFolder = folder => {
     let newPath = "";
     let splitPath = CURRENT_PATH.split("/");
 
@@ -461,7 +426,7 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   // refresh path
-  const refreshPath = cPath => {
+  let refreshPath = cPath => {
     let newLinePath = [];
     let newHtmlContent = `<li><label id="CURRENT_PATH">Path:</label></li>
                               <li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">/</a></li>`;
@@ -514,10 +479,10 @@ document.addEventListener("DOMContentLoaded", function() {
         "REAL_ROOT_PATH: " + REAL_ROOT_PATH + " realpath:" + realpath
       );
     fetch("/files?path=" + encodeURI(realpath), {
-      method: "GET",
-      headers: headers,
-      timeout: 720000
-    })
+        method: "GET",
+        headers: headers,
+        timeout: 720000
+      })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
@@ -539,7 +504,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var allCkeckbox = document.querySelectorAll(".check");
     let v = document.querySelector("#selectAllFiles").checked;
     if (RUNMODE === "DEBUG") console.log("selectAllFiles :", v);
-    allCkeckbox.forEach(function(element, i) {
+    allCkeckbox.forEach(function (element, i) {
       if (!allCkeckbox[i].disabled) {
         allCkeckbox[i].checked = v;
       }
@@ -548,20 +513,20 @@ document.addEventListener("DOMContentLoaded", function() {
     if (RUNMODE === "DEBUG") console.log(getCheckedFolder());
   };
 
-  const getCheckedFiles = function() {
+  const getCheckedFiles = function () {
     var checkedFiles = [];
     var allElements = document.querySelectorAll(".typeFile");
-    allElements.forEach(function(element, i) {
+    allElements.forEach(function (element, i) {
       if (RUNMODE === "DEBUG") console.log("element: ", element);
       if (RUNMODE === "DEBUG")
         console.log(
           "children: ",
           element.parentElement.parentElement.children[0].children[0]
-            .children[0].checked
+          .children[0].checked
         );
       if (
         element.parentElement.parentElement.children[0].children[0].children[0]
-          .checked
+        .checked
       ) {
         aSelectedFiles.push(element.innerHTML);
         checkedFiles.push(element.innerHTML);
@@ -576,10 +541,10 @@ document.addEventListener("DOMContentLoaded", function() {
     return checkedFiles;
   };
 
-  const getCheckedFolder = function() {
+  const getCheckedFolder = function () {
     var checkedFolders = [];
     var allElements = document.querySelectorAll(".dashboard-path");
-    allElements.forEach(function(v, i) {
+    allElements.forEach(function (v, i) {
       if (RUNMODE === "DEBUG") console.log("element v: ", v);
       if (RUNMODE === "DEBUG") console.log("check ", v.children[0].checked);
       if (RUNMODE === "DEBUG")
@@ -606,7 +571,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return checkedFolders;
   };
 
-  const showDialogYesNo = (title, content, yesCb, noCb) => {
+   window.showDialogYesNo = (title, content, yesCb, noCb) => {
     let w = 32;
     let h = 440;
     let result = null;
@@ -641,6 +606,16 @@ document.addEventListener("DOMContentLoaded", function() {
       noCb("NO");
     });
   };
+  
+  const formatSize = (bytes)=> {
+    if      (bytes>=1073741824) {bytes=parseInt(bytes/1000000000)+' GB';}
+    else if (bytes>=1048576)    {bytes=parseInt(bytes/1000000)+' MB';}
+    else if (bytes>=1024)       {bytes=parseInt(bytes/1000)+' KB';}
+    else if (bytes>1)           {bytes=bytes+' bytes';}
+    else if (bytes==1)          {bytes=bytes+' byte';}
+    else                        {bytes='0 byte';}
+    return bytes;
+};
 
   const renderFilesTable = (aFol, aFil) => {
     let newHtmlContent = ``;
@@ -667,7 +642,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     aFil.forEach((val, idx, array) => {
-      let fileSize = parseInt(val.size / 1024);
+      let fileSize = formatSize(val.size);
+
       newHtmlContent += `<tr><td><div class="md-checkbox"><input class="checkFile check" id="${
         val.name
       }" type="checkbox">
@@ -675,7 +651,7 @@ document.addEventListener("DOMContentLoaded", function() {
       newHtmlContent += `<td><i class="fa fa-file"></i><span class="typeFile">${
         val.name
       }</span></td>`;
-      newHtmlContent += `<td>${fileSize} KB</td><td>&nbsp;</td><td>${
+      newHtmlContent += `<td>${fileSize}</td><td>&nbsp;</td><td>${
         val.date
       }</td></tr>`;
     });
@@ -692,7 +668,7 @@ document.addEventListener("DOMContentLoaded", function() {
     aFiles = [];
     if (data.message) return null;
     data.forEach((val, idx, array) => {
-      let fileSize = parseInt(val.size / 1024);
+      let fileSize = (val.size / 1024);
       if (val.isFolder) {
         aFolders.push({
           name: val.name,
@@ -922,7 +898,10 @@ document.addEventListener("DOMContentLoaded", function() {
         },
         success: data => {
           //if (RUNMODE === 'DEBUG' ) console.log(JSON.parse(data))
-          let { status, message } = JSON.parse(data);
+          let {
+            status,
+            message
+          } = JSON.parse(data);
           if (RUNMODE === "DEBUG") console.log("status", status);
           if (status === "FAIL") {
             showToast(message, "err");
@@ -1010,7 +989,7 @@ document.addEventListener("DOMContentLoaded", function() {
     selectAll(e.target.htmlFor);
   });
 
-  $("a").on("click", function(e) {
+  $("a").on("click", function (e) {
     if (RUNMODE === "DEBUG") console.log(this.id);
     if (RUNMODE === "DEBUG") console.log($(this).hasClass("disabled"));
 
@@ -1092,7 +1071,7 @@ document.addEventListener("DOMContentLoaded", function() {
           }
           break;
         case "upload":
-          fileManager.upload(Token);
+          upload(Token);
           break;
         case "download":
           if (aSelectedFiles.length > 0) {
@@ -1127,9 +1106,9 @@ document.addEventListener("DOMContentLoaded", function() {
     if (RUNMODE === "DEBUG") console.log("position: ", position);
     let newPosition = position + "px";
     if ($("#Settingdropdown").css("display") === "block") {
-      document.getElementById("settings").classList
-        ? document.getElementById("settings").classList.remove("selected")
-        : (document.getElementById("settings").className = "");
+      document.getElementById("settings").classList ?
+        document.getElementById("settings").classList.remove("selected") :
+        (document.getElementById("settings").className = "");
       //document.getElementById('Settingdropdown').classList.remove('setting');
       document.getElementById("Settingdropdown").style.display = "none";
     } else {

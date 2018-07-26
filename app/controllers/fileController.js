@@ -91,10 +91,16 @@ class FileController {
     fs.mkdir(newFolder, function (err) {
       if (err) {
         console.error(err)
-        res.send(JSON.stringify({ status: 'FAIL', data: err }))
+        if(err.code == 'EEXIST') {
+          res.send(JSON.stringify({ status: 'FAIL', message: 'folder already exists',data: null }))
+        } else {
+          res.send(JSON.stringify({ status: 'FAIL', message: 'Error code: '+ err.code,data: null }))
+        } 
+      } else {
+        console.log('Directory created successfully!')
+        res.send(JSON.stringify({ status: 'OK', message: 'Carpeta '+ folderName +' creada',data: { 'folderName': req.body.folderName,'Path': req.body.path } }))
       }
-      console.log('Directory created successfully!')
-      res.send(JSON.stringify({ status: 'OK', data: { 'folderName': req.body.folderName,'Path': req.body.path } }))
+      
     })
   }
 
@@ -131,6 +137,7 @@ class FileController {
      // create an incoming form object
      let form = new formidable.IncomingForm()
      let repoPath = req.query.destPath
+     let fileName = ''
      
      form.maxFileSize = 700 * 1024 * 1024;    
      // specify that we want to allow the user to upload multiple files in a single request
@@ -145,17 +152,19 @@ class FileController {
      // rename it to it's orignal name
      form.on('file', function(field, file) {
          console.log(file);
+         fileName = file.name;
          fs.rename(file.path, path.join(form.uploadDir, file.name))
      });
 
      // log any errors that occur
      form.on('error', function(err) {
          console.log('An error has occured: \n' + err)
+         res.send(JSON.stringify({ status: 'FAIL', message: err,data:{fileName: fileName} }))
      });
 
      // once all the files have been uploaded, send a response to the client
      form.on('end', function() {
-         res.end('success')
+         res.send(JSON.stringify({ status: 'OK', message: '',data:{fileName: fileName} }))
      });
 
      // parse the incoming request containing the form data

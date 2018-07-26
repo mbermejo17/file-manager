@@ -1,7 +1,7 @@
 import Cookies from "../vendor/js-cookie";
 
 
- var getRealPath = module.exports = (p) => {
+export function getRealPath(p) {
       let rPath = "";
       let RUNMODE = Cookies.get("RunMode");
       let REAL_ROOT_PATH = Cookies.get("RootPath");
@@ -20,4 +20,19 @@ import Cookies from "../vendor/js-cookie";
       }
       if (RUNMODE === "DEBUG") console.log("getRealPath:rPath ", rPath);
       return rPath;
-    };
+    }
+
+export function serializeObject(dataObject) {
+      var stringResult = "",
+        value = void 0;
+      for (var key in dataObject) {
+        if (RUNMODE === "DEBUG") console.log(dataObject[key], key);
+        value = dataObject[key];
+        if (stringResult !== "") {
+          stringResult += "&" + key + "=" + value;
+        } else {
+          stringResult += key + "=" + value;
+        }
+      }
+      return stringResult;
+    }   
