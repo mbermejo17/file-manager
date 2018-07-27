@@ -8,7 +8,8 @@ const fs = require('fs'),
   normalize = require('normalize-path'),
   formidable = require('formidable'),
   uuidv4 = require('uuid/v4'),
-  Util = require('./../models/util')
+  Util = require('./../models/util'),
+  moment = require('moment')
 
 let _getStats = (p) => {
   fs.stat(p, (err, stats) => {
@@ -27,6 +28,13 @@ let _getStats = (p) => {
 let _getUID = () => {
   let uid = uuidv4();
   return uid.replace(/-/g,'');
+};
+
+
+let  _cleanExpiredSharedFiles = (query,callback)=>{
+  Util.CleanExpiredFiles(query,(response)=>{
+    callback(response);
+  });
 };
 
 /* const read = (dir) =>
@@ -208,6 +216,9 @@ class FileController {
     let destUserName = req.body.destUserName
     let expirationDate = req.body.expirationDate
     let uid = _getUID()
+    let date = new Date();
+    let newDate = new Date(date.setDate(date.getDate() + 1));
+    console.log(newDate); 
     let data = {
       UrlCode: uid,
       User: userName,
@@ -216,8 +227,13 @@ class FileController {
       FileName: fileName,
       Size: fileSize,
       ExpirationDate: expirationDate,
+      UnixDate: moment(expirationDate).unix(),
       State: 'Pending'
     }
+    let sqlQuery = 'DELETE FROM Shared WHERE (ExpirateDate  < ?);';
+    console.log(sqlQuery);
+   _cleanExpiredSharedFiles(sqlQuery,(response)=>{
+    console.log(response);
     Util.Add(data,(d)=>{
       console.log("d : ", d);
       if (d.status === 'FAIL') {
@@ -227,6 +243,7 @@ class FileController {
           return res.status(200).json(d); 
       }
     })
+   });
   }
   
 }

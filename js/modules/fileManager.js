@@ -1,12 +1,12 @@
 import Cookies from "../vendor/js-cookie";
-import {getRealPath, serializeObject} from "./general";
+import moment from "moment";
+import { getRealPath, serializeObject } from "./general";
 ////////////////////////////////////
 // Files and Folder module
 ///////////////////////////////////
 
 let RUNMODE = Cookies.get("RunMode");
 let REAL_ROOT_PATH = Cookies.get("RootPath");
-
 
 let htmlShareFile = `<div id="shareFileModal">
                         <div id="modal-header">
@@ -110,11 +110,16 @@ export function shareFile() {
   );
   let AddUserModalContent = document.getElementById("AddUserModalContent");
   let containerOverlay = document.querySelector(".container-overlay");
-  let validations ={
-    email: [/^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/, 'Please enter a valid email address']
+  let validations = {
+    email: [
+      /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/,
+      "Please enter a valid email address"
+    ]
   };
+ 
   /**/
   searchUserModalContent.innerHTML = htmlShareFile;
+ 
   AddUserModalContent.style.display = "none";
   searchUserModalContent.style.display = "block";
   containerOverlay.style.display = "block";
@@ -125,54 +130,63 @@ export function shareFile() {
       searchUserModalContent.style.display = "none";
       containerOverlay.style.display = "none";
     });
-    
-    document.getElementById('sharedModalClose').addEventListener('click',(e)=>{
-      e.preventDefault();
-      searchUserModalContent.style.display = "none";
-      containerOverlay.style.display = "none";
-    });
+
+  document.getElementById("sharedModalClose").addEventListener("click", e => {
+    e.preventDefault();
+    searchUserModalContent.style.display = "none";
+    containerOverlay.style.display = "none";
+  });
 
   document
     .getElementById("btn-ShareFileAccept")
     .addEventListener("click", e => {
       e.preventDefault();
-      if (document.getElementById("destUserName").value !== '') {
-      if (RUNMODE === "DEBUG")
-        console.log(document.getElementById("destUserName").value);
-      if (RUNMODE === "DEBUG")
-        console.log(document.getElementById("FileExpirateDate").value);
-      let data = {
-        fileName: aSelectedFiles[0],
-        fileSize: null,
-        path: CURRENT_PATH,
-        userName: UserName,
-        destUserName: document.getElementById("destUserName").value,
-        expirationDate: document.getElementById("FileExpirateDate").value
-      };
-      execFetch("/files/share", "POST", data)
-        .then(d => {
-          if (RUNMODE === "DEBUG") console.log(d);
-          if (d.status === "OK") {
-            searchUserModalContent.style.display = "none";
-            containerOverlay.style.display = "none";
-            sendEmail(
-              d.data.DestUser,
-              "mbermejo17@gmail.com",
-              "URL para descarga de archivo",
-              `Descarga de archivo https://194.224.194.134/files/share/${
-                d.data.UrlCode
-              }`
+      let tmpDate = new Date(document.getElementById("FileExpirateDate").value);
+      let strTime = ''
+      if (document.getElementById("FileExpirateDate").value ==='') {
+        strTime = moment(Date.now()).format('YYYY/MM/DD h:mm');
+      } else {
+        strTime = moment(document.getElementById("FileExpirateDate").value).format('YYYY/MM/DD h:mm');
+      }
+
+      if (document.getElementById("destUserName").value !== "") {
+        if (RUNMODE === "DEBUG")
+          console.log(document.getElementById("destUserName").value);
+        if (RUNMODE === "DEBUG")
+          console.log(document.getElementById("FileExpirateDate").value);
+        let data = {
+          fileName: aSelectedFiles[0],
+          fileSize: null,
+          path: CURRENT_PATH,
+          userName: UserName,
+          destUserName: document.getElementById("destUserName").value,
+          expirationDate: strTime,
+          unixDate: moment(strTime).unix()
+        };
+        execFetch("/files/share", "POST", data)
+          .then(d => {
+            if (RUNMODE === "DEBUG") console.log(d);
+            if (d.status === "OK") {
+              searchUserModalContent.style.display = "none";
+              containerOverlay.style.display = "none";
+              sendEmail(
+                d.data.DestUser,
+                "mbermejo17@gmail.com",
+                "URL para descarga de archivo",
+                `Descarga de archivo https://194.224.194.134/files/share/${
+                  d.data.UrlCode
+                }`
+              );
+              document.getElementById("refresh").click();
+            }
+          })
+          .catch(e => {
+            showToast(
+              "Error al compartir archivo " + data.fileName + ".<br>Err:" + e,
+              "err"
             );
-            document.getElementById("refresh").click();
-          }
-        })
-        .catch(e => {
-          showToast(
-            "Error al compartir archivo " + data.fileName + ".<br>Err:" + e,
-            "err"
-          );
-          if (RUNMODE === "DEBUG") console.log(e);
-        });
+            if (RUNMODE === "DEBUG") console.log(e);
+          });
       }
     });
 }
@@ -275,66 +289,70 @@ export function upload(Token) {
       processData: false,
       contentType: false,
       timeout: 290000,
-      beforeSend: function (xhrObj) {
+      beforeSend: function(xhrObj) {
         xhrObj.setRequestHeader("Authorization", "Bearer " + Token);
         xhrObj.setRequestHeader("destPath", realpath);
       },
-      success: function (data) {
-        if (RUNMODE === "DEBUG") console.log(fileName + "upload successful!\n" + data);
-        if(data.status == 'OK') {
-        showToast(fileName + " uploaded sucessfully", "success");
-        $("#abort" + nFile).hide();
-        $("#refresh").trigger("click");
-        handlerCounter = handlerCounter - 1;
-        if (handlerCounter == 0) {
-          $("#btnCancelAll")
-            .removeClass("disabled")
-            .addClass("disabled");
-        }
-      } else {
-        if(data.status == 'FAIL') {
-          showToast("Error: " + data.message , "err");
+      success: function(data) {
+        if (RUNMODE === "DEBUG")
+          console.log(fileName + "upload successful!\n" + data);
+        if (data.status == "OK") {
+          showToast(fileName + " uploaded sucessfully", "success");
           $("#abort" + nFile).hide();
+          $("#refresh").trigger("click");
           handlerCounter = handlerCounter - 1;
-        if (handlerCounter == 0) {
-          $("#btnCancelAll")
-            .removeClass("disabled")
-            .addClass("disabled");
+          if (handlerCounter == 0) {
+            $("#btnCancelAll")
+              .removeClass("disabled")
+              .addClass("disabled");
+          }
+        } else {
+          if (data.status == "FAIL") {
+            showToast("Error: " + data.message, "err");
+            $("#abort" + nFile).hide();
+            handlerCounter = handlerCounter - 1;
+            if (handlerCounter == 0) {
+              $("#btnCancelAll")
+                .removeClass("disabled")
+                .addClass("disabled");
+            }
+          }
         }
-        }
-      }
       },
-      xhr: function () {
+      xhr: function() {
         aListHandler[nFile] = new XMLHttpRequest();
         let percentComplete = 0;
         aListHandler[nFile].upload.addEventListener(
           "progress",
-          function (evt) {
+          function(evt) {
             console.log(evt.total);
-              if (evt.total > 700000) {
-                showToast(fileName + " excede del tamaño soportado (700MB)", "err");
-                aListHandler[nFile].abort();
-                let percentLabel = document.querySelector("#percent" + nFile);
-                let progressBar = document.querySelector("#progress-bar" + nFile);
-                progressBar.innerHTML = "Aborted by server";
-                percentLabel.innerHTML = "";
-                progressBar.style.color = "red";
-                progressBar.style.width = "100%";
-                progressBar.style.backgroundColor = "white";
-                handlerCounter = handlerCounter - 1;
-                if (handlerCounter == 0) {
-                  $("#btnCancelAll")
-                    .removeClass("disabled")
-                    .addClass("disabled");
-                }
-              } else {
-                if (evt.lengthComputable) {
-                  percentComplete = evt.loaded / evt.total;
-                  percentComplete = parseInt(percentComplete * 100);
-                  $("#percent" + nFile).text(percentComplete + "%");
-                  $("#progress-bar" + nFile).width(percentComplete + "%");
-                }
+            if (evt.total > 700000) {
+              showToast(
+                fileName + " excede del tamaño soportado (700MB)",
+                "err"
+              );
+              aListHandler[nFile].abort();
+              let percentLabel = document.querySelector("#percent" + nFile);
+              let progressBar = document.querySelector("#progress-bar" + nFile);
+              progressBar.innerHTML = "Aborted by server";
+              percentLabel.innerHTML = "";
+              progressBar.style.color = "red";
+              progressBar.style.width = "100%";
+              progressBar.style.backgroundColor = "white";
+              handlerCounter = handlerCounter - 1;
+              if (handlerCounter == 0) {
+                $("#btnCancelAll")
+                  .removeClass("disabled")
+                  .addClass("disabled");
               }
+            } else {
+              if (evt.lengthComputable) {
+                percentComplete = evt.loaded / evt.total;
+                percentComplete = parseInt(percentComplete * 100);
+                $("#percent" + nFile).text(percentComplete + "%");
+                $("#progress-bar" + nFile).width(percentComplete + "%");
+              }
+            }
           },
           false
         );
@@ -389,12 +407,12 @@ export function upload(Token) {
     }
     $("#btnCancelAll").addClass("disabled");
   });
-  $("#upload-input").on("change", function (e) {
+  $("#upload-input").on("change", function(e) {
     let files = $("#upload-input").get(0).files;
     handlerCounter = files.length;
-    files.length > 0 ?
-      $("#sFiles").html(files.length + " archivos seleccionados.") :
-      $("#sFiles").html(files[0]);
+    files.length > 0
+      ? $("#sFiles").html(files.length + " archivos seleccionados.")
+      : $("#sFiles").html(files[0]);
     if (RUNMODE === "DEBUG") console.log(files.length);
     $(".file-input").hide();
     if (files.length > 0 && files.length <= 5) {
@@ -421,14 +439,14 @@ export function newFolder(folderName) {
   headers.append("Authorization", "Bearer " + Token);
   headers.append("Content-Type", "application/json");
   fetch("/files/newfolder", {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        path: getRealPath(CURRENT_PATH),
-        folderName: folderName
-      }),
-      timeout: 10000
-    })
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify({
+      path: getRealPath(CURRENT_PATH),
+      folderName: folderName
+    }),
+    timeout: 10000
+  })
     .then(r => r.json())
     .then(data => {
       if (RUNMODE === "DEBUG") console.log(data);
@@ -438,11 +456,22 @@ export function newFolder(folderName) {
         $("#refresh").trigger("click");
         showToast("Creada nueva carpeta " + data.data.folderName, "success");
       } else {
-        showToast("Error al crear la carpeta " + folderName + " <br>Error: " + data.message, "err");
+        showToast(
+          "Error al crear la carpeta " +
+            folderName +
+            " <br>Error: " +
+            data.message,
+          "err"
+        );
       }
     })
     .catch(err => {
-      showToast("Error al crear la carpeta " + folderName + " <br>Error: error no identificado", "err");
+      showToast(
+        "Error al crear la carpeta " +
+          folderName +
+          " <br>Error: error no identificado",
+        "err"
+      );
       if (RUNMODE === "DEBUG") console.log(err);
     });
 }
@@ -458,14 +487,14 @@ export function deleteFile(path) {
   for (x = 0; x < aF.length; x++) {
     if (RUNMODE === "DEBUG") console.log("Deleting file " + aF[x] + " ...");
     fetch("/files/delete", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          path: getRealPath(path),
-          fileName: aF[x]
-        }),
-        timeout: 720000
-      })
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        path: getRealPath(path),
+        fileName: aF[x]
+      }),
+      timeout: 720000
+    })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
@@ -501,14 +530,14 @@ export function deleteFolder(path) {
   for (x = 0; x < aF.length; x++) {
     if (RUNMODE === "DEBUG") console.log("Deleting folder " + aF[x] + " ...");
     fetch("/files/delete", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          path: getRealPath(path),
-          fileName: aF[x]
-        }),
-        timeout: 720000
-      })
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        path: getRealPath(path),
+        fileName: aF[x]
+      }),
+      timeout: 720000
+    })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
@@ -621,15 +650,15 @@ export function download(fileList, text) {
     liNumber.style.display = "block";
     liFilename.innerHTML = fName;
     reqList[i].timeout = 36000;
-    reqList[i].ontimeout = function () {
+    reqList[i].ontimeout = function() {
       if (RUNMODE === "DEBUG")
         console.log(
           "** Timeout error ->File:" +
-          fName +
-          " " +
-          reqList[i].status +
-          " " +
-          reqList[i].statusText
+            fName +
+            " " +
+            reqList[i].status +
+            " " +
+            reqList[i].statusText
         );
       // handlerCount = handlerCount - 1
       progressBar.innerHTML = "Timeout Error";
@@ -640,29 +669,29 @@ export function download(fileList, text) {
       progressBar.classList.add("blink");
       responseTimeout[i] = true;
     };
-    reqList[i].onprogress = function (evt) {
+    reqList[i].onprogress = function(evt) {
       if (evt.lengthComputable) {
         let percentComplete = parseInt((evt.loaded / evt.total) * 100);
         progressBar.style.width = percentComplete + "%";
         percentLabel.innerHTML = percentComplete + "%";
       }
     };
-    reqList[i].onerror = function () {
+    reqList[i].onerror = function() {
       if (RUNMODE === "DEBUG")
         console.log(
           "** An error occurred during the transaction ->File:" +
-          fName +
-          " " +
-          req.status +
-          " " +
-          req.statusText
+            fName +
+            " " +
+            req.status +
+            " " +
+            req.statusText
         );
       handlerCount = handlerCount - 1;
       percentLabel.innerHTML = "Error";
       percentLabel.style.color = "red";
       $("#abort" + i).hide();
     };
-    reqList[i].onloadend = function () {
+    reqList[i].onloadend = function() {
       handlerCount = handlerCount - 1;
       if (!responseTimeout[i]) {
         progressBar.style.width = "100%";
@@ -679,12 +708,12 @@ export function download(fileList, text) {
       if (RUNMODE === "DEBUG")
         console.log("File " + handlerCount + " downloaded");
     };
-    reqList[i].onloadstart = function () {
+    reqList[i].onloadstart = function() {
       handlerCount = handlerCount + 1;
       progressBar.style.width = "0";
       percentLabel.innerHTML = "0%";
     };
-    reqList[i].onload = function () {
+    reqList[i].onload = function() {
       if (reqList[i].readyState === 4 && reqList[i].status === 200) {
         let filename = "";
         let disposition = reqList[i].getResponseHeader("Content-Disposition");
@@ -724,7 +753,7 @@ export function download(fileList, text) {
             // preloader.style.display = 'none'
           }
 
-          setTimeout(function () {
+          setTimeout(function() {
             URL.revokeObjectURL(downloadUrl);
           }, 100); // cleanup
         }

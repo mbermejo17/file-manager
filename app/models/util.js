@@ -3,6 +3,7 @@ const config = require("../config/config.json");
 const dbPath = path.resolve(config.dbPath, config.dbName);
 const sqlite3 = require("sqlite3").verbose();
 const Base64 = require("js-base64").Base64;
+const moment = require("moment");
 
 let UtilModel = {};
 let db;
@@ -86,11 +87,50 @@ UtilModel.getById = function (fileId, callback) {
   });
 }
 
+UtilModel.CleanExpiredFiles = function (query, callback) {
+  let response = {};
+  
+  if (!db) dbOpen();
+  let stmt = db.prepare(query);
+  stmt.bind(moment(Date.now()).format('YYYY/MM/DD h:mm').unix());
+  stmt.run(function(err) {
+    console.log('Cambios: ',this.changes);
+    if (err) {
+      //dbClose();
+      console.error(err.message);
+      callback({
+        status: 'FAIL',
+        message: `Error ${err.message}`,
+        data: null
+      });
+    } else {
+    //dbClose();
+    if (this.changes >0 ) {
+      //dbClose();
+        callback({
+          status: "OK",
+          message: "Borrados " + this.changes + " archivos caducados.",
+          data: this.changes
+        });
+    } else {
+      //dbClose();
+        callback({
+          status: "OK",
+          message: "No se han encontrado archivos caducados.",
+          data: this.changes
+        });
+    }
+  }
+});
+}
+
+
+
 UtilModel.Add = function (shareData, callback) {
   let response = {};
   if (!db) dbOpen();
   console.log("db handler: ", db);
-  stmt = db.prepare("INSERT INTO Shared VALUES (?,?,?,?,?,?,?,?,?)");
+  stmt = db.prepare("INSERT INTO Shared VALUES (?,?,?,?,?,?,?,?,?,?)");
   stmt.bind(
     null,
     shareData.UrlCode,
@@ -99,8 +139,9 @@ UtilModel.Add = function (shareData, callback) {
     shareData.RealPath,
     shareData.FileName,
     shareData.Size,
+    shareData.State,
     shareData.ExpirationDate,
-    shareData.State
+    shareData.UnixDate
   );
   stmt.run(function (err, result) {
     //dbClose();
