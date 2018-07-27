@@ -29,7 +29,7 @@ exports.Index = (req, res, next) => {
     if (req.cookies.token) {
       console.log("render dashboard");
       res.render("dashboard", {
-        UserName: data.UserName,
+        UserName: req.UserName,
         Token: req.cookies.token,
         Role: req.cookies.UserRole,
         wssURL: req.cookies.wssURL

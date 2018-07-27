@@ -16,11 +16,9 @@ import {
   upload,
   newFolder
 } from "./modules/fileManager";
-
-
+import route from 'riot-route';
 
 document.addEventListener("DOMContentLoaded", function () {
-
   window.UserName = Cookies.get("UserName");
   let UserRole = Cookies.get("UserRole");
   let CompanyName = Cookies.get("CompanyName");
@@ -44,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.aFiles = [];
   let currentTopToast = 30;
   let topToast = 0;
-
+  
 
   let htmlSearchUserTemplate = `<div id="searchUserModal">
                           <div class="row"> 
@@ -1140,4 +1138,10 @@ document.addEventListener("DOMContentLoaded", function () {
   if (RUNMODE === "DEBUG")
     console.log(document.querySelector("#selectAllFiles").checked);
   if (RUNMODE === "DEBUG") console.log();
+
+  // Front-End routing
+  ////////////////////////
+
+// adding routes
+
 });
