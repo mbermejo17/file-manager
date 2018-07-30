@@ -24,10 +24,12 @@ window.userData = {
   RunMode: Cookies.get("RunMode")
 };
 
-window.ROOTPATH = "/";
-window.CURRENT_PATH = ROOTPATH;
-window.aSelectedFiles = [];
-window.aSelectedFolders = [];
+window.appData = {
+  rootPath : "/",
+  currentPath: "/",
+  aSelectedFiles: [],
+  aDelectedFolders: []
+};
 
 (function(w, d) {
   let [
@@ -358,21 +360,21 @@ window.aSelectedFolders = [];
     }
     if (userData.RunMode === "DEBUG")
       console.log("changePath:fullNewPath ", fullNewPath);
-    CURRENT_PATH = fullNewPath.trim();
-    refreshPath(CURRENT_PATH);
+    appData.currentPath = fullNewPath.trim();
+    refreshPath(appData.currentPath);
     refreshBarMenu();
   };
 
   // get New path
   let getNewPath = pathSelected => {
-    let splitPath = CURRENT_PATH.split("/");
+    let splitPath = appData.currentPath.split("/");
     let newPath = "";
     let temp = [];
 
     splitPath = cleanArray(splitPath);
 
     if (userData.RunMode === "DEBUG")
-      console.log("Current Path: ", CURRENT_PATH);
+      console.log("Current Path: ", appData.currentPath);
     if (userData.RunMode === "DEBUG")
       console.log("Path Selected: ", pathSelected);
     if (userData.RunMode === "DEBUG") console.log("splitPath : ", splitPath);
@@ -400,17 +402,17 @@ window.aSelectedFolders = [];
   // go back Folder
   let goBackFolder = folder => {
     let newPath = "";
-    let splitPath = CURRENT_PATH.split("/");
+    let splitPath = appData.currentPath.split("/");
 
     if (userData.RunMode === "DEBUG")
       console.log("goBackFolder:folder ", folder);
     if (userData.RunMode === "DEBUG")
-      console.log("goBackFolder:CURRENT_PATH ", CURRENT_PATH);
+      console.log("goBackFolder:appData.currentPath ", appData.currentPath);
 
     splitPath = cleanArray(splitPath);
     splitPath.pop();
 
-    if (CURRENT_PATH !== "/" && folder == "..") {
+    if (appData.currentPath !== "/" && folder == "..") {
       if (splitPath.length > 0) {
         newPath += splitPath[splitPath.length - 1];
       } else {
@@ -527,13 +529,13 @@ window.aSelectedFolders = [];
         element.parentElement.parentElement.children[0].children[0].children[0]
           .checked
       ) {
-        aSelectedFiles.push(element.innerHTML);
+        appData.aSelectedFiles.push(element.innerHTML);
         checkedFiles.push(element.innerHTML);
         // c(element.children[1].innerHTML)
       } else {
-        const idx = aSelectedFiles.indexOf(element.innerHTML);
+        const idx = appData.aSelectedFiles.indexOf(element.innerHTML);
         if (idx > -1) {
-          aSelectedFiles.splice(idx, 1);
+          appData.aSelectedFiles.splice(idx, 1);
         }
       }
     });
@@ -701,17 +703,17 @@ window.aSelectedFolders = [];
     $(".file-Name").on("click", e => {
       if (userData.RunMode === "DEBUG") console.log(e);
       if (userData.RunMode === "DEBUG")
-        console.log("Current Path: ", CURRENT_PATH);
+        console.log("Current Path: ", appData.currentPath);
       let newPath = "";
       if (e.target.innerText != "..") {
         newPath = getNewPath(e.target.innerText);
         if (userData.RunMode === "DEBUG")
           console.log("New Path: ", newPath.trim());
         refreshPath(newPath.trim());
-        CURRENT_PATH = newPath.trim();
+        appData.currentPath = newPath.trim();
         refreshBarMenu();
       } else {
-        if (CURRENT_PATH !== ROOTPATH) goBackFolder(e.target.innerText);
+        if (appData.currentPath !== ROOTPATH) goBackFolder(e.target.innerText);
       }
     });
 
@@ -738,11 +740,11 @@ window.aSelectedFolders = [];
 
     if (contentType != -1) {
       if (isChecked) {
-        aSelectedFiles.push(name);
+        appData.aSelectedFiles.push(name);
       } else {
-        const idx = aSelectedFiles.indexOf(name);
+        const idx = appData.aSelectedFiles.indexOf(name);
         if (idx > -1) {
-          aSelectedFiles.splice(idx, 1);
+          appData.aSelectedFiles.splice(idx, 1);
         }
       }
     } else {
@@ -756,7 +758,7 @@ window.aSelectedFolders = [];
       }
     }
     if (userData.RunMode === "DEBUG")
-      console.log(aSelectedFiles, aSelectedFolders);
+      console.log(appData.aSelectedFiles, aSelectedFolders);
   };
 
   const showUserProfile = (w, h, t) => {
@@ -1033,11 +1035,11 @@ window.aSelectedFolders = [];
           }
           break;
         case "refresh":
-          refreshPath(CURRENT_PATH);
+          refreshPath(appData.currentPath);
           break;
         case "share":
-          if (aSelectedFiles.length > 0) {
-            if (aSelectedFiles.length > 1) {
+          if (appData.aSelectedFiles.length > 0) {
+            if (appData.aSelectedFiles.length > 1) {
               showToast("No pueden seleccionarse más de un archivo", "err");
               break;
             }
@@ -1067,14 +1069,14 @@ window.aSelectedFolders = [];
           $("#logoutmodal").hide();
           break;
         case "home":
-          CURRENT_PATH = ROOTPATH;
-          refreshPath(CURRENT_PATH);
+          appData.currentPath = ROOTPATH;
+          refreshPath(appData.currentPath);
           break;
         case "newFolder":
           showNewFolder(32, 440, "New Folder");
           break;
         case "delete":
-          if (aSelectedFolders.length > 0 || aSelectedFiles.length > 0) {
+          if (aSelectedFolders.length > 0 || appData.aSelectedFiles.length > 0) {
             deleteSelected();
           } else {
             showToast("No se han seleccionado archivos o carpetas", "err");
@@ -1084,15 +1086,15 @@ window.aSelectedFolders = [];
           upload(userData.Token);
           break;
         case "download":
-          if (aSelectedFiles.length > 0) {
-            if (aSelectedFiles.length > 5) {
+          if (appData.aSelectedFiles.length > 0) {
+            if (appData.aSelectedFiles.length > 5) {
               showToast(
                 "No se pueden descargar más de 5 archivos a la vez",
                 "err"
               );
               break;
             }
-            download(aSelectedFiles, "File");
+            download(appData.aSelectedFiles, "File");
           } else {
             showToast("No se han seleccionado archivos para descargar", "err");
           }
@@ -1147,7 +1149,7 @@ window.aSelectedFolders = [];
     $("#settings").removeClass("selected");
   });
   document.querySelector("#bar-preloader").style.Display = "none";
-  refreshPath(CURRENT_PATH);
+  refreshPath(appData.currentPath);
   refreshBarMenu();
   if (userData.RunMode === "DEBUG")
     console.log(document.querySelector("#selectAllFiles").checked);

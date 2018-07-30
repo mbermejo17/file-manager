@@ -39,7 +39,7 @@ window.userData = {
 };
 
 window.ROOTPATH = "/";
-window.CURRENT_PATH = ROOTPATH;
+window.appData.currentPath = ROOTPATH;
 window.aSelectedFiles = [];
 window.aSelectedFolders = [];
 
@@ -309,20 +309,20 @@ window.aSelectedFolders = [];
       fullNewPath = newPath;
     }
     if (userData.RunMode === "DEBUG") console.log("changePath:fullNewPath ", fullNewPath);
-    CURRENT_PATH = fullNewPath.trim();
-    refreshPath(CURRENT_PATH);
+    appData.currentPath = fullNewPath.trim();
+    refreshPath(appData.currentPath);
     refreshBarMenu();
   };
 
   // get New path
   var getNewPath = function getNewPath(pathSelected) {
-    var splitPath = CURRENT_PATH.split("/");
+    var splitPath = appData.currentPath.split("/");
     var newPath = "";
     var temp = [];
 
     splitPath = cleanArray(splitPath);
 
-    if (userData.RunMode === "DEBUG") console.log("Current Path: ", CURRENT_PATH);
+    if (userData.RunMode === "DEBUG") console.log("Current Path: ", appData.currentPath);
     if (userData.RunMode === "DEBUG") console.log("Path Selected: ", pathSelected);
     if (userData.RunMode === "DEBUG") console.log("splitPath : ", splitPath);
     if (splitPath.length == 0) {
@@ -348,15 +348,15 @@ window.aSelectedFolders = [];
   // go back Folder
   var goBackFolder = function goBackFolder(folder) {
     var newPath = "";
-    var splitPath = CURRENT_PATH.split("/");
+    var splitPath = appData.currentPath.split("/");
 
     if (userData.RunMode === "DEBUG") console.log("goBackFolder:folder ", folder);
-    if (userData.RunMode === "DEBUG") console.log("goBackFolder:CURRENT_PATH ", CURRENT_PATH);
+    if (userData.RunMode === "DEBUG") console.log("goBackFolder:appData.currentPath ", appData.currentPath);
 
     splitPath = cleanArray(splitPath);
     splitPath.pop();
 
-    if (CURRENT_PATH !== "/" && folder == "..") {
+    if (appData.currentPath !== "/" && folder == "..") {
       if (splitPath.length > 0) {
         newPath += splitPath[splitPath.length - 1];
       } else {
@@ -371,7 +371,7 @@ window.aSelectedFolders = [];
   // refresh path
   var refreshPath = function refreshPath(cPath) {
     var newLinePath = [];
-    var newHtmlContent = "<li><label id=\"CURRENT_PATH\">Path:</label></li>\n                              <li><spand>&nbsp;</spand><a class=\"breadcrumb-line-path\" href=\"#!\">/</a></li>";
+    var newHtmlContent = "<li><label id=\"appData.currentPath\">Path:</label></li>\n                              <li><spand>&nbsp;</spand><a class=\"breadcrumb-line-path\" href=\"#!\">/</a></li>";
 
     if (userData.RunMode === "DEBUG") console.log("init path: ", cPath);
     if (userData.RunMode === "DEBUG") console.log("cPath lenght:", cPath.length);
@@ -401,7 +401,7 @@ window.aSelectedFolders = [];
       $("#waiting").removeClass("active");
     }
 
-    $("#CURRENT_PATH").html(newHtmlContent);
+    $("#appData.currentPath").html(newHtmlContent);
 
     $(".breadcrumb-line-path").on("click", function (e) {
       changePath(e.target.innerText);
@@ -580,16 +580,16 @@ window.aSelectedFolders = [];
 
     $(".file-Name").on("click", function (e) {
       if (userData.RunMode === "DEBUG") console.log(e);
-      if (userData.RunMode === "DEBUG") console.log("Current Path: ", CURRENT_PATH);
+      if (userData.RunMode === "DEBUG") console.log("Current Path: ", appData.currentPath);
       var newPath = "";
       if (e.target.innerText != "..") {
         newPath = getNewPath(e.target.innerText);
         if (userData.RunMode === "DEBUG") console.log("New Path: ", newPath.trim());
         refreshPath(newPath.trim());
-        CURRENT_PATH = newPath.trim();
+        appData.currentPath = newPath.trim();
         refreshBarMenu();
       } else {
-        if (CURRENT_PATH !== ROOTPATH) goBackFolder(e.target.innerText);
+        if (appData.currentPath !== ROOTPATH) goBackFolder(e.target.innerText);
       }
     });
 
@@ -842,7 +842,7 @@ window.aSelectedFolders = [];
           }
           break;
         case "refresh":
-          refreshPath(CURRENT_PATH);
+          refreshPath(appData.currentPath);
           break;
         case "share":
           if (aSelectedFiles.length > 0) {
@@ -876,8 +876,8 @@ window.aSelectedFolders = [];
           $("#logoutmodal").hide();
           break;
         case "home":
-          CURRENT_PATH = ROOTPATH;
-          refreshPath(CURRENT_PATH);
+          appData.currentPath = ROOTPATH;
+          refreshPath(appData.currentPath);
           break;
         case "newFolder":
           showNewFolder(32, 440, "New Folder");
@@ -941,7 +941,7 @@ window.aSelectedFolders = [];
     $("#settings").removeClass("selected");
   });
   document.querySelector("#bar-preloader").style.Display = "none";
-  refreshPath(CURRENT_PATH);
+  refreshPath(appData.currentPath);
   refreshBarMenu();
   if (userData.RunMode === "DEBUG") console.log(document.querySelector("#selectAllFiles").checked);
   if (userData.RunMode === "DEBUG") console.log();
@@ -1037,7 +1037,7 @@ function shareFile() {
       var data = {
         fileName: aSelectedFiles[0],
         fileSize: null,
-        path: CURRENT_PATH,
+        path: appData.currentPath,
         userName: userData.UserName,
         destUserName: document.getElementById("destUserName").value,
         expirationDate: strTime,
@@ -1066,10 +1066,10 @@ function deleteSelected() {
   if (userData.RunMode === "DEBUG") console.log("aSelectedFolders: ", aSelectedFolders.length);
   if (aSelectedFolders.length > 0) {
     showDialogYesNo("Delete foldes", "Delete selected folders?", function (y) {
-      $.when(deleteFolder(CURRENT_PATH)).then(function (result) {
+      $.when(deleteFolder(appData.currentPath)).then(function (result) {
         if (aSelectedFiles.length > 0) {
           showDialogYesNo("Delete Files", "Delete selected files?", function (y) {
-            deleteFile(CURRENT_PATH);
+            deleteFile(appData.currentPath);
           }, function (n) {
             if (userData.RunMode === "DEBUG") console.log("Delete Files Canceled");
           });
@@ -1080,7 +1080,7 @@ function deleteSelected() {
       if (userData.RunMode === "DEBUG") console.log("Delete Folder Canceled");
       if (aSelectedFiles.length > 0) {
         showDialogYesNo("Delete Files", "Delete selected files?", function (y) {
-          deleteFile(CURRENT_PATH);
+          deleteFile(appData.currentPath);
         }, function (n) {
           if (userData.RunMode === "DEBUG") console.log("Delete Files Canceled");
         });
@@ -1089,7 +1089,7 @@ function deleteSelected() {
   } else {
     if (aSelectedFiles.length > 0) {
       showDialogYesNo("Delete Files", "Delete selected files?", function (y) {
-        deleteFile(CURRENT_PATH);
+        deleteFile(appData.currentPath);
       }, function (n) {
         if (userData.RunMode === "DEBUG") console.log("Delete Files Canceled");
       });
@@ -1113,8 +1113,8 @@ function upload(Token) {
     $("#li" + nFile).show();
     $("#li-filename" + nFile).show();
     $("#li-filename" + nFile).html(fileName);
-    var realpath = (0, _general.getRealPath)(CURRENT_PATH);
-    if (userData.RunMode === "DEBUG") console.log("Upload:CURRENT_PATH " + CURRENT_PATH);
+    var realpath = (0, _general.getRealPath)(appData.currentPath);
+    if (userData.RunMode === "DEBUG") console.log("Upload:appData.currentPath " + appData.currentPath);
     if (userData.RunMode === "DEBUG") console.log("Upload:REAL_ROOT_PATH " + REAL_ROOT_PATH);
     if (userData.RunMode === "DEBUG") console.log("Upload:realPath " + realpath);
     $.ajax({
@@ -1257,7 +1257,7 @@ function newFolder(folderName) {
     method: "POST",
     headers: headers,
     body: JSON.stringify({
-      path: (0, _general.getRealPath)(CURRENT_PATH),
+      path: (0, _general.getRealPath)(appData.currentPath),
       folderName: folderName
     }),
     timeout: 10000
@@ -1517,9 +1517,9 @@ function download(fileList, text) {
       }
     };
     reqList[i].setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    if (userData.RunMode === "DEBUG") console.log((0, _general.getRealPath)(CURRENT_PATH) + "/" + fileList[i]);
+    if (userData.RunMode === "DEBUG") console.log((0, _general.getRealPath)(appData.currentPath) + "/" + fileList[i]);
     reqList[i].send((0, _general.serializeObject)({
-      filename: (0, _general.getRealPath)(CURRENT_PATH) + "/" + fileList[i]
+      filename: (0, _general.getRealPath)(appData.currentPath) + "/" + fileList[i]
     }));
   };
   for (var i = 0; i < fileList.length; i++) {

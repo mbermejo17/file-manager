@@ -289,7 +289,7 @@ UserModel.Add = function(userData, callback) {
           Base64.decode(userData.userPassword),
           userData.userRole,
           userData.companyName,
-          userData.rootPath,
+          appData.rootPath,
           userData.accessRights,
           userData.expirateDate
         );

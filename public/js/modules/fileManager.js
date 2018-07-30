@@ -86,7 +86,7 @@ function shareFile() {
       var data = {
         fileName: aSelectedFiles[0],
         fileSize: null,
-        path: CURRENT_PATH,
+        path: appData.currentPath,
         userName: UserName,
         destUserName: document.getElementById("destUserName").value,
         expirationDate: strTime,
@@ -112,10 +112,10 @@ function deleteSelected() {
   if (RUNMODE === "DEBUG") console.log("aSelectedFolders: ", aSelectedFolders.length);
   if (aSelectedFolders.length > 0) {
     showDialogYesNo("Delete foldes", "Delete selected folders?", function (y) {
-      $.when(deleteFolder(CURRENT_PATH)).then(function (result) {
+      $.when(deleteFolder(appData.currentPath)).then(function (result) {
         if (aSelectedFiles.length > 0) {
           showDialogYesNo("Delete Files", "Delete selected files?", function (y) {
-            deleteFile(CURRENT_PATH);
+            deleteFile(appData.currentPath);
           }, function (n) {
             if (RUNMODE === "DEBUG") console.log("Delete Files Canceled");
           });
@@ -126,7 +126,7 @@ function deleteSelected() {
       if (RUNMODE === "DEBUG") console.log("Delete Folder Canceled");
       if (aSelectedFiles.length > 0) {
         showDialogYesNo("Delete Files", "Delete selected files?", function (y) {
-          deleteFile(CURRENT_PATH);
+          deleteFile(appData.currentPath);
         }, function (n) {
           if (RUNMODE === "DEBUG") console.log("Delete Files Canceled");
         });
@@ -135,7 +135,7 @@ function deleteSelected() {
   } else {
     if (aSelectedFiles.length > 0) {
       showDialogYesNo("Delete Files", "Delete selected files?", function (y) {
-        deleteFile(CURRENT_PATH);
+        deleteFile(appData.currentPath);
       }, function (n) {
         if (RUNMODE === "DEBUG") console.log("Delete Files Canceled");
       });
@@ -159,8 +159,8 @@ function upload(Token) {
     $("#li" + nFile).show();
     $("#li-filename" + nFile).show();
     $("#li-filename" + nFile).html(fileName);
-    var realpath = (0, _general.getRealPath)(CURRENT_PATH);
-    if (RUNMODE === "DEBUG") console.log("Upload:CURRENT_PATH " + CURRENT_PATH);
+    var realpath = (0, _general.getRealPath)(appData.currentPath);
+    if (RUNMODE === "DEBUG") console.log("Upload:appData.currentPath " + appData.currentPath);
     if (RUNMODE === "DEBUG") console.log("Upload:REAL_ROOT_PATH " + REAL_ROOT_PATH);
     if (RUNMODE === "DEBUG") console.log("Upload:realPath " + realpath);
     $.ajax({
@@ -303,7 +303,7 @@ function newFolder(folderName) {
     method: "POST",
     headers: headers,
     body: JSON.stringify({
-      path: (0, _general.getRealPath)(CURRENT_PATH),
+      path: (0, _general.getRealPath)(appData.currentPath),
       folderName: folderName
     }),
     timeout: 10000
@@ -563,9 +563,9 @@ function download(fileList, text) {
       }
     };
     reqList[i].setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    if (RUNMODE === "DEBUG") console.log((0, _general.getRealPath)(CURRENT_PATH) + "/" + fileList[i]);
+    if (RUNMODE === "DEBUG") console.log((0, _general.getRealPath)(appData.currentPath) + "/" + fileList[i]);
     reqList[i].send((0, _general.serializeObject)({
-      filename: (0, _general.getRealPath)(CURRENT_PATH) + "/" + fileList[i]
+      filename: (0, _general.getRealPath)(appData.currentPath) + "/" + fileList[i]
     }));
   };
   for (var i = 0; i < fileList.length; i++) {
