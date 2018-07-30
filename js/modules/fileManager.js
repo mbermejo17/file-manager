@@ -1,12 +1,8 @@
-import Cookies from "../vendor/js-cookie";
 import moment from "moment";
 import { getRealPath, serializeObject } from "./general";
 ////////////////////////////////////
 // Files and Folder module
 ///////////////////////////////////
-
-let RUNMODE = Cookies.get("RunMode");
-let REAL_ROOT_PATH = Cookies.get("RootPath");
 
 let htmlShareFile = `<div id="shareFileModal">
                         <div id="modal-header">
@@ -31,6 +27,9 @@ let htmlShareFile = `<div id="shareFileModal">
                         </div>  
                         <div class="row"> 
                           <div class="input-field col s9 m9">
+                            <input class="check" id="delFileAfterExpired" type="checkbox">
+                            <label class="checkbox" for="delFileAfterExpired"></label> 
+                            <span>Delete file when expires</span>  
                           </div>
                           <div class="input-field col s1 m1">
                             <button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-ShareFileCancel" type="submit" name="action">Cancel</button>
@@ -150,22 +149,23 @@ export function shareFile() {
       }
 
       if (document.getElementById("destUserName").value !== "") {
-        if (RUNMODE === "DEBUG")
+        if (userData.RunMode === "DEBUG")
           console.log(document.getElementById("destUserName").value);
-        if (RUNMODE === "DEBUG")
+        if (userData.RunMode === "DEBUG")
           console.log(document.getElementById("FileExpirateDate").value);
         let data = {
           fileName: aSelectedFiles[0],
           fileSize: null,
           path: CURRENT_PATH,
-          userName: UserName,
+          userName: userData.UserName,
           destUserName: document.getElementById("destUserName").value,
           expirationDate: strTime,
-          unixDate: moment(strTime).unix()
+          unixDate: moment(strTime).unix(),
+          deleteExpiredFile: (document.getElementById('delFileAfterExpired').checked) ? 1 : 0
         };
         execFetch("/files/share", "POST", data)
           .then(d => {
-            if (RUNMODE === "DEBUG") console.log(d);
+            if (userData.RunMode === "DEBUG") console.log(d);
             if (d.status === "OK") {
               searchUserModalContent.style.display = "none";
               containerOverlay.style.display = "none";
@@ -177,6 +177,8 @@ export function shareFile() {
                   d.data.UrlCode
                 }`
               );
+              aSelectedFiles = [];
+              aSelectedFolders = [];
               document.getElementById("refresh").click();
             }
           })
@@ -185,14 +187,14 @@ export function shareFile() {
               "Error al compartir archivo " + data.fileName + ".<br>Err:" + e,
               "err"
             );
-            if (RUNMODE === "DEBUG") console.log(e);
+            if (userData.RunMode === "DEBUG") console.log(e);
           });
       }
     });
 }
 
 export function deleteSelected() {
-  if (RUNMODE === "DEBUG")
+  if (userData.RunMode === "DEBUG")
     console.log("aSelectedFolders: ", aSelectedFolders.length);
   if (aSelectedFolders.length > 0) {
     showDialogYesNo(
@@ -208,7 +210,7 @@ export function deleteSelected() {
                 deleteFile(CURRENT_PATH);
               },
               n => {
-                if (RUNMODE === "DEBUG") console.log("Delete Files Canceled");
+                if (userData.RunMode === "DEBUG") console.log("Delete Files Canceled");
               }
             );
           }
@@ -216,7 +218,7 @@ export function deleteSelected() {
         });
       },
       n => {
-        if (RUNMODE === "DEBUG") console.log("Delete Folder Canceled");
+        if (userData.RunMode === "DEBUG") console.log("Delete Folder Canceled");
         if (aSelectedFiles.length > 0) {
           showDialogYesNo(
             "Delete Files",
@@ -225,7 +227,7 @@ export function deleteSelected() {
               deleteFile(CURRENT_PATH);
             },
             n => {
-              if (RUNMODE === "DEBUG") console.log("Delete Files Canceled");
+              if (userData.RunMode === "DEBUG") console.log("Delete Files Canceled");
             }
           );
         }
@@ -240,7 +242,7 @@ export function deleteSelected() {
           deleteFile(CURRENT_PATH);
         },
         n => {
-          if (RUNMODE === "DEBUG") console.log("Delete Files Canceled");
+          if (userData.RunMode === "DEBUG") console.log("Delete Files Canceled");
         }
       );
     }
@@ -278,10 +280,10 @@ export function upload(Token) {
     $("#li-filename" + nFile).show();
     $("#li-filename" + nFile).html(fileName);
     let realpath = getRealPath(CURRENT_PATH);
-    if (RUNMODE === "DEBUG") console.log("Upload:CURRENT_PATH " + CURRENT_PATH);
-    if (RUNMODE === "DEBUG")
+    if (userData.RunMode === "DEBUG") console.log("Upload:CURRENT_PATH " + CURRENT_PATH);
+    if (userData.RunMode === "DEBUG")
       console.log("Upload:REAL_ROOT_PATH " + REAL_ROOT_PATH);
-    if (RUNMODE === "DEBUG") console.log("Upload:realPath " + realpath);
+    if (userData.RunMode === "DEBUG") console.log("Upload:realPath " + realpath);
     $.ajax({
       url: "/files/upload?destPath=" + realpath,
       type: "POST",
@@ -294,7 +296,7 @@ export function upload(Token) {
         xhrObj.setRequestHeader("destPath", realpath);
       },
       success: function(data) {
-        if (RUNMODE === "DEBUG")
+        if (userData.RunMode === "DEBUG")
           console.log(fileName + "upload successful!\n" + data);
         if (data.status == "OK") {
           showToast(fileName + " uploaded sucessfully", "success");
@@ -382,7 +384,7 @@ export function upload(Token) {
   $("#btnCancelAll").removeClass("disabled");
   $(".modal_close").on("click", e => {
     e.preventDefault();
-    if (RUNMODE === "DEBUG") console.log(e);
+    if (userData.RunMode === "DEBUG") console.log(e);
     let n = parseInt(e.target.id.slice(-1));
     aListHandler[n].abort();
     let percentLabel = document.querySelector("#percent" + n);
@@ -413,7 +415,7 @@ export function upload(Token) {
     files.length > 0
       ? $("#sFiles").html(files.length + " archivos seleccionados.")
       : $("#sFiles").html(files[0]);
-    if (RUNMODE === "DEBUG") console.log(files.length);
+    if (userData.RunMode === "DEBUG") console.log(files.length);
     $(".file-input").hide();
     if (files.length > 0 && files.length <= 5) {
       $("#btnCloseUpload")
@@ -449,7 +451,7 @@ export function newFolder(folderName) {
   })
     .then(r => r.json())
     .then(data => {
-      if (RUNMODE === "DEBUG") console.log(data);
+      if (userData.RunMode === "DEBUG") console.log(data);
       if (data.status == "OK") {
         $("#modal").hide();
         $("#lean-overlay").hide();
@@ -472,7 +474,7 @@ export function newFolder(folderName) {
           " <br>Error: error no identificado",
         "err"
       );
-      if (RUNMODE === "DEBUG") console.log(err);
+      if (userData.RunMode === "DEBUG") console.log(err);
     });
 }
 
@@ -480,12 +482,12 @@ export function deleteFile(path) {
   const headers = new Headers();
   let x = 0;
   let aF = aSelectedFiles.slice();
-  if (RUNMODE === "DEBUG") console.log(aF);
+  if (userData.RunMode === "DEBUG") console.log(aF);
   headers.append("Authorization", "Bearer " + Token);
   headers.append("Content-Type", "application/json");
   $("#waiting").addClass("active");
   for (x = 0; x < aF.length; x++) {
-    if (RUNMODE === "DEBUG") console.log("Deleting file " + aF[x] + " ...");
+    if (userData.RunMode === "DEBUG") console.log("Deleting file " + aF[x] + " ...");
     fetch("/files/delete", {
       method: "POST",
       headers: headers,
@@ -498,7 +500,7 @@ export function deleteFile(path) {
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
-        if (RUNMODE === "DEBUG") console.log(data);
+        if (userData.RunMode === "DEBUG") console.log(data);
         if (data.status == "OK") {
           aSelectedFiles.shift();
           $(".toast")
@@ -509,7 +511,7 @@ export function deleteFile(path) {
         }
       })
       .catch(err => {
-        if (RUNMODE === "DEBUG") console.log(err);
+        if (userData.RunMode === "DEBUG") console.log(err);
         $(".toast")
           .removeClass("err")
           .addClass("err");
@@ -523,12 +525,12 @@ export function deleteFolder(path) {
   const headers = new Headers();
   let x = 0;
   let aF = aSelectedFolders.slice();
-  if (RUNMODE === "DEBUG") console.log(aF);
+  if (userData.RunMode === "DEBUG") console.log(aF);
   headers.append("Authorization", "Bearer " + Token);
   headers.append("Content-Type", "application/json");
   $("#waiting").addClass("active");
   for (x = 0; x < aF.length; x++) {
-    if (RUNMODE === "DEBUG") console.log("Deleting folder " + aF[x] + " ...");
+    if (userData.RunMode === "DEBUG") console.log("Deleting folder " + aF[x] + " ...");
     fetch("/files/delete", {
       method: "POST",
       headers: headers,
@@ -541,7 +543,7 @@ export function deleteFolder(path) {
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
-        if (RUNMODE === "DEBUG") console.log(data);
+        if (userData.RunMode === "DEBUG") console.log(data);
         if (data.status == "OK") {
           $(".toast")
             .removeClass("success")
@@ -552,7 +554,7 @@ export function deleteFolder(path) {
         }
       })
       .catch(err => {
-        if (RUNMODE === "DEBUG") console.log(err);
+        if (userData.RunMode === "DEBUG") console.log(err);
         $("#waiting").removeClass("active");
       });
   }
@@ -651,7 +653,7 @@ export function download(fileList, text) {
     liFilename.innerHTML = fName;
     reqList[i].timeout = 36000;
     reqList[i].ontimeout = function() {
-      if (RUNMODE === "DEBUG")
+      if (userData.RunMode === "DEBUG")
         console.log(
           "** Timeout error ->File:" +
             fName +
@@ -677,7 +679,7 @@ export function download(fileList, text) {
       }
     };
     reqList[i].onerror = function() {
-      if (RUNMODE === "DEBUG")
+      if (userData.RunMode === "DEBUG")
         console.log(
           "** An error occurred during the transaction ->File:" +
             fName +
@@ -705,7 +707,7 @@ export function download(fileList, text) {
           .addClass("disabled");
         $("#refresh").trigger("click");
       }
-      if (RUNMODE === "DEBUG")
+      if (userData.RunMode === "DEBUG")
         console.log("File " + handlerCount + " downloaded");
     };
     reqList[i].onloadstart = function() {
@@ -763,7 +765,7 @@ export function download(fileList, text) {
       "Content-type",
       "application/x-www-form-urlencoded"
     );
-    if (RUNMODE === "DEBUG")
+    if (userData.RunMode === "DEBUG")
       console.log(getRealPath(CURRENT_PATH) + "/" + fileList[i]);
     reqList[i].send(
       serializeObject({

@@ -1,31 +1,35 @@
 "use sctrict";
 import "babel-polyfill";
 import ajax from "./vendor/ajax";
-import {
-  Base64
-} from "js-base64";
+import { Base64 } from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
 
-
-import {getRealPath, serializeObject} from "./modules/general";
+import { getRealPath, serializeObject } from "./modules/general";
 import {
-  shareFile, 
+  shareFile,
   deleteSelected,
   download,
   upload,
   newFolder
 } from "./modules/fileManager";
-import route from 'riot-route';
 
-document.addEventListener("DOMContentLoaded", function () {
-  window.UserName = Cookies.get("UserName");
-  let UserRole = Cookies.get("UserRole");
-  let CompanyName = Cookies.get("CompanyName");
-  let REAL_ROOT_PATH = Cookies.get("RootPath");
-  window.Token = Cookies.get("token");
-  let AccessString = Cookies.get("AccessString");
-  window.RUNMODE = Cookies.get("RunMode");
+window.userData = {
+  UserName: Cookies.get("UserName"),
+  UserRole: Cookies.get("UserRole"),
+  CompanyName: Cookies.get("CompanyName"),
+  RealRootPaht: Cookies.get("RootPath"),
+  Token: Cookies.get("token"),
+  AccessString: Cookies.get("AccessString"),
+  RunMode: Cookies.get("RunMode")
+};
+
+window.ROOTPATH = "/";
+window.CURRENT_PATH = ROOTPATH;
+window.aSelectedFiles = [];
+window.aSelectedFolders = [];
+
+(function(w, d) {
   let [
     AllowDownload,
     AllowUpload,
@@ -33,16 +37,12 @@ document.addEventListener("DOMContentLoaded", function () {
     AllowDeleteFolder,
     AllowNewFolder,
     AllowShareFile
-  ] = AccessString.split(",");
-  window.ROOTPATH = "/";
-  window.CURRENT_PATH = ROOTPATH;
-  window.aSelectedFiles = [];
-  window.aSelectedFolders = [];
-  window.aFolders = [];
-  window.aFiles = [];
+  ] = userData.AccessString.split(",");
+
+  let aFolders = [];
+  let aFiles = [];
   let currentTopToast = 30;
   let topToast = 0;
-  
 
   let htmlSearchUserTemplate = `<div id="searchUserModal">
                           <div class="row"> 
@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
                             <div class="input-field col s1 m1"></div>
                             </div>
                         </div>`;
-
 
   let htmlUserFormTemplate = `
       <div id="AddUserModal">
@@ -158,8 +157,6 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
       </div>`;
 
-  
-
   const logout = () => {
     Cookies.remove("UserName");
     Cookies.remove("UserRole");
@@ -177,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //////////////////////////////////
 
   const hasClass = (el, className) => {
-    if (RUNMODE === "DEBUG") console.log(el);
+    if (userData.RunMode === "DEBUG") console.log(el);
     return (" " + el.className + " ").indexOf(" " + className + " ") > -1;
   };
 
@@ -192,9 +189,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const removeClass = (el, className) => {
     if (el.classList) {
-      if (RUNMODE === "DEBUG") console.log("el class", el.className("active"));
+      if (userData.RunMode === "DEBUG")
+        console.log("el class", el.className("active"));
       el.classList.remove(className);
-      if (RUNMODE === "DEBUG")
+      if (userData.RunMode === "DEBUG")
         console.log("el class after", el.className("active"));
     } else if (hasClass(el, className)) {
       var reg = new RegExp("(\\s|^)" + className + "(\\s|$)");
@@ -208,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return temp;
   };
 
-  window.FetchHandleErrors = function (response) {
+  window.FetchHandleErrors = function(response) {
     if (!response.ok) {
       //throw Error(response.statusText);
       if (response.statusCode == 401) {
@@ -222,7 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const header = new Headers();
     const bodyData = data ? JSON.stringify(data) : null;
     header.append("Content-Type", "application/json");
-    header.append("Authorization", "Bearer " + Token);
+    header.append("Authorization", "Bearer " + userData.Token);
 
     const initData = {
       method: met,
@@ -255,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
     x.classList.add(type);
     x.style.setProperty("--snackbarTop", newTopToast + "px");
     x.style.setProperty("--snackbarCurrentTop", newCurrentTopToast + "px");
-    setTimeout(function () {
+    setTimeout(function() {
       x.className = x.className.replace("show", "");
       if (topToast !== 0 && topToast > 5) {
         topToast = topToast - 5;
@@ -265,8 +263,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }, 3000);
   };
-
-  
 
   /////////////////////////////////
   //  End Tools
@@ -346,8 +342,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  
-
   ///////////////////////////////
   // Path handler
   //////////////////////////////
@@ -355,13 +349,14 @@ document.addEventListener("DOMContentLoaded", function () {
   // change path event
   let changePath = newPath => {
     let fullNewPath = "";
-    if (RUNMODE === "DEBUG") console.log("changePath:newPath ", newPath);
+    if (userData.RunMode === "DEBUG")
+      console.log("changePath:newPath ", newPath);
     if (newPath !== "/") {
       fullNewPath = getNewPath(newPath);
     } else {
       fullNewPath = newPath;
     }
-    if (RUNMODE === "DEBUG")
+    if (userData.RunMode === "DEBUG")
       console.log("changePath:fullNewPath ", fullNewPath);
     CURRENT_PATH = fullNewPath.trim();
     refreshPath(CURRENT_PATH);
@@ -376,9 +371,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     splitPath = cleanArray(splitPath);
 
-    if (RUNMODE === "DEBUG") console.log("Current Path: ", CURRENT_PATH);
-    if (RUNMODE === "DEBUG") console.log("Path Selected: ", pathSelected);
-    if (RUNMODE === "DEBUG") console.log("splitPath : ", splitPath);
+    if (userData.RunMode === "DEBUG")
+      console.log("Current Path: ", CURRENT_PATH);
+    if (userData.RunMode === "DEBUG")
+      console.log("Path Selected: ", pathSelected);
+    if (userData.RunMode === "DEBUG") console.log("splitPath : ", splitPath);
     if (splitPath.length == 0) {
       newPath += "/" + pathSelected;
     } else {
@@ -388,14 +385,15 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           if (splitPath[x] === pathSelected) {
             newPath += "/" + splitPath[x];
-            if (RUNMODE === "DEBUG") console.log("New Path: ", newPath);
+            if (userData.RunMode === "DEBUG")
+              console.log("New Path: ", newPath);
             return newPath;
           }
         }
       }
       newPath += "/" + pathSelected;
     }
-    if (RUNMODE === "DEBUG") console.log("New Path: ", newPath);
+    if (userData.RunMode === "DEBUG") console.log("New Path: ", newPath);
     return newPath;
   };
 
@@ -404,8 +402,9 @@ document.addEventListener("DOMContentLoaded", function () {
     let newPath = "";
     let splitPath = CURRENT_PATH.split("/");
 
-    if (RUNMODE === "DEBUG") console.log("goBackFolder:folder ", folder);
-    if (RUNMODE === "DEBUG")
+    if (userData.RunMode === "DEBUG")
+      console.log("goBackFolder:folder ", folder);
+    if (userData.RunMode === "DEBUG")
       console.log("goBackFolder:CURRENT_PATH ", CURRENT_PATH);
 
     splitPath = cleanArray(splitPath);
@@ -419,7 +418,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    if (RUNMODE === "DEBUG") console.log("goBackFolder:newPath " + newPath);
+    if (userData.RunMode === "DEBUG")
+      console.log("goBackFolder:newPath " + newPath);
     changePath(newPath.trim());
   };
 
@@ -429,20 +429,21 @@ document.addEventListener("DOMContentLoaded", function () {
     let newHtmlContent = `<li><label id="CURRENT_PATH">Path:</label></li>
                               <li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">/</a></li>`;
 
-    if (RUNMODE === "DEBUG") console.log("init path: ", cPath);
-    if (RUNMODE === "DEBUG") console.log("cPath lenght:", cPath.length);
+    if (userData.RunMode === "DEBUG") console.log("init path: ", cPath);
+    if (userData.RunMode === "DEBUG")
+      console.log("cPath lenght:", cPath.length);
     $("#waiting").addClass("active");
 
     if (cPath.length > 1) {
       let cPathArray = cPath.split("/");
       cPathArray = cleanArray(cPathArray);
 
-      if (RUNMODE === "DEBUG")
+      if (userData.RunMode === "DEBUG")
         console.log("refreshPath:cPathArray ", cPathArray);
       /* cPathArray.forEach((val, idx, array) => {
         if (val.trim() != "") newLinePath.push(val);
       }); */
-      //if (RUNMODE === "DEBUG") console.log("newLinePath: ", newLinePath);
+      //if (userData.RunMode === "DEBUG") console.log("newLinePath: ", newLinePath);
       if (cPathArray.length > 0) {
         for (let x = 0; x < cPathArray.length; x++) {
           if (x == 0) {
@@ -469,27 +470,27 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     const headers = new Headers();
-    headers.append("Authorization", "Bearer " + Token);
+    headers.append("Authorization", "Bearer " + userData.Token);
     let realpath = getRealPath(cPath);
 
-    if (RUNMODE === "DEBUG")
+    if (userData.RunMode === "DEBUG")
       console.log(
-        "REAL_ROOT_PATH: " + REAL_ROOT_PATH + " realpath:" + realpath
+        "userData.RealRootPath: " + userData.RealRootPath + " realpath:" + realpath
       );
     fetch("/files?path=" + encodeURI(realpath), {
-        method: "GET",
-        headers: headers,
-        timeout: 720000
-      })
+      method: "GET",
+      headers: headers,
+      timeout: 720000
+    })
       .then(FetchHandleErrors)
       .then(r => r.json())
       .then(data => {
-        if (RUNMODE === "DEBUG") console.log(data);
+        if (userData.RunMode === "DEBUG") console.log(data);
         refreshFilesTable(data);
         $("#waiting").removeClass("active");
       })
       .catch(err => {
-        if (RUNMODE === "DEBUG") console.log(err);
+        if (userData.RunMode === "DEBUG") console.log(err);
         $("#waiting").removeClass("active");
       });
   };
@@ -501,30 +502,30 @@ document.addEventListener("DOMContentLoaded", function () {
   const selectAll = e => {
     var allCkeckbox = document.querySelectorAll(".check");
     let v = document.querySelector("#selectAllFiles").checked;
-    if (RUNMODE === "DEBUG") console.log("selectAllFiles :", v);
-    allCkeckbox.forEach(function (element, i) {
+    if (userData.RunMode === "DEBUG") console.log("selectAllFiles :", v);
+    allCkeckbox.forEach(function(element, i) {
       if (!allCkeckbox[i].disabled) {
         allCkeckbox[i].checked = v;
       }
     });
-    if (RUNMODE === "DEBUG") console.log(getCheckedFiles());
-    if (RUNMODE === "DEBUG") console.log(getCheckedFolder());
+    if (userData.RunMode === "DEBUG") console.log(getCheckedFiles());
+    if (userData.RunMode === "DEBUG") console.log(getCheckedFolder());
   };
 
-  const getCheckedFiles = function () {
+  const getCheckedFiles = function() {
     var checkedFiles = [];
     var allElements = document.querySelectorAll(".typeFile");
-    allElements.forEach(function (element, i) {
-      if (RUNMODE === "DEBUG") console.log("element: ", element);
-      if (RUNMODE === "DEBUG")
+    allElements.forEach(function(element, i) {
+      if (userData.RunMode === "DEBUG") console.log("element: ", element);
+      if (userData.RunMode === "DEBUG")
         console.log(
           "children: ",
           element.parentElement.parentElement.children[0].children[0]
-          .children[0].checked
+            .children[0].checked
         );
       if (
         element.parentElement.parentElement.children[0].children[0].children[0]
-        .checked
+          .checked
       ) {
         aSelectedFiles.push(element.innerHTML);
         checkedFiles.push(element.innerHTML);
@@ -539,13 +540,14 @@ document.addEventListener("DOMContentLoaded", function () {
     return checkedFiles;
   };
 
-  const getCheckedFolder = function () {
+  const getCheckedFolder = function() {
     var checkedFolders = [];
     var allElements = document.querySelectorAll(".dashboard-path");
-    allElements.forEach(function (v, i) {
-      if (RUNMODE === "DEBUG") console.log("element v: ", v);
-      if (RUNMODE === "DEBUG") console.log("check ", v.children[0].checked);
-      if (RUNMODE === "DEBUG")
+    allElements.forEach(function(v, i) {
+      if (userData.RunMode === "DEBUG") console.log("element v: ", v);
+      if (userData.RunMode === "DEBUG")
+        console.log("check ", v.children[0].checked);
+      if (userData.RunMode === "DEBUG")
         console.log(
           "text ",
           v.parentElement.parentElement.children[1].children[1].text
@@ -569,7 +571,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return checkedFolders;
   };
 
-   window.showDialogYesNo = (title, content, yesCb, noCb) => {
+  window.showDialogYesNo = (title, content, yesCb, noCb) => {
     let w = 32;
     let h = 440;
     let result = null;
@@ -604,16 +606,23 @@ document.addEventListener("DOMContentLoaded", function () {
       noCb("NO");
     });
   };
-  
-  const formatSize = (bytes)=> {
-    if      (bytes>=1073741824) {bytes=parseInt(bytes/1000000000)+' GB';}
-    else if (bytes>=1048576)    {bytes=parseInt(bytes/1000000)+' MB';}
-    else if (bytes>=1024)       {bytes=parseInt(bytes/1000)+' KB';}
-    else if (bytes>1)           {bytes=bytes+' bytes';}
-    else if (bytes==1)          {bytes=bytes+' byte';}
-    else                        {bytes='0 byte';}
+
+  const formatSize = bytes => {
+    if (bytes >= 1073741824) {
+      bytes = parseInt(bytes / 1000000000) + " GB";
+    } else if (bytes >= 1048576) {
+      bytes = parseInt(bytes / 1000000) + " MB";
+    } else if (bytes >= 1024) {
+      bytes = parseInt(bytes / 1000) + " KB";
+    } else if (bytes > 1) {
+      bytes = bytes + " bytes";
+    } else if (bytes == 1) {
+      bytes = bytes + " byte";
+    } else {
+      bytes = "0 byte";
+    }
     return bytes;
-};
+  };
 
   const renderFilesTable = (aFol, aFil) => {
     let newHtmlContent = ``;
@@ -661,12 +670,12 @@ document.addEventListener("DOMContentLoaded", function () {
       .getElementById("tbl-files")
       .getElementsByTagName("tbody")[0];
 
-    if (RUNMODE === "DEBUG") console.log(data);
+    if (userData.RunMode === "DEBUG") console.log(data);
     aFolders = [];
     aFiles = [];
     if (data.message) return null;
     data.forEach((val, idx, array) => {
-      let fileSize = (val.size / 1024);
+      let fileSize = val.size / 1024;
       if (val.isFolder) {
         aFolders.push({
           name: val.name,
@@ -690,12 +699,14 @@ document.addEventListener("DOMContentLoaded", function () {
     renderFilesTable(aFolders, aFiles);
 
     $(".file-Name").on("click", e => {
-      if (RUNMODE === "DEBUG") console.log(e);
-      if (RUNMODE === "DEBUG") console.log("Current Path: ", CURRENT_PATH);
+      if (userData.RunMode === "DEBUG") console.log(e);
+      if (userData.RunMode === "DEBUG")
+        console.log("Current Path: ", CURRENT_PATH);
       let newPath = "";
       if (e.target.innerText != "..") {
         newPath = getNewPath(e.target.innerText);
-        if (RUNMODE === "DEBUG") console.log("New Path: ", newPath.trim());
+        if (userData.RunMode === "DEBUG")
+          console.log("New Path: ", newPath.trim());
         refreshPath(newPath.trim());
         CURRENT_PATH = newPath.trim();
         refreshBarMenu();
@@ -706,12 +717,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $(".check").on("click", e => {
       selectDeselect(e);
-      if (RUNMODE === "DEBUG") console.log(e.target.checked);
-      if (RUNMODE === "DEBUG")
+      if (userData.RunMode === "DEBUG") console.log(e.target.checked);
+      if (userData.RunMode === "DEBUG")
         console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
-      if (RUNMODE === "DEBUG")
+      if (userData.RunMode === "DEBUG")
         console.log(e.target.parentNode.parentNode.rowIndex);
-      if (RUNMODE === "DEBUG")
+      if (userData.RunMode === "DEBUG")
         console.log(e.target.parentNode.children[1].htmlFor);
     });
     $("#goBackFolder").on("click", e => {
@@ -744,15 +755,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     }
-    if (RUNMODE === "DEBUG") console.log(aSelectedFiles, aSelectedFolders);
+    if (userData.RunMode === "DEBUG")
+      console.log(aSelectedFiles, aSelectedFolders);
   };
 
   const showUserProfile = (w, h, t) => {
     let ModalTitle = t;
     let ModalContent = `<table id="tableUserProfile" class="striped highlight">
-                    <tr><td>User Name:</td><td>${UserName}</td></tr>
-                    <tr><td>User Role:</td><td>${UserRole}</td></tr> 
-                    <tr><td>Company Name:</td><td>${CompanyName}</td></tr>
+                    <tr><td>User Name:</td><td>${userData.UserName}</td></tr>
+                    <tr><td>User Role:</td><td>${userData.UserRole}</td></tr> 
+                    <tr><td>Company Name:</td><td>${userData.CompanyName}</td></tr>
                     <tr><td colspan="2" style="text-align:center;border-botom:1px solid #CCC">&nbsp;</td></tr>
                     <tr><td>Allow new Folder:</td><td>`;
     ModalContent += AllowNewFolder == "1" ? "Allow" : "Deny";
@@ -826,7 +838,7 @@ document.addEventListener("DOMContentLoaded", function () {
     $("#AcceptNewFolder").on("click", e => {
       e.preventDefault();
       let newFolderName = $("#newFolderName").val();
-      if (RUNMODE === "DEBUG") console.log(newFolderName);
+      if (userData.RunMode === "DEBUG") console.log(newFolderName);
       newFolder(newFolderName);
     });
     $("#modalClose").on("click", () => {
@@ -877,9 +889,9 @@ document.addEventListener("DOMContentLoaded", function () {
     $("#lean-overlay").show();
     $("#AcceptChangeUserPassword").on("click", e => {
       e.preventDefault();
-      let username = UserName;
+      let username = userData.UserName;
       let newpassword = $("#newpassword").val();
-      if (RUNMODE === "DEBUG") console.log(username, newpassword);
+      if (userData.RunMode === "DEBUG") console.log(username, newpassword);
       ajax({
         type: "POST",
         url: "/changepasswd",
@@ -895,23 +907,20 @@ document.addEventListener("DOMContentLoaded", function () {
                                                       .add('active') */
         },
         success: data => {
-          //if (RUNMODE === 'DEBUG' ) console.log(JSON.parse(data))
-          let {
-            status,
-            message
-          } = JSON.parse(data);
-          if (RUNMODE === "DEBUG") console.log("status", status);
+          //if (userData.RunMode === 'DEBUG' ) console.log(JSON.parse(data))
+          let { status, message } = JSON.parse(data);
+          if (userData.RunMode === "DEBUG") console.log("status", status);
           if (status === "FAIL") {
             showToast(message, "err");
             d.querySelector("#message").innerHTML = message;
           } else {
             showToast(message, "success");
-            if (RUNMODE === "DEBUG") console.log(message);
+            if (userData.RunMode === "DEBUG") console.log(message);
           }
           $("#modal").hide();
         },
         complete: (xhr, status) => {
-          if (RUNMODE === "DEBUG") console.log(xhr, status);
+          if (userData.RunMode === "DEBUG") console.log(xhr, status);
           //waiting.style.display = 'none'
           $("#modal").hide();
           $("#lean-overlay").hide();
@@ -919,9 +928,9 @@ document.addEventListener("DOMContentLoaded", function () {
         error: (xhr, err) => {
           showToast("Wrong password", "err");
           if (err === "timeout") {
-            if (RUNMODE === "DEBUG") console.log("Timeout Error");
+            if (userData.RunMode === "DEBUG") console.log("Timeout Error");
           } else {
-            if (RUNMODE === "DEBUG") console.log(xhr, err);
+            if (userData.RunMode === "DEBUG") console.log(xhr, err);
           }
         }
       });
@@ -970,12 +979,12 @@ document.addEventListener("DOMContentLoaded", function () {
         .removeClass("disabled")
         .addClass("disabled");
     }
-    if (UserRole.toUpperCase() == "ADMIN") {
+    if (userData.UserRole.toUpperCase() == "ADMIN") {
       $("#settings").show();
     } else {
       $("#settings").hide();
     }
-    $("#modaltrigger").html(UserName);
+    $("#modaltrigger").html(userData.UserName);
     /* $("#modaltrigger").leanModal({
       top: 110,
       overlay: 0.45,
@@ -987,9 +996,9 @@ document.addEventListener("DOMContentLoaded", function () {
     selectAll(e.target.htmlFor);
   });
 
-  $("a").on("click", function (e) {
-    if (RUNMODE === "DEBUG") console.log(this.id);
-    if (RUNMODE === "DEBUG") console.log($(this).hasClass("disabled"));
+  $("a").on("click", function(e) {
+    if (userData.RunMode === "DEBUG") console.log(this.id);
+    if (userData.RunMode === "DEBUG") console.log($(this).hasClass("disabled"));
 
     if (!$(this).hasClass("disabled")) {
       switch (this.id) {
@@ -1003,14 +1012,17 @@ document.addEventListener("DOMContentLoaded", function () {
           break;
         case "usertrigger":
           e.stopPropagation();
-          if (RUNMODE === "DEBUG")
+          if (userData.RunMode === "DEBUG")
             console.log($("#Usersdropdown").css("display"));
           let position1 = document.getElementById("usertrigger").offsetLeft;
           let position2 = document.getElementById("usertrigger").offsetWidth;
-          if (RUNMODE === "DEBUG") console.log("position1: ", position1);
-          if (RUNMODE === "DEBUG") console.log("position2: ", position2);
+          if (userData.RunMode === "DEBUG")
+            console.log("position1: ", position1);
+          if (userData.RunMode === "DEBUG")
+            console.log("position2: ", position2);
           let newPosition = parseInt(position1 + position2) + "px";
-          if (RUNMODE === "DEBUG") console.log("newPosition: ", newPosition);
+          if (userData.RunMode === "DEBUG")
+            console.log("newPosition: ", newPosition);
           if ($("#Usersdropdown").css("display") === "block") {
             $("#usertrigger").removeClass("selected");
             $("#Usersdropdown").hide();
@@ -1069,7 +1081,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           break;
         case "upload":
-          upload(Token);
+          upload(userData.Token);
           break;
         case "download":
           if (aSelectedFiles.length > 0) {
@@ -1091,22 +1103,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
   $("#usertrigger")
-    .html(UserName)
-    .attr("title", "Empresa: " + CompanyName);
+    .html(userData.UserName)
+    .attr("title", "Empresa: " + userData.CompanyName);
 
   $("#settings").on("click", e => {
-    if (RUNMODE === "DEBUG")
+    if (userData.RunMode === "DEBUG")
       console.log("setting left:", $(e.target).position().left);
-    if (RUNMODE === "DEBUG")
+    if (userData.RunMode === "DEBUG")
       console.log("settingdropdown left:", $("#Settingdropdown").css("left"));
-    if (RUNMODE === "DEBUG") console.log($("#Settingdropdown").css("display"));
+    if (userData.RunMode === "DEBUG")
+      console.log($("#Settingdropdown").css("display"));
     let position = document.querySelector("#settings").offsetLeft;
-    if (RUNMODE === "DEBUG") console.log("position: ", position);
+    if (userData.RunMode === "DEBUG") console.log("position: ", position);
     let newPosition = position + "px";
     if ($("#Settingdropdown").css("display") === "block") {
-      document.getElementById("settings").classList ?
-        document.getElementById("settings").classList.remove("selected") :
-        (document.getElementById("settings").className = "");
+      document.getElementById("settings").classList
+        ? document.getElementById("settings").classList.remove("selected")
+        : (document.getElementById("settings").className = "");
       //document.getElementById('Settingdropdown').classList.remove('setting');
       document.getElementById("Settingdropdown").style.display = "none";
     } else {
@@ -1116,8 +1129,9 @@ document.addEventListener("DOMContentLoaded", function () {
       //addClass(document.getElementById('Settingdropdown'),'setting');
       document.getElementById("Settingdropdown").style.left = newPosition;
       document.getElementById("Settingdropdown").style.display = "block";
-      if (RUNMODE === "DEBUG") console.log("newPosition: ", newPosition);
-      if (RUNMODE === "DEBUG")
+      if (userData.RunMode === "DEBUG")
+        console.log("newPosition: ", newPosition);
+      if (userData.RunMode === "DEBUG")
         console.log(
           "Settingdropdown new position",
           document.getElementById("Settingdropdown").style.left
@@ -1135,13 +1149,12 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelector("#bar-preloader").style.Display = "none";
   refreshPath(CURRENT_PATH);
   refreshBarMenu();
-  if (RUNMODE === "DEBUG")
+  if (userData.RunMode === "DEBUG")
     console.log(document.querySelector("#selectAllFiles").checked);
-  if (RUNMODE === "DEBUG") console.log();
+  if (userData.RunMode === "DEBUG") console.log();
 
   // Front-End routing
   ////////////////////////
 
-// adding routes
-
-});
+  // adding routes
+})(window, document);

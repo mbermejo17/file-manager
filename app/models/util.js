@@ -92,7 +92,7 @@ UtilModel.CleanExpiredFiles = function (query, callback) {
   
   if (!db) dbOpen();
   let stmt = db.prepare(query);
-  stmt.bind(moment(Date.now()).format('YYYY/MM/DD h:mm').unix());
+  stmt.bind(moment(Date.now()).unix());
   stmt.run(function(err) {
     console.log('Cambios: ',this.changes);
     if (err) {
@@ -130,7 +130,7 @@ UtilModel.Add = function (shareData, callback) {
   let response = {};
   if (!db) dbOpen();
   console.log("db handler: ", db);
-  stmt = db.prepare("INSERT INTO Shared VALUES (?,?,?,?,?,?,?,?,?,?)");
+  stmt = db.prepare("INSERT INTO Shared VALUES (?,?,?,?,?,?,?,?,?,?,?)");
   stmt.bind(
     null,
     shareData.UrlCode,
@@ -141,7 +141,8 @@ UtilModel.Add = function (shareData, callback) {
     shareData.Size,
     shareData.State,
     shareData.ExpirationDate,
-    shareData.UnixDate
+    shareData.UnixDate,
+    shareData.deleteExpiredFile
   );
   stmt.run(function (err, result) {
     //dbClose();

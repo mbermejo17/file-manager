@@ -215,6 +215,7 @@ class FileController {
     let userName = req.body.userName
     let destUserName = req.body.destUserName
     let expirationDate = req.body.expirationDate
+    let deleteExpiredFile = req.body.deleteExpiredFile
     let uid = _getUID()
     let date = new Date();
     let newDate = new Date(date.setDate(date.getDate() + 1));
@@ -228,9 +229,10 @@ class FileController {
       Size: fileSize,
       ExpirationDate: expirationDate,
       UnixDate: moment(expirationDate).unix(),
-      State: 'Pending'
+      State: 'Pending',
+      deleteExpiredFile: deleteExpiredFile
     }
-    let sqlQuery = 'DELETE FROM Shared WHERE (ExpirateDate  < ?);';
+    let sqlQuery = 'DELETE FROM Shared WHERE (UnixDate  < ?);';
     console.log(sqlQuery);
    _cleanExpiredSharedFiles(sqlQuery,(response)=>{
     console.log(response);
