@@ -57,7 +57,7 @@ class FileController {
     console.log('fileController::getFiles:dirPath: ', dirPath)
     let userData = JSON.parse(req.userData)
     console.log('fileController::getFiles:userData: ', userData)
-    let rPath = appData.rootPath
+    let rPath = userData.RootPath
     console.log('getFiles:dirPath.indexOf(rPath) ', dirPath.indexOf(rPath))
     if (dirPath.indexOf(rPath) != 1 && rPath != '/') {
       return res.send(JSON.stringify({}))

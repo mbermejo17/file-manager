@@ -178,7 +178,7 @@ export function shareFile() {
                 }`
               );
               appData.aSelectedFiles = [];
-              aSelectedFolders = [];
+              appData.aSelectedFolders = [];
               document.getElementById("refresh").click();
             }
           })
@@ -195,8 +195,8 @@ export function shareFile() {
 
 export function deleteSelected() {
   if (userData.RunMode === "DEBUG")
-    console.log("aSelectedFolders: ", aSelectedFolders.length);
-  if (aSelectedFolders.length > 0) {
+    console.log("aSelectedFolders: ", appData.aSelectedFolders.length);
+  if (appData.aSelectedFolders.length > 0) {
     showDialogYesNo(
       "Delete foldes",
       "Delete selected folders?",
@@ -292,7 +292,7 @@ export function upload(Token) {
       contentType: false,
       timeout: 290000,
       beforeSend: function(xhrObj) {
-        xhrObj.setRequestHeader("Authorization", "Bearer " + Token);
+        xhrObj.setRequestHeader("Authorization", "Bearer " + userData.Token);
         xhrObj.setRequestHeader("destPath", realpath);
       },
       success: function(data) {
@@ -438,7 +438,7 @@ export function upload(Token) {
 
 export function newFolder(folderName) {
   const headers = new Headers();
-  headers.append("Authorization", "Bearer " + Token);
+  headers.append("Authorization", "Bearer " + userData.Token);
   headers.append("Content-Type", "application/json");
   fetch("/files/newfolder", {
     method: "POST",
@@ -483,7 +483,7 @@ export function deleteFile(path) {
   let x = 0;
   let aF = appData.aSelectedFiles.slice();
   if (userData.RunMode === "DEBUG") console.log(aF);
-  headers.append("Authorization", "Bearer " + Token);
+  headers.append("Authorization", "Bearer " + userData.Token);
   headers.append("Content-Type", "application/json");
   $("#waiting").addClass("active");
   for (x = 0; x < aF.length; x++) {
@@ -524,9 +524,9 @@ export function deleteFile(path) {
 export function deleteFolder(path) {
   const headers = new Headers();
   let x = 0;
-  let aF = aSelectedFolders.slice();
+  let aF = appData.aSelectedFolders.slice();
   if (userData.RunMode === "DEBUG") console.log(aF);
-  headers.append("Authorization", "Bearer " + Token);
+  headers.append("Authorization", "Bearer " + userData.Token);
   headers.append("Content-Type", "application/json");
   $("#waiting").addClass("active");
   for (x = 0; x < aF.length; x++) {
@@ -549,7 +549,7 @@ export function deleteFolder(path) {
             .removeClass("success")
             .addClass("success");
           showToast("Carpeta " + data.data.fileName + " borrada", "success");
-          aSelectedFolders.shift();
+          appData.aSelectedFolders.shift();
           $("#waiting").removeClass("active");
         }
       })

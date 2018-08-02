@@ -4,6 +4,7 @@ import ajax from "./vendor/ajax";
 import { Base64 } from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
+import UserModule from "./modules/user";
 
 import { getRealPath, serializeObject } from "./modules/general";
 import {
@@ -18,7 +19,7 @@ window.userData = {
   UserName: Cookies.get("UserName"),
   UserRole: Cookies.get("UserRole"),
   CompanyName: Cookies.get("CompanyName"),
-  RealRootPaht: Cookies.get("RootPath"),
+  RealRootPath: Cookies.get("RootPath"),
   Token: Cookies.get("token"),
   AccessString: Cookies.get("AccessString"),
   RunMode: Cookies.get("RunMode")
@@ -28,7 +29,7 @@ window.appData = {
   rootPath : "/",
   currentPath: "/",
   aSelectedFiles: [],
-  aDelectedFolders: []
+  aSelectedFolders: []
 };
 
 (function(w, d) {
@@ -88,8 +89,8 @@ window.appData = {
                       <label for="repeatUserPasswd">Repeat Password</label></div>
                   </div>
                   <div class="row">
-                      <div class="input-field col s4"><input id="ROOTPATH" type="text" />
-                      <label for="ROOTPATH">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
+                      <div class="input-field col s4"><input id="rootpath" type="text" />
+                      <label for="rootpath">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
                       <div class="input-field col s6 right">
                         <input class="datepicker" id="ExpirateDate" type="date"/>
                         <label for="ExpirateDate">Expiration Date</label>
@@ -165,7 +166,7 @@ window.appData = {
     Cookies.remove("sessionId");
     Cookies.remove("token");
     Cookies.remove("wssURL");
-    Cookies.remove("ROOTPATH");
+    Cookies.remove("RootPath");
     Cookies.remove("CompanyName");
     Cookies.remove("AccessString");
     document.location.href = "/";
@@ -428,7 +429,7 @@ window.appData = {
   // refresh path
   let refreshPath = cPath => {
     let newLinePath = [];
-    let newHtmlContent = `<li><label id="CURRENT_PATH">Path:</label></li>
+    let newHtmlContent = `<li><label id="currentpath">Path:</label></li>
                               <li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">/</a></li>`;
 
     if (userData.RunMode === "DEBUG") console.log("init path: ", cPath);
@@ -465,7 +466,7 @@ window.appData = {
       $("#waiting").removeClass("active");
     }
 
-    $("#CURRENT_PATH").html(newHtmlContent);
+    $("#currentPath").html(newHtmlContent);
 
     $(".breadcrumb-line-path").on("click", e => {
       changePath(e.target.innerText);
@@ -555,18 +556,18 @@ window.appData = {
           v.parentElement.parentElement.children[1].children[1].text
         );
       if (v.children[0].checked) {
-        aSelectedFolders.push(
+        appData.aSelectedFolders.push(
           v.parentElement.parentElement.children[1].children[1].text
         );
         checkedFolders.push(
           v.parentElement.parentElement.children[1].children[1].text
         );
       } else {
-        const idx = aSelectedFolders.indexOf(
+        const idx = appData.aSelectedFolders.indexOf(
           v.parentElement.parentElement.children[1].children[1].text
         );
         if (idx > -1) {
-          aSelectedFolders.splice(idx, 1);
+          appData.aSelectedFolders.splice(idx, 1);
         }
       }
     });
@@ -713,7 +714,7 @@ window.appData = {
         appData.currentPath = newPath.trim();
         refreshBarMenu();
       } else {
-        if (appData.currentPath !== ROOTPATH) goBackFolder(e.target.innerText);
+        if (appData.currentPath !== appData.rootPath) goBackFolder(e.target.innerText);
       }
     });
 
@@ -749,16 +750,16 @@ window.appData = {
       }
     } else {
       if (isChecked) {
-        aSelectedFolders.push(name);
+        appData.aSelectedFolders.push(name);
       } else {
-        const idx = aSelectedFolders.indexOf(name);
+        const idx = appData.aSelectedFolders.indexOf(name);
         if (idx > -1) {
-          aSelectedFolders.splice(idx, 1);
+          appData.aSelectedFolders.splice(idx, 1);
         }
       }
     }
     if (userData.RunMode === "DEBUG")
-      console.log(appData.aSelectedFiles, aSelectedFolders);
+      console.log(appData.aSelectedFiles, appData.aSelectedFolders);
   };
 
   const showUserProfile = (w, h, t) => {
@@ -1008,7 +1009,7 @@ window.appData = {
           showAddUserForm("New User", null);
           break;
         case "userMod":
-          editUser();
+          UserModule.editUser();
           break;
         case "settings":
           break;
@@ -1069,14 +1070,14 @@ window.appData = {
           $("#logoutmodal").hide();
           break;
         case "home":
-          appData.currentPath = ROOTPATH;
+          appData.currentPath = appData.rootPath;
           refreshPath(appData.currentPath);
           break;
         case "newFolder":
           showNewFolder(32, 440, "New Folder");
           break;
         case "delete":
-          if (aSelectedFolders.length > 0 || appData.aSelectedFiles.length > 0) {
+          if (appData.aSelectedFolders.length > 0 || appData.aSelectedFiles.length > 0) {
             deleteSelected();
           } else {
             showToast("No se han seleccionado archivos o carpetas", "err");
