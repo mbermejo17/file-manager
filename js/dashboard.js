@@ -161,80 +161,7 @@ window.appData = {
   //  End Tools
   ////////////////////////////////
 
-  const checkAccessRights = (AccessSwitch, role, accessRights) => {
-    let opt = "";
-    let aAccessRights = split(accessRights, ",");
-    if (role !== "Custom") {
-      switch (role.toUpperCase()) {
-        case "USER":
-          opt = "opt1";
-          break;
-        case "ADMIN":
-          opt = "opt2";
-          break;
-        case "ADVANCED USER":
-          opt = "opt3";
-          break;
-      }
-      changeAccessRights(AccessSwitch, opt);
-    } else {
-      for (let x = 0; x < AccessSwitch.length; x++) {
-        if (aAccessRights[x] == 1) {
-          AccessSwitch[x].checked = true;
-        } else {
-          AccessSwitch[x].checked = false;
-        }
-      }
-    }
-  };
-
-  const changeAccessRights = (AccessSwitch, opt) => {
-    for (let x = 0; x < AccessSwitch.length; x++) {
-      AccessSwitch[x].disabled = false;
-    }
-    switch (opt) {
-      case "opt1":
-        AccessSwitch[0].checked = true;
-        AccessSwitch[1].checked = true;
-        AccessSwitch[2].checked = false;
-        AccessSwitch[3].checked = false;
-        AccessSwitch[4].checked = false;
-        AccessSwitch[5].checked = false;
-        AccessSwitch[2].disabled = true;
-        AccessSwitch[3].disabled = true;
-        AccessSwitch[4].disabled = true;
-        AccessSwitch[5].disabled = true;
-        break;
-      case "opt2":
-        AccessSwitch[0].checked = true;
-        AccessSwitch[1].checked = true;
-        AccessSwitch[2].checked = true;
-        AccessSwitch[3].checked = true;
-        AccessSwitch[4].checked = true;
-        AccessSwitch[5].checked = true;
-        break;
-      case "opt3":
-        AccessSwitch[0].checked = true;
-        AccessSwitch[1].checked = true;
-        AccessSwitch[2].checked = false;
-        AccessSwitch[2].disabled = true;
-        AccessSwitch[3].checked = false;
-        AccessSwitch[3].disabled = true;
-        AccessSwitch[4].checked = true;
-        AccessSwitch[5].checked = false;
-        AccessSwitch[5].disabled = true;
-        break;
-      case "opt4":
-        AccessSwitch[0].checked = false;
-        AccessSwitch[1].checked = false;
-        AccessSwitch[2].checked = false;
-        AccessSwitch[3].checked = false;
-        AccessSwitch[4].checked = false;
-        AccessSwitch[5].checked = false;
-        break;
-    }
-  };
-
+  
   ///////////////////////////////
   // Path handler
   //////////////////////////////
@@ -257,7 +184,7 @@ window.appData = {
   };
 
   // get New path
-  let getNewPath = pathSelected => {
+  let getNewPath = (pathSelected) => {
     let splitPath = appData.currentPath.split("/");
     let newPath = "";
     let temp = [];
@@ -942,6 +869,7 @@ window.appData = {
         case "userLogout":
           $("#Usersdropdown").hide();
           $("#logoutmodal").show();
+          addClass(document.querySelector('#logoutmodal'),'modal-logout');
           break;
         case "ModalUserLogout":
           $("#logoutmodal").hide();
