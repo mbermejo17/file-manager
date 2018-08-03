@@ -282,7 +282,7 @@ export function upload(Token) {
     let realpath = getRealPath(appData.currentPath);
     if (userData.RunMode === "DEBUG") console.log("Upload:appData.currentPath " + appData.currentPath);
     if (userData.RunMode === "DEBUG")
-      console.log("Upload:REAL_ROOT_PATH " + REAL_ROOT_PATH);
+      console.log("Upload:REAL_ROOT_PATH " + userData.REAL_ROOT_PATH);
     if (userData.RunMode === "DEBUG") console.log("Upload:realPath " + realpath);
     $.ajax({
       url: "/files/upload?destPath=" + realpath,
@@ -295,14 +295,16 @@ export function upload(Token) {
         xhrObj.setRequestHeader("Authorization", "Bearer " + userData.Token);
         xhrObj.setRequestHeader("destPath", realpath);
       },
-      success: function(data) {
-        if (userData.RunMode === "DEBUG")
-          console.log(fileName + "upload successful!\n" + data);
+      success: function(jsonData) {
+        let data = JSON.parse(jsonData);
+        if (userData.RunMode === "DEBUG") console.log(data.data + "upload successful!\n" + data);
+          console.log('handlerCounter1: ',handlerCounter);
         if (data.status == "OK") {
           showToast(fileName + " uploaded sucessfully", "success");
           $("#abort" + nFile).hide();
           $("#refresh").trigger("click");
           handlerCounter = handlerCounter - 1;
+          console.log('handlerCounter2: ',handlerCounter);
           if (handlerCounter == 0) {
             $("#btnCancelAll")
               .removeClass("disabled")
@@ -327,8 +329,8 @@ export function upload(Token) {
         aListHandler[nFile].upload.addEventListener(
           "progress",
           function(evt) {
-            console.log(evt.total);
-            if (evt.total > 700000) {
+            console.log(fileName + ' File size: ',evt.total);
+            if (evt.total > 700000000) {
               showToast(
                 fileName + " excede del tamaño soportado (700MB)",
                 "err"

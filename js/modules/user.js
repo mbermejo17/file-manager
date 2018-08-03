@@ -3,7 +3,122 @@
   // Users manage module
   ///////////////////////////////////
 
-  const searchUserName = userName => {
+  let htmlUserFormTemplate = `
+      <div id="AddUserModal">
+          <h4 id ="userFormTitle" class="header2">New User</h4>
+          <div class="row">
+              <form class="col s12 m12 l12" id="formAddUser">
+                  <div class="row">
+                      <div class="input-field col s6"><input id="UserName" type="text" />
+                      <label for="UserName">Name</label></div>
+                      <div class="input-field col s6"><input id="CompanyName" type="text" />
+                      <label for="CompanyName">Company Name</label></div>
+                  </div>
+                  <div class="row">
+                      <div class="input-field col s6"><input id="UserPasswd" type="password" autocomplete="off" />
+                      <label for="UserPasswd">Password</label></div>
+                      <div class="input-field col s6"><input id="repeatUserPasswd" type="password" autocomplete="off" />
+                      <label for="repeatUserPasswd">Repeat Password</label></div>
+                  </div>
+                  <div class="row">
+                      <div class="input-field col s4"><input id="rootpath" type="text" />
+                      <label for="rootpath">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
+                      <div class="input-field col s6 right">
+                        <input class="datepicker" id="ExpirateDate" type="date"/>
+                        <label for="ExpirateDate">Expiration Date</label>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="rights">Access Rights</div>
+                  </div>
+                  <div class="row">
+                      <div class="input-field col s2 m2"></div>
+                      <div class="input-field col s8 m8" style="line-height: .9em;" >
+                        <input id="Role" type="hidden" value="" />
+                        <select id="RoleOptions" name="optionsname" required="">
+                          <option value="opt1">User</option>
+                          <option value="opt2">Admin</option>
+                          <option value="opt3">Advanced User</option>
+                          <option value="opt4">Custom</option>
+                        </select>
+                        <label>User Role</label>
+                      </div>
+                      <div class="input-field col s2 m2"></div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                      <span class="label-switch col s2">Download</span>
+                      <div class="switch col s3">
+                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                        <span class="lever"></span>On</label>
+                      </div>
+                      <span class="col s2"></span>
+                      <span class="label-switch col s2">Upload</span>
+                      <div class="switch col s3">
+                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                        <span class="lever"></span>On</label>
+                      </div>
+                  </div>
+                  <div class="row"><span class="label-switch col s2">Delete File</span>
+                      <div class="switch col s3">
+                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                        <span class="lever"></span>On</label>
+                      </div>
+                      <span class="col s2">   </span>
+                      <span class="label-switch col s2">Delete Folder</span>
+                      <div class="switch col s3">
+                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                        <span class="lever"></span>On</label>
+                      </div>
+                  </div>
+                  <div class="row">
+                    <span class="label-switch col s2">Add Folder</span>
+                    <div class="switch col s3">
+                      <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                      <span class="lever"></span>On</label>
+                    </div>
+                    <span class="col s2">   </span>
+                    <span class="label-switch col s2>Share</span>
+                    <div class="switch col s3">
+                      <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                      <span class="lever"></span>On       </label></div>
+                  </div>
+                  <div class="row"><br/>
+                      <div class="input-field col s6 m6"></div>
+                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserCancel" type="submit" name="action">Cancel</button></div>
+                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserAcept" type="submit" name="action">Accept</button></div>
+                  </div>
+              </form>
+          </div>
+      </div>`;
+
+  let htmlSearchUserTemplate = `<div id="searchUserModal">
+                                  <div class="row"> 
+                                    <div class="input-field col s12 m12"></div>
+                                  </div>
+                                  <div class="row" id="searchUser">
+                                  <div class="input-field col s1 m1"></div>
+                                    <div class="input-field col s5">
+                                    <input id="searchUserName" type="hidden" autocomplete="off" />
+                                    <label for="usersList">Search User</label></div>
+                                    <select id="usersList" class="md-select">
+                                    </select>  
+                                    <div class="input-field col s2">
+                                      <i class="fa fa-search" id="btnSearchUser"></i>
+                                    </div>
+                                    <div class="input-field col s4 m4"></div>
+                                    <div class="row"> 
+                                    <div class="input-field col s9 m9"></div>
+                                    <div class="input-field col s2 m2">
+                                      <button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-SearchUserCancel" type="submit" name="action">Cancel</button></div>
+                                    </div>
+                                    <div class="input-field col s1 m1"></div>
+                                    </div>
+                                </div>`;
+
+
+
+  export function searchUserName(userName) {
     if (RunMode === "DEBUG") console.log(userName);
 
     execFetch("/searchuser?userName=" + userName, "GET", null)
@@ -22,10 +137,10 @@
         );
         if (RunMode === "DEBUG") console.log(e);
       });
-  };
+  }
 
 
-  const LoadUsersList = (el) => {
+  export function LoadUsersList(el){
     execFetch("/users", "GET")
       .then(d => {
         if (RunMode === "DEBUG") console.log(d);
@@ -40,9 +155,9 @@
         showToast("Error al grabar los cambios para el usuario " + data.userName + ".<br>Err:" + e, "err");
         if (RunMode === "DEBUG") console.log(e);
       });
-  };
+  }
 
-  const editUser = () => {
+  export function editUser() {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let SearchUserModalContent = document.querySelector(
       "#searchUserModalContent"
@@ -72,10 +187,10 @@
         SearchUserModalContent.style.display = "none";
         containerOverlay.style.display = "none";
       });
-  };
+  }
 
 
-  const selectRole = (element, role) => {
+  export function selectRole(element, role){
     if (RunMode === "DEBUG") console.log(role);
     for (let x = 0; x < element.options.length; x++) {
       if (RunMode === "DEBUG") console.log("option: ", element.options[x].text);
@@ -93,9 +208,9 @@
         break;
       }
     }
-  };
+  }
 
-  const showAddUserForm = (title, data) => {
+  export function showAddUserForm(title, data){
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let containerOverlay = document.querySelector(".container-overlay");
     let SearchUserModalContent = document.querySelector(
@@ -330,7 +445,7 @@
           if (RunMode === "DEBUG") console.log(e);
         });
     };
-  };
+  }
 
 ////////////////////////////////////
 // End user manage module

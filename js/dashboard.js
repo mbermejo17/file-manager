@@ -4,7 +4,7 @@ import ajax from "./vendor/ajax";
 import { Base64 } from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
-import UserModule from "./modules/user";
+import {editUser, showAddUserForm} from "./modules/user";
 
 import { getRealPath, serializeObject } from "./modules/general";
 import {
@@ -47,118 +47,8 @@ window.appData = {
   let currentTopToast = 30;
   let topToast = 0;
 
-  let htmlSearchUserTemplate = `<div id="searchUserModal">
-                          <div class="row"> 
-                            <div class="input-field col s12 m12"></div>
-                          </div>
-                          <div class="row" id="searchUser">
-                          <div class="input-field col s1 m1"></div>
-                            <div class="input-field col s5">
-                            <input id="searchUserName" type="hidden" autocomplete="off" />
-                            <label for="usersList">Search User</label></div>
-                            <select id="usersList" class="md-select">
-                            </select>  
-                            <div class="input-field col s2">
-                              <i class="fa fa-search" id="btnSearchUser"></i>
-                            </div>
-                            <div class="input-field col s4 m4"></div>
-                            <div class="row"> 
-                            <div class="input-field col s9 m9"></div>
-                            <div class="input-field col s2 m2">
-                              <button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-SearchUserCancel" type="submit" name="action">Cancel</button></div>
-                            </div>
-                            <div class="input-field col s1 m1"></div>
-                            </div>
-                        </div>`;
-
-  let htmlUserFormTemplate = `
-      <div id="AddUserModal">
-          <h4 id ="userFormTitle" class="header2">New User</h4>
-          <div class="row">
-              <form class="col s12 m12 l12" id="formAddUser">
-                  <div class="row">
-                      <div class="input-field col s6"><input id="UserName" type="text" />
-                      <label for="UserName">Name</label></div>
-                      <div class="input-field col s6"><input id="CompanyName" type="text" />
-                      <label for="CompanyName">Company Name</label></div>
-                  </div>
-                  <div class="row">
-                      <div class="input-field col s6"><input id="UserPasswd" type="password" autocomplete="off" />
-                      <label for="UserPasswd">Password</label></div>
-                      <div class="input-field col s6"><input id="repeatUserPasswd" type="password" autocomplete="off" />
-                      <label for="repeatUserPasswd">Repeat Password</label></div>
-                  </div>
-                  <div class="row">
-                      <div class="input-field col s4"><input id="rootpath" type="text" />
-                      <label for="rootpath">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
-                      <div class="input-field col s6 right">
-                        <input class="datepicker" id="ExpirateDate" type="date"/>
-                        <label for="ExpirateDate">Expiration Date</label>
-                      </div>
-                  </div>
-                  <div class="row">
-                      <div class="rights">Access Rights</div>
-                  </div>
-                  <div class="row">
-                      <div class="input-field col s2 m2"></div>
-                      <div class="input-field col s8 m8" style="line-height: .9em;" >
-                        <input id="Role" type="hidden" value="" />
-                        <select id="RoleOptions" name="optionsname" required="">
-                          <option value="opt1">User</option>
-                          <option value="opt2">Admin</option>
-                          <option value="opt3">Advanced User</option>
-                          <option value="opt4">Custom</option>
-                        </select>
-                        <label>User Role</label>
-                      </div>
-                      <div class="input-field col s2 m2"></div>
-                  </div>
-                  <br/>
-                  <div class="row">
-                      <span class="label-switch col s2">Download</span>
-                      <div class="switch col s3">
-                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                        <span class="lever"></span>On</label>
-                      </div>
-                      <span class="col s2"></span>
-                      <span class="label-switch col s2">Upload</span>
-                      <div class="switch col s3">
-                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                        <span class="lever"></span>On</label>
-                      </div>
-                  </div>
-                  <div class="row"><span class="label-switch col s2">Delete File</span>
-                      <div class="switch col s3">
-                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                        <span class="lever"></span>On</label>
-                      </div>
-                      <span class="col s2">   </span>
-                      <span class="label-switch col s2">Delete Folder</span>
-                      <div class="switch col s3">
-                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                        <span class="lever"></span>On</label>
-                      </div>
-                  </div>
-                  <div class="row">
-                    <span class="label-switch col s2">Add Folder</span>
-                    <div class="switch col s3">
-                      <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                      <span class="lever"></span>On</label>
-                    </div>
-                    <span class="col s2">   </span>
-                    <span class="label-switch col s2>Share</span>
-                    <div class="switch col s3">
-                      <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                      <span class="lever"></span>On       </label></div>
-                  </div>
-                  <div class="row"><br/>
-                      <div class="input-field col s6 m6"></div>
-                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserCancel" type="submit" name="action">Cancel</button></div>
-                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserAcept" type="submit" name="action">Accept</button></div>
-                  </div>
-              </form>
-          </div>
-      </div>`;
+  
+  
 
   const logout = () => {
     Cookies.remove("UserName");
@@ -1009,7 +899,7 @@ window.appData = {
           showAddUserForm("New User", null);
           break;
         case "userMod":
-          UserModule.editUser();
+          editUser();
           break;
         case "settings":
           break;

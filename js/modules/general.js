@@ -10,7 +10,7 @@ export function getRealPath(p) {
           rPath = "/" + userData.RealRootPath;
         } else {
           //rPath = "/" + REAL_ROOT__PATH + p;
-          rPath = p;
+          rPath = "/" + userData.RealRootPath + p;
         }
       }
       if (userData.RunMode === "DEBUG") console.log("getRealPath:rPath ", rPath);
