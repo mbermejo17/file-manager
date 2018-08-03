@@ -203,7 +203,7 @@ window.appData = {
     }
   };
 
-  const cleanArray = arr => {
+  const cleanArray = (arr) => {
     let temp = [];
     for (let i of arr) i && temp.push(i);
     return temp;
@@ -219,7 +219,7 @@ window.appData = {
     return response;
   };
 
-  window.execFetch = async (uri, met, data) => {
+  window.execFetch = async function(uri, met, data) {
     const header = new Headers();
     const bodyData = data ? JSON.stringify(data) : null;
     header.append("Content-Type", "application/json");
@@ -234,7 +234,7 @@ window.appData = {
     const resp = await fetch(uri, initData);
     const json = await resp.json();
     return json;
-  };
+  }
 
   window.showToast = (msg, type) => {
     let newTopToast = 0;
@@ -1120,9 +1120,7 @@ window.appData = {
     if (userData.RunMode === "DEBUG") console.log("position: ", position);
     let newPosition = position + "px";
     if ($("#Settingdropdown").css("display") === "block") {
-      document.getElementById("settings").classList
-        ? document.getElementById("settings").classList.remove("selected")
-        : (document.getElementById("settings").className = "");
+      (document.getElementById("settings").classList) ? document.getElementById("settings").classList.remove("selected") : (document.getElementById("settings").className = "");
       //document.getElementById('Settingdropdown').classList.remove('setting');
       document.getElementById("Settingdropdown").style.display = "none";
     } else {
