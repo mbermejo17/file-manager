@@ -56,6 +56,7 @@
         "watchify": "^3.11.0"
     },
     "dependencies": {
+        "axios": "^0.18.0",
         "babel-polyfill": "^6.26.0",
         "cookie-parser": "^1.4.3",
         "express": "^4.16.3",

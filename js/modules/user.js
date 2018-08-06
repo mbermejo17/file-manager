@@ -1,3 +1,4 @@
+import axios from 'axios';
 
   ////////////////////////////////////
   // Users manage module
@@ -99,10 +100,10 @@
                                   <div class="row" id="searchUser">
                                   <div class="input-field col s1 m1"></div>
                                     <div class="input-field col s5">
-                                    <input id="searchUserName" type="hidden" autocomplete="off" />
+                                    <input id="searchUserName" type="text" autocomplete="off" />
                                     <label for="usersList">Search User</label></div>
-                                    <select id="usersList" class="md-select">
-                                    </select>  
+                                    <div id="user-List" >
+                                    </div> 
                                     <div class="input-field col s2">
                                       <i class="fa fa-search" id="btnSearchUser"></i>
                                     </div>
@@ -226,7 +227,7 @@
       })
       .catch(e => {
         showToast("Error al grabar los cambios.<br>Err:" + e, "err");
-        if (RunMode === "DEBUG") console.log(e);
+        if (appData.RunMode === "DEBUG") console.log(e);
       });
   }
 
@@ -240,14 +241,47 @@
     let containerOverlay = document.querySelector(".container-overlay");
     AddUserModalContent.style.display = "none";
     SearchUserModalContent.innerHTML = htmlSearchUserTemplate;
-    LoadUsersList(document.getElementById('usersList'));
+    //LoadUsersList(document.getElementById('usersList'));
     SearchUserModalContent.style.display = "block";
     containerOverlay.style.display = "block";
+    const config = {
+      headers: {
+        "Content-Type":"application/json",
+        "Authorization": "Bearer " + userData.Token
+      }
+    };
+
+    axios.get('/users',config)
+    .then((res)=>{
+      let listContent = '';
+      console.log(res.data.data);
+      res.data.data.forEach(function(value,idx,arr) {
+        listContent += `<a href="#">${arr[idx].UserName}</a>`;
+      });
+      document.getElementById('user-List').innerHTML = listContent;
+      console.log(listContent);
+    })
+    .catch((err)=>{
+      console.log(err);
+    });
+
     SearchUserModalContent.addEventListener("keyup", e => {
       e.preventDefault();
-      if (e.keyCode === 13) {
-        searchUserName(document.getElementById("searchUserName").value);
+      
+      let input = document.getElementById('searchUserName');
+      let filter = input.value.toUpperCase();
+      let div = document.getElementById('user-List');
+      let a = div.getElementsByTagName('a');
+      for(let i=0; i < a.length ; i++){
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+           a[i].style.display =''; 
+        } else {
+           a[i].style.dsiplay = 'none';
+        }
       }
+      /* if (e.keyCode === 13) {
+        searchUserName(document.getElementById("searchUserName").value);
+      } */
     });
     document.querySelector("#btnSearchUser").addEventListener("click", e => {
       e.preventDefault();
