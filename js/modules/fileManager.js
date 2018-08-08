@@ -1,4 +1,5 @@
 import moment from "moment";
+import axios from "axios";
 import { getRealPath, serializeObject } from "./general";
 ////////////////////////////////////
 // Files and Folder module
@@ -115,10 +116,10 @@ export function shareFile() {
       "Please enter a valid email address"
     ]
   };
- 
+
   /**/
   searchUserModalContent.innerHTML = htmlShareFile;
- 
+
   AddUserModalContent.style.display = "none";
   searchUserModalContent.style.display = "block";
   containerOverlay.style.display = "block";
@@ -141,11 +142,13 @@ export function shareFile() {
     .addEventListener("click", e => {
       e.preventDefault();
       let tmpDate = new Date(document.getElementById("FileExpirateDate").value);
-      let strTime = ''
-      if (document.getElementById("FileExpirateDate").value ==='') {
-        strTime = moment(Date.now()).format('YYYY/MM/DD h:mm');
+      let strTime = "";
+      if (document.getElementById("FileExpirateDate").value === "") {
+        strTime = moment(Date.now()).format("YYYY/MM/DD h:mm");
       } else {
-        strTime = moment(document.getElementById("FileExpirateDate").value).format('YYYY/MM/DD h:mm');
+        strTime = moment(
+          document.getElementById("FileExpirateDate").value
+        ).format("YYYY/MM/DD h:mm");
       }
 
       if (document.getElementById("destUserName").value !== "") {
@@ -161,20 +164,30 @@ export function shareFile() {
           destUserName: document.getElementById("destUserName").value,
           expirationDate: strTime,
           unixDate: moment(strTime).unix(),
-          deleteExpiredFile: (document.getElementById('delFileAfterExpired').checked) ? 1 : 0
+          deleteExpiredFile: document.getElementById("delFileAfterExpired")
+            .checked
+            ? 1
+            : 0
         };
-        execFetch("/files/share", "POST", data)
+        axios
+          .post("/files/share", data, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + userData.Token
+            },
+            timeout: 30000
+          })
           .then(d => {
-            if (userData.RunMode === "DEBUG") console.log(d);
-            if (d.status === "OK") {
+            if (userData.RunMode === "DEBUG") console.log(d.data);
+            if (d.data.status === "OK") {
               searchUserModalContent.style.display = "none";
               containerOverlay.style.display = "none";
               sendEmail(
-                d.data.DestUser,
+                d.data.data.DestUser,
                 "mbermejo17@gmail.com",
                 "URL para descarga de archivo",
                 `Descarga de archivo https://194.224.194.134/files/share/${
-                  d.data.UrlCode
+                  d.data.data.UrlCode
                 }`
               );
               appData.aSelectedFiles = [];
@@ -210,7 +223,8 @@ export function deleteSelected() {
                 deleteFile(appData.currentPath);
               },
               n => {
-                if (userData.RunMode === "DEBUG") console.log("Delete Files Canceled");
+                if (userData.RunMode === "DEBUG")
+                  console.log("Delete Files Canceled");
               }
             );
           }
@@ -227,7 +241,8 @@ export function deleteSelected() {
               deleteFile(appData.currentPath);
             },
             n => {
-              if (userData.RunMode === "DEBUG") console.log("Delete Files Canceled");
+              if (userData.RunMode === "DEBUG")
+                console.log("Delete Files Canceled");
             }
           );
         }
@@ -242,7 +257,8 @@ export function deleteSelected() {
           deleteFile(appData.currentPath);
         },
         n => {
-          if (userData.RunMode === "DEBUG") console.log("Delete Files Canceled");
+          if (userData.RunMode === "DEBUG")
+            console.log("Delete Files Canceled");
         }
       );
     }
@@ -280,62 +296,39 @@ export function upload(Token) {
     $("#li-filename" + nFile).show();
     $("#li-filename" + nFile).html(fileName);
     let realpath = getRealPath(appData.currentPath);
-    if (userData.RunMode === "DEBUG") console.log("Upload:appData.currentPath " + appData.currentPath);
+    if (userData.RunMode === "DEBUG")
+      console.log("Upload:appData.currentPath " + appData.currentPath);
     if (userData.RunMode === "DEBUG")
       console.log("Upload:REAL_ROOT_PATH " + userData.REAL_ROOT_PATH);
-    if (userData.RunMode === "DEBUG") console.log("Upload:realPath " + realpath);
-    $.ajax({
-      url: "/files/upload?destPath=" + realpath,
-      type: "POST",
-      data: formData,
-      processData: false,
-      contentType: false,
-      timeout: 290000,
-      beforeSend: function(xhrObj) {
-        xhrObj.setRequestHeader("Authorization", "Bearer " + userData.Token);
-        xhrObj.setRequestHeader("destPath", realpath);
-      },
-      success: function(jsonData) {
-        let data = JSON.parse(jsonData);
-        if (userData.RunMode === "DEBUG") console.log(data.data + "upload successful!\n" + data);
-          console.log('handlerCounter1: ',handlerCounter);
-        if (data.status == "OK") {
-          showToast(fileName + " uploaded sucessfully", "success");
-          $("#abort" + nFile).hide();
-          $("#refresh").trigger("click");
-          handlerCounter = handlerCounter - 1;
-          console.log('handlerCounter2: ',handlerCounter);
-          if (handlerCounter == 0) {
-            $("#btnCancelAll")
-              .removeClass("disabled")
-              .addClass("disabled");
-          }
-        } else {
-          if (data.status == "FAIL") {
-            showToast("Error: " + data.message, "err");
-            $("#abort" + nFile).hide();
-            handlerCounter = handlerCounter - 1;
-            if (handlerCounter == 0) {
-              $("#btnCancelAll")
-                .removeClass("disabled")
-                .addClass("disabled");
-            }
-          }
-        }
-      },
-      xhr: function() {
-        aListHandler[nFile] = new XMLHttpRequest();
+    if (userData.RunMode === "DEBUG")
+      console.log("Upload:realPath " + realpath);
+    let CancelToken = axios.CancelToken;
+    axios
+      .post("/files/upload?destPath=" + realpath, formData, {
+        headers: {
+          Authorization: "Bearer " + userData.Token,
+          destPath: realpath
+        },
+        timeout: 290000,
+        cancelToken: new CancelToken(
+          function executor(c) {
+            aListHandler[nFile] = c;
+           }),
+        onUploadProgress: function(progressEvent) {
+          let _this = this;
+          console.log('progressEvent: ',progressEvent);
         let percentComplete = 0;
-        aListHandler[nFile].upload.addEventListener(
-          "progress",
-          function(evt) {
-            console.log(fileName + ' File size: ',evt.total);
+        let evt = progressEvent;
+        //aListHandler[nFile].upload.addEventListener(
+        //  "progress",
+        //  function(evt) {
+            console.log(fileName + " File size: ", evt.total);
             if (evt.total > 700000000) {
               showToast(
                 fileName + " excede del tamaño soportado (700MB)",
                 "err"
               );
-              aListHandler[nFile].abort();
+              aListHandler[nFile]();
               let percentLabel = document.querySelector("#percent" + nFile);
               let progressBar = document.querySelector("#progress-bar" + nFile);
               progressBar.innerHTML = "Aborted by server";
@@ -357,12 +350,41 @@ export function upload(Token) {
                 $("#progress-bar" + nFile).width(percentComplete + "%");
               }
             }
-          },
-          false
-        );
+          //false
+        //);
         return aListHandler[nFile];
       }
-    });
+      })
+      .then(d => {
+        let data = JSON.parse(d);
+        if (userData.RunMode === "DEBUG")
+          console.log(data.data + "upload successful!\n" + data);
+        console.log("handlerCounter1: ", handlerCounter);
+        if (data.status == "OK") {
+          showToast(fileName + " uploaded sucessfully", "success");
+          $("#abort" + nFile).hide();
+          $("#refresh").trigger("click");
+          handlerCounter = handlerCounter - 1;
+          console.log("handlerCounter2: ", handlerCounter);
+          if (handlerCounter == 0) {
+            $("#btnCancelAll")
+              .removeClass("disabled")
+              .addClass("disabled");
+          }
+        } else {
+          if (data.status == "FAIL") {
+            showToast("Error: " + data.message, "err");
+            $("#abort" + nFile).hide();
+            handlerCounter = handlerCounter - 1;
+            if (handlerCounter == 0) {
+              $("#btnCancelAll")
+                .removeClass("disabled")
+                .addClass("disabled");
+            }
+          }
+        }
+      })
+      .catch(e => {});
   }
 
   $("#modal")
@@ -388,7 +410,7 @@ export function upload(Token) {
     e.preventDefault();
     if (userData.RunMode === "DEBUG") console.log(e);
     let n = parseInt(e.target.id.slice(-1));
-    aListHandler[n].abort();
+    aListHandler[n]();
     let percentLabel = document.querySelector("#percent" + n);
     let progressBar = document.querySelector("#progress-bar" + n);
     progressBar.innerHTML = "Canceled by user";
@@ -400,7 +422,7 @@ export function upload(Token) {
   });
   $("#btnCancelAll").on("click", e => {
     for (let x = 0; x < 4; x++) {
-      aListHandler[x].abort();
+      aListHandler[x]();
       let percentLabel = document.querySelector("#percent" + x);
       let progressBar = document.querySelector("#progress-bar" + x);
       progressBar.innerHTML = "Canceled by user";
@@ -489,7 +511,8 @@ export function deleteFile(path) {
   headers.append("Content-Type", "application/json");
   $("#waiting").addClass("active");
   for (x = 0; x < aF.length; x++) {
-    if (userData.RunMode === "DEBUG") console.log("Deleting file " + aF[x] + " ...");
+    if (userData.RunMode === "DEBUG")
+      console.log("Deleting file " + aF[x] + " ...");
     fetch("/files/delete", {
       method: "POST",
       headers: headers,
@@ -532,7 +555,8 @@ export function deleteFolder(path) {
   headers.append("Content-Type", "application/json");
   $("#waiting").addClass("active");
   for (x = 0; x < aF.length; x++) {
-    if (userData.RunMode === "DEBUG") console.log("Deleting folder " + aF[x] + " ...");
+    if (userData.RunMode === "DEBUG")
+      console.log("Deleting folder " + aF[x] + " ...");
     fetch("/files/delete", {
       method: "POST",
       headers: headers,

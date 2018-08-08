@@ -1,6 +1,7 @@
 "use sctrict";
 import "babel-polyfill";
-import ajax from "./vendor/ajax";
+//import ajax from "./vendor/ajax";
+import axios from 'axios';
 import { Base64 } from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
