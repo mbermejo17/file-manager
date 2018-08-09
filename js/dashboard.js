@@ -1,5 +1,6 @@
 "use sctrict";
 import "babel-polyfill";
+
 //import ajax from "./vendor/ajax";
 import axios from 'axios';
 import { Base64 } from "js-base64";
@@ -253,7 +254,7 @@ window.appData = {
     if (userData.RunMode === "DEBUG") console.log("init path: ", cPath);
     if (userData.RunMode === "DEBUG")
       console.log("cPath lenght:", cPath.length);
-    $("#waiting").addClass("active");
+    $u("#waiting").addClass("active");
 
     if (cPath.length > 1) {
       let cPathArray = cPath.split("/");
@@ -281,14 +282,16 @@ window.appData = {
           }
         }
       }
-      $("#waiting").removeClass("active");
+      $u("#waiting").removeClass("active");
     }
 
-    $("#currentPath").html(newHtmlContent);
+    $u("#currentPath").html(newHtmlContent);
 
-    $(".breadcrumb-line-path").on("click", e => {
-      changePath(e.target.innerText);
-    });
+    [].forEach.call(document.querySelectorAll('.breadcrumb-line-path'), function(el) {
+      el.addEventListener('click', function(e) {
+        changePath(e.target.innerText);
+      })
+    })
 
     const headers = new Headers();
     headers.append("Authorization", "Bearer " + userData.Token);
@@ -308,11 +311,11 @@ window.appData = {
       .then(data => {
         if (userData.RunMode === "DEBUG") console.log(data);
         refreshFilesTable(data);
-        $("#waiting").removeClass("active");
+        $u("#waiting").removeClass("active");
       })
       .catch(err => {
         if (userData.RunMode === "DEBUG") console.log(err);
-        $("#waiting").removeClass("active");
+        $u("#waiting").removeClass("active");
       });
   };
 
@@ -407,23 +410,23 @@ window.appData = {
                             <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnYes" href="#">Yes</a>
                             <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnNO" href="#">NO</a>
                         </div>`;
-    $("#modal")
+    $u("#modal")
       .html(htmlContent)
       .css("width: " + w + "%;height: " + h + "px;text-align: center;");
     //$('.modal-content').css('width: 350px;');
-    $(".modal").css("width: 40% !important");
-    $("#modal").show();
-    $("#lean-overlay").show();
-    $("#btnYes").on("click", e => {
+    $u(".modal").css("width: 40% !important");
+    $u("#modal").show();
+    $u("#lean-overlay").show();
+    $u("#btnYes").on("click", e => {
       e.preventDefault();
-      $("#modal").hide();
-      $("#lean-overlay").hide();
+      $u("#modal").hide();
+      $u("#lean-overlay").hide();
       yesCb("YES");
     });
-    $("#btnNO").on("click", e => {
+    $u("#btnNO").on("click", e => {
       e.preventDefault();
-      $("#modal").hide();
-      $("#lean-overlay").hide();
+      $u("#modal").hide();
+      $u("#lean-overlay").hide();
       noCb("NO");
     });
   };
@@ -519,25 +522,28 @@ window.appData = {
 
     renderFilesTable(aFolders, aFiles);
 
-    $(".file-Name").on("click", e => {
-      if (userData.RunMode === "DEBUG") console.log(e);
-      if (userData.RunMode === "DEBUG")
-        console.log("Current Path: ", appData.currentPath);
-      let newPath = "";
-      if (e.target.innerText != "..") {
-        newPath = getNewPath(e.target.innerText);
+    [].forEach.call(document.querySelectorAll('.file-Name'), function(el) {
+      el.addEventListener('click', function(e) {
+        if (userData.RunMode === "DEBUG") console.log(e);
         if (userData.RunMode === "DEBUG")
-          console.log("New Path: ", newPath.trim());
-        refreshPath(newPath.trim());
-        appData.currentPath = newPath.trim();
-        refreshBarMenu();
-      } else {
-        if (appData.currentPath !== appData.rootPath) goBackFolder(e.target.innerText);
-      }
+          console.log("Current Path: ", appData.currentPath);
+        let newPath = "";
+        if (e.target.innerText != "..") {
+          newPath = getNewPath(e.target.innerText);
+          if (userData.RunMode === "DEBUG")
+            console.log("New Path: ", newPath.trim());
+          refreshPath(newPath.trim());
+          appData.currentPath = newPath.trim();
+          refreshBarMenu();
+        } else {
+          if (appData.currentPath !== appData.rootPath) goBackFolder(e.target.innerText);
+        }
+      });
     });
 
-    $(".check").on("click", e => {
-      selectDeselect(e);
+    [].forEach.call(document.querySelectorAll('.check'), function(el) {
+      el.addEventListener('click', function(e) {
+        selectDeselect(e);
       if (userData.RunMode === "DEBUG") console.log(e.target.checked);
       if (userData.RunMode === "DEBUG")
         console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
@@ -545,8 +551,11 @@ window.appData = {
         console.log(e.target.parentNode.parentNode.rowIndex);
       if (userData.RunMode === "DEBUG")
         console.log(e.target.parentNode.children[1].htmlFor);
-    });
-    $("#goBackFolder").on("click", e => {
+      });
+    });  
+
+     
+    $u("#goBackFolder").on("click", e => {
       e.preventDefault();
       goBackFolder();
     });
@@ -616,18 +625,18 @@ window.appData = {
                       <div class="modal-footer">
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
                       </div>    `;
-    $("#modal")
+    $u("#modal")
       .html(htmlContent)
       .css("width: " + w + "%;height: " + h + "px;");
-    $("#modal").show();
-    $("#lean-overlay").show();
-    $("#ModalClose").on("click", () => {
-      $("#modal").hide();
-      $("#lean-overlay").hide();
+    $u("#modal").show();
+    $u("#lean-overlay").show();
+    $u("#ModalClose").on("click", () => {
+      $u("#modal").hide();
+      $u("#lean-overlay").hide();
     });
-    $("#modalClose").on("click", () => {
-      $("#modal").hide();
-      $("#lean-overlay").hide();
+    $u("#modalClose").on("click", () => {
+      $u("#modal").hide();
+      $u("#lean-overlay").hide();
     });
   };
   const showNewFolder = (w, h, t) => {
@@ -649,26 +658,26 @@ window.appData = {
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptNewFolder" href="#!">Accept</a>
                       </div>    `;
-    $("#modal")
+    $u("#modal")
       .html(htmlContent)
       .css("width: " + w + "%;height: " + h + "px;text-align: center;");
     //$('.modal-content').css('width: 350px;');
-    $(".modal").css("width: 40% !important");
-    $("#modal").show();
-    $("#lean-overlay").show();
-    $("#AcceptNewFolder").on("click", e => {
+    $u(".modal").css("width: 40% !important");
+    $u("#modal").show();
+    $u("#lean-overlay").show();
+    $u("#AcceptNewFolder").on("click", e => {
       e.preventDefault();
-      let newFolderName = $("#newFolderName").val();
+      let newFolderName = $u("#newFolderName").val();
       if (userData.RunMode === "DEBUG") console.log(newFolderName);
       newFolder(newFolderName);
     });
-    $("#modalClose").on("click", () => {
-      $("#modal").hide();
-      $("#lean-overlay").hide();
+    $u("#modalClose").on("click", () => {
+      $u("#modal").hide();
+      $u("#lean-overlay").hide();
     });
-    $("#ModalClose").on("click", () => {
-      $("#modal").hide();
-      $("#lean-overlay").hide();
+    $u("#ModalClose").on("click", () => {
+      $u("#modal").hide();
+      $u("#lean-overlay").hide();
     });
     document.getElementById("newFolderName").addEventListener("keyup", e => {
       e.preventDefault();
@@ -701,14 +710,14 @@ window.appData = {
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptChangeUserPassword" href="#!">Accept</a>
                       </div>    `;
-    $("#modal")
+    $u("#modal")
       .html(htmlContent)
       .css("width: " + w + "%;height: " + h + "px;text-align: center;");
     //$('.modal-content').css('width: 350px;');
-    $(".modal").css("width: 40% !important");
-    $("#modal").show();
-    $("#lean-overlay").show();
-    $("#AcceptChangeUserPassword").on("click", e => {
+    $u(".modal").css("width: 40% !important");
+    $u("#modal").show();
+    $u("#lean-overlay").show();
+    $u("#AcceptChangeUserPassword").on("click", e => {
       e.preventDefault();
       let username = userData.UserName;
       let newpassword = $("#newpassword").val();
@@ -738,13 +747,13 @@ window.appData = {
             showToast(message, "success");
             if (userData.RunMode === "DEBUG") console.log(message);
           }
-          $("#modal").hide();
+          $u("#modal").hide();
         },
         complete: (xhr, status) => {
           if (userData.RunMode === "DEBUG") console.log(xhr, status);
           //waiting.style.display = 'none'
-          $("#modal").hide();
-          $("#lean-overlay").hide();
+          $u("#modal").hide();
+          $u("#lean-overlay").hide();
         },
         error: (xhr, err) => {
           showToast("Wrong password", "err");
@@ -756,56 +765,56 @@ window.appData = {
         }
       });
     });
-    $("#modalClose").on("click", () => {
-      $("#modal").hide();
-      $("#lean-overlay").hide();
+    $u("#modalClose").on("click", () => {
+      $u("#modal").hide();
+      $u("#lean-overlay").hide();
     });
-    $("#ModalClose").on("click", () => {
-      $("#modal").hide();
-      $("#lean-overlay").hide();
+    $u("#ModalClose").on("click", () => {
+      $u("#modal").hide();
+      $u("#lean-overlay").hide();
     });
   };
 
   let refreshBarMenu = () => {
     if (AllowNewFolder === "1") {
-      $("#newFolder").removeClass("disabled");
+      $u("#newFolder").removeClass("disabled");
     } else {
-      $("#newFolder").removeClass("disabled");
-      $("#newFolder").addClass("disabled");
+      $u("#newFolder").removeClass("disabled");
+      $u("#newFolder").addClass("disabled");
     }
     if (AllowDeleteFolder === "1" && AllowDeleteFile === "1") {
-      $("#delete").removeClass("disabled");
+      $u("#delete").removeClass("disabled");
     } else {
-      $("#delete").removeClass("disabled");
-      $("#delete").addClass("disabled");
+      $u("#delete").removeClass("disabled");
+      $u("#delete").addClass("disabled");
     }
     if (AllowShareFile === "1") {
-      $("#share").removeClass("disabled");
+      $u("#share").removeClass("disabled");
     } else {
-      $("#share").removeClass("disabled");
-      $("#share").addClass("disabled");
+      $u("#share").removeClass("disabled");
+      $u("#share").addClass("disabled");
     }
     if (AllowUpload == "1") {
-      $("#upload").removeClass("disabled");
+      $u("#upload").removeClass("disabled");
     } else {
-      $("#upload")
+      $u("#upload")
         .removeClass("disabled")
         .addClass("disabled");
     }
 
     if (AllowDownload == "1") {
-      $("#download").removeClass("disabled");
+      $u("#download").removeClass("disabled");
     } else {
-      $("#download")
+      $u("#download")
         .removeClass("disabled")
         .addClass("disabled");
     }
     if (userData.UserRole.toUpperCase() == "ADMIN") {
-      $("#settings").show();
+      $u("#settings").show();
     } else {
-      $("#settings").hide();
+      $u("#settings").hide();
     }
-    $("#modaltrigger").html(userData.UserName);
+    $u("#modaltrigger").html(userData.UserName);
     /* $("#modaltrigger").leanModal({
       top: 110,
       overlay: 0.45,
@@ -817,24 +826,10 @@ window.appData = {
     selectAll(e.target.htmlFor);
   });
 
-  $("a").on("click", function(e) {
-    if (userData.RunMode === "DEBUG") console.log(this.id);
-    if (userData.RunMode === "DEBUG") console.log($(this).hasClass("disabled"));
 
-    if (!$(this).hasClass("disabled")) {
-      switch (this.id) {
-        case "userAdd":
-          showAddUserForm("New User", null);
-          break;
-        case "userMod":
-          editUser();
-          break;
-        case "settings":
-          break;
-        case "usertrigger":
-          e.stopPropagation();
+  const userTrigger = function(){
           if (userData.RunMode === "DEBUG")
-            console.log($("#Usersdropdown").css("display"));
+            console.log($u("#Usersdropdown").css("display"));
           let position1 = document.getElementById("usertrigger").offsetLeft;
           let position2 = document.getElementById("usertrigger").offsetWidth;
           if (userData.RunMode === "DEBUG")
@@ -844,101 +839,147 @@ window.appData = {
           let newPosition = parseInt(position1 + position2) + "px";
           if (userData.RunMode === "DEBUG")
             console.log("newPosition: ", newPosition);
-          if ($("#Usersdropdown").css("display") === "block") {
-            $("#usertrigger").removeClass("selected");
-            $("#Usersdropdown").hide();
+          if ($u("#Usersdropdown").css("display") === "block") {
+            $u("#usertrigger").removeClass("selected");
+            $u("#Usersdropdown").hide();
           } else {
-            $("#usertrigger").addClass("selected");
+            $u("#usertrigger").addClass("selected");
             document.getElementById("Usersdropdown").style.right = newPosition;
-            $("#Usersdropdown").show();
+            $u("#Usersdropdown").show();
           }
-          break;
-        case "refresh":
-          refreshPath(appData.currentPath);
-          break;
-        case "share":
-          if (appData.aSelectedFiles.length > 0) {
-            if (appData.aSelectedFiles.length > 1) {
-              showToast("No pueden seleccionarse más de un archivo", "err");
-              break;
-            }
-            shareFile();
-          } else {
-            showToast("No se han seleccionado archivo para compartir", "err");
-          }
-          break;
-        case "userLogout":
-          $("#Usersdropdown").hide();
-          $("#logoutmodal").show();
-          addClass(document.querySelector('#logoutmodal'),'modal-logout');
-          break;
-        case "ModalUserLogout":
-          $("#logoutmodal").hide();
-          logout();
-          break;
-        case "userChangePassword":
-          $("#Usersdropdown").hide();
-          showChangeUserPassword(32, 440, "Change User Password");
-          break;
-        case "userProfile":
-          $("#Usersdropdown").hide();
-          showUserProfile(40, 440, "User Profile");
-          break;
-        case "logoutModalClose":
-        case "cancel":
-          $("#logoutmodal").hide();
-          break;
-        case "home":
-          appData.currentPath = appData.rootPath;
-          refreshPath(appData.currentPath);
-          break;
-        case "newFolder":
-          showNewFolder(32, 440, "New Folder");
-          break;
-        case "delete":
-          if (appData.aSelectedFolders.length > 0 || appData.aSelectedFiles.length > 0) {
-            deleteSelected();
-          } else {
-            showToast("No se han seleccionado archivos o carpetas", "err");
-          }
-          break;
-        case "upload":
-          upload(userData.Token);
-          break;
-        case "download":
-          if (appData.aSelectedFiles.length > 0) {
-            if (appData.aSelectedFiles.length > 5) {
-              showToast(
-                "No se pueden descargar más de 5 archivos a la vez",
-                "err"
-              );
-              break;
-            }
-            download(appData.aSelectedFiles, "File");
-          } else {
-            showToast("No se han seleccionado archivos para descargar", "err");
-          }
-          break;
+  };
+
+
+  $u('#userAdd').on('click',(e)=>{if(!$u(this).hasClass("disabled")) showAddUserForm("New User", null);});
+  
+  $u('#userMod').on('click',(e)=>{if(!$u(this).hasClass("disabled")) editUser();});
+  
+  $u('#settings').on('click',(e)=>{});
+  
+  $u('#usertrigger').on('click',(e)=>{if(!$u(this).hasClass("disabled")) userTrigger()});
+  
+  $u('#refresh').on('click',(e)=>{ if(!$u(this).hasClass("disabled")) refreshPath(appData.currentPath);});
+  
+  $u('#share').on('click',(e)=>{
+    if (appData.aSelectedFiles.length > 0) {
+      if (appData.aSelectedFiles.length > 1) {
+        showToast("No pueden seleccionarse más de un archivo", "err");
+      }
+      shareFile();
+    } else {
+      showToast("No se han seleccionado archivo para compartir", "err");
+    } 
+  });
+  
+  $u('#userLogout').on('click',(e)=>{
+    if(!$u(this).hasClass("disabled")) {
+    $u("#Usersdropdown").hide();
+    $u("#logoutmodal").show();
+    addClass(document.querySelector('#logoutmodal'),'modal-logout');
+    } else {
+      showToast("Opcion no permitida", "err");
+    }
+  });
+  
+  $u('#ModalUserLogout').on('click',(e)=>{
+    if(!$u(this).hasClass("disabled")) {
+    $u("#logoutmodal").hide();
+    logout();
+    } else {
+      showToast("Opcion no permitida", "err");
+    }
+  });
+  
+  $u('#userChangePassword').on('click',(e)=>{
+    if(!$u(this).hasClass("disabled")) {
+    $u("#Usersdropdown").hide();
+    showChangeUserPassword(32, 440, "Change User Password");
+    } else {
+      showToast("Opcion no permitida", "err");
+    }
+  });
+
+  $u('#userProfile').on('click',(e)=>{
+    if(!$u(this).hasClass("disabled")) {
+      $u("#Usersdropdown").hide();
+      showUserProfile(40, 440, "User Profile");
+    } else {
+      showToast("Opcion no permitida", "err");
+    }
+  });
+
+  $u('#cancel').on('click',(e)=>{ 
+   if (!$u(this).hasClass("disabled")) {
+    $u("#logoutmodal").hide();
+  } else {
+    showToast("Opcion no permitida", "err");
+  }});
+
+  $u('#home').on('click',(e)=>{
+    if(!$u(this).hasClass("disabled")) {
+      appData.currentPath = appData.rootPath;
+      refreshPath(appData.currentPath);
+    }else {
+      showToast("Opcion no permitida", "err");
+    }
+  });
+
+  $u('#newFolder').on('click',(e)=>{
+    if(!$u(this).hasClass("disabled")) { 
+      showNewFolder(32, 440, "New Folder");
+    }else {
+      showToast("Opcion no permitida", "err");
+  }
+});
+
+  $u('#delete').on('click',(e)=>{
+    if(!$u(this).hasClass("disabled")) {
+      if (appData.aSelectedFolders.length > 0 || appData.aSelectedFiles.length > 0) {
+        deleteSelected();
+      } else {
+        showToast("No se han seleccionado archivos o carpetas", "err");
+      }
+    }
+  });
+
+  $u('#upload').on('click',(e)=>{
+    if(!$u(this).hasClass("disabled")) {
+    upload(userData.Token);
+  } else {
+    showToast("Opcion no permitida", "err");
+  }});
+
+  $u('#download').on('click',(e)=>{
+    if(!$u(this).hasClass("disabled")) {
+      if (appData.aSelectedFiles.length > 0) {
+        if (appData.aSelectedFiles.length > 5) {
+          showToast("No se pueden descargar más de 5 archivos a la vez","err");
+        }
+        download(appData.aSelectedFiles, "File");
+      } else {
+        showToast("No se han seleccionado archivos para descargar", "err");
       }
     } else {
       showToast("Opcion no permitida", "err");
     }
   });
-  $("#usertrigger")
-    .html(userData.UserName)
-    .attr("title", "Empresa: " + userData.CompanyName);
 
-  $("#settings").on("click", e => {
+ 
+  $u("#usertrigger").html(userData.UserName);
+  
+  $u("#usertrigger").attr("title", "Empresa: " + userData.CompanyName);
+
+  $u("#settings").on("click", e => {
     if (userData.RunMode === "DEBUG")
-      console.log("setting left:", $(e.target).position().left);
+      console.log("setting left:", $u(e.target).position().left);
     if (userData.RunMode === "DEBUG")
-      console.log("settingdropdown left:", $("#Settingdropdown").css("left"));
+      console.log("settingdropdown left:", $u("#Settingdropdown").css("left"));
     if (userData.RunMode === "DEBUG")
-      console.log($("#Settingdropdown").css("display"));
+      console.log($u("#Settingdropdown").css("display"));
     let position = document.querySelector("#settings").offsetLeft;
     if (userData.RunMode === "DEBUG") console.log("position: ", position);
     let newPosition = position + "px";
-    if ($("#Settingdropdown").css("display") === "block") {
+    if ($u("#Settingdropdown").css("display") === "block") {
       (document.getElementById("settings").classList) ? document.getElementById("settings").classList.remove("selected") : (document.getElementById("settings").className = "");
       //document.getElementById('Settingdropdown').classList.remove('setting');
       document.getElementById("Settingdropdown").style.display = "none";
@@ -958,13 +999,13 @@ window.appData = {
         );
     }
   });
-  $("#Usersdropdown").on("mouseleave", () => {
-    $("#Usersdropdown").hide();
-    $("#usertrigger").removeClass("selected");
+  $u("#Usersdropdown").on("mouseleave", () => {
+    $u("#Usersdropdown").hide();
+    $u("#usertrigger").removeClass("selected");
   });
-  $("#Settingdropdown").on("mouseleave", () => {
-    $("#Settingdropdown").hide();
-    $("#settings").removeClass("selected");
+  $u("#Settingdropdown").on("mouseleave", () => {
+    $u("#Settingdropdown").hide();
+    $u("#settings").removeClass("selected");
   });
   document.querySelector("#bar-preloader").style.Display = "none";
   refreshPath(appData.currentPath);
