@@ -287,14 +287,13 @@ export function upload(Token) {
                               <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Close</a>
                       </div>`;
 
-  $("#upload")
-    .removeClass("disabled")
-    .addClass("disabled");
+  $u("#upload").removeClass("disabled");
+  $u("#upload").addClass("disabled");
 
   function fnUploadFile(formData, nFile, fileName) {
-    $("#li" + nFile).show();
-    $("#li-filename" + nFile).show();
-    $("#li-filename" + nFile).html(fileName);
+    $u("#li" + nFile).show();
+    $u("#li-filename" + nFile).show();
+    $u("#li-filename" + nFile).html(fileName);
     let realpath = getRealPath(appData.currentPath);
     if (userData.RunMode === "DEBUG")
       console.log("Upload:appData.currentPath " + appData.currentPath);
@@ -338,9 +337,8 @@ export function upload(Token) {
               progressBar.style.backgroundColor = "white";
               handlerCounter = handlerCounter - 1;
               if (handlerCounter == 0) {
-                $("#btnCancelAll")
-                  .removeClass("disabled")
-                  .addClass("disabled");
+                $u("#btnCancelAll").removeClass("disabled");
+                  $u("#btnCancelAll").addClass("disabled");
               }
             } else {
               if (evt.lengthComputable) {
@@ -477,9 +475,9 @@ export function newFolder(folderName) {
     .then(data => {
       if (userData.RunMode === "DEBUG") console.log(data);
       if (data.status == "OK") {
-        $("#modal").hide();
-        $("#lean-overlay").hide();
-        $("#refresh").trigger("click");
+        $u("#modal").hide();
+        $u("#lean-overlay").hide();
+        $u('#refresh').trigger('click');
         showToast("Creada nueva carpeta " + data.data.folderName, "success");
       } else {
         showToast(
