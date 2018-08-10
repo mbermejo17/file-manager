@@ -5,8 +5,8 @@ html(lang="es")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     meta(http-equiv="X-UA-Compatible" content="ie=edge")
     title Logon
-    link(type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection")
-    link(rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons")
+    //link(type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection")
+    // link(rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons")
     link(rel="stylesheet" href="css/font-awesome.min.css")
     link(type="text/css" rel="stylesheet" href="css/style.css" media="screen,projection")
     link(rel="shortcut icon" href="/favicon.ico")
@@ -24,27 +24,19 @@ html(lang="es")
     .row.nav-unify
     .row
       br
-    .row.logon-container
-      .card-panel
-        h4.header2 User logon
-        br
-        .row
-          form#formLogon.col.s12.m6.l8
-            .row
-              .input-field.col.s12
-                input#username(type="text",autocomplete="off")
-                label(for="username") Name
-            .row
-              .input-field.col.s12
-                input#password(type="password",autocomplete="off").toggle-password
-                label#passwdLabel(for="password") Password
-                span#password-field.fa.fa-fw.fa-eye.field-icon.toggle-password
-            .row
-              br
-              .input-field.col.s6.m6
-              .input-field.col.s12.m12
-                button#login-button.waves-effect.waves-teal.btn-flat.btn2-unify.right(type="submit" name="action")
-                  | Logon
+    form
+      .group
+        input#username(type="text",autocomplete="off")
+        span.highlight
+        span.bar
+        label Name
+      .group
+        input#password(type="password",autocomplete="off")
+        span.highlight
+        span.bar
+        label Email
+      button#login-button(type="submit").btn-flat.btn2-unify.waves-effect.waves-teal
+        | Login
     .footer-unify
       .container
         .col.m6.left
@@ -60,5 +52,8 @@ html(lang="es")
           .circle
         .circle-clipper.right
           .circle      
-    script(type="text/javascript" src="js/materialize.min.js")
+    script(type="text/javascript" src="js/modules/unify.js")
+    script(type="text/javascript" src="js/modules/cash.js")
+    script(type="text/javascript" src="js/modules/toast.js")
+    script(type="text/javascript" src="js/modules/waves.js")
     script(type="text/javascript" src="js/logon.js")

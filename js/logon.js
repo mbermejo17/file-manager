@@ -6,14 +6,7 @@ import md5 from './vendor/md5.min';
 import Cookies from './vendor/js-cookie';
 
 ((c, d) => {
-  console.log(navigator.userAgent.indexOf("MSIE"));
-  console.log(navigator.userAgent.indexOf("Edge"));
-  if(navigator.userAgent.indexOf("MSIE")!=-1 || navigator.userAgent.indexOf("Edge") !=-1 || navigator.userAgent.indexOf("rv:11")!=-1) {
-    document.body.removeChild(document.getElementById("password-field")); 
-  } else {
-    document.getElementById("password-field").style.display ="none"; 
-  }
-
+ 
   let waiting = d.querySelector('#waiting')
   const READY_STATE_COMPLETE = 4
   const OK = 200
@@ -96,7 +89,8 @@ import Cookies from './vendor/js-cookie';
         let dataJSON = JSON.parse(data)
         console.log('status', dataJSON.status)
         if (status === 'FAIL') {
-          M.toast({
+            M.toast()
+          Toast.Toast({
             html: dataJSON.message
           })
           document.querySelector('#message').innerHTML = dataJSON.message
@@ -108,7 +102,7 @@ import Cookies from './vendor/js-cookie';
         console.log(xhr, status)
       },
       error: (xhr, err) => {
-        M.toast({
+        Toast({
           html: 'Wrong user name or password'
         })
         if (err === 'timeout') {
@@ -123,41 +117,16 @@ import Cookies from './vendor/js-cookie';
   loader.style.display = 'none'
   loginbutton.addEventListener('click', submit)
   
-  d.getElementById("password-field").addEventListener('mouseout',(e)=>{
-    d.querySelector("#password").setAttribute("type","password")
-  })
-
-  d.getElementById('passwdLabel').addEventListener('change',(e)=>{
-    if (e.target.htmlFor == '' && hasClass(e.target,'active')) {
-      if (d.getElementById("password-field")) {
-        d.getElementById("password-field").style.display='block';
-      }
-    } 
-  });
-
-  d.getElementById("password-field").addEventListener('click',(e)=> {
-    c('password-field click',e)
-  
-    let cName = d.getElementById("password-field").className;
-    if(cName.indexOf("fa-eye") > -1) {
-      e.target.classList.add("fa-eye")
-    } else {
-      e.target.classList.remove("fa-eye")
-    }
-    if(cName.indexOf("fa-eye-slash") >-1) {
-      e.target.classList.add("fa-eye-slash")
-    }else {
-      e.target.classList.remove("fa-eye-sl")
-    }
    
-    var input =  d.querySelector("#password");
-    console.log(input)
-    if (input.getAttribute("type") == "password") {
-      input.setAttribute("type","text")
-    } else {
-      input.setAttribute("type","password")
-    }
-  });
   document.querySelector('#bar-preloader').style.display='none';
-  
+
+  [].forEach.call(document.querySelectorAll('input'), function(el) {
+       el.addEventListener('blur',function(e) {
+        if (e.target.value)
+          $u('#' +e.target.id).addClass('used');
+        else
+          $u('#' +e.target.id).removeClass('used');
+      });
+    });
+
 })(console.log, document)

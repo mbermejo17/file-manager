@@ -546,14 +546,14 @@ window.appData = {
         });
 
         $u('.check').on('click', (e) => {
+            console.log('check: ',e);
             selectDeselect(e);
-            if (userData.RunMode === "DEBUG") console.log(e.target.checked);
-            if (userData.RunMode === "DEBUG")
-                console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
-            if (userData.RunMode === "DEBUG")
-                console.log(e.target.parentNode.parentNode.rowIndex);
-            if (userData.RunMode === "DEBUG")
-                console.log(e.target.parentNode.children[1].htmlFor);
+            if (userData.RunMode === "DEBUG") { 
+              console.log('checked: ',e.target.checked);
+              console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
+              console.log(e.target.parentNode.parentNode.parentNode.rowIndex);
+              console.log(e.target.parentNode.children[1].htmlFor);
+            }    
         });
 
 
@@ -563,7 +563,7 @@ window.appData = {
         });
     };
 
-    const selectDeselect = e => {
+    const selectDeselect = (e) => {
         const isChecked = e.target.checked;
         const contentType = e.target.className.split(/\s+/).indexOf("checkFile");
         const name = e.target.parentNode.children[1].htmlFor;
@@ -778,6 +778,7 @@ window.appData = {
             $u("#lean-overlay").hide();
         });
     };
+    //let refreshBarMenu = () =>{};
 
     let refreshBarMenu = () => {
         if (AllowNewFolder === "1") {
@@ -814,17 +815,13 @@ window.appData = {
                 .addClass("disabled");
         }
         if (userData.UserRole.toUpperCase() == "ADMIN") {
-            $u("#settings").show();
+            $u("#settings").removeClass('hide');
         } else {
-            $u("#settings").hide();
+            $u("#settings").addClass('hide');
         }
-        $u("#modaltrigger").html(userData.UserName);
-        /* $("#modaltrigger").leanModal({
-          top: 110,
-          overlay: 0.45,
-          closeButton: ".hidemodal"
-        }); */
-    };
+        $u("#usertrigger").html(userData.UserName);
+    }; 
+    
 
     $("#selectAllFiles").on("click", e => {
         selectAll(e.target.htmlFor);
@@ -855,24 +852,29 @@ window.appData = {
 
 
     $u('#userAdd').on('click', (e) => {
+        e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) showAddUserForm("New User", null);
     });
 
     $u('#userMod').on('click', (e) => {
+        e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) editUser();
     });
 
     $u('#settings').on('click', (e) => {});
 
     $u('#usertrigger').on('click', (e) => {
+      e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) userTrigger()
     });
 
     $u('#refresh').on('click', (e) => {
+      e.preventDefault();
         refreshPath(appData.currentPath);
     });
 
     $u('#share').on('click', (e) => {
+      e.preventDefault();
         if (appData.aSelectedFiles.length > 0) {
             if (appData.aSelectedFiles.length > 1) {
                 showToast("No pueden seleccionarse más de un archivo", "err");
@@ -884,6 +886,7 @@ window.appData = {
     });
 
     $u('#userLogout').on('click', (e) => {
+      e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             $u("#Usersdropdown").hide();
             $u("#logoutmodal").show();
@@ -894,6 +897,7 @@ window.appData = {
     });
 
     $u('#ModalUserLogout').on('click', (e) => {
+      e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             $u("#logoutmodal").hide();
             logout();
@@ -903,6 +907,7 @@ window.appData = {
     });
 
     $u('#userChangePassword').on('click', (e) => {
+      e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             $u("#Usersdropdown").hide();
             showChangeUserPassword(32, 440, "Change User Password");
@@ -912,6 +917,7 @@ window.appData = {
     });
 
     $u('#userProfile').on('click', (e) => {
+      e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             $u("#Usersdropdown").hide();
             showUserProfile(40, 440, "User Profile");
@@ -921,6 +927,7 @@ window.appData = {
     });
 
     $u('#cancel').on('click', (e) => {
+      e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             $u("#logoutmodal").hide();
         } else {
@@ -928,7 +935,9 @@ window.appData = {
         }
     });
 
+  
     $u('#home').on('click', (e) => {
+      e.preventDefault();
         console.log(e);
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             appData.currentPath = appData.rootPath;
@@ -939,6 +948,7 @@ window.appData = {
     });
 
     $u('#newFolder').on('click', (e) => {
+      e.preventDefault();
         console.log(e);
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             showNewFolder(32, 440, "New Folder");
@@ -948,6 +958,7 @@ window.appData = {
     });
 
     $u('#delete').on('click', (e) => {
+      e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             if (appData.aSelectedFolders.length > 0 || appData.aSelectedFiles.length > 0) {
                 deleteSelected();
@@ -958,6 +969,7 @@ window.appData = {
     });
 
     $u('#upload').on('click', (e) => {
+      e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             upload(userData.Token);
         } else {
@@ -966,6 +978,7 @@ window.appData = {
     });
 
     $u('#download').on('click', (e) => {
+      e.preventDefault();
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             if (appData.aSelectedFiles.length > 0) {
                 if (appData.aSelectedFiles.length > 5) {
@@ -986,6 +999,7 @@ window.appData = {
     $u("#usertrigger").attr("title", "Empresa: " + userData.CompanyName);
 
     $u("#settings").on("click", e => {
+      e.preventDefault();
         if (userData.RunMode === "DEBUG")
             console.log("setting left:", $u(e.target).position().left);
         if (userData.RunMode === "DEBUG")
@@ -1023,6 +1037,7 @@ window.appData = {
         $u("#Settingdropdown").hide();
         $u("#settings").removeClass("selected");
     });
+
     document.querySelector("#bar-preloader").style.Display = "none";
     refreshPath(appData.currentPath);
     refreshBarMenu();

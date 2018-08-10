@@ -55,7 +55,6 @@ function $u(selector) {
         if (selector.indexOf('.') == 0 || selector.indexOf('.')) {
         [].forEach.call(document.querySelectorAll(selector), function(el) {
                 el.addEventListener(type, function(e) {
-                    e.preventDefault();
                     callback(e);
                 });
             });
@@ -66,14 +65,7 @@ function $u(selector) {
     self.hasClass = function(className) {
        console.log(selector);
        if(selector.indexOf('#') === 0) { 
-        //return self.element.className.match(/\bclassName\b/);
-        if (self.element.classList)
-            return self.element.classList.contains(className);
-        else
-            return new RegExp('(^| )' + className + '( |$)', 'gi').test(self.element.className);
-        //return new RegExp('(\\s|^)' + className + '(\\s|$)').test(target.className);
-       } else {
-
+            return self.element.classList ? self.element.classList.contains(className) : new RegExp('\\b'+ className+'\\b').test(self.element.className);
        }
     };
 
@@ -84,10 +76,14 @@ function $u(selector) {
         else
             self.element.className += ' ' + className;
       } else {
-
+        [].forEach.call(document.querySelectorAll(selector), function(el) {
+            if (el.classList)
+                el.classList.add(className);
+            else
+                el.className += ' ' + className;
+            });
       }      
-        return self;
-
+    return self;
     };
 
     self.removeClass = function(className) {
@@ -97,6 +93,12 @@ function $u(selector) {
         else
             self.element.className = self.element.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
       } else {
+        [].forEach.call(document.querySelectorAll(selector), function(el) {
+            if (el.element.classList)
+            el.classList.remove(className);
+        else
+            el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+            });
 
       }
             return self;
@@ -108,6 +110,7 @@ function $u(selector) {
     };
 
     self.show = function() {
+
         self.element.style.display = 'block';
         return self;
     };
