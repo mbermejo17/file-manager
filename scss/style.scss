@@ -1,4 +1,5 @@
-@import './components/waves';
+@import './components_1/waves';
+@import './componentes/toast';
 
 $color_1: white;
 $color_2: #95C857;
@@ -226,6 +227,24 @@ body {
   display: block;
 }
 
+.logon-icon {
+    margin:0 auto;
+    text-align: center;
+    padding-bottom: 25px;
+}
+.logon-icon i {
+    font-size: 1.9em;
+    padding: 5px;
+}
+
+.center-left {
+    text-align: left;
+}
+
+.center-right {
+    text-align:right;
+}
+
 @keyframes linear_loader {
     0% {
     	right: 100%; 
@@ -265,7 +284,7 @@ h3 { color: #4a89dc; }
 form {
 	width: 380px;
 	margin: 4em auto;
-	padding: 3em 2em 2em 2em;
+	padding: 2.8em 2em 1em 2em;
 	background: #fafafa;
 	border: 1px solid #ebebeb;
 	box-shadow: rgba(0,0,0,0.14902) 0px 1px 1px 0px,rgba(0,0,0,0.09804) 0px 1px 2px 0px;
@@ -277,7 +296,7 @@ form {
 }
 
 input {
-	font-size: 18px;
+	font-size: .9em;
 	padding: 10px 10px 10px 5px;
 	-webkit-appearance: none;
 	display: block;
@@ -328,7 +347,7 @@ input:focus ~ label, input.used ~ label {
 	content: '';
 	height: 2px; 
 	width: 0;
-	bottom: 1px; 
+	/*bottom: 1px; */
 	position: absolute;
 	background: #4a89dc; 
 	transition: all 0.2s ease;

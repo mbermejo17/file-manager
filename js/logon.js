@@ -62,6 +62,14 @@ import Cookies from './vendor/js-cookie';
     window.location.href = '/dashboard';
   };
 
+  function showToast(title,msg,type,icon=true){
+    toast.create({
+       title: title,
+       text: msg,
+       type: type,
+       icon: icon
+    });
+  };
 
   function submit(e) {
     e.preventDefault()
@@ -89,10 +97,7 @@ import Cookies from './vendor/js-cookie';
         let dataJSON = JSON.parse(data)
         console.log('status', dataJSON.status)
         if (status === 'FAIL') {
-            M.toast()
-          Toast.Toast({
-            html: dataJSON.message
-          })
+            showToast('Error',dataJSON.message,'error','fas fa-exclamation-triangle');
           document.querySelector('#message').innerHTML = dataJSON.message
         } else {
           showDashboard(dataJSON.data)
@@ -102,9 +107,7 @@ import Cookies from './vendor/js-cookie';
         console.log(xhr, status)
       },
       error: (xhr, err) => {
-        Toast({
-          html: 'Wrong user name or password'
-        })
+        showToast('Error','Wrong user name or password','error');
         if (err === 'timeout') {
           console.log('Timeout Error')
         } else {

@@ -7,7 +7,7 @@ html(lang="es")
     title Logon
     //link(type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection")
     // link(rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons")
-    link(rel="stylesheet" href="css/font-awesome.min.css")
+    link(rel="stylesheet" href="css/fontawesome.all.min.css")
     link(type="text/css" rel="stylesheet" href="css/style.css" media="screen,projection")
     link(rel="shortcut icon" href="/favicon.ico")
     link(rel="shortcut icon" href="/favicon_64.png")
@@ -23,20 +23,22 @@ html(lang="es")
         .col.m3.status.right
     .row.nav-unify
     .row
-      br
     form
+      .logon-icon
+        i.far.fa-user-circle  
       .group
         input#username(type="text",autocomplete="off")
         span.highlight
         span.bar
-        label Name
+        label User Name
       .group
         input#password(type="password",autocomplete="off")
         span.highlight
         span.bar
-        label Email
-      button#login-button(type="submit").btn-flat.btn2-unify.waves-effect.waves-teal
-        | Login
+        label Password
+      .group.center-right  
+        button#login-button(type="submit").btn-flat.btn2-unify.waves-effect.waves-teal
+          | Login
     .footer-unify
       .container
         .col.m6.left

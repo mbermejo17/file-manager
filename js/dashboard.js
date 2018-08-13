@@ -136,36 +136,14 @@ window.appData = {
         return json;
     }
 
-    window.showToast = (msg, type) => {
-        let newTopToast = 0;
-        let newCurrentTopToast = 0;
-        if (topToast == 0) {
-            newTopToast = topToast;
-            newCurrentTopToast = currentTopToast;
-        } else {
-            newTopToast = topToast + 5;
-            newCurrentTopToast = currentTopToast + 35;
-            topToast = newTopToast;
-            currentTopToast = newCurrentTopToast;
-        }
-
-        let x = document.getElementById("snackbar");
-        x.innerHTML = msg;
-        x.className = "show";
-        x.classList.remove(type);
-        x.classList.add(type);
-        x.style.setProperty("--snackbarTop", newTopToast + "px");
-        x.style.setProperty("--snackbarCurrentTop", newCurrentTopToast + "px");
-        setTimeout(function() {
-            x.className = x.className.replace("show", "");
-            if (topToast !== 0 && topToast > 5) {
-                topToast = topToast - 5;
-            }
-            if (currentTopToast !== 30 && currentTopToast > 35) {
-                currentTopToast = currentTopToast - 35;
-            }
-        }, 3000);
-    };
+    window.showToast = function(title,msg,type,icon=true){
+        toast.create({
+           title: title,
+           text: msg,
+           type: type,
+           icon: icon
+        });
+      };
 
     /////////////////////////////////
     //  End Tools
@@ -745,10 +723,10 @@ window.appData = {
                     } = JSON.parse(data);
                     if (userData.RunMode === "DEBUG") console.log("status", status);
                     if (status === "FAIL") {
-                        showToast(message, "err");
+                        showToast('Error',message, "err");
                         d.querySelector("#message").innerHTML = message;
                     } else {
-                        showToast(message, "success");
+                        showToast('',message, "success");
                         if (userData.RunMode === "DEBUG") console.log(message);
                     }
                     $u("#modal").hide();
@@ -760,7 +738,7 @@ window.appData = {
                     $u("#lean-overlay").hide();
                 },
                 error: (xhr, err) => {
-                    showToast("Wrong password", "err");
+                    showToast('Error',"Wrong password", "err");
                     if (err === "timeout") {
                         if (userData.RunMode === "DEBUG") console.log("Timeout Error");
                     } else {
@@ -823,7 +801,7 @@ window.appData = {
     }; 
     
 
-    $("#selectAllFiles").on("click", e => {
+    $u("#selectAllFiles").on("click", e => {
         selectAll(e.target.htmlFor);
     });
 
@@ -877,11 +855,11 @@ window.appData = {
       e.preventDefault();
         if (appData.aSelectedFiles.length > 0) {
             if (appData.aSelectedFiles.length > 1) {
-                showToast("No pueden seleccionarse más de un archivo", "err");
+                showToast('Info',"No pueden seleccionarse más de un archivo", "warning");
             }
             shareFile();
         } else {
-            showToast("No se han seleccionado archivo para compartir", "err");
+            showToast('Info',"No se han seleccionado archivo para compartir", "warning");
         }
     });
 
@@ -892,7 +870,7 @@ window.appData = {
             $u("#logoutmodal").show();
             addClass(document.querySelector('#logoutmodal'), 'modal-logout');
         } else {
-            showToast("Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "err");
         }
     });
 
@@ -902,7 +880,7 @@ window.appData = {
             $u("#logoutmodal").hide();
             logout();
         } else {
-            showToast("Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "err");
         }
     });
 
@@ -912,7 +890,7 @@ window.appData = {
             $u("#Usersdropdown").hide();
             showChangeUserPassword(32, 440, "Change User Password");
         } else {
-            showToast("Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "err");
         }
     });
 
@@ -922,7 +900,7 @@ window.appData = {
             $u("#Usersdropdown").hide();
             showUserProfile(40, 440, "User Profile");
         } else {
-            showToast("Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "err");
         }
     });
 
@@ -931,7 +909,7 @@ window.appData = {
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             $u("#logoutmodal").hide();
         } else {
-            showToast("Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "err");
         }
     });
 
@@ -943,7 +921,7 @@ window.appData = {
             appData.currentPath = appData.rootPath;
             refreshPath(appData.currentPath);
         } else {
-            showToast("Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "err");
         }
     });
 
@@ -953,7 +931,7 @@ window.appData = {
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             showNewFolder(32, 440, "New Folder");
         } else {
-            showToast("Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "err");
         }
     });
 
@@ -963,7 +941,7 @@ window.appData = {
             if (appData.aSelectedFolders.length > 0 || appData.aSelectedFiles.length > 0) {
                 deleteSelected();
             } else {
-                showToast("No se han seleccionado archivos o carpetas", "err");
+                showToast('Error',"No se han seleccionado archivos o carpetas", "err");
             }
         }
     });
@@ -973,7 +951,7 @@ window.appData = {
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             upload(userData.Token);
         } else {
-            showToast("Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "err");
         }
     });
 
@@ -982,14 +960,14 @@ window.appData = {
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             if (appData.aSelectedFiles.length > 0) {
                 if (appData.aSelectedFiles.length > 5) {
-                    showToast("No se pueden descargar más de 5 archivos a la vez", "err");
+                    showToast('Error',"No se pueden descargar más de 5 archivos a la vez", "err");
                 }
                 download(appData.aSelectedFiles, "File");
             } else {
-                showToast("No se han seleccionado archivos para descargar", "err");
+                showToast('Error',"No se han seleccionado archivos para descargar", "err");
             }
         } else {
-            showToast("Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "err");
         }
     });
 
@@ -998,10 +976,11 @@ window.appData = {
 
     $u("#usertrigger").attr("title", "Empresa: " + userData.CompanyName);
 
-    $u("#settings").on("click", e => {
+    $u("#settings").on("click", (e) => {
       e.preventDefault();
         if (userData.RunMode === "DEBUG")
-            console.log("setting left:", $u(e.target).position().left);
+            console.log(e);
+            console.log("setting left:", $u(e.target.id).position().left);
         if (userData.RunMode === "DEBUG")
             console.log("settingdropdown left:", $u("#Settingdropdown").css("left"));
         if (userData.RunMode === "DEBUG")

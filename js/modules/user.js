@@ -227,7 +227,7 @@ import axios from 'axios';
       })
       .catch(e => {
         showToast("Error al grabar los cambios.<br>Err:" + e, "err");
-        if (appData.RunMode === "DEBUG") console.log(e);
+        if (userData.RunMode === "DEBUG") console.log(e);
       });
   }
 

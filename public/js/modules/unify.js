@@ -8,6 +8,11 @@ function $u(selector) {
         self.element.setAttribute(name, value);
         return self;
     };
+
+    self.data = function(id) {
+        return JSON.parse(self.element.dataset[id]);
+    }
+
     self.html = function(htmlContent) {
         if (htmlContent) { 
             self.element.innerHTML = htmlContent;
@@ -40,10 +45,22 @@ function $u(selector) {
         return self.element.offsetWidth;
     };
 
+    self.position = function(){
+        return {
+        top: self.top + window.pageYOffset,
+        left: self.left + window.pageXOffset
+        } 
+    }
+
     self.parent = function() {
         self.element = self.element.parentNode;
         return self;
     };
+
+    self.append = function(htmlText) {
+        let node = document.createRange().createContextualFragment(htmlText);
+        self.element.appendChild(node);
+    }
 
     self.children = function(key) {
         if (!key) key = 0;
@@ -52,13 +69,11 @@ function $u(selector) {
     };
 
     self.on = function(type, callback) {
-        if (selector.indexOf('.') == 0 || selector.indexOf('.')) {
         [].forEach.call(document.querySelectorAll(selector), function(el) {
                 el.addEventListener(type, function(e) {
                     callback(e);
                 });
             });
-        }
         return self;
     };
 
@@ -68,6 +83,10 @@ function $u(selector) {
             return self.element.classList ? self.element.classList.contains(className) : new RegExp('\\b'+ className+'\\b').test(self.element.className);
        }
     };
+
+    self.toggleClass = function(klassName){
+        self.element.classList.toggle(klassName);
+    }
 
     self.addClass = function(className) {
       if(selector.indexOf('#') == 0) { 

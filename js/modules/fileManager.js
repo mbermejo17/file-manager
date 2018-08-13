@@ -196,9 +196,9 @@ export function shareFile() {
             }
           })
           .catch(e => {
-            showToast(
+            showToast('Error',
               "Error al compartir archivo " + data.fileName + ".<br>Err:" + e,
-              "err"
+              "error"
             );
             if (userData.RunMode === "DEBUG") console.log(e);
           });
@@ -323,9 +323,9 @@ export function upload(Token) {
         //  function(evt) {
             console.log(fileName + " File size: ", evt.total);
             if (evt.total > 700000000) {
-              showToast(
+              showToast('Error',
                 fileName + " excede del tamaño soportado (700MB)",
-                "err"
+                "error"
               );
               aListHandler[nFile]();
               let percentLabel = document.querySelector("#percent" + nFile);
@@ -359,7 +359,7 @@ export function upload(Token) {
           console.log(data.data + "upload successful!\n" + data);
         console.log("handlerCounter1: ", handlerCounter);
         if (data.status == "OK") {
-          showToast(fileName + " uploaded sucessfully", "success");
+          showToast('Upload',fileName + " uploaded sucessfully", "success");
           $("#abort" + nFile).hide();
           $("#refresh").trigger("click");
           handlerCounter = handlerCounter - 1;
@@ -371,7 +371,7 @@ export function upload(Token) {
           }
         } else {
           if (data.status == "FAIL") {
-            showToast("Error: " + data.message, "err");
+            showToast('Error',"Error: " + data.message, "error");
             $("#abort" + nFile).hide();
             handlerCounter = handlerCounter - 1;
             if (handlerCounter == 0) {
@@ -453,7 +453,7 @@ export function upload(Token) {
       }
       $("#btnCloseUpload").removeClass("disabled");
     } else {
-      showToast("No se pueden subir más de 5 archivos a la vez", "err");
+      showToast('Error',"No se pueden subir más de 5 archivos a la vez", "error");
     }
   });
 }
@@ -478,23 +478,23 @@ export function newFolder(folderName) {
         $u("#modal").hide();
         $u("#lean-overlay").hide();
         $u('#refresh').trigger('click');
-        showToast("Creada nueva carpeta " + data.data.folderName, "success");
+        showToast('New Folder',"Creada nueva carpeta " + data.data.folderName, "success");
       } else {
-        showToast(
+        showToast('Error',
           "Error al crear la carpeta " +
             folderName +
             " <br>Error: " +
             data.message,
-          "err"
+          "error"
         );
       }
     })
     .catch(err => {
-      showToast(
+      showToast('Error',
         "Error al crear la carpeta " +
           folderName +
           " <br>Error: error no identificado",
-        "err"
+        "error"
       );
       if (userData.RunMode === "DEBUG") console.log(err);
     });
@@ -526,19 +526,13 @@ export function deleteFile(path) {
         if (userData.RunMode === "DEBUG") console.log(data);
         if (data.status == "OK") {
           appData.aSelectedFiles.shift();
-          $(".toast")
-            .removeClass("success")
-            .addClass("success");
-          showToast("Archivo " + data.data.fileName + " borrado", "success");
+          showToast('Delete file',"Archivo " + data.data.fileName + " borrado", "success");
           $("#refresh").trigger("click");
         }
       })
       .catch(err => {
         if (userData.RunMode === "DEBUG") console.log(err);
-        $(".toast")
-          .removeClass("err")
-          .addClass("err");
-        showToast(err, "err");
+        showToast('Error',err, "error");
       });
   }
   $("#waiting").removeClass("active");
@@ -569,10 +563,7 @@ export function deleteFolder(path) {
       .then(data => {
         if (userData.RunMode === "DEBUG") console.log(data);
         if (data.status == "OK") {
-          $(".toast")
-            .removeClass("success")
-            .addClass("success");
-          showToast("Carpeta " + data.data.fileName + " borrada", "success");
+          showToast('Delete Folder',"Carpeta " + data.data.fileName + " borrada", "success");
           appData.aSelectedFolders.shift();
           $("#waiting").removeClass("active");
         }
