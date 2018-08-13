@@ -91,9 +91,9 @@
       // autohide
       if (options.timeout) {
         setTimeout(toast.hide, options.timeout);
-      }  else {
+      }   else {
         setTimeout(toast.hide, 3000);
-      }
+      } 
 
       if (options.type) {
         toast.className += ' toast-' + options.type;

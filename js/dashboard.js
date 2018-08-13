@@ -1,3 +1,7 @@
+/* jshint laxbreak: true */
+/* experimental: [asyncawait, asyncreqawait] */
+
+
 "use sctrict";
 import "babel-polyfill";
 
@@ -490,11 +494,13 @@ window.appData = {
                     date: val.date
                 });
             } else {
+              if(!val.name.startsWith('upload_')){
                 aFiles.push({
                     name: val.name,
                     size: val.size,
                     date: val.date
                 });
+              }
             }
         });
         aFolders.sort((a, b) => {
@@ -723,7 +729,7 @@ window.appData = {
                     } = JSON.parse(data);
                     if (userData.RunMode === "DEBUG") console.log("status", status);
                     if (status === "FAIL") {
-                        showToast('Error',message, "err");
+                        showToast('Error',message, "error");
                         d.querySelector("#message").innerHTML = message;
                     } else {
                         showToast('',message, "success");
@@ -738,7 +744,7 @@ window.appData = {
                     $u("#lean-overlay").hide();
                 },
                 error: (xhr, err) => {
-                    showToast('Error',"Wrong password", "err");
+                    showToast('Error',"Wrong password", "error");
                     if (err === "timeout") {
                         if (userData.RunMode === "DEBUG") console.log("Timeout Error");
                     } else {
@@ -843,7 +849,7 @@ window.appData = {
 
     $u('#usertrigger').on('click', (e) => {
       e.preventDefault();
-        if (!$u('#' + e.target.id).hasClass("disabled")) userTrigger()
+        if (!$u('#' + e.target.id).hasClass("disabled")) userTrigger();
     });
 
     $u('#refresh').on('click', (e) => {
@@ -870,7 +876,7 @@ window.appData = {
             $u("#logoutmodal").show();
             addClass(document.querySelector('#logoutmodal'), 'modal-logout');
         } else {
-            showToast('Error',"Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "error");
         }
     });
 
@@ -880,7 +886,7 @@ window.appData = {
             $u("#logoutmodal").hide();
             logout();
         } else {
-            showToast('Error',"Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "error");
         }
     });
 
@@ -890,7 +896,7 @@ window.appData = {
             $u("#Usersdropdown").hide();
             showChangeUserPassword(32, 440, "Change User Password");
         } else {
-            showToast('Error',"Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "error");
         }
     });
 
@@ -900,7 +906,7 @@ window.appData = {
             $u("#Usersdropdown").hide();
             showUserProfile(40, 440, "User Profile");
         } else {
-            showToast('Error',"Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "error");
         }
     });
 
@@ -909,7 +915,7 @@ window.appData = {
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             $u("#logoutmodal").hide();
         } else {
-            showToast('Error',"Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "error");
         }
     });
 
@@ -921,7 +927,7 @@ window.appData = {
             appData.currentPath = appData.rootPath;
             refreshPath(appData.currentPath);
         } else {
-            showToast('Error',"Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "error");
         }
     });
 
@@ -931,7 +937,7 @@ window.appData = {
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             showNewFolder(32, 440, "New Folder");
         } else {
-            showToast('Error',"Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "error");
         }
     });
 
@@ -941,7 +947,7 @@ window.appData = {
             if (appData.aSelectedFolders.length > 0 || appData.aSelectedFiles.length > 0) {
                 deleteSelected();
             } else {
-                showToast('Error',"No se han seleccionado archivos o carpetas", "err");
+                showToast('Error',"No se han seleccionado archivos o carpetas", "error");
             }
         }
     });
@@ -951,7 +957,7 @@ window.appData = {
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             upload(userData.Token);
         } else {
-            showToast('Error',"Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "error");
         }
     });
 
@@ -960,14 +966,14 @@ window.appData = {
         if (!$u('#' + e.target.id).hasClass("disabled")) {
             if (appData.aSelectedFiles.length > 0) {
                 if (appData.aSelectedFiles.length > 5) {
-                    showToast('Error',"No se pueden descargar más de 5 archivos a la vez", "err");
+                    showToast('Error',"No se pueden descargar más de 5 archivos a la vez", "error");
                 }
                 download(appData.aSelectedFiles, "File");
             } else {
-                showToast('Error',"No se han seleccionado archivos para descargar", "err");
+                showToast('Error',"No se han seleccionado archivos para descargar", "error");
             }
         } else {
-            showToast('Error',"Opcion no permitida", "err");
+            showToast('Error',"Opcion no permitida", "error");
         }
     });
 

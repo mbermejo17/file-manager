@@ -1,3 +1,5 @@
+
+/* jshint laxbreak: true */
 import moment from "moment";
 import axios from "axios";
 import { getRealPath, serializeObject } from "./general";
@@ -353,15 +355,15 @@ export function upload(Token) {
         return aListHandler[nFile];
       }
       })
-      .then(d => {
-        let data = JSON.parse(d);
+      .then(data => {
+        //let data = JSON.parse(d);
         if (userData.RunMode === "DEBUG")
-          console.log(data.data + "upload successful!\n" + data);
+          console.log("Upload successful!\n",data);
         console.log("handlerCounter1: ", handlerCounter);
-        if (data.status == "OK") {
+        if (data.data.status == "OK") {
           showToast('Upload',fileName + " uploaded sucessfully", "success");
-          $("#abort" + nFile).hide();
-          $("#refresh").trigger("click");
+          $u("#abort" + nFile).hide();
+          $u("#refresh").trigger("click");
           handlerCounter = handlerCounter - 1;
           console.log("handlerCounter2: ", handlerCounter);
           if (handlerCounter == 0) {
@@ -370,8 +372,8 @@ export function upload(Token) {
               .addClass("disabled");
           }
         } else {
-          if (data.status == "FAIL") {
-            showToast('Error',"Error: " + data.message, "error");
+          if (data.data.status == "FAIL") {
+            showToast('Error',"Error: " + data.data.message, "error");
             $("#abort" + nFile).hide();
             handlerCounter = handlerCounter - 1;
             if (handlerCounter == 0) {
@@ -382,7 +384,9 @@ export function upload(Token) {
           }
         }
       })
-      .catch(e => {});
+      .catch(e => {
+        console.log('Upload Error:',e);
+      });
   }
 
   $("#modal")
@@ -434,9 +438,10 @@ export function upload(Token) {
   $("#upload-input").on("change", function(e) {
     let files = $("#upload-input").get(0).files;
     handlerCounter = files.length;
-    files.length > 0
-      ? $("#sFiles").html(files.length + " archivos seleccionados.")
-      : $("#sFiles").html(files[0]);
+    let htmlText = (files.length > 0)
+      ? files.length + " archivos seleccionados."
+      : files[0];
+      $("#sFiles").html(htmlText);  
     if (userData.RunMode === "DEBUG") console.log(files.length);
     $(".file-input").hide();
     if (files.length > 0 && files.length <= 5) {
@@ -521,13 +526,13 @@ export function deleteFile(path) {
       timeout: 720000
     })
       .then(FetchHandleErrors)
-      .then(r => r.json())
-      .then(data => {
-        if (userData.RunMode === "DEBUG") console.log(data);
-        if (data.status == "OK") {
+      .then((r) => r.json())
+      .then((d) => {
+        if (userData.RunMode === "DEBUG") console.log(d);
+        if (d.status == "OK") {
           appData.aSelectedFiles.shift();
-          showToast('Delete file',"Archivo " + data.data.fileName + " borrado", "success");
-          $("#refresh").trigger("click");
+          showToast('Delete file',"Archivo " + d.data.fileName + " borrado", "success");
+          $u("#refresh").trigger("click");
         }
       })
       .catch(err => {
@@ -722,6 +727,7 @@ export function download(fileList, text) {
           .addClass("disabled");
         $("#refresh").trigger("click");
       }
+      showToast('Download File','Archivo '+ fName +' descargado','success');
       if (userData.RunMode === "DEBUG")
         console.log("File " + handlerCount + " downloaded");
     };

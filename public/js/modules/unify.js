@@ -11,7 +11,7 @@ function $u(selector) {
 
     self.data = function(id) {
         return JSON.parse(self.element.dataset[id]);
-    }
+    };
 
     self.html = function(htmlContent) {
         if (htmlContent) { 
@@ -49,8 +49,8 @@ function $u(selector) {
         return {
         top: self.top + window.pageYOffset,
         left: self.left + window.pageXOffset
-        } 
-    }
+        }; 
+    };
 
     self.parent = function() {
         self.element = self.element.parentNode;
@@ -60,7 +60,7 @@ function $u(selector) {
     self.append = function(htmlText) {
         let node = document.createRange().createContextualFragment(htmlText);
         self.element.appendChild(node);
-    }
+    };
 
     self.children = function(key) {
         if (!key) key = 0;
@@ -86,7 +86,7 @@ function $u(selector) {
 
     self.toggleClass = function(klassName){
         self.element.classList.toggle(klassName);
-    }
+    };
 
     self.addClass = function(className) {
       if(selector.indexOf('#') == 0) { 
