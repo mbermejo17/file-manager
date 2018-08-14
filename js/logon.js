@@ -7,33 +7,33 @@ import Cookies from './vendor/js-cookie';
 
 ((c, d) => {
 
-  const READY_STATE_COMPLETE = 4
-  const OK = 200
-  const NOT_FOUND = 404
-  const main = d.querySelector('#main')
-  const loginbutton = d.querySelector('#login-button')
+  const READY_STATE_COMPLETE = 4;
+  const OK = 200;
+  const NOT_FOUND = 404;
+  const main = d.querySelector('#main');
+  const loginbutton = d.querySelector('#login-button');
 
   const hasClass = (el, className) => {
     if (el.classList)
-      return el.classList.contains(className)
+      return el.classList.contains(className);
     else
-      return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))
-  }
+      return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+  };
 
   const addClass = (el, className) => {
     if (el.classList)
-      el.classList.add(className)
-    else if (!hasClass(el, className)) el.className += " " + className
-  }
+      el.classList.add(className);
+    else if (!hasClass(el, className)) el.className += " " + className;
+  };
 
   const removeClass = (el, className) => {
     if (el.classList)
-      el.classList.remove(className)
+      el.classList.remove(className);
     else if (hasClass(el, className)) {
-      var reg = new RegExp('(\\s|^)' + className + '(\\s|$)')
-      el.className = el.className.replace(reg, ' ')
+      var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+      el.className = el.className.replace(reg, ' ');
     }
-  }
+  };
 
   let logout = function () {
     Cookies.remove('UserName');
@@ -67,17 +67,22 @@ import Cookies from './vendor/js-cookie';
        type: type,
        icon: icon
     });
-  };
+  }
 
   function submit(e) {
-    e.preventDefault()
-    let username = d.querySelector('#username').value
-    let password = d.querySelector('#password').value
-    let form = d.querySelector('#formLogon')
+    e.preventDefault();
+    let username = d.querySelector('#username').value;
+    let password = d.querySelector('#password').value;
+    let form = d.querySelector('#formLogon');
+    if(username.trim() == '' || password.trim() == '') {
+      showToast('Error','Username or Password not provided','error');
+      return false;
+    }
+
     //d.querySelector('#password').value = Base64.encode(md5(password)
-    console.log(password)
-    console.log(md5(password))
-    console.log(Base64.encode(md5(password)))
+    console.log(password);
+    console.log(md5(password));
+    console.log(Base64.encode(md5(password)));
     ajax({
       type: 'POST',
       url: '/login',
@@ -92,32 +97,32 @@ import Cookies from './vendor/js-cookie';
       success: (data) => {
         console.log(data);
         //console.log(JSON.parse(data))
-        let dataJSON = JSON.parse(data)
-        console.log('status', dataJSON.status)
+        let dataJSON = JSON.parse(data);
+        console.log('status', dataJSON.status);
         $u("#waiting").addClass("active");
         if (status === 'FAIL') {
             showToast('Error',dataJSON.message,'error','fas fa-exclamation-triangle');
-          document.querySelector('#message').innerHTML = dataJSON.message
+          document.querySelector('#message').innerHTML = dataJSON.message;
         } else {
           showDashboard(dataJSON.data)
         }
       },
       complete: (xhr, status) => {
-        console.log(xhr, status)
+        console.log(xhr, status);
       },
       error: (xhr, err) => {
         $u("#waiting").removeClass("active");
         showToast('Error','Wrong user name or password','error');
         if (err === 'timeout') {
-          console.log('Timeout Error')
+          console.log('Timeout Error');
         } else {
-          console.log(xhr, err)
+          console.log(xhr, err);
         }
       }
     })
   }
  
-  loginbutton.addEventListener('click', submit)
+  loginbutton.addEventListener('click', submit);
   $u("#waiting").removeClass("active");
      
   document.querySelector('#bar-preloader').style.display='none';
@@ -131,4 +136,4 @@ import Cookies from './vendor/js-cookie';
       });
     });
 
-})(console.log, document)
+})(console.log, document);

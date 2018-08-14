@@ -1,0 +1,48 @@
+/* botones */
+
+.btn-flat {
+  border: $button-border;
+  border-radius: $button-radius;
+  display: inline-block;
+  height: $button-height;
+  line-height: $button-height;
+  padding: $button-padding;
+  text-transform: uppercase;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent; // Gets rid of tap active state
+  box-shadow: none;
+  background-color: transparent;
+  color: $button-flat-color;
+  cursor: pointer;
+  transition: background-color .2s;
+  &:focus,
+  &:hover {
+    box-shadow: none;
+  }
+  &:focus {
+    background-color: rgba(0, 0, 0, .1);
+  }
+  &.disabled {
+    background-color: transparent !important;
+    color: $button-flat-disabled-color !important;
+    cursor: default;
+  }
+}
+
+
+.btn2-unify {
+  background: linear-gradient(0deg, rgb(93, 164, 7) 0%, rgb(152, 198, 61) 100%);
+  color: $color_3 !important;
+  margin-left: 5px !important;
+  height: 25px;
+  font-size: .8em !important;
+  line-height: 25px;
+  &:hover {
+      text-decoration: underline;
+      color: $color_4 !important;
+  }
+}
+
+
+/* ************* */
+

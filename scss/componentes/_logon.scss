@@ -1,0 +1,242 @@
+.input-field {
+  margin: 0;
+}
+
+.logon-container {
+  text-align: center;
+}
+
+
+
+.field-icon {
+  top: 35px;
+  float: right;
+  margin-left: -25px;
+  margin-top: -25px;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}  
+
+.bar-preloader-container{
+position: relative;
+height: 5px;
+width: 100%;
+background-color: #bdbdbd;
+}
+    
+.bar-preloader{
+content: "";
+display: inline;
+position: absolute;
+height: 100%;
+width: 0;
+right: 0;
+}
+
+.bar:nth-child(1) {
+background-color: #006495;
+animation: linear_loader 3s linear 1s infinite;
+}
+#password-field + .input-field label .active{
+display: block;
+}
+
+.logon-icon {
+  margin:0 auto;
+  text-align: center;
+  padding-bottom: 25px;
+}
+.logon-icon i {
+  font-size: 1.9em;
+  padding: 5px;
+}
+
+
+@keyframes linear_loader {
+  0% {
+    right: 100%; 
+    width: 10%;
+  }
+  30% {
+    right: 0%; 
+    width: 40%;
+  }
+  50% {
+    right: 0%; 
+    width: 0%;
+  }
+  80% {
+    right: 0%; 
+    width: 0%;
+  }
+  100% {
+    right: 0%; 
+    width: 0%;
+  }
+}		
+
+/* ************************** */
+form {
+	width: 330px;
+	margin: 4em auto;
+	padding: 2.8em 2em 1em 2em;
+	background: #fafafa;
+	border: 1px solid #ebebeb;
+	box-shadow: rgba(0,0,0,0.14902) 0px 1px 1px 0px,rgba(0,0,0,0.09804) 0px 1px 2px 0px;
+}
+
+.group { 
+	position: relative; 
+	margin-bottom: 45px; 
+}
+
+#login-button {
+    margin-right: 15px;
+}
+
+input {
+    font-size: .9em;
+    margin-left: auto;
+    margin-right: auto;
+	padding: 10px 10px 10px 5px;
+	-webkit-appearance: none;
+	display: block;
+	background: #fafafa;
+	color: #636363;
+	width: 90%;
+	border: none;
+	border-radius: 0;
+	border-bottom: 1px solid #757575;
+}
+
+input:focus { outline: none; }
+
+
+/* Label */
+
+label {
+	color: #999; 
+	font-size: .9em;
+	font-weight: normal;
+	position: absolute;
+	pointer-events: none;
+	left: 15px;
+	top: 10px;
+	transition: all 0.2s ease;
+}
+
+
+/* active */
+
+input:focus ~ label, input.used ~ label {
+	top: -20px;
+  transform: scale(.75); left: 8px;
+	/* font-size: 14px; */
+	color: #4a89dc;
+}
+
+
+/* Underline */
+
+.bar {
+	position: relative;
+	display: block;
+	width: 90%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.bar:before, .bar:after {
+	content: '';
+	height: 2px; 
+	width: 0;
+	/*bottom: 1px; */
+	position: absolute;
+	background: #4a89dc; 
+	transition: all 0.2s ease;
+}
+
+.bar:before { left: 50%; }
+
+.bar:after { right: 50%; }
+
+
+/* active */
+
+input:focus ~ .bar:before, input:focus ~ .bar:after { width: 50%; }
+
+
+/* Highlight */
+
+.highlight {
+	position: absolute;
+	height: 60%; 
+	width: 100px; 
+	top: 25%; 
+	left: 0;
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+
+/* active */
+
+input:focus ~ .highlight {
+	animation: inputHighlighter 0.3s ease;
+}
+
+
+/* Animations */
+
+@keyframes inputHighlighter {
+	from { background: #4a89dc; }
+	to 	{ width: 0; background: transparent; }
+}
+
+
+/* Ripples container */
+
+.ripples {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+  }
+  
+  
+  /* Ripples circle */
+  
+  .ripplesCircle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+  }
+  
+  .ripples.is-active .ripplesCircle {
+    animation: ripples .4s ease-in;
+  }
+  
+  
+  /* Ripples animation */
+  
+  @keyframes ripples {
+    0% { opacity: 0; }
+  
+    25% { opacity: 1; }
+  
+    100% {
+      width: 200%;
+      padding-bottom: 200%;
+      opacity: 0;
+    }
+  }

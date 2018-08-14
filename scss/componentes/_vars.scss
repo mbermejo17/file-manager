@@ -1,0 +1,31 @@
+$color_1: white;
+$color_2: #95C857;
+$color_3: black;
+$color_4: #FFF;
+$font_family_1: 'Roboto',
+'Open Sans';
+$font_family_2: 'Open Sans',
+'Arial',
+sans-serif;
+$background_color_1: #293037;
+$background_color_2: #fff;
+
+// Buttons
+// Shared styles
+$button-border: none !default;
+$button-background-focus: lighten($color_2, 4%) !default;
+$button-font-size: 14px !default;
+$button-icon-font-size: 1.3rem !default;
+$button-height: 36px !default;
+$button-padding: 0 16px !default;
+$button-radius: 2px !default;
+
+// Disabled styles
+$button-disabled-background: #DFDFDF !default;
+$button-disabled-color: #9F9F9F !default;
+
+
+// Flat buttons
+$button-flat-color: #343434 !default;
+$button-flat-disabled-color: lighten(#999, 10%) !default;
+
