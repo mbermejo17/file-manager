@@ -89,13 +89,14 @@ import Cookies from './vendor/js-cookie';
       },
       ajaxtimeout: 40000,
       beforeSend: () => {
-        addClass(waiting, 'active')
+        $u('#loader').show();
       },
       success: (data) => {
         console.log(data);
         //console.log(JSON.parse(data))
         let dataJSON = JSON.parse(data)
         console.log('status', dataJSON.status)
+        $u('#loader').hide();
         if (status === 'FAIL') {
             showToast('Error',dataJSON.message,'error','fas fa-exclamation-triangle');
           document.querySelector('#message').innerHTML = dataJSON.message
@@ -107,6 +108,7 @@ import Cookies from './vendor/js-cookie';
         console.log(xhr, status)
       },
       error: (xhr, err) => {
+        $u('#loader').hide();
         showToast('Error','Wrong user name or password','error');
         if (err === 'timeout') {
           console.log('Timeout Error')
@@ -117,7 +119,7 @@ import Cookies from './vendor/js-cookie';
       }
     })
   }
-  loader.style.display = 'none'
+ 
   loginbutton.addEventListener('click', submit)
   
    

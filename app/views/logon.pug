@@ -25,7 +25,7 @@ html(lang="es")
     .row
     form
       .logon-icon
-        i.far.fa-user-circle  
+        i.fas.fa-user  
       .group
         input#username(type="text",autocomplete="off")
         span.highlight
@@ -45,15 +45,9 @@ html(lang="es")
           // <img src="img/logo_brand.png" alt="">
         .col.m6.right
           // <h5 class="unify-text right">© Unify Inc. 2018</h5>
-    #loader(style="display:none")
-    #waiting.preloader-wrapper
-      .spinner-layer.spinner-blue-only
-        .circle-clipper.left
-          .circle
-        .gap-patch
-          .circle
-        .circle-clipper.right
-          .circle      
+    #loader.loader
+      svg.circular
+      circle.path(cx="50",cy="50",r="20",fill="none",stroke-width="2",stroke-miterlimit="10")
     script(type="text/javascript" src="js/modules/unify.js")
     script(type="text/javascript" src="js/modules/cash.js")
     script(type="text/javascript" src="js/modules/toast.js")

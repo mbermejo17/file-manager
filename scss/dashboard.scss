@@ -19,6 +19,18 @@
   src: url('../font/roboto/Roboto-Regular.ttf') format('truetype');
 }
 
+.row {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 1280px;
+  width: 90%;
+}
+
 
 .material-icons {
   font-family: 'Material Icons';
