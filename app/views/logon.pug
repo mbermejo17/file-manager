@@ -45,9 +45,14 @@ html(lang="es")
           // <img src="img/logo_brand.png" alt="">
         .col.m6.right
           // <h5 class="unify-text right">© Unify Inc. 2018</h5>
-    #loader.loader
-      svg.circular
-      circle.path(cx="50",cy="50",r="20",fill="none",stroke-width="2",stroke-miterlimit="10")
+    #waiting.preloader-wrapper.active
+        .spinner-layer.spinner-green
+          .circle-clipper.left
+            .circle
+          .gap-patch
+            .circle
+          .circle-clipper.right
+            .circle
     script(type="text/javascript" src="js/modules/unify.js")
     script(type="text/javascript" src="js/modules/cash.js")
     script(type="text/javascript" src="js/modules/toast.js")

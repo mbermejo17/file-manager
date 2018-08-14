@@ -6,12 +6,10 @@ import md5 from './vendor/md5.min';
 import Cookies from './vendor/js-cookie';
 
 ((c, d) => {
- 
-  let waiting = d.querySelector('#waiting')
+
   const READY_STATE_COMPLETE = 4
   const OK = 200
   const NOT_FOUND = 404
-  const loader = d.querySelector('#loader')
   const main = d.querySelector('#main')
   const loginbutton = d.querySelector('#login-button')
 
@@ -89,14 +87,14 @@ import Cookies from './vendor/js-cookie';
       },
       ajaxtimeout: 40000,
       beforeSend: () => {
-        $u('#loader').show();
+        $u("#waiting").addClass("active");
       },
       success: (data) => {
         console.log(data);
         //console.log(JSON.parse(data))
         let dataJSON = JSON.parse(data)
         console.log('status', dataJSON.status)
-        $u('#loader').hide();
+        $u("#waiting").addClass("active");
         if (status === 'FAIL') {
             showToast('Error',dataJSON.message,'error','fas fa-exclamation-triangle');
           document.querySelector('#message').innerHTML = dataJSON.message
@@ -108,21 +106,20 @@ import Cookies from './vendor/js-cookie';
         console.log(xhr, status)
       },
       error: (xhr, err) => {
-        $u('#loader').hide();
+        $u("#waiting").removeClass("active");
         showToast('Error','Wrong user name or password','error');
         if (err === 'timeout') {
           console.log('Timeout Error')
         } else {
           console.log(xhr, err)
         }
-        removeClass(waiting, 'active')
       }
     })
   }
  
   loginbutton.addEventListener('click', submit)
-  
-   
+  $u("#waiting").removeClass("active");
+     
   document.querySelector('#bar-preloader').style.display='none';
 
   [].forEach.call(document.querySelectorAll('input'), function(el) {
