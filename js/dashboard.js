@@ -651,7 +651,7 @@ window.appData = {
                               </div>
                           </div>`;
     let htmlContent = `<div id="modal-header">
-                        <h5>${ModalTitle}</h5>
+                          <h5><i class="fas fa-user-lock icon-title"></i>${ModalTitle}</h5>
                         <a class="modal_close" id="modalClose" href="#hola"></a>
                       </div>
                       <div class="modal-content">
@@ -661,11 +661,12 @@ window.appData = {
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptChangeUserPassword" href="#!">Accept</a>
                       </div>    `;
-    $u("#modal")
-      .html(htmlContent)
-      .css("width: " + w + "%;height: " + h + "px;text-align: center;");
+    $u("#modal").html(htmlContent);
+    $u("#modal").removeClass('modal-changePassword');
+    $u("#modal").addClass('modal-changePassword');
+    $u(".modal-changePassword").css("height: " + h + "px;text-align: center;");
     //$('.modal-content').css('width: 350px;');
-    $u(".modal").css("width: 40% !important");
+    //$u(".modal").css("width: 40% !important");
     $u("#modal").show();
     $u("#lean-overlay").show();
     $u("#AcceptChangeUserPassword").on("click", e => {
@@ -692,10 +693,10 @@ window.appData = {
           let { status, message } = JSON.parse(data);
           if (userData.RunMode === "DEBUG") console.log("status", status);
           if (status === "FAIL") {
-            showToast("Error", message, "error");
+            showToast("Change User Password", message, "error");
             d.querySelector("#message").innerHTML = message;
           } else {
-            showToast("", message, "success");
+            showToast("Change User Password", message, "success");
             if (userData.RunMode === "DEBUG") console.log(message);
           }
           $u("#modal").hide();
@@ -707,7 +708,7 @@ window.appData = {
           $u("#lean-overlay").hide();
         },
         error: (xhr, err) => {
-          showToast("Error", "Wrong password", "error");
+          showToast("Change User Password", "Wrong password", "error");
           if (err === "timeout") {
             if (userData.RunMode === "DEBUG") console.log("Timeout Error");
           } else {
@@ -783,12 +784,13 @@ window.appData = {
     let newPosition = parseInt(position1 + position2) + "px";
     if (userData.RunMode === "DEBUG") console.log("newPosition: ", newPosition);
     if (userData.RunMode === "DEBUG") console.log('Desiplay: ',$u("#Usersdropdown").css("display"));
-    if ($u("#Usersdropdown").css("display") === "block") {
+    if ($u("#Usersdropdown").css("display") === "block" || $u("#Usersdropdown").css("display") == '') {
       $u("#usertrigger").removeClass("selected");
       $u("#Usersdropdown").hide();
     } else {
       $u("#usertrigger").addClass("selected");
-      document.getElementById("Usersdropdown").style.right = newPosition;
+      document.getElementById("Usersdropdown").style.right = (position2 +10) + 'px';
+      document.getElementById("Usersdropdown").style.top = '60px';
       $u("#Usersdropdown").show();
     }
   };
@@ -821,7 +823,7 @@ window.appData = {
     if (appData.aSelectedFiles.length > 0) {
       if (appData.aSelectedFiles.length > 1) {
         showToast(
-          "Info",
+          "Share File",
           "No pueden seleccionarse más de un archivo",
           "warning"
         );
@@ -829,8 +831,8 @@ window.appData = {
       shareFile();
     } else {
       showToast(
-        "Info",
-        "No se han seleccionado archivo para compartir",
+        "Share File",
+        "No se ha seleccionado archivo para compartir",
         "warning"
       );
     }
@@ -843,7 +845,7 @@ window.appData = {
       $u("#logoutmodal").show();
       $u("#logoutmodal").addClass("modal-logout");
     } else {
-      showToast("Error", "Opcion no permitida", "error");
+      showToast("User Logout", "Opcion no permitida", "error");
     }
   });
 
@@ -853,7 +855,7 @@ window.appData = {
       $u("#logoutmodal").hide();
       logout();
     } else {
-      showToast("Error", "Opcion no permitida", "error");
+      showToast("User Logout", "Opcion no permitida", "error");
     }
   });
 
@@ -861,9 +863,9 @@ window.appData = {
     e.preventDefault();
     if (!$u("#" + e.target.id).hasClass("disabled")) {
       $u("#Usersdropdown").hide();
-      showChangeUserPassword(32, 440, "Change User Password");
+      showChangeUserPassword(32, 380, "Change User Password");
     } else {
-      showToast("Error", "Opcion no permitida", "error");
+      showToast("Change User Password", "Opcion no permitida", "error");
     }
   });
 
@@ -873,7 +875,7 @@ window.appData = {
       $u("#Usersdropdown").hide();
       showUserProfile(40, 440, "User Profile");
     } else {
-      showToast("Error", "Opcion no permitida", "error");
+      showToast("User Profile", "Opcion no permitida", "error");
     }
   });
 
@@ -882,7 +884,7 @@ window.appData = {
     if (!$u("#" + e.target.id).hasClass("disabled")) {
       $u("#logoutmodal").hide();
     } else {
-      showToast("Error", "Opcion no permitida", "error");
+      showToast("User Logout", "Opcion no permitida", "error");
     }
   });
 
@@ -893,7 +895,7 @@ window.appData = {
       appData.currentPath = appData.rootPath;
       refreshPath(appData.currentPath);
     } else {
-      showToast("Error", "Opcion no permitida", "error");
+      showToast("Home", "Opcion no permitida", "error");
     }
   });
 
@@ -903,7 +905,7 @@ window.appData = {
     if (!$u("#" + e.target.id).hasClass("disabled")) {
       showNewFolder(32, 440, "New Folder");
     } else {
-      showToast("Error", "Opcion no permitida", "error");
+      showToast("New Folder", "Opcion no permitida", "error");
     }
   });
 
@@ -917,7 +919,7 @@ window.appData = {
         deleteSelected();
       } else {
         showToast(
-          "Error",
+          "Delete",
           "No se han seleccionado archivos o carpetas",
           "error"
         );
@@ -930,7 +932,7 @@ window.appData = {
     if (!$u("#" + e.target.id).hasClass("disabled")) {
       upload(userData.Token);
     } else {
-      showToast("Error", "Opcion no permitida", "error");
+      showToast("Upload", "Opcion no permitida", "error");
     }
   });
 
@@ -940,7 +942,7 @@ window.appData = {
       if (appData.aSelectedFiles.length > 0) {
         if (appData.aSelectedFiles.length > 5) {
           showToast(
-            "Error",
+            "Download",
             "No se pueden descargar más de 5 archivos a la vez",
             "error"
           );
@@ -948,13 +950,13 @@ window.appData = {
         download(appData.aSelectedFiles, "File");
       } else {
         showToast(
-          "Error",
+          "Download",
           "No se han seleccionado archivos para descargar",
           "error"
         );
       }
     } else {
-      showToast("Error", "Opcion no permitida", "error");
+      showToast("Download", "Opcion no permitida", "error");
     }
   });
 

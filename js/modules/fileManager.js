@@ -198,7 +198,7 @@ export function shareFile() {
             }
           })
           .catch(e => {
-            showToast('Error',
+            showToast('Share files',
               "Error al compartir archivo " + data.fileName + ".<br>Err:" + e,
               "error"
             );
