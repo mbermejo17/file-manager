@@ -1,4 +1,9 @@
-@import './componentes/toast';
+@import "./componentes/reset";
+@import "./componentes/vars";
+@import "./componentes/spinner";
+@import "./componentes/waves";
+@import "./componentes/toast";
+@import "./componentes/button";
 
 :root {
   --snackbarCurrentTop: 30px;
@@ -112,41 +117,11 @@ body {
   padding-left: 10px;
   color: $color_2;
 }
-.btn-unify {
-  color: $color_2 !important;
-  margin-left: 5px !important;
-  height: 25px;
-  font-size: .8em !important;
-  &:hover {
-    text-decoration: underline;
-    color: $color_3 !important;
-  }
-}
 
-.btn-unify.disabled,
-.btn2-unify.disabled {
-  color: $color_2 !important;
-  margin-left: 5px !important;
-  height: 25px;
-  font-size: .8em !important;
-  &:hover {
-    text-decoration: none;
-    cursor: not-allowed;
-    color: $color_2 !important;
-  }
-}
-
-.btn2-unify {
-  background: linear-gradient(0deg, rgb(93, 164, 7) 0%, rgb(152, 198, 61) 100%);
-  color: $color_5 !important;
-  margin-left: 5px !important;
-  height: 25px;
-  font-size: .8em !important;
-  line-height: 25px;
-  &:hover {
-    text-decoration: underline;
-    color: $color_4 !important;
-  }
+.filesTable {
+  color: var(--main-color);
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .nav-unify {

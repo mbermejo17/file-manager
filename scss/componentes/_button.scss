@@ -29,6 +29,17 @@
   }
 }
 
+.btn-unify {
+  color: $color_2 !important;
+  margin-left: 5px !important;
+  height: 25px;
+  font-size: .8em !important;
+  &:hover {
+    text-decoration: underline;
+    color: $color_1 !important;
+  }
+}
+
 
 .btn2-unify {
   background: linear-gradient(0deg, rgb(93, 164, 7) 0%, rgb(152, 198, 61) 100%);
@@ -40,6 +51,19 @@
   &:hover {
       text-decoration: underline;
       color: $color_4 !important;
+  }
+}
+
+.btn-unify.disabled,
+.btn2-unify.disabled {
+  color: $color_2 !important;
+  margin-left: 5px !important;
+  height: 25px;
+  font-size: .8em !important;
+  &:hover {
+    text-decoration: none;
+    cursor: not-allowed;
+    color: $color_2 !important;
   }
 }
 

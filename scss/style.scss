@@ -1,144 +1,124 @@
-@import './componentes/vars';
-@import './componentes/spinner';
-@import './componentes/waves';
-@import './componentes/toast';
-@import './componentes/button';
-@import './componentes/logon';
-
+@import "./componentes/reset";
+@import "./componentes/vars";
+@import "./componentes/spinner";
+@import "./componentes/waves";
+@import "./componentes/toast";
+@import "./componentes/button";
+@import "./componentes/logon";
 
 .row {
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 20px;
-  }
-  
-  .container {
-    margin: 0 auto;
-    max-width: 1280px;
-    width: 90%;
-  }
-  
-  
-
-
-@font-face {
-    font-family: 'Roboto';
-    src: url('../font/roboto/Roboto-Regular.eot');
-    /* IE9 Compat Modes */
-    src: url('../font/roboto/Roboto-Regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-    url('../font/roboto/Roboto-Regular.woff') format('woff'), /* Modern Browsers */
-    url('../font/roboto/Roboto-Regular.ttf') format('truetype'), /* Safari, Android, iOS */
-    url('../font/roboto/Roboto-Regular.svg#svgFontName') format('svg');
-    /* Legacy iOS */
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
 }
 
-* { box-sizing:border-box; }
-/* use the font */
-
-* {
-    font-family: 'Roboto', sans-serif;
-    -webkit-font-smoothing: antialiased;
+.container {
+  margin: 0 auto;
+  max-width: 1280px;
+  width: 90%;
 }
-body, html {
-    width: 100vw;
-    background: url(../img/bg_content.png) 0 0 repeat-x transparent;
-    height: 100vh;
+
+body,
+html {
+  width: 100vw;
+  background: url(../img/bg_content.png) 0 0 repeat-x transparent;
+  height: 100vh;
+  font-family: var(--main-font);
 }
 
 .head-container {
-    height: 70px;
-    background-image: url(../img/bg_header.png);
+  height: 70px;
+  background-image: url(../img/bg_header.png);
 }
 
 .logo {
-    padding-left: 10px;
-    font-size: 1.2em;
-    color: $color_1;
-    line-height: 70px;
-    font-family: $font_family_1;
+  padding-left: 10px;
+  font-size: 1.2em;
+  color: $color_1;
+  line-height: 70px;
+  font-family: var(--main-font);
 }
 
 .title {
-    text-align: center;
-    font-size: 1.6em;
-    font-weight: bold;
-    color: $color_1;
-    line-height: 70px;
-    font-family: $font_family_1;
+  text-align: center;
+  font-size: 1.6em;
+  font-weight: bold;
+  color: $color_1;
+  line-height: 70px;
+  font-family: var(--main-font);
 }
 
 .status {
-    text-align: right;
-    font-size: 1.2em;
-    color: $color_1;
-    line-height: 70px;
-    font-family: $font_family_1;
-    i {
-        color: $color_3;
-    }
+  text-align: right;
+  font-size: 1.2em;
+  color: $color_1;
+  line-height: 70px;
+  font-family: var(--main-font);
+  i {
+    color: $color_3;
+  }
 }
 
 .user-link {
-    padding-left: 10px;
-    color: $color_2;
+  padding-left: 10px;
+  color: $color_2;
 }
 
-
-
 .nav-unify {
-    text-align: center;
-    top: 70px;
-    font-family: $font_family_2;
-    font-weight: 400;
-    position: absolute;
-    background: url(../img/bg_navi.png) 0 0 repeat-x transparent;
-    width: 100%;
-    color: $color_2;
-    height: 40px;
+  text-align: center;
+  top: 70px;
+  font-family: var(--alternate-font);
+  font-weight: 400;
+  position: absolute;
+  background: url(../img/bg_navi.png) 0 0 repeat-x transparent;
+  width: 100%;
+  color: $color_2;
+  height: 40px;
 }
 
 .footer-unify {
-    height: 70px;
-    bottom: 0px;
-    position: fixed;
-    width: 100%;
-    background-color: $background_color_1;
+  height: 70px;
+  bottom: 0px;
+  position: fixed;
+  width: 100%;
+  background-color: $background_color_1;
 }
 
 .unify-text {
-    font-size: 13px;
-    color: $color_4;
+  font-size: 13px;
+  color: $color_4;
 }
 
 .main-container {
-    height: auto;
-    padding-top: 20px;
-    width: 320px;
-    background-color: $background_color_2;
-    text-align: center;
+  height: auto;
+  padding-top: 20px;
+  width: 320px;
+  background-color: $background_color_2;
+  text-align: center;
 }
 
-
 .center-left {
-    text-align: left;
+  text-align: left;
 }
 
 .center-right {
-    text-align:right;
+  text-align: right;
 }
 
-
-hgroup { 
-	text-align:center;
-	margin-top: 4em;
+hgroup {
+  text-align: center;
+  margin-top: 4em;
 }
 
-h1, h3 { font-weight: 300; }
+h1,
+h3 {
+  font-weight: 300;
+}
 
-h1 { color: #636363; }
+h1 {
+  color: #636363;
+}
 
-h3 { color: #4a89dc; }
-
-
-
-  
+h3 {
+  color: #4a89dc;
+}
