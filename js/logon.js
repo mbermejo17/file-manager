@@ -2,6 +2,7 @@ import axios from "axios";
 import { Base64 } from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
+import {modalDialog} from "./vendor/modalDialog";
 
 ((c, d) => {
   const READY_STATE_COMPLETE = 4;
@@ -114,6 +115,7 @@ import Cookies from "./vendor/js-cookie";
   }
 
   loginbutton.addEventListener("click", submit);
+  
   $u("#waiting").removeClass("active");
 
   [].forEach.call(document.querySelectorAll("input"), function(el) {
@@ -122,4 +124,19 @@ import Cookies from "./vendor/js-cookie";
       else $u("#" + e.target.id).removeClass("used");
     });
   });
+
+  let modalDialogOptions = {
+    cancel: true,
+    cancelText: "cancel button",
+    cancelCallBack: function (event) {
+        console.log("modalDialogOptions.cancelCallBack");
+    },
+    confirm: true,
+    confirmText: "confirm button",
+    confirmCallBack: function (event) {
+        console.log("modalDialogOptions.confirmCallBack");
+    }
+}; 
+  modalDialog('Prueba','Esto es una prueba',modalDialogOptions);
+
 })(console.log, document);

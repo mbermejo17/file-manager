@@ -1,0 +1,115 @@
+.modal-dialog-alert-mask {
+  position: fixed;
+  z-index: 9998;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-dialog-alert-message-body {
+  position: fixed;
+  z-index: 9999;
+  min-width: 640px;
+  max-width: 720px;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  background-color: #fafafc;
+  text-align: center;
+  border-radius: 3px;
+  -webkit-box-shadow: 0 0 48px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 48px rgba(0, 0, 0, 0.15);
+  -webkit-animation: modal-dialog-show 0.1s;
+  animation: modal-dialog-show 0.1s;
+}
+@media screen and (max-width: 480px) {
+  .modal-dialog-alert-message-body {
+      min-width: 320px;
+      max-width: 100%;
+  }
+}
+.modal-dialog-alert-message-tbf {
+  padding: 0 20px;
+  font-size: 16px;
+}
+.modal-dialog-alert-message-title {
+  font-weight: 400;
+  font-size: 18px;
+  padding: 8px 24px;
+}
+.modal-dialog-alert-message-content {
+  padding: 24px 24px;
+  text-align: center;
+}
+.modal-dialog-alert-message-button {
+  position: relative;
+  padding: 24px;
+  font-size: 18px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-dialog-alert-message-button a {
+  display: block;
+  margin: 0 24px;
+  color: #3cc51f;
+  text-decoration: none;
+  border-radius: 3px;
+  padding: 12px 24px;
+}
+a.modal-dialog-alert-message-button-cancel,
+a.modal-dialog-alert-message-button-cancel:link {
+  color: #FFFFFF;
+  background-color: #95A5A6;
+}
+a.modal-dialog-alert-message-button-cancel:hover {
+  color: #FFFFFF;
+  background-color: #7F8C8D;
+  text-decoration: none;
+}
+
+a.modal-dialog-alert-message-button-confirm,
+a.modal-dialog-alert-message-button-confirm:link {
+  color: #FFFFFF;
+  background-color: #34495E;
+}
+a.modal-dialog-alert-message-button-confirm:hover {
+  color: #FFFFFF;
+  background-color: #2C3E50;
+  text-decoration: none;
+}
+
+@-webkit-keyframes modal-dialog-show {
+  0% {
+      -webkit-filter: opacity(.2);
+      filter: opacity(.2);
+      margin-top: -16px;
+  }
+  100% {
+      -webkit-filter: opacity(1);
+      filter: opacity(1);
+      margin-top: 0;
+  }
+}
+@keyframes modal-dialog-show {
+  0% {
+      -webkit-filter: opacity(.2);
+      filter: opacity(.2);
+      margin-top: -16px;
+  }
+  100% {
+      -webkit-filter: opacity(1);
+      filter: opacity(1);
+      margin-top: 0;
+  }
+}
+
+.modal-dialog-open {
+  overflow: hidden;
+}

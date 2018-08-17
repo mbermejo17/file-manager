@@ -31,7 +31,7 @@ function $u(selector) {
         console.log(self);
         if(valText) {
           self.element.value = valText;
-          return self;
+          return self.element;
         } else {
           return self.element.value;
         }
@@ -72,7 +72,7 @@ function $u(selector) {
         [].forEach.call(document.querySelectorAll(selector), function(el) {
                 el.addEventListener(type, function(e) {
                     callback(e);
-                });
+                },false);
             });
         return self;
     };

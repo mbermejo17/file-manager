@@ -1,10 +1,12 @@
 @import "./componentes/reset";
+@import "./componentes/font-roboto";
 @import "./componentes/vars";
 @import "./componentes/spinner";
 @import "./componentes/waves";
 @import "./componentes/toast";
 @import "./componentes/button";
 @import "./componentes/logon";
+@import "./componentes/modalDialog";
 
 .row {
   margin-left: auto;
