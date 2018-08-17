@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { Base64 } from "js-base64";
+import md5 from "../vendor/md5.min";
+import moment from "moment";
 
 ////////////////////////////////////
 // Users manage module
@@ -73,17 +76,17 @@ let htmlUserFormTemplate = `
                       </div>
                   </div>
                   <div class="row">
-                    <span class="label-switch col s2">Add Folder</span>
-                    <div class="switch col s3">
-                      <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                      <span class="lever"></span>On</label>
-                    </div>
-                    <span class="col s2">   </span>
-                    <span class="label-switch col s2>Share files</span>
-                    <div class="switch col s3">
-                      <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                      <span class="lever"></span>On</label>
-                    </div>
+                      <span class="label-switch col s2">Add Folder</span>
+                      <div class="switch col s3">
+                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                        <span class="lever"></span>On</label>
+                      </div>
+                      <span class="col s2"></span>
+                      <span class="label-switch col s2">Share files</span>
+                      <div class="switch col s3">
+                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
+                        <span class="lever"></span>On</label>
+                      </div>
                   </div>
                   <div class="row"><br/>
                       <div class="input-field col s6 m6"></div>
@@ -194,7 +197,7 @@ const changeAccessRights = (AccessSwitch, opt) => {
 
 
 export function searchUserName(userName) {
-    if (RunMode === "DEBUG") console.log(userName);
+    if (userData.RunMode === "DEBUG") console.log(userName);
     $u("#waiting").addClass("active");
     axios.get('/searchuser?userName=" + userName', {
         headers: {
@@ -323,13 +326,13 @@ export function editUser() {
 
 
 export function selectRole(element, role) {
-    if (RunMode === "DEBUG") console.log(role);
+    if (userData.RunMode === "DEBUG") console.log(role);
     for (let x = 0; x < element.options.length; x++) {
-        if (RunMode === "DEBUG") console.log("option: ", element.options[x].text);
+        if (userData.RunMode === "DEBUG") console.log("option: ", element.options[x].text);
         if (element.options[x].text.toUpperCase() === role.toUpperCase()) {
             element.options[x].selected = "selected";
             element.selectedIndex = x;
-            if (RunMode === "DEBUG")
+            if (userData.RunMode === "DEBUG")
                 console.log("option selected: ", element.options[x].text);
             if (role.toUpperCase() !== "CUSTOM") {
                 changeAccessRights(
@@ -354,7 +357,7 @@ export function showAddUserForm(title, data) {
 
     AddUserModalContent.innerHTML = htmlUserFormTemplate;
     if (data) {
-        if (RunMode === "DEBUG") console.log(data);
+        if (userData.RunMode === "DEBUG") console.log(data);
         oldData = Object.assign({}, data);
         document.querySelector("#userFormTitle").innerHTML = title;
         document.querySelector("#UserName").value = data.UserName;
@@ -365,30 +368,23 @@ export function showAddUserForm(title, data) {
         document.querySelector("#ExpirateDate").value = data.ExpirateDate;
         //document.querySelector("#expirationDate")
         selectRole(document.querySelector("#RoleOptions"), data.Role);
-        if (data.Role.toUpperCase() === "CUSTOM")
-            checkAccessRights(data.AccessString);
+        if (data.Role.toUpperCase() === "CUSTOM") checkAccessRights(data.AccessString);
         containerOverlay.style.display = "block";
         AddUserModalContent.style.display = "block";
         document.querySelector("label[for=UserName]").classList.add("active");
         document.querySelector("label[for=CompanyName]").classList.add("active");
         document.querySelector("label[for=UserPasswd]").classList.add("active");
-        document
-            .querySelector("label[for=repeatUserPasswd]")
-            .classList.add("active");
+        document.querySelector("label[for=repeatUserPasswd]").classList.add("active");
         document.querySelector("label[for=RootPath]").classList.add("active");
         document.querySelector("#UserName").disabled = true;
 
-        document
-            .querySelector("#btn-addUserCancel")
-            .addEventListener("click", e => {
+        document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
                 e.preventDefault();
                 //containerOverlay.style.display = "none";
                 AddUserModalContent.style.display = "none";
                 SearchUserModalContent.style.display = "block";
             });
-        document
-            .querySelector("#btn-addUserAcept")
-            .addEventListener("click", e => {
+        document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
                 e.preventDefault();
                 _updateUser(oldData);
             });
@@ -399,16 +395,12 @@ export function showAddUserForm(title, data) {
             document.querySelectorAll(".AccessRightsSwitch"),
             "opt1"
         );
-        document
-            .querySelector("#btn-addUserCancel")
-            .addEventListener("click", e => {
+        document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
                 e.preventDefault();
                 containerOverlay.style.display = "none";
                 AddUserModalContent.style.display = "none";
             });
-        document
-            .querySelector("#btn-addUserAcept")
-            .addEventListener("click", e => {
+        document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
                 e.preventDefault();
                 _addUser();
             });
@@ -418,9 +410,9 @@ export function showAddUserForm(title, data) {
 
     $(".AccessRightsSwitch").change(function() {
         if ($(this).is(":checked")) {
-            if (RunMode === "DEBUG") console.log("Is checked");
+            if (userData.RunMode === "DEBUG") console.log("Is checked");
         } else {
-            if (RunMode === "DEBUG") console.log("Is Not checked");
+            if (userData.RunMode === "DEBUG") console.log("Is Not checked");
         }
     });
 
@@ -439,7 +431,7 @@ export function showAddUserForm(title, data) {
         let accessString = _getAccessString(AccessSwitch);
         let userRole = _getUserRole();
         let queryString = {};
-        if (RunMode === "DEBUG") console.log(oldData);
+        if (userData.RunMode === "DEBUG") console.log(oldData);
         for (let prop in oldData) {
             if (hasOwnProperty.call(oldData, prop)) {
                 console.log(prop);
@@ -480,7 +472,7 @@ export function showAddUserForm(title, data) {
                 }
             }
         }
-        if (RunMode === 'DEBUG') console.log(queryString);
+        if (userData.RunMode === 'DEBUG') console.log(queryString);
         return queryString;
     };
 
@@ -523,22 +515,31 @@ export function showAddUserForm(title, data) {
     };
 
     const _getAccessString = AccessSwitch => {
-        let result = "";
-        let v = 0;
+        let accessName = [
+            'download',
+            'upload',
+            'deletefile',
+            'deletefolder',
+            'addfolder',
+            'sharefiles'
+        ];
+        let result = '';
+        let v = false;
 
         for (let x = 0; x < AccessSwitch.length; x++) {
             if (AccessSwitch[x].checked) {
-                v = 1;
+                v = true;
             } else {
-                v = 0;
+                v = false;
             }
-            if (x != 0) {
-                result += "," + v;
+            if (x !=0 ){
+                result += ',"' + accessName[x] + '":' + v;
             } else {
-                result += v;
+                result += '"' + accessName[x] + '":' + v;
             }
         }
-        return result;
+        console.log('getAccessString: ',result);
+        return encodeURI('{'+result+'}');
     };
 
     const _addUser = () => {
@@ -547,17 +548,17 @@ export function showAddUserForm(title, data) {
         let companyName = document.querySelector("#CompanyName").value;
         let userPassword = document.querySelector("#UserPasswd").value;
         let userRole = sel[sel.selectedIndex].innerHTML;
-        let userRootPath = document.querySelector("#RootPath").value;
+        let userRootPath = document.querySelector("#rootpath").value;
         let expirateDate = document.querySelector("#ExpirateDate").value;
         let result = _getAccessString(AccessSwitch);
 
-        if (RunMode === "DEBUG") console.log("User Name: " + userName);
-        if (RunMode === "DEBUG") console.log("Company Name: " + companyName);
-        if (RunMode === "DEBUG") console.log("Password: " + userPassword);
-        if (RunMode === "DEBUG") console.log("Root Path: " + userRootPath);
-        if (RunMode === "DEBUG") console.log("Expirate Date: " + expirateDate);
-        if (RunMode === "DEBUG") console.log("Role: " + userRole);
-        if (RunMode === "DEBUG") console.log("Access Rights: " + result);
+        if (userData.RunMode === "DEBUG") console.log("User Name: " + userName);
+        if (userData.RunMode === "DEBUG") console.log("Company Name: " + companyName);
+        if (userData.RunMode === "DEBUG") console.log("Password: " + userPassword);
+        if (userData.RunMode === "DEBUG") console.log("Root Path: " + userRootPath);
+        if (userData.RunMode === "DEBUG") console.log("Expirate Date: " + expirateDate);
+        if (userData.RunMode === "DEBUG") console.log("Role: " + userRole);
+        if (userData.RunMode === "DEBUG") console.log("Access Rights: " +  result );
         let data = {
             userName: userName,
             userPassword: Base64.encode(md5(userPassword)),
@@ -565,10 +566,11 @@ export function showAddUserForm(title, data) {
             userRole: userRole,
             expirateDate: expirateDate,
             rootPath: userRootPath,
-            accessRights: result
+            accessRights: result,
+            unixDate: moment(expirateDate).unix() 
         };
         $u("#waiting").addClass("active");
-        axios.post('/adduser', {
+        axios.post('/adduser', data,{
             headers: {
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + userData.Token

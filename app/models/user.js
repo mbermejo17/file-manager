@@ -282,16 +282,17 @@ UserModel.Add = function(userData, callback) {
           data: null
         });
       } else {
-        stmt = db.prepare("INSERT INTO Users VALUES (?,?,?,?,?,?,?,?)");
+        stmt = db.prepare("INSERT INTO Users VALUES (?,?,?,?,?,?,?,?,?)");
         stmt.bind(
           null,
           userData.userName,
           Base64.decode(userData.userPassword),
           userData.userRole,
           userData.companyName,
-          appData.rootPath,
-          userData.accessRights,
-          userData.expirateDate
+          userData.rootPath,
+          decodeURI(userData.accessRights),
+          userData.expirateDate,
+          userData.unixDate
         );
         stmt.run(function(err, result) {
           //dbClose();

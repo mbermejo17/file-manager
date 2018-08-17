@@ -10,8 +10,14 @@ html(lang="es")
     link(type="text/css" rel="stylesheet" href="css/fontawesome.all.min.css" media="screen,projection")
     link(type="text/css" rel="stylesheet" href="css/dashboard.css" media="screen,projection")
   body
-    #bar-preloader.bar-preloader-container
-      .bar-preloader
+    #waiting.preloader-wrapper.active
+      .spinner-layer.spinner-blue-only
+        .circle-clipper.left
+          .circle
+        .gap-patch
+          .circle
+        .circle-clipper.right
+          .circle
     .wrapper
       .row.head-container
         .container
@@ -92,14 +98,6 @@ html(lang="es")
       .modal-footer
         a#ModalUserLogout.modal-action.modal-close.waves-effect.waves-teal.btn-flat.btn2-unify(href="#!") Yes
         a#cancel.modal-action.modal-close.waves-effect.waves-teal.btn-flat.btn2-unify(href="#!") Cancel
-    #waiting.preloader-wrapper
-      .spinner-layer.spinner-blue-only
-        .circle-clipper.left
-          .circle
-        .gap-patch
-          .circle
-        .circle-clipper.right
-          .circle
     .container-overlay    
       #AddUserModalContent
       #searchUserModalContent

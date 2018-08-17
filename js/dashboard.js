@@ -26,7 +26,7 @@ window.userData = {
   CompanyName: Cookies.get("CompanyName"),
   RealRootPath: Cookies.get("RootPath"),
   Token: Cookies.get("token"),
-  AccessString: Cookies.get("AccessString"),
+  AccessString: JSON.parse(Cookies.get("AccessString")),
   RunMode: Cookies.get("RunMode")
 };
 
@@ -38,14 +38,14 @@ window.appData = {
 };
 
 (function(w, d) {
-  let [
-    AllowDownload,
-    AllowUpload,
-    AllowDeleteFile,
-    AllowDeleteFolder,
-    AllowNewFolder,
-    AllowShareFile
-  ] = userData.AccessString.split(",");
+  let 
+    AllowDownload = userData.AccessString.download,
+    AllowUpload = userData.AccessString.upload,
+    AllowDeleteFile = userData.AccessString.deletefile,
+    AllowDeleteFolder = userData.AccessString.deletefolder,
+    AllowNewFolder = userData.AccessString.addfolder,
+    AllowShareFile = userData.AccessString.sharefiles;
+  
 
   let aFolders = [];
   let aFiles = [];
@@ -103,6 +103,10 @@ window.appData = {
     return json;
   };
 
+
+  ////////////////////////////////////////
+  // Global Function Show Toast notifications
+  ////////////////////////////////////////
   window.showToast = function(title, msg, type, icon = true) {
     toast.create({
       title: title,
@@ -116,12 +120,10 @@ window.appData = {
   //  End Tools
   ////////////////////////////////
 
-  ///////////////////////////////
-  // Path handler
-  //////////////////////////////
-
-  // change path event
-  let changePath = newPath => {
+  ////////////////////////////////////////
+  // Change Path
+  ////////////////////////////////////////
+  const changePath = newPath => {
     let fullNewPath = "";
     if (userData.RunMode === "DEBUG")
       console.log("changePath:newPath ", newPath);
@@ -137,7 +139,9 @@ window.appData = {
     refreshBarMenu();
   };
 
-  // get New path
+  ////////////////////////////////////////
+  // Get content from new Path
+  ////////////////////////////////////////
   let getNewPath = pathSelected => {
     let splitPath = appData.currentPath.split("/");
     let newPath = "";
@@ -171,8 +175,10 @@ window.appData = {
     return newPath;
   };
 
-  // go back Folder
-  let goBackFolder = folder => {
+  ////////////////////////////////////////
+  // Got to back Folder
+  ////////////////////////////////////////
+  const goBackFolder = folder => {
     let newPath = "";
     let splitPath = appData.currentPath.split("/");
 
@@ -197,8 +203,10 @@ window.appData = {
     changePath(newPath.trim());
   };
 
-  // refresh path
-  let refreshPath = cPath => {
+  ////////////////////////////////////////
+  // Refres Content Path
+  ////////////////////////////////////////
+  const refreshPath = cPath => {
     let newLinePath = [];
     let newHtmlContent = `<li><label id="currentpath">Path:</label></li>
                               <li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">/</a></li>`;
@@ -270,7 +278,7 @@ window.appData = {
   };
 
   //////////////////////////////////
-  // User UI
+  // Select all Files & Folders
   /////////////////////////////////
 
   const selectAll = e => {
@@ -286,6 +294,9 @@ window.appData = {
     if (userData.RunMode === "DEBUG") console.log(getCheckedFolder());
   };
 
+  ////////////////////////////////////////
+  // Get List Checked Files
+  ////////////////////////////////////////
   const getCheckedFiles = function() {
     var checkedFiles = [];
     var allElements = document.querySelectorAll(".typeFile");
@@ -314,6 +325,9 @@ window.appData = {
     return checkedFiles;
   };
 
+  ////////////////////////////////////////
+  // Get List Checked Folders
+  ////////////////////////////////////////
   const getCheckedFolder = function() {
     var checkedFolders = [];
     var allElements = document.querySelectorAll(".dashboard-path");
@@ -345,6 +359,9 @@ window.appData = {
     return checkedFolders;
   };
 
+  ////////////////////////////////////////
+  // Modal Daialog
+  ////////////////////////////////////////
   window.showDialogYesNo = (title, content, yesCb, noCb) => {
     let w = 32;
     let h = 440;
@@ -381,6 +398,9 @@ window.appData = {
     });
   };
 
+  ////////////////////////////////////////
+  // Format file size
+  ////////////////////////////////////////
   const formatSize = bytes => {
     if (bytes >= 1073741824) {
       bytes = parseInt(bytes / 1000000000) + " GB";
@@ -398,6 +418,9 @@ window.appData = {
     return bytes;
   };
 
+  ////////////////////////////////////////
+  // Render View Files & Folders
+  ////////////////////////////////////////
   const renderFilesTable = (aFol, aFil) => {
     let newHtmlContent = ``;
     const tbodyContent = document
@@ -438,6 +461,9 @@ window.appData = {
     tbodyContent.innerHTML = newHtmlContent;
   };
 
+  ////////////////////////////////////////
+  // Refresh Files and Folders View
+  ////////////////////////////////////////
   const refreshFilesTable = data => {
     const tbodyContent = document
       .getElementById("tbl-files")
@@ -508,6 +534,9 @@ window.appData = {
     });
   };
 
+  ////////////////////////////////////////
+  // Select / Deselect Files & Folders
+  ////////////////////////////////////////
   const selectDeselect = e => {
     const isChecked = e.target.checked;
     const contentType = e.target.className.split(/\s+/).indexOf("checkFile");
@@ -536,6 +565,9 @@ window.appData = {
       console.log(appData.aSelectedFiles, appData.aSelectedFolders);
   };
 
+  ////////////////////////////////////////
+  // User Profile
+  ////////////////////////////////////////
   const showUserProfile = (w, h, t) => {
     let ModalTitle = t;
     let ModalContent = `<table id="tableUserProfile" class="striped highlight">
@@ -546,22 +578,22 @@ window.appData = {
                     }</td></tr>
                     <tr><td colspan="2" style="text-align:center;border-botom:1px solid #CCC">&nbsp;</td></tr>
                     <tr><td>Allow new Folder:</td><td>`;
-    ModalContent += AllowNewFolder == "1" ? "Allow" : "Deny";
+    ModalContent += AllowNewFolder === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow Share Files:</td><td>`;
-    ModalContent += AllowShareFile == "1" ? "Allow" : "Deny";
+    ModalContent += AllowShareFile === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow delete Folder:</td><td>`;
-    ModalContent += AllowDeleteFolder == "1" ? "Allow" : "Deny";
+    ModalContent += AllowDeleteFolder === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow delete File:</td><td>`;
-    ModalContent += AllowDeleteFile == "1" ? "Allow" : "Deny";
+    ModalContent += AllowDeleteFile === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow Upload:</td><td>`;
-    ModalContent += AllowUpload == "1" ? "Allow" : "Deny";
+    ModalContent += AllowUpload === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow Download:</td><td>`;
-    ModalContent += AllowDownload == "1" ? "Allow" : "Deny";
+    ModalContent += AllowDownload === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                 </table>`;
     let htmlContent = `<div id="modal-header">
@@ -589,6 +621,9 @@ window.appData = {
     });
   };
 
+  ////////////////////////////////////////
+  // New Folder
+  ////////////////////////////////////////
   const showNewFolder = (w, h, t) => {
     let ModalTitle = t;
     let ModalContent = `<div class="row">
@@ -638,6 +673,9 @@ window.appData = {
     });
   };
 
+  ////////////////////////////////////////
+  // Change User Password
+  ////////////////////////////////////////
   const showChangeUserPassword = (w, h, t) => {
     let ModalTitle = t;
     let ModalContent = `<div class="row">
@@ -662,11 +700,9 @@ window.appData = {
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptChangeUserPassword" href="#!">Accept</a>
                       </div>    `;
     $u("#modal").html(htmlContent);
-    $u("#modal").removeClass('modal-changePassword');
-    $u("#modal").addClass('modal-changePassword');
+    $u("#modal").removeClass("modal-changePassword");
+    $u("#modal").addClass("modal-changePassword");
     $u(".modal-changePassword").css("height: " + h + "px;text-align: center;");
-    //$('.modal-content').css('width: 350px;');
-    //$u(".modal").css("width: 40% !important");
     $u("#modal").show();
     $u("#lean-overlay").show();
     $u("#AcceptChangeUserPassword").on("click", e => {
@@ -674,48 +710,40 @@ window.appData = {
       let username = userData.UserName;
       let newpassword = $("#newpassword").val();
       if (userData.RunMode === "DEBUG") console.log(username, newpassword);
-      ajax({
-        type: "POST",
-        url: "/changepasswd",
-        data: {
-          username: username,
-          newpassword: Base64.encode(md5(newpassword))
-        },
-        ajaxtimeout: 40000,
-        beforeSend: () => {
-          /* waiting.style.display = 'block'
-                                                            waiting
-                                                                .classList
-                                                                .add('active') */
-        },
-        success: data => {
-          //if (userData.RunMode === 'DEBUG' ) console.log(JSON.parse(data))
-          let { status, message } = JSON.parse(data);
-          if (userData.RunMode === "DEBUG") console.log("status", status);
-          if (status === "FAIL") {
-            showToast("Change User Password", message, "error");
-            d.querySelector("#message").innerHTML = message;
-          } else {
-            showToast("Change User Password", message, "success");
-            if (userData.RunMode === "DEBUG") console.log(message);
+      $u("#waiting").addClass("active");
+      axios
+        .post(
+          "/changepasswd",
+          {
+            username: username,
+            newpassword: Base64.encode(md5(newpassword))
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + userData.Token,
+              "Content-Type": "application/json"
+            },
+            timeout: 290000
           }
-          $u("#modal").hide();
-        },
-        complete: (xhr, status) => {
-          if (userData.RunMode === "DEBUG") console.log(xhr, status);
-          //waiting.style.display = 'none'
+        )
+        .then(d => {
+          $u("#waiting").removeClass("active");
+          if (userData.RunMode === "DEBUG") console.log("changePassword: ", d);
+          if (d.data.status === "FAIL") {
+            showToast("Change User Password", d.data.message, "error");
+            d.querySelector("#message").innerHTML = d.data.message;
+          } else {
+            showToast("Change User Password", d.data.message, "success");
+            if (userData.RunMode === "DEBUG") console.log(d.data.message);
+          }
           $u("#modal").hide();
           $u("#lean-overlay").hide();
-        },
-        error: (xhr, err) => {
-          showToast("Change User Password", "Wrong password", "error");
-          if (err === "timeout") {
-            if (userData.RunMode === "DEBUG") console.log("Timeout Error");
-          } else {
-            if (userData.RunMode === "DEBUG") console.log(xhr, err);
-          }
-        }
-      });
+        })
+        .catch(e => {
+          $u("#waiting").removeClass("active");
+          showToast("Change User Password", e, "error");
+          if (userData.RunMode === "DEBUG") console.log(e);
+        });
     });
     $u("#modalClose").on("click", () => {
       $u("#modal").hide();
@@ -726,28 +754,27 @@ window.appData = {
       $u("#lean-overlay").hide();
     });
   };
-  //let refreshBarMenu = () =>{};
 
-  let refreshBarMenu = () => {
-    if (AllowNewFolder === "1") {
+  const refreshBarMenu = () => {
+    if (AllowNewFolder === true) {
       $u("#newFolder").removeClass("disabled");
     } else {
       $u("#newFolder").removeClass("disabled");
       $u("#newFolder").addClass("disabled");
     }
-    if (AllowDeleteFolder === "1" && AllowDeleteFile === "1") {
+    if (AllowDeleteFolder === true && AllowDeleteFile === true) {
       $u("#delete").removeClass("disabled");
     } else {
       $u("#delete").removeClass("disabled");
       $u("#delete").addClass("disabled");
     }
-    if (AllowShareFile === "1") {
+    if (AllowShareFile === true) {
       $u("#share").removeClass("disabled");
     } else {
       $u("#share").removeClass("disabled");
       $u("#share").addClass("disabled");
     }
-    if (AllowUpload == "1") {
+    if (AllowUpload == true) {
       $u("#upload").removeClass("disabled");
     } else {
       $u("#upload")
@@ -755,7 +782,7 @@ window.appData = {
         .addClass("disabled");
     }
 
-    if (AllowDownload == "1") {
+    if (AllowDownload == true) {
       $u("#download").removeClass("disabled");
     } else {
       $u("#download")
@@ -783,17 +810,28 @@ window.appData = {
     if (userData.RunMode === "DEBUG") console.log("position2: ", position2);
     let newPosition = parseInt(position1 + position2) + "px";
     if (userData.RunMode === "DEBUG") console.log("newPosition: ", newPosition);
-    if (userData.RunMode === "DEBUG") console.log('Desiplay: ',$u("#Usersdropdown").css("display"));
-    if ($u("#Usersdropdown").css("display") === "block" || $u("#Usersdropdown").css("display") == '') {
+    if (userData.RunMode === "DEBUG")
+      console.log("Desiplay: ", $u("#Usersdropdown").css("display"));
+    if (
+      $u("#Usersdropdown").css("display") === "block" ||
+      $u("#Usersdropdown").css("display") == ""
+    ) {
       $u("#usertrigger").removeClass("selected");
       $u("#Usersdropdown").hide();
     } else {
       $u("#usertrigger").addClass("selected");
-      document.getElementById("Usersdropdown").style.right = (position2 +10) + 'px';
-      document.getElementById("Usersdropdown").style.top = '60px';
+      document.getElementById("Usersdropdown").style.right =
+        position2 + 10 + "px";
+      document.getElementById("Usersdropdown").style.top = "60px";
       $u("#Usersdropdown").show();
     }
   };
+
+  /////////////////////////////////////////
+  //  Events handlers
+  /////////////////////////////////////////
+
+  // Add User
 
   $u("#userAdd").on("click", e => {
     e.preventDefault();
@@ -801,168 +839,14 @@ window.appData = {
       showAddUserForm("New User", null);
   });
 
+  // Edit user
+
   $u("#userMod").on("click", e => {
     e.preventDefault();
     if (!$u("#" + e.target.id).hasClass("disabled")) editUser();
   });
 
-  $u("#settings").on("click", e => {});
-
-  $u("#usertrigger").on("click", e => {
-    e.preventDefault();
-    if (!$u("#" + e.target.id).hasClass("disabled")) userTrigger();
-  });
-
-  $u("#refresh").on("click", e => {
-    e.preventDefault();
-    refreshPath(appData.currentPath);
-  });
-
-  $u("#share").on("click", e => {
-    e.preventDefault();
-    if (appData.aSelectedFiles.length > 0) {
-      if (appData.aSelectedFiles.length > 1) {
-        showToast(
-          "Share File",
-          "No pueden seleccionarse más de un archivo",
-          "warning"
-        );
-      }
-      shareFile();
-    } else {
-      showToast(
-        "Share File",
-        "No se ha seleccionado archivo para compartir",
-        "warning"
-      );
-    }
-  });
-
-  $u("#userLogout").on("click", e => {
-    e.preventDefault();
-    if (!$u("#" + e.target.id).hasClass("disabled")) {
-      $u("#Usersdropdown").hide();
-      $u("#logoutmodal").show();
-      $u("#logoutmodal").addClass("modal-logout");
-    } else {
-      showToast("User Logout", "Opcion no permitida", "error");
-    }
-  });
-
-  $u("#ModalUserLogout").on("click", e => {
-    e.preventDefault();
-    if (!$u("#" + e.target.id).hasClass("disabled")) {
-      $u("#logoutmodal").hide();
-      logout();
-    } else {
-      showToast("User Logout", "Opcion no permitida", "error");
-    }
-  });
-
-  $u("#userChangePassword").on("click", e => {
-    e.preventDefault();
-    if (!$u("#" + e.target.id).hasClass("disabled")) {
-      $u("#Usersdropdown").hide();
-      showChangeUserPassword(32, 380, "Change User Password");
-    } else {
-      showToast("Change User Password", "Opcion no permitida", "error");
-    }
-  });
-
-  $u("#userProfile").on("click", e => {
-    e.preventDefault();
-    if (!$u("#" + e.target.id).hasClass("disabled")) {
-      $u("#Usersdropdown").hide();
-      showUserProfile(40, 440, "User Profile");
-    } else {
-      showToast("User Profile", "Opcion no permitida", "error");
-    }
-  });
-
-  $u("#cancel").on("click", e => {
-    e.preventDefault();
-    if (!$u("#" + e.target.id).hasClass("disabled")) {
-      $u("#logoutmodal").hide();
-    } else {
-      showToast("User Logout", "Opcion no permitida", "error");
-    }
-  });
-
-  $u("#home").on("click", e => {
-    e.preventDefault();
-    console.log(e);
-    if (!$u("#" + e.target.id).hasClass("disabled")) {
-      appData.currentPath = appData.rootPath;
-      refreshPath(appData.currentPath);
-    } else {
-      showToast("Home", "Opcion no permitida", "error");
-    }
-  });
-
-  $u("#newFolder").on("click", e => {
-    e.preventDefault();
-    console.log(e);
-    if (!$u("#" + e.target.id).hasClass("disabled")) {
-      showNewFolder(32, 440, "New Folder");
-    } else {
-      showToast("New Folder", "Opcion no permitida", "error");
-    }
-  });
-
-  $u("#delete").on("click", e => {
-    e.preventDefault();
-    if (!$u("#" + e.target.id).hasClass("disabled")) {
-      if (
-        appData.aSelectedFolders.length > 0 ||
-        appData.aSelectedFiles.length > 0
-      ) {
-        deleteSelected();
-      } else {
-        showToast(
-          "Delete",
-          "No se han seleccionado archivos o carpetas",
-          "error"
-        );
-      }
-    }
-  });
-
-  $u("#upload").on("click", e => {
-    e.preventDefault();
-    if (!$u("#" + e.target.id).hasClass("disabled")) {
-      upload(userData.Token);
-    } else {
-      showToast("Upload", "Opcion no permitida", "error");
-    }
-  });
-
-  $u("#download").on("click", e => {
-    e.preventDefault();
-    if (!$u("#" + e.target.id).hasClass("disabled")) {
-      if (appData.aSelectedFiles.length > 0) {
-        if (appData.aSelectedFiles.length > 5) {
-          showToast(
-            "Download",
-            "No se pueden descargar más de 5 archivos a la vez",
-            "error"
-          );
-        }
-        download(appData.aSelectedFiles, "File");
-      } else {
-        showToast(
-          "Download",
-          "No se han seleccionado archivos para descargar",
-          "error"
-        );
-      }
-    } else {
-      showToast("Download", "Opcion no permitida", "error");
-    }
-  });
-
-  $u("#usertrigger").html(userData.UserName);
-
-  $u("#usertrigger").attr("title", "Empresa: " + userData.CompanyName);
+  // Edit App Settings
 
   $u("#settings").on("click", e => {
     e.preventDefault();
@@ -998,6 +882,8 @@ window.appData = {
     }
   });
 
+  // Hide User Options Panel
+
   $u("#Usersdropdown").on("mouseleave", () => {
     $u("#Usersdropdown").hide();
     $u("#usertrigger").removeClass("selected");
@@ -1007,12 +893,195 @@ window.appData = {
     $u("#settings").removeClass("selected");
   });
 
-  document.querySelector("#bar-preloader").style.Display = "none";
+  // User Options
+
+  $u("#usertrigger").on("click", e => {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) userTrigger();
+  });
+
+  // Refresh view
+
+  $u("#refresh").on("click", e => {
+    e.preventDefault();
+    refreshPath(appData.currentPath);
+  });
+
+  // Share File
+
+  $u("#share").on("click", e => {
+    e.preventDefault();
+    if (appData.aSelectedFiles.length > 0) {
+      if (appData.aSelectedFiles.length > 1) {
+        showToast(
+          "Share File",
+          "No pueden seleccionarse más de un archivo",
+          "warning"
+        );
+      }
+      shareFile();
+    } else {
+      showToast(
+        "Share File",
+        "No se ha seleccionado archivo para compartir",
+        "warning"
+      );
+    }
+  });
+
+  // User Logout
+
+  $u("#userLogout").on("click", e => {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#Usersdropdown").hide();
+      $u("#logoutmodal").show();
+      $u("#logoutmodal").addClass("modal-logout");
+    } else {
+      showToast("User Logout", "Opcion no permitida", "error");
+    }
+  });
+
+  // Show modal User Logout
+
+  $u("#ModalUserLogout").on("click", e => {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#logoutmodal").hide();
+      logout();
+    } else {
+      showToast("User Logout", "Opcion no permitida", "error");
+    }
+  });
+
+  // Show Modal Dialog Change User Password
+
+  $u("#userChangePassword").on("click", e => {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#Usersdropdown").hide();
+      showChangeUserPassword(32, 380, "Change User Password");
+    } else {
+      showToast("Change User Password", "Opcion no permitida", "error");
+    }
+  });
+
+  // Show User Profile
+
+  $u("#userProfile").on("click", e => {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#Usersdropdown").hide();
+      showUserProfile(40, 440, "User Profile");
+    } else {
+      showToast("User Profile", "Opcion no permitida", "error");
+    }
+  });
+
+  // Cancel Modal Dialog option
+
+  $u("#cancel").on("click", e => {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#logoutmodal").hide();
+    } else {
+      showToast("User Logout", "Opcion no permitida", "error");
+    }
+  });
+
+  // Go to Home Path
+
+  $u("#home").on("click", e => {
+    e.preventDefault();
+    console.log(e);
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      appData.currentPath = appData.rootPath;
+      refreshPath(appData.currentPath);
+    } else {
+      showToast("Home", "Opcion no permitida", "error");
+    }
+  });
+
+  // Show Modal Dialog Add New Folder
+
+  $u("#newFolder").on("click", e => {
+    e.preventDefault();
+    console.log(e);
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      showNewFolder(32, 440, "New Folder");
+    } else {
+      showToast("New Folder", "Opcion no permitida", "error");
+    }
+  });
+
+  // Delete Files / Folders
+
+  $u("#delete").on("click", e => {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      if (
+        appData.aSelectedFolders.length > 0 ||
+        appData.aSelectedFiles.length > 0
+      ) {
+        deleteSelected();
+      } else {
+        showToast(
+          "Delete",
+          "No se han seleccionado archivos o carpetas",
+          "error"
+        );
+      }
+    }
+  });
+
+  // Upload Files
+
+  $u("#upload").on("click", e => {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      upload(userData.Token);
+    } else {
+      showToast("Upload", "Opcion no permitida", "error");
+    }
+  });
+
+  // Download Files
+
+  $u("#download").on("click", e => {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      if (appData.aSelectedFiles.length > 0) {
+        if (appData.aSelectedFiles.length > 5) {
+          showToast(
+            "Download",
+            "No se pueden descargar más de 5 archivos a la vez",
+            "error"
+          );
+        }
+        download(appData.aSelectedFiles, "File");
+      } else {
+        showToast(
+          "Download",
+          "No se han seleccionado archivos para descargar",
+          "error"
+        );
+      }
+    } else {
+      showToast("Download", "Opcion no permitida", "error");
+    }
+  });
+
+  ///////////////////////////////////
+  //  End event handlers
+  ///////////////////////////////////
+
+  $u("#usertrigger").html(userData.UserName);
+  $u("#usertrigger").attr("title", "Empresa: " + userData.CompanyName);
+
+  $u("#waiting").removeClass("active");
+
+  console.log(userData.AccessString);
+
   refreshPath(appData.currentPath);
   refreshBarMenu();
-  if (userData.RunMode === "DEBUG")
-    console.log(document.querySelector("#selectAllFiles").checked);
-  if (userData.RunMode === "DEBUG") console.log();
-
-  
 })(window, document);
