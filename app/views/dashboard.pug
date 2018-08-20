@@ -6,7 +6,7 @@ html(lang="es")
     meta(http-equiv="X-UA-Compatible" content="ie=edge")
     title Document
     link(type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons")
-    link(type="text/css" rel="stylesheet" href="css/materialize.css" media="screen,projection")
+    //link(type="text/css" rel="stylesheet" href="css/materialize.css" media="screen,projection")
     link(type="text/css" rel="stylesheet" href="css/fontawesome.all.min.css" media="screen,projection")
     link(type="text/css" rel="stylesheet" href="css/dashboard.css" media="screen,projection")
   body
@@ -19,24 +19,23 @@ html(lang="es")
         .circle-clipper.right
           .circle
     .wrapper
-      .row.head-container
-        .container
-          .col.m3.logo
-            img(src="img/logo_brand.png" alt="Unify Home")
-          .col.m6.center.title
-            | File Manager
-          .col.m3.status.right
-            i.material-icons person
-            a#usertrigger.dropdown-menu.user-link.btn-unify(href="#!")
-          #Usersdropdown.dropdown-User-content
-            ul
-              li
-                a#userProfile.btn-unify(href="#") User Profile
-              li
-                a#userChangePassword.btn-unify(href="#") Change Password
-              li
-                a#userLogout.btn-unify(href="#") Logout  
-      .row.nav-unify
+      .head-container
+        .logo
+          img(src="img/logo_brand.png" alt="Unify Home")
+        .title
+          | File Manager
+        .status
+          i.fa.fa-user
+          a#usertrigger.dropdown-menu.user-link.btn-unify(href="#!")
+        #Usersdropdown.dropdown-User-content
+          ul
+            li
+              a#userProfile.btn-unify(href="#") User Profile
+            li
+              a#userChangePassword.btn-unify(href="#") Change Password
+            li
+              a#userLogout.btn-unify(href="#") Logout  
+      .nav-unify
         i#settings.material-icons.btn-flat settings
         #Settingdropdown.dropdown-setting-content
           ul
@@ -53,8 +52,8 @@ html(lang="es")
         a#download.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Download
         a#upload.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Upload
       .row
-      .container
-        .row.line-path
+      .main
+        .line-path
           ul#currentPath.path.left
             li
               label#currentpath Path:
@@ -64,7 +63,7 @@ html(lang="es")
             li
               a#refresh(href="#")
                 i.material-icons autorenew
-        .row.main-container
+        .main-container
           table#tbl-files.striped.highlight.responsive-table
             thead
               tr

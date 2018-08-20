@@ -74,6 +74,11 @@ export function modalDialog(title, message, options) {
       return true;
   };
 
+  ModalDialogObject.modalClose = function (event) {
+    document.body.classList.remove('modal-dialog-open');
+    window.modalDialogAlert.element.style.display = 'none';
+  };
+
   if (!ModalDialogObject.element) {
     ModalDialogObject.html =
           '<div class="modal-dialog-alert" id="modal-dialog-alert" role="alertdialog">' +
@@ -81,18 +86,18 @@ export function modalDialog(title, message, options) {
           '<div class="modal-dialog-alert-message-body" role="alert" aria-relevant="all">' +
           '<div class="modal-dialog-alert-message-tbf modal-dialog-alert-message-title">' +
           ModalDialogObject.title +
-          '</div>' +
+          '</div>' + '<a class="modal_close" id="modalClose" href="#"></a>' +
           '<div class="modal-dialog-alert-message-tbf modal-dialog-alert-message-content">' +
           ModalDialogObject.message +
           '</div>' +
           '<div class="modal-dialog-alert-message-tbf modal-dialog-alert-message-button">';
 
       if (ModalDialogObject.cancel || true) {
-        ModalDialogObject.html += '<a href="javascript:;" class="modal-dialog-alert-message-tbf modal-dialog-alert-message-button-cancel">' + ModalDialogObject.cancelText + '</a>';
+        ModalDialogObject.html += '<a href="javascript:;" class="btn2-unify modal-dialog-alert-message-tbf modal-dialog-alert-message-button-cancel"  id="ModalDialog-button-cancel">' + ModalDialogObject.cancelText + '</a>';
       }
 
       if (ModalDialogObject.confirm || true) {
-        ModalDialogObject.html += '<a href="javascript:;" class="modal-dialog-alert-message-tbf modal-dialog-alert-message-button-confirm">' + ModalDialogObject.confirmText + '</a>';
+        ModalDialogObject.html += '<a href="javascript:;" class="btn2-unify modal-dialog-alert-message-tbf modal-dialog-alert-message-button-confirm" id="ModalDialog-button-confirm">' + ModalDialogObject.confirmText + '</a>';
       }
 
       ModalDialogObject.html += '</div></div></div>';
@@ -102,24 +107,26 @@ export function modalDialog(title, message, options) {
       element.innerHTML = ModalDialogObject.html;
       document.body.appendChild(element);
 
+      ModalDialogObject.modalClose = document.querySelector('#modalClose');
       ModalDialogObject.element = document.querySelector('.modal-dialog-alert');
-      ModalDialogObject.cancelElement = document.querySelector('.modal-dialog-alert-message-button-cancel');
+      ModalDialogObject.cancelElement = document.querySelector('#ModalDialog-button-cancel');
 
       // Enabled cancel button callback
       if (ModalDialogObject.cancel) {
-          document.querySelector('.modal-dialog-alert-message-button-cancel').style.display = 'block';
+          document.querySelector('#ModalDialog-button-cancel').style.display = 'block';
       } else {
-          document.querySelector('.modal-dialog-alert-message-button-cancel').style.display = 'none';
+          document.querySelector('#ModalDialog-button-cancel').style.display = 'none';
       }
 
       // Enabled cancel button callback
-      ModalDialogObject.confirmElement = document.querySelector('.modal-dialog-alert-message-button-confirm');
+      ModalDialogObject.confirmElement = document.querySelector('#ModalDialog-button-confirm');
       if (ModalDialogObject.confirm) {
-          document.querySelector('.modal-dialog-alert-message-button-confirm').style.display = 'block';
+          document.querySelector('#ModalDialog-button-confirm').style.display = 'block';
       } else {
-          document.querySelector('.modal-dialog-alert-message-button-confirm').style.display = 'none';
+          document.querySelector('#ModalDialog-button-confirm').style.display = 'none';
       }
 
+      ModalDialogObject.modalClose.onclick = ModalDialogObject.modalClose; 
       ModalDialogObject.cancelElement.onclick = ModalDialogObject.cancelCallBack;
       ModalDialogObject.confirmElement.onclick = ModalDialogObject.confirmCallBack;
 
@@ -128,24 +135,24 @@ export function modalDialog(title, message, options) {
 
   document.querySelector('.modal-dialog-alert-message-title').innerHTML = '';
   document.querySelector('.modal-dialog-alert-message-content').innerHTML = '';
-  document.querySelector('.modal-dialog-alert-message-button-cancel').innerHTML = ModalDialogObject.cancelText;
-  document.querySelector('.modal-dialog-alert-message-button-confirm').innerHTML = ModalDialogObject.confirmText;
+  document.querySelector('#ModalDialog-button-cancel').innerHTML = ModalDialogObject.cancelText;
+  document.querySelector('#ModalDialog-button-confirm').innerHTML = ModalDialogObject.confirmText;
 
-  ModalDialogObject.cancelElement = document.querySelector('.modal-dialog-alert-message-button-cancel');
+  ModalDialogObject.cancelElement = document.querySelector('#ModalDialog-button-cancel');
 
   // Enabled cancel button callback
   if (ModalDialogObject.cancel) {
-      document.querySelector('.modal-dialog-alert-message-button-cancel').style.display = 'block';
+      document.querySelector('#ModalDialog-button-cancel').style.display = 'block';
   } else {
-      document.querySelector('.modal-dialog-alert-message-button-cancel').style.display = 'none';
+      document.querySelector('#ModalDialog-button-cancel').style.display = 'none';
   }
 
   // Enabled cancel button callback
-  ModalDialogObject.confirmElement = document.querySelector('.modal-dialog-alert-message-button-confirm');
+  ModalDialogObject.confirmElement = document.querySelector('#ModalDialog-button-confirm');
   if (ModalDialogObject.confirm) {
-      document.querySelector('.modal-dialog-alert-message-button-confirm').style.display = 'block';
+      document.querySelector('#ModalDialog-button-confirm').style.display = 'block';
   } else {
-      document.querySelector('.modal-dialog-alert-message-button-confirm').style.display = 'none';
+      document.querySelector('#ModalDialog-button-confirm').style.display = 'none';
   }
   ModalDialogObject.cancelElement.onclick = ModalDialogObject.cancelCallBack;
   ModalDialogObject.confirmElement.onclick = ModalDialogObject.confirmCallBack;

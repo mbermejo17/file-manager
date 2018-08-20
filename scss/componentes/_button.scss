@@ -40,6 +40,17 @@
   }
 }
 
+a.btn-unify  {
+  text-decoration: none;
+  font-family: var(--main-font);
+  color:var(--main-color);
+  font-size: var(--font-size);
+}
+a:hover.btn-unify  {
+    text-decoration: underline;
+    color: var(--second-color);
+  }
+
 
 .btn2-unify {
   background: linear-gradient(0deg, rgb(93, 164, 7) 0%, rgb(152, 198, 61) 100%);

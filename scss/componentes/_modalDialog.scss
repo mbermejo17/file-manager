@@ -18,8 +18,7 @@
   -webkit-transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
-  background-color: #fafafc;
-  text-align: center;
+  background-color: var(--bg-color);
   border-radius: 3px;
   -webkit-box-shadow: 0 0 48px rgba(0, 0, 0, 0.15);
   box-shadow: 0 0 48px rgba(0, 0, 0, 0.15);
@@ -37,13 +36,14 @@
   font-size: 16px;
 }
 .modal-dialog-alert-message-title {
-  font-weight: 400;
-  font-size: 18px;
+  background-color: lightgrey;
+  font-weight: bold;
+  font-size: 1.4em;
   padding: 8px 24px;
 }
 .modal-dialog-alert-message-content {
   padding: 24px 24px;
-  text-align: center;
+  font-size: 1em;
 }
 .modal-dialog-alert-message-button {
   position: relative;
