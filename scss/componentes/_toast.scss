@@ -9,6 +9,8 @@ $toast-color: #3a4349;
   right: 0;
   width: auto;
   min-width: 230px;
+  z-index: 9998;
+  transition: height 2s ease, top 2s ease;
   /*   font-family: 'Helvetica'; */
 }
 
@@ -23,6 +25,7 @@ $toast-color: #3a4349;
   animation-duration: 0.3s;
   animation-name: toast;
   animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  transition: height 2s ease, top 2s ease;
 }
 
 .toast-fadeOut {

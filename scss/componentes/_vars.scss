@@ -25,6 +25,9 @@ $button-disabled-color: #9f9f9f !default;
 $button-flat-color: #343434 !default;
 $button-flat-disabled-color: lighten(#999, 10%) !default;
 
+// Tables
+$table-striped-color: rgba(240, 240, 240, 0.5) !default;
+
 /* Custom Properties */
 :root {
   --main-font: "Roboto";
