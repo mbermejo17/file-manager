@@ -5,6 +5,9 @@ import {
     getRealPath,
     serializeObject
 } from "./general";
+
+import {modalDialog} from "../vendor/modalDialog";
+
 ////////////////////////////////////
 // Files and Folder module
 ///////////////////////////////////
@@ -214,7 +217,27 @@ export function deleteSelected() {
     if (userData.RunMode === "DEBUG")
         console.log("aSelectedFolders: ", appData.aSelectedFolders.length);
     if (appData.aSelectedFolders.length > 0) {
-        showDialogYesNo(
+        let result = 0;
+        let modalDialogOptions = {
+            cancel: true,
+            cancelText: "cancel button",
+            cancelCallBack: function (event) {
+                console.log("modalDialogOptions.cancelCallBack");
+                result = 0;
+            },
+            confirm: true,
+            confirmText: "confirm button",
+            confirmCallBack: function (event) {
+                console.log("modalDialogOptions.confirmCallBack");
+                deleteFile(appData.currentPath);
+                result = 1;
+            }
+        }; 
+        modalDialog('Delete foldes','Delete selected folders?',modalDialogOptions);
+        console.log('Delete return: ',result); 
+        
+
+        /* showDialogYesNo(
             "Delete foldes",
             "Delete selected folders?",
             y => {
@@ -251,7 +274,7 @@ export function deleteSelected() {
                     );
                 }
             }
-        );
+        ); */
     } else {
         if (appData.aSelectedFiles.length > 0) {
             showDialogYesNo(

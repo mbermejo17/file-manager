@@ -168,25 +168,31 @@ body {
 }
 
 .footer-unify {
+  position: fixed;
+  bottom: 0;
   height: 70px;
-  /* bottom: 0px; */
-  width: 100%;
+  width: 100vw;
   background-color: $background_color_1;
 }
+
+.footer-container {
+  display: flex;
+  justify-content: space-around;
+}
+
 .unify-text {
   font-size: 13px;
   color: $color_4;
 }
 .wrapper {
-  min-height: 100%;
-  margin-bottom: -70px;
-  padding-bottom: 70px;
+  min-height: 100vh;
+  //margin-bottom: -70px;
+  //padding-bottom: 70px;
 }
 .path {
   li {
     display: inline-block;
     font-size: 1em;
-    padding-left: 5px;
     a {
       &:hover {
         text-decoration: underline;
@@ -228,11 +234,14 @@ table.striped {
     border-spacing: 0;
   thead {
     th {
-      padding: 5px 5px;
+      text-align: center;
+      padding: 5px;
+      div {
+        margin-top: 9px;
+      }
     }
     border-bottom: 1px solid black;
-    th:first-child {
-      text-align: center;
+    th:first-child {    
       width: 10px;
     }
     th:nth-child(2) {
@@ -240,20 +249,17 @@ table.striped {
       width: 220px;
     }
     th:nth-child(3) {
-      text-align: center;
       width: 80px;
     }
     th:nth-child(4) {
-      text-align: center;
       width: 10px;
     }
     th:nth-child(5) {
-      text-align: center;
       width: 70px;
     }
   }
   tbody {
-    font-size: 0.85em;
+    font-size: 0.76em;
     tr:nth-child(odd) {
         background-color: $table-striped-color;
         &:hover {
@@ -261,10 +267,10 @@ table.striped {
           }
       }
     td {
-      padding: 5px 5px;
+      text-align: center;
     }
     td:first-child {
-      text-align: center;
+      padding: 5px 5px;
       width: 10px;
     }
     td:nth-child(2) {
@@ -276,11 +282,9 @@ table.striped {
       width: 80px;
     }
     td:nth-child(4) {
-      text-align: center;
       width: 10px;
     }
     td:nth-child(5) {
-      text-align: center;
       width: 70px;
     }
   }
@@ -621,7 +625,7 @@ input[type="date"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
 input {
-  height: 2.5em !important;
+  height: 1.2em;
 }
 
 #RoleOptions {
@@ -707,16 +711,15 @@ $md-checkbox-checked-color: $background_color_4;
 $md-checkbox-border-color: rgba(0, 0, 0, 0.54);
 $md-checkbox-border-color-disabled: rgba(0, 0, 0, 0.26);
 $md-checkbox-checked-color-disabled: rgba(0, 0, 0, 0.26);
-$md-checkbox-size: 15px;
+$md-checkbox-size: 9px;
 $md-checkbox-padding: 4px;
 $md-checkmark-width: 2px;
 $md-checkmark-color: #fff;
+
 .md-checkbox {
   position: relative;
   text-align: left;
-  top: 10px;
-
-  margin-left: 15px;
+  margin-left: 10px;
   &.md-checkbox-inline {
     display: inline-block;
   }
@@ -753,13 +756,17 @@ $md-checkmark-color: #fff;
         border: 2px solid $md-checkbox-checked-color;
       }
       + label:after {
+        top: 2.35px;
+        left: 3.35px;
+        width: 4.78px;
+        height: 4px;
         $md-checkmark-size: $md-checkbox-size - (2 * $md-checkbox-padding);
         transform: rotate(-45deg);
-        top: ($md-checkbox-size / 2) - ($md-checkmark-size / 4) -
-          $md-checkbox-size/10;
-        left: $md-checkbox-padding;
-        width: $md-checkmark-size;
-        height: $md-checkmark-size / 2;
+        /* top: ($md-checkbox-size / 2) - ($md-checkmark-size / 4) -
+          $md-checkbox-size/10; */
+        // left: $md-checkbox-padding;
+        /* width: $md-checkmark-size;
+        height: $md-checkmark-size / 2; */
         border: $md-checkmark-width solid $md-checkmark-color;
         border-top-style: none;
         border-right-style: none;

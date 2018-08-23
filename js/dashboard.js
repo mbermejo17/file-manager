@@ -1086,20 +1086,4 @@ window.appData = {
   refreshPath(appData.currentPath);
   refreshBarMenu();
 
-  let modalDialogOptions = {
-    cancel: true,
-    cancelText: "cancel button",
-    cancelCallBack: function (event) {
-        console.log("modalDialogOptions.cancelCallBack");
-    },
-    confirm: true,
-    confirmText: "confirm button",
-    confirmCallBack: function (event) {
-        console.log("modalDialogOptions.confirmCallBack");
-    }
-}; 
-  modalDialog('Prueba','Esto es una prueba',modalDialogOptions);
-
-
-
 })(window, document);
