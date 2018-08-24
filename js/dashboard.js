@@ -430,7 +430,7 @@ window.appData = {
 
     newHtmlContent += `<tr><td><span>&nbsp;</span></td>
               <td><i class="fa fa-folder filesTable"></i><a href="#" id="goBackFolder" class="file-Name typeFolder">..</a></td>
-              <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`;
+              <td>&nbsp;</td><td>&nbsp;</td></tr>`;
     aFol.forEach((val, idx, array) => {
       newHtmlContent += `<tr><td><div class="md-checkbox dashboard-path"><input class="checkFolder check" id="${
         val.name
@@ -441,7 +441,7 @@ window.appData = {
       newHtmlContent += `<td><i class="fa fa-folder filesTable"></i><a href="#" class="file-Name typeFolder">${
         val.name
       }</a></td>`;
-      newHtmlContent += `<td>&nbsp;</td><td>&nbsp;</td><td>${
+      newHtmlContent += `<td>&nbsp;</td><td>${
         val.date
       }</td></tr>`;
     });
@@ -455,7 +455,7 @@ window.appData = {
       newHtmlContent += `<td><i class="fa fa-file filesTable"></i><span class="typeFile">${
         val.name
       }</span></td>`;
-      newHtmlContent += `<td>${fileSize}</td><td>&nbsp;</td><td>${
+      newHtmlContent += `<td>${fileSize}</td><td>${
         val.date
       }</td></tr>`;
     });
@@ -1085,5 +1085,28 @@ window.appData = {
 
   refreshPath(appData.currentPath);
   refreshBarMenu();
+
+  let modalDialogOptions = {
+    cancel: true,
+    cancelText: "Cancel",
+    confirm: true,
+    confirmText: "OK",
+    type: 'prompt'
+  };
+    
+        modalDialogOptions.confirmCallBack = async (e,data) => {
+          console.log(data);
+        };
+        modalDialogOptions.cancelCallBack = async (e,data) => {
+          console.log(data);
+        };
+        modalDialog(
+          "New Folder",
+          "Folder Name",
+          modalDialogOptions
+        );
+
+
+
 
 })(window, document);

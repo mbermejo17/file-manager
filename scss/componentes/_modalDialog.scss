@@ -8,6 +8,50 @@
   background: rgba(0, 0, 0, 0.6);
 }
 
+.modal-dialog-input {
+  font-size: 0.9em;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px 10px 10px 5px;
+  -webkit-appearance: none;
+  display: block;
+  background: #fafafa;
+  color: #636363;
+  width: 280px;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #757575;
+}
+
+.modal-dialog-input:focus {
+  outline: none;
+}
+
+.modal-dialog-label {
+  color: #999;
+  font-size: 0.9em;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 185px;
+  top: 105px;
+  transition: all 0.2s ease;
+}
+/* active */
+
+.modal-dialog-input:focus ~ .modal-dialog-label,
+.modal-dialog-input.used ~ .modal-dialog-label {
+  top: -20px;
+  transform: scale(0.75);
+  left: 162px;
+  top: 80px;
+  /* font-size: 14px; */
+  color: #4a89dc;
+}
+
+
+
+
 .modal-dialog-alert-message-body {
   position: fixed;
   z-index: 9999;
@@ -61,7 +105,7 @@
   color: #3cc51f;
   text-decoration: none;
   border-radius: 3px;
-  padding: 12px 24px;
+  padding: 5px 24px;
 }
 a.modal-dialog-alert-message-button-cancel,
 a.modal-dialog-alert-message-button-cancel:link {
