@@ -49,9 +49,6 @@
   color: #4a89dc;
 }
 
-
-
-
 .modal-dialog-alert-message-body {
   position: fixed;
   z-index: 9999;
@@ -69,6 +66,23 @@
   -webkit-animation: modal-dialog-show 0.1s;
   animation: modal-dialog-show 0.1s;
 }
+
+.btn-input [type=file] {
+  cursor: inherit;
+  display: block;
+  font-size: 999px;
+  filter: alpha(opacity=0);
+  min-height: 100%;
+  min-width: 100%;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  line-height: .9em;
+  top: 0;
+  cursor: pointer;
+}
+
 @media screen and (max-width: 480px) {
   .modal-dialog-alert-message-body {
       min-width: 320px;

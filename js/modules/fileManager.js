@@ -264,21 +264,24 @@ export function upload(Token) {
   let aListHandler = [];
   let handlerCounter = 0;
   let ModalTitle = "Subida de archivos";
-  let ModalContent = `<label class="file-input waves-effect waves-teal btn-flat btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>
+  let ModalContent = `<label class="btn-input waves-effect waves-teal btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>
                         <span id="sFiles">Ningun archivo seleccionado</span>`;
   ModalContent += htmlUploadDownloadTemplate;
-  let htmlContent = `<div id="modal-header">
+  let htmlContent = `<div class="modal-dialog-alert">
+                        <div class="modal-dialog-alert-mask"></div>
+                        <div class="modal-dialog-alert-message-body">
+                        <div id="modal-header">
                           <h5>${ModalTitle}</h5>
                           <a class="modal_close" id="modalClose" href="#"></a>
                         </div>
-                        <div class="modal-content">
+                        <div class="files-progress-content">
                           <p>${ModalContent}</p>
                       </div>
                       <div class="modal-footer">
                               <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
                               <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel uploads</a>  
                               <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Close</a>
-                      </div>`;
+                      </div></div></div>`;
 
   $u("#upload").removeClass("disabled");
   $u("#upload").addClass("disabled");

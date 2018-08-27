@@ -626,52 +626,37 @@ window.appData = {
   // New Folder
   ////////////////////////////////////////
   const showNewFolder = (w, h, t) => {
-    let ModalTitle = t;
-    let ModalContent = `<div class="row">
-                              <div class="input-field col s12">
-                                <input id="newFolderName" type="text"/>
-                                <label for="newFolderName">New Folder Name</label>
-                              </div>
-                          </div>`;
-    let htmlContent = `<div id="modal-header">
-                        <h5>${ModalTitle}</h5>
-                        <a class="modal_close" id="modalClose" href="#"></a>
-                      </div>
-                      <div class="modal-content">
-                        <p>${ModalContent}</p>
-                      </div>
-                      <div class="modal-footer">
-                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
-                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptNewFolder" href="#!">Accept</a>
-                      </div>    `;
-    $u("#modal").html(htmlContent);
-    $u("#modal").css(
-      "width: " + w + "%;height: " + h + "px;text-align: center;"
-    );
-    //$('.modal-content').css('width: 350px;');
-    $u(".modal").css("width: 40% !important");
-    $u("#modal").show();
-    $u("#lean-overlay").show();
-    $u("#AcceptNewFolder").on("click", e => {
-      let newFolderName = $u("#newFolderName").val();
-      if (userData.RunMode === "DEBUG")
-        console.log("newFolderName: ", newFolderName);
-      newFolder(newFolderName);
-    });
-    $u("#modalClose").on("click", e => {
-      $u("#modal").hide();
-      $u("#lean-overlay").hide();
-    });
-    $u("#ModalClose").on("click", e => {
-      $u("#modal").hide();
-      $u("#lean-overlay").hide();
-    });
-    document.getElementById("newFolderName").addEventListener("keyup", e => {
+    let modalDialogOptions = {
+      cancel: true,
+      cancelText: "Cancel",
+      confirm: true,
+      confirmText: "OK",
+      type: 'prompt'
+    };
+      
+          modalDialogOptions.confirmCallBack = async (e,data) => {
+            if (userData.RunMode === "DEBUG") console.log("newFolderName: ", data);
+            if(data || data.trim() !== '') {
+              let parseFolderName = data.replace(/\s/g,"_");
+              newFolder(parseFolderName);
+            }
+          };
+          modalDialogOptions.cancelCallBack = async (e,data) => {
+            console.log(data);
+          };
+          modalDialog(
+            "New Folder",
+            "Folder Name",
+            modalDialogOptions
+          );
+   
+   /*  document.getElementById("newFolderName").addEventListener("keyup", e => {
       e.preventDefault();
       if (e.keyCode === 13) {
         document.getElementById("AcceptNewFolder").click();
       }
-    });
+    }); */
+
   };
 
   ////////////////////////////////////////
@@ -1085,28 +1070,5 @@ window.appData = {
 
   refreshPath(appData.currentPath);
   refreshBarMenu();
-
-  let modalDialogOptions = {
-    cancel: true,
-    cancelText: "Cancel",
-    confirm: true,
-    confirmText: "OK",
-    type: 'prompt'
-  };
-    
-        modalDialogOptions.confirmCallBack = async (e,data) => {
-          console.log(data);
-        };
-        modalDialogOptions.cancelCallBack = async (e,data) => {
-          console.log(data);
-        };
-        modalDialog(
-          "New Folder",
-          "Folder Name",
-          modalDialogOptions
-        );
-
-
-
 
 })(window, document);

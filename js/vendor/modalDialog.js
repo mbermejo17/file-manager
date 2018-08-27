@@ -7,6 +7,11 @@ export function modalDialog(title, message, options) {
   if (typeof options !== 'object') {
       options = {};
   }
+  if(document.querySelector('#modal-dialog-alert-wrap')) {
+    let el = document.querySelector('#modal-dialog-alert-wrap');
+    el.parentNode.removeChild(el);
+    delete window.modalDialogAlert;
+  }
 
   if (!window.modalDialogAlert) {
       var ModalDialogObject = {
@@ -15,7 +20,7 @@ export function modalDialog(title, message, options) {
           confirmElement: null
       };
       ModalDialogObject.element = document.querySelector('.modal-dialog-alert');
-  } else {
+  } /* else {
       // Clear style
       if (window.modalDialogAlert.cancel) {
           window.modalDialogAlert.cancelElement.style = '';
@@ -28,7 +33,7 @@ export function modalDialog(title, message, options) {
       window.modalDialogAlert.element.style.display = 'block';
 
       ModalDialogObject = window.modalDialogAlert;
-  }
+  } */
 
   // Define default options
   ModalDialogObject.type = options.type !== undefined ? options.type : 'OkCancel';
@@ -61,6 +66,12 @@ export function modalDialog(title, message, options) {
       });
   }
 
+
+
+ 
+ 
+
+
   ModalDialogObject.message = message;
   ModalDialogObject.title = title;
   ModalDialogObject.confirm = options.confirm !== undefined ? options.confirm : true;
@@ -71,8 +82,7 @@ export function modalDialog(title, message, options) {
       // Confirm callback
       if (typeof options.confirmCallBack === 'function') {
           if(ModalDialogObject.type === 'prompt') {
-            console.log(ModalDialogObject.inputId.value)  
-            options.confirmCallBack(event,ModalDialogObject.inputId.value);
+            options.confirmCallBack(event,(ModalDialogObject.inputId.value.trim()));
           } else {
             options.confirmCallBack(event);
           }
@@ -201,6 +211,12 @@ export function modalDialog(title, message, options) {
   document.querySelector('.modal-dialog-alert-message-content').innerHTML = messageContent;
   if(ModalDialogObject.type === 'prompt') {
     ModalDialogObject.inputId = document.querySelector('#inputId');
+    document.getElementById("inputId").addEventListener("keyup", e => {
+        e.preventDefault();
+        if (e.keyCode === 13) {
+          document.getElementById("ModalDialog-button-confirm").click();
+        }
+  });
   }
   window.modalDialogAlert = ModalDialogObject;
 }
