@@ -1,0 +1,209 @@
+:root {
+  --main-font: "Roboto";
+  --alternate-font: "Open Sans";
+  --font-size: 16px;
+  --line-height: 1.6;
+  --main-color: #95c857;
+  --main-modal-color: #95c857;
+  --second-color: #fff;
+  --second-modal-color: #fff;
+  --bg-color: #fff;
+  --bg-modal-color: #fff;
+  --bg-alternate-color: #293037;
+  --border-color: #293037;
+  --text-color: #fff;
+  --title-color: var(--second-color);
+  --link-color: var(--main-color);
+  --link-hover-color: var(--second-color);
+  --nav-height: 56px;
+}
+
+.ModalDialog-mask {
+  position: fixed;
+  z-index: 9998;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.ModalDialog-input {
+  font-size: 0.9em;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px 10px 10px 5px;
+  -webkit-appearance: none;
+  display: block;
+  background: #fafafa;
+  color: #636363;
+  width: 280px;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #757575;
+}
+
+
+.ModalDialog-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: url(../img/modal_close.png);
+  z-index: 2;
+}
+
+.ModalDialog-input:focus {
+  outline: none;
+}
+
+.ModalDialog-label {
+  color: #999;
+  font-size: 0.9em;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 185px;
+  top: 105px;
+  transition: all 0.2s ease;
+}
+/* active */
+.input-field {
+  margin: 0;
+}
+
+.input-field label .active {
+  display: block;
+}
+
+.ModalDialog-input:focus ~ .ModalDialog-label,
+.ModalDialog-input.used ~ .ModalDialog-label {
+  top: -20px;
+  transform: scale(0.75);
+  left: 162px;
+  top: 80px;
+  /* font-size: 14px; */
+  color: #4a89dc;
+}
+
+.ModalDialog-body {
+  position: fixed;
+  z-index: 9999;
+  min-width: 640px;
+  max-width: 720px;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  background-color: var(--bg-color);
+  border-radius: 6px;
+  -webkit-box-shadow: 0 0 48px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 48px rgba(0, 0, 0, 0.15);
+  -webkit-animation: modal-dialog-show 0.1s;
+  animation: modal-dialog-show 0.1s;
+}
+
+.btn-input [type=file] {
+  cursor: inherit;
+  display: block;
+  font-size: 999px;
+  filter: alpha(opacity=0);
+  min-height: 100%;
+  min-width: 100%;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  line-height: .9em;
+  top: 0;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 480px) {
+  .modal-dialog-alert-message-body {
+      min-width: 320px;
+      max-width: 100%;
+  }
+}
+.ModalDialog-title {
+  background-color: lightgrey;
+  font-weight: bold;
+  font-size: 1.4em;
+  padding: 8px 24px;
+  border-radius: 6px 6px 0 0;
+}
+.ModalDialog-content ,.ModalDialog-container {
+  padding: 24px 24px;
+  font-size: 1em;
+}
+.ModalDialog-button {
+  position: relative;
+  padding: 24px;
+  font-size: 18px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ModalDialog-button a {
+  display: block;
+  margin: 0 24px;
+  color: #3cc51f;
+  text-decoration: none;
+  border-radius: 3px;
+  padding: 5px 24px;
+}
+a.ModalDialog-button-cancel,
+a.ModalDialog-button-cancel:link {
+  color: #FFFFFF;
+  background-color: #95A5A6;
+}
+a.ModalDialog-button-cancel:hover {
+  color: #FFFFFF;
+  background-color: #7F8C8D;
+  text-decoration: none;
+}
+
+a.ModalDialog-button-confirm,
+a.ModalDialog-button-confirm:link {
+  color: #FFFFFF;
+  background-color: #34495E;
+}
+a.ModalDialog-button-confirm:hover {
+  color: #FFFFFF;
+  background-color: #2C3E50;
+  text-decoration: none;
+}
+
+@-webkit-keyframes modal-dialog-show {
+  0% {
+      -webkit-filter: opacity(.2);
+      filter: opacity(.2);
+      margin-top: -16px;
+  }
+  100% {
+      -webkit-filter: opacity(1);
+      filter: opacity(1);
+      margin-top: 0;
+  }
+}
+@keyframes modal-dialog-show {
+  0% {
+      -webkit-filter: opacity(.2);
+      filter: opacity(.2);
+      margin-top: -16px;
+  }
+  100% {
+      -webkit-filter: opacity(1);
+      filter: opacity(1);
+      margin-top: 0;
+  }
+}
+
+.modal-dialog-open {
+  overflow: hidden;
+}
