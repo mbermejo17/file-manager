@@ -231,7 +231,7 @@ window.appData = {
               cPathArray[x]
             }</a></li>`;
           } else {
-            newHtmlContent += `<li><spand>/&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${
+            newHtmlContent += `<li><spand>&nbsp/&nbsp;</spand><a class="breadcrumb-line-path" href="#!">${
               cPathArray[x]
             }</a></li>`;
           }
@@ -631,7 +631,8 @@ window.appData = {
       cancelText: "Cancel",
       confirm: true,
       confirmText: "OK",
-      type: 'prompt'
+      type: 'prompt',
+      width: '400px'
     };
       
           modalDialogOptions.confirmCallBack = async (e,data) => {
@@ -921,8 +922,27 @@ window.appData = {
     e.preventDefault();
     if (!$u("#" + e.target.id).hasClass("disabled")) {
       $u("#Usersdropdown").hide();
-      $u("#logoutmodal").show();
-      $u("#logoutmodal").addClass("modal-logout");
+      let modalDialogOptions = {
+        cancel: true,
+        cancelText: "No",
+        confirm: true,
+        confirmText: "Yes",
+        type: '',
+        width: '400px'
+      };
+        
+            modalDialogOptions.confirmCallBack = async (e,data) => {
+              if (userData.RunMode === "DEBUG") console.log("data: ", data);
+              logout();
+            };
+            modalDialogOptions.cancelCallBack = async (e,data) => {
+              console.log(data);
+            };
+            modalDialog(
+              "Close User session",
+              "Do you want to exit?",
+              modalDialogOptions
+            );
     } else {
       showToast("User Logout", "Opcion no permitida", "error");
     }

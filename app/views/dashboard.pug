@@ -5,7 +5,7 @@ html(lang="es")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     meta(http-equiv="X-UA-Compatible" content="ie=edge")
     title Document
-    link(type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons")
+    //link(type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons")
     //link(type="text/css" rel="stylesheet" href="css/materialize.css" media="screen,projection")
     link(type="text/css" rel="stylesheet" href="css/fontawesome.all.min.css" media="screen,projection")
     link(type="text/css" rel="stylesheet" href="css/dashboard.css" media="screen,projection")
@@ -36,7 +36,7 @@ html(lang="es")
             li
               a#userLogout.btn-unify(href="#") Logout  
       .nav-unify
-        i#settings.material-icons.btn-flat settings
+        i#settings.fas.fa-cog(title="Settings")
         #Settingdropdown.dropdown-setting-content
           ul
             li
@@ -61,8 +61,8 @@ html(lang="es")
               a.breadcrumb-line-path(href="#!") \
           ul.path.right
             li
-              a#refresh(href="#")
-                i.material-icons autorenew
+              a#refresh(href="#",title="Refresh")
+                i.fas.fa-sync
         .main-container
           table#tbl-files.striped.highlight.responsive-table
             thead

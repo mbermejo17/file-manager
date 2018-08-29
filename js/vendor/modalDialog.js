@@ -13,17 +13,17 @@ export function modalDialog(title, message, options) {
 
   console.log("window.modalDialogAlert: ", window.modalDialogAlert);
   console.log(
-    ".modal-dialog-alert: ",
-    document.querySelector(".modal-dialog-alert")
+    ".ModalDialog-alert: ",
+    document.querySelector(".ModalDialog-alert")
   );
 
   //if (window.modalDialogAlert.element) delete window.modalDialogAlert;
-  if(document.querySelector('#modal-dialog-alert-wrap')) {
-    let el = document.querySelector('#modal-dialog-alert-wrap');
+  if(document.querySelector('#ModalDialog-wrap')) {
+    let el = document.querySelector('#ModalDialog-wrap');
     el.parentNode.removeChild(el);
   }
-  if (document.querySelector(".modal-dialog-alert")) {
-    let el = document.querySelector(".modal-dialog-alert");
+  if (document.querySelector(".ModalDialog-alert")) {
+    let el = document.querySelector(".ModalDialog-alert");
     el.parentNode.removeChild(el);
   }
 
@@ -37,7 +37,7 @@ export function modalDialog(title, message, options) {
       cancelElement: null,
       confirmElement: null
     };
-    ModalDialogObject.element = document.querySelector(".modal-dialog-alert");
+    ModalDialogObject.element = document.querySelector("#ModalDialog-alert");
   }
   /* else {
          // Clear style
@@ -57,6 +57,8 @@ export function modalDialog(title, message, options) {
   // Define default options
   ModalDialogObject.type =
     options.type !== undefined ? options.type : "OkCancel";
+    ModalDialogObject.width =
+    options.width !== undefined ? options.width : '640px';  
   ModalDialogObject.cancel =
     options.cancel !== undefined ? options.cancel : false;
   ModalDialogObject.cancelText =
@@ -66,7 +68,7 @@ export function modalDialog(title, message, options) {
     window.modalDialogAlert.element.style.display = "none";
     // Cancel callback
     if (typeof options.cancelCallBack === "function") {
-      let el = document.querySelector('#modal-dialog-alert-wrap');
+      let el = document.querySelector('#ModalDialog-wrap');
       el.parentNode.removeChild(el);
       options.cancelCallBack(event);
     }
@@ -76,15 +78,15 @@ export function modalDialog(title, message, options) {
   };
 
   // Close alert on click outside
-  if (document.querySelector(".modal-dialog-alert-mask")) {
+  if (document.querySelector(".ModalDialog-mask")) {
     document
-      .querySelector(".modal-dialog-alert-mask")
+      .querySelector(".ModalDialog-mask")
       .addEventListener("click", function(event) {
         document.body.classList.remove("modal-dialog-open");
         window.modalDialogAlert.element.style.display = "none";
         // Cancel callback
         if (typeof options.cancelCallBack === "function") {
-          let el = document.querySelector('#modal-dialog-alert-wrap');
+          let el = document.querySelector('#ModalDialog-wrap');
           el.parentNode.removeChild(el);
           options.cancelCallBack(event);
         }
@@ -104,7 +106,7 @@ export function modalDialog(title, message, options) {
     window.modalDialogAlert.element.style.display = "none";
     // Confirm callback
     if (typeof options.confirmCallBack === "function") {
-      let el = document.querySelector('#modal-dialog-alert-wrap');
+      let el = document.querySelector('#ModalDialog-wrap');
       el.parentNode.removeChild(el);
       if (ModalDialogObject.type === "prompt") {
         options.confirmCallBack(event, ModalDialogObject.inputId.value.trim());
@@ -117,8 +119,8 @@ export function modalDialog(title, message, options) {
     return true;
   };
 
-  ModalDialogObject.modalClose = function(event) {
-    let el = document.querySelector('#modal-dialog-alert-wrap');
+  ModalDialogObject.ModalClose = function(event) {
+    let el = document.querySelector('#ModalDialog-wrap');
     el.parentNode.removeChild(el);
     /* document.body.classList.remove("modal-dialog-open");
     window.modalDialogAlert.element.style.display = "none"; */
@@ -128,48 +130,53 @@ export function modalDialog(title, message, options) {
     let htmlContent = "";
 
     htmlContent =
-      '<div class="modal-dialog-alert" id="modal-dialog-alert">' +
-      '<div class="modal-dialog-alert-mask"></div>' +
-      '<div class="modal-dialog-alert-message-body" aria-relevant="all">' +
-      '<div class="modal-dialog-alert-message-tbf modal-dialog-alert-message-title">' +
-      ModalDialogObject.title +
-      "</div>" +
-      '<a class="modal_close" id="modalClose" href="#"></a>';
+    '<div class="ModalDialog-alert" id="ModalDialog-alert">' + 
+    '<div class="ModalDialog-mask"></div>' +
+    '<div class="ModalDialog-body" aria-relevant="all">' +
+      '<div class="ModalDialog-title">'+
+        ModalDialogObject.title +
+      '</div>' +
+      '<a class="ModalDialog-close" id="ModalDialogClose" href="#"></a>';
 
     console.log("ModalDialogObject.type: ", ModalDialogObject.type);
     if (ModalDialogObject.type == "prompt") {
       messageContent =
-        '<div class="modal-dialog-alert-message-tbf modal-dialog-alert-message-content">' +
-        '<div class="input-field">' +
-        '<input id="inputId" class="modal-dialog-input" type="text">' +
-        '<label for="inputId" class="modal-dialog-label">' +
-        ModalDialogObject.message +
-        "</label>" +
-        "</div>" +
-        "</div>";
+      '<div class="ModalDialog-container">' +
+        '<div class="ModalDialog-content" id="ModalDialog-content">' +
+          '<div class="input-field">' +
+            '<input id="inputId" class="ModalDialog-input" type="text">' +
+            '<label for="inputId" class="ModalDialog-label">' +
+                            ModalDialogObject.message +
+             "</label>" +
+          "</div>" +
+        "</div></div>";
 
       htmlContent +=
         messageContent +
-        '<div class="modal-dialog-alert-message-tbf modal-dialog-alert-message-button">';
+        '<div class="ModalDialog-button">';
     } else {
-      htmlContent =
-        htmlContent +
-        '<div class="modal-dialog-alert-message-tbf modal-dialog-alert-message-content">' +
-        ModalDialogObject.message +
-        "</div>" +
-        '<div class="modal-dialog-alert-message-tbf modal-dialog-alert-message-button">';
+      messageContent = 
+      '<div class="ModalDialog-container">' +
+        '<div class="ModalDialog-content" id="ModalDialog-content">' +
+            ModalDialogObject.message +
+        '</div>'+
+      '</div>';
+      
+      htmlContent +=
+        messageContent +
+        '<div class="ModalDialog-button">';
     }
 
     if (ModalDialogObject.cancel || true) {
       htmlContent +=
-        '<a href="javascript:;" class="btn2-unify modal-dialog-alert-message-tbf modal-dialog-alert-message-button-cancel"  id="ModalDialog-button-cancel">' +
+        '<a href="javascript:;" class="btn2-unify ModalDialog-button-cancel"  id="ModalDialog-button-cancel">' +
         ModalDialogObject.cancelText +
         "</a>";
     }
 
     if (ModalDialogObject.confirm || true) {
       htmlContent +=
-        '<a href="javascript:;" class="btn2-unify modal-dialog-alert-message-tbf modal-dialog-alert-message-button-confirm" id="ModalDialog-button-confirm">' +
+        '<a href="javascript:;" class="btn2-unify ModalDialog-button-confirm" id="ModalDialog-button-confirm">' +
         ModalDialogObject.confirmText +
         "</a>";
     }
@@ -178,12 +185,12 @@ export function modalDialog(title, message, options) {
     ModalDialogObject.html = htmlContent;
 
     var element = document.createElement("div");
-    element.id = "modal-dialog-alert-wrap";
+    element.id = "ModalDialog-wrap";
     element.innerHTML = htmlContent;
     document.body.appendChild(element);
 
-    ModalDialogObject.modalClose = document.querySelector("#modalClose");
-    ModalDialogObject.element = document.querySelector(".modal-dialog-alert");
+    ModalDialogObject.modalClose = document.querySelector("#ModalDialogClose");
+    ModalDialogObject.element = document.querySelector(".ModalDialog-alert");
     ModalDialogObject.cancelElement = document.querySelector(
       "#ModalDialog-button-cancel"
     );
@@ -209,7 +216,7 @@ export function modalDialog(title, message, options) {
         "none";
     }
 
-    ModalDialogObject.modalClose.onclick = ModalDialogObject.modalClose;
+    ModalDialogObject.modalClose.onclick = ModalDialogObject.ModalClose;
     ModalDialogObject.cancelElement.onclick = ModalDialogObject.cancelCallBack;
     ModalDialogObject.confirmElement.onclick =
       ModalDialogObject.confirmCallBack;
@@ -217,8 +224,8 @@ export function modalDialog(title, message, options) {
     window.modalDialogAlert = ModalDialogObject;
   }
 
-  document.querySelector(".modal-dialog-alert-message-title").innerHTML = "";
-  document.querySelector(".modal-dialog-alert-message-content").innerHTML = "";
+  document.querySelector(".ModalDialog-title").innerHTML = "";
+  document.querySelector(".ModalDialog-content").innerHTML = "";
   document.querySelector("#ModalDialog-button-cancel").innerHTML =
     ModalDialogObject.cancelText;
   document.querySelector("#ModalDialog-button-confirm").innerHTML =
@@ -254,10 +261,10 @@ export function modalDialog(title, message, options) {
   ModalDialogObject.title = ModalDialogObject.title || "";
   ModalDialogObject.message = ModalDialogObject.message || "";
 
-  document.querySelector(".modal-dialog-alert-message-title").innerHTML =
+  document.querySelector(".ModalDialog-title").innerHTML =
     ModalDialogObject.title;
   document.querySelector(
-    ".modal-dialog-alert-message-content"
+    ".ModalDialog-content"
   ).innerHTML = messageContent;
   if (ModalDialogObject.type === "prompt") {
     ModalDialogObject.inputId = document.querySelector("#inputId");
@@ -268,5 +275,6 @@ export function modalDialog(title, message, options) {
       }
     });
   }
+  document.querySelector(".ModalDialog-body").style.width = ModalDialogObject.width;
   window.modalDialogAlert = ModalDialogObject;
 }

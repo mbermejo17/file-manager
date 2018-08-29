@@ -100,9 +100,6 @@ body {
   font-size: 1.2em;
   color: $color_1;
   font-family: var(--main-font);
-  i {
-    color: $color_3;
-  }
 }
 .user-link {
   padding-left: 10px;
@@ -141,6 +138,11 @@ body {
   margin-right: 10px;
   i {
     margin-top: 5px;
+    margin-right: 5px;
+    color: var(--main-color);
+  }
+  i:hover {
+    color: darken($color_2,10%);
   }
 }
 .main-container {
@@ -399,13 +401,15 @@ table.striped {
 }
 
 #settings {
-  color: $color_2;
   width: 5px !important;
   height: 10px !important;
-  font-size: 1.2em;
-  margin-top: 6px;
+  font-size: 1em;
+  margin-top: 10px;
+  margin-right: 10px;
+  color: var(--main-color);
   &:hover {
-    color: $color_1;
+    color: var(--second-color);
+    cursor: pointer;
   }
 }
 #tableUserProfile {

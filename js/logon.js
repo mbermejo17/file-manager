@@ -2,7 +2,7 @@ import axios from "axios";
 import { Base64 } from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
-import {modalDialog} from "./vendor/modalDialog";
+
 
 ((c, d) => {
   const READY_STATE_COMPLETE = 4;
@@ -109,8 +109,12 @@ import {modalDialog} from "./vendor/modalDialog";
       })
       .catch((e) => {
         $u("#waiting").removeClass("active");
-        showToast("Login", "Wrong user name or password", "error");
-        console.log(e);
+        if(e.response.status === 403) {
+          showToast("Login", e.response.data.message, "error");
+        } else {
+          showToast("Login", "Wrong user name or password", "error");
+        } 
+        //console.log('Logon result:',e.response.status);
       });
   }
 
@@ -124,19 +128,5 @@ import {modalDialog} from "./vendor/modalDialog";
       else $u("#" + e.target.id).removeClass("used");
     });
   });
-
-  let modalDialogOptions = {
-    cancel: true,
-    cancelText: "cancel button",
-    cancelCallBack: function (event) {
-        console.log("modalDialogOptions.cancelCallBack");
-    },
-    confirm: true,
-    confirmText: "confirm button",
-    confirmCallBack: function (event) {
-        console.log("modalDialogOptions.confirmCallBack");
-    }
-}; 
-  modalDialog('Prueba','Esto es una prueba',modalDialogOptions);
 
 })(console.log, document);

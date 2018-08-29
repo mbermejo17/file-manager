@@ -222,7 +222,8 @@ export function deleteSelected() {
     cancel: true,
     cancelText: "Cancel",
     confirm: true,
-    confirmText: "OK"
+    confirmText: "OK",
+    width: '340px'
   };
   if (appData.aSelectedFolders.length > 0) {
     let result = 0;

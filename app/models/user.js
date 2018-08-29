@@ -242,22 +242,6 @@ UserModel.All = function(callback) {
       }
     }
   );
-
-  /* db.get(sql, (err, row) => {
-      if (err) {
-          dbClose();
-          console.error(err.message);
-          callback(err.message, null);
-      } else {
-          dbClose();
-          console.log(row);
-          if (row) {
-              callback(null, row);
-          } else {
-              callback('No se encuentran registros', null);
-          }
-      }
-  }); */
 };
 
 UserModel.Add = function(userData, callback) {

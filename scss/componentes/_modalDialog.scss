@@ -1,4 +1,4 @@
-.modal-dialog-alert-mask {
+.ModalDialog-mask {
   position: fixed;
   z-index: 9998;
   width: 100%;
@@ -8,7 +8,7 @@
   background: rgba(0, 0, 0, 0.6);
 }
 
-.modal-dialog-input {
+.ModalDialog-input {
   font-size: 0.9em;
   margin-left: auto;
   margin-right: auto;
@@ -23,11 +23,23 @@
   border-bottom: 1px solid #757575;
 }
 
-.modal-dialog-input:focus {
+
+.ModalDialog-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: url(../img/modal_close.png);
+  z-index: 2;
+}
+
+.ModalDialog-input:focus {
   outline: none;
 }
 
-.modal-dialog-label {
+.ModalDialog-label {
   color: #999;
   font-size: 0.9em;
   font-weight: normal;
@@ -38,9 +50,16 @@
   transition: all 0.2s ease;
 }
 /* active */
+.input-field {
+  margin: 0;
+}
 
-.modal-dialog-input:focus ~ .modal-dialog-label,
-.modal-dialog-input.used ~ .modal-dialog-label {
+.input-field label .active {
+  display: block;
+}
+
+.ModalDialog-input:focus ~ .ModalDialog-label,
+.ModalDialog-input.used ~ .ModalDialog-label {
   top: -20px;
   transform: scale(0.75);
   left: 162px;
@@ -49,7 +68,7 @@
   color: #4a89dc;
 }
 
-.modal-dialog-alert-message-body {
+.ModalDialog-body {
   position: fixed;
   z-index: 9999;
   min-width: 640px;
@@ -60,7 +79,7 @@
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   background-color: var(--bg-color);
-  border-radius: 3px;
+  border-radius: 6px;
   -webkit-box-shadow: 0 0 48px rgba(0, 0, 0, 0.15);
   box-shadow: 0 0 48px rgba(0, 0, 0, 0.15);
   -webkit-animation: modal-dialog-show 0.1s;
@@ -89,21 +108,18 @@
       max-width: 100%;
   }
 }
-.modal-dialog-alert-message-tbf {
-  padding: 0 20px;
-  font-size: 16px;
-}
-.modal-dialog-alert-message-title {
+.ModalDialog-title {
   background-color: lightgrey;
   font-weight: bold;
   font-size: 1.4em;
   padding: 8px 24px;
+  border-radius: 6px 6px 0 0;
 }
-.modal-dialog-alert-message-content {
+.ModalDialog-content ,.ModalDialog-container {
   padding: 24px 24px;
   font-size: 1em;
 }
-.modal-dialog-alert-message-button {
+.ModalDialog-button {
   position: relative;
   padding: 24px;
   font-size: 18px;
@@ -113,7 +129,7 @@
   align-items: center;
   justify-content: center;
 }
-.modal-dialog-alert-message-button a {
+.ModalDialog-button a {
   display: block;
   margin: 0 24px;
   color: #3cc51f;
@@ -121,23 +137,23 @@
   border-radius: 3px;
   padding: 5px 24px;
 }
-a.modal-dialog-alert-message-button-cancel,
-a.modal-dialog-alert-message-button-cancel:link {
+a.ModalDialog-button-cancel,
+a.ModalDialog-button-cancel:link {
   color: #FFFFFF;
   background-color: #95A5A6;
 }
-a.modal-dialog-alert-message-button-cancel:hover {
+a.ModalDialog-button-cancel:hover {
   color: #FFFFFF;
   background-color: #7F8C8D;
   text-decoration: none;
 }
 
-a.modal-dialog-alert-message-button-confirm,
-a.modal-dialog-alert-message-button-confirm:link {
+a.ModalDialog-button-confirm,
+a.ModalDialog-button-confirm:link {
   color: #FFFFFF;
   background-color: #34495E;
 }
-a.modal-dialog-alert-message-button-confirm:hover {
+a.ModalDialog-button-confirm:hover {
   color: #FFFFFF;
   background-color: #2C3E50;
   text-decoration: none;

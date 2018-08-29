@@ -1,3 +1,6 @@
+
+
+
 //const mongoose = require("mongoose");
 //const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -7,15 +10,16 @@ const config = require("../config/config.json");
 const JWT_KEY = config.jwtKey;
 const fs = require("fs");
 const normalize = require("normalize-path");
-const pathPrefix = '.\\repository\\';
+const pathPrefix = ".\\repository\\";
 const User = require("../models/user");
+const moment = require("moment");
 
 const makeUserPathIfNotExist = (p, callback) => {
   let newFolder = normalize(pathPrefix + "/" + p.toUpperCase());
-  let r ;
-  if(!fs.existsSync(newFolder)) {
-      r = fs.mkdir(newFolder);
-  }   
+  let r;
+  if (!fs.existsSync(newFolder)) {
+    r = fs.mkdir(newFolder);
+  }
   console.log("makeNewPath: ", r);
   callback(r);
 };
@@ -54,12 +58,12 @@ exports.changePasswd = (req, res, next) => {
     userName: req.body.username,
     userPasswd: Base64.decode(req.body.newpassword)
   };
-  User.ChangePasswd(userData, (data) => {
-    //let dataJSON = JSON.parse(data);  
-    if (data.status !=='OK') {
-        return res.status(500).json(data);
+  User.ChangePasswd(userData, data => {
+    //let dataJSON = JSON.parse(data);
+    if (data.status !== "OK") {
+      return res.status(500).json(data);
     } else {
-        return res.status(200).json(data);
+      return res.status(200).json(data);
     }
   });
 };
@@ -76,17 +80,23 @@ exports.UserAdd = (req, res) => {
   User.Add(data, d => {
     response.push(d);
     console.log("d : ", d);
-    if (d.status === 'OK') {
+    if (d.status === "OK") {
       makeUserPathIfNotExist(rootPath, result => {
-       if(!result) {
-        return res.status(200).json(response[0]);
-        console.log(result);
-       } else {
-        return res.status(200).json({"status":"FAIL","message":response[0].message +".<br>Error al crear Carpeta.","data":null });
-       } 
-    });
+        if (!result) {
+          return res.status(200).json(response[0]);
+          console.log(result);
+        } else {
+          return res
+            .status(200)
+            .json({
+              status: "FAIL",
+              message: response[0].message + ".<br>Error al crear Carpeta.",
+              data: null
+            });
+        }
+      });
     } else {
-        return res.status(200).json(d); 
+      return res.status(200).json(d);
     }
   });
 };
@@ -95,52 +105,56 @@ exports.UserUpdate = (req, res) => {
   let data = req.body;
   let userName = data.userName;
   let queryString = data.queryString;
-  let accessString = '';
+  let accessString = "";
   let response = [];
   let newData = {};
 
-  for(var propertyName in queryString) {
+  for (var propertyName in queryString) {
     accessString += `${propertyName} = '${queryString[propertyName]}',`;
   }
- 
-  console.log('before:', accessString);
-  accessString   = accessString.slice(0,-1);
-  console.log('after:', accessString);
-  newData = {"userName":userName, "queryString": accessString};
 
-  User.Update(newData, (d) => {
+  console.log("before:", accessString);
+  accessString = accessString.slice(0, -1);
+  console.log("after:", accessString);
+  newData = { userName: userName, queryString: accessString };
+
+  User.Update(newData, d => {
     response.push(d);
     console.log("d : ", d);
-    if (d.status === 'OK') {
-       makeUserPathIfNotExist(rootPath, result => {
-       if(!result) {
-        return res.status(200).json(response[0]);
-        console.log(result);
-       } else {
-        return res.status(200).json({"status":"FAIL","message":response[0].message +".<br>Error al crear Carpeta.","data":null });
-       } 
-    });
+    if (d.status === "OK") {
+      makeUserPathIfNotExist(rootPath, result => {
+        if (!result) {
+          return res.status(200).json(response[0]);
+          console.log(result);
+        } else {
+          return res
+            .status(200)
+            .json({
+              status: "FAIL",
+              message: response[0].message + ".<br>Error al crear Carpeta.",
+              data: null
+            });
+        }
+      });
     } else {
-        return res.status(200).json(d); 
+      return res.status(200).json(d);
     }
   });
 };
 exports.UserGetAll = (req, res, next) => {
-  User.All(
-    (data) => {
-      if (data.status == 'FAIL') {
-        console.log(status);
-        res.status(500).json({ status: "FAIL", message: status, data: null });
-      } else {
-            console.log(data);
-            return res.status(200).json({
-              status: "OK",
-              message: "Users found",
-              data: data.data
-            });
-        } 
-      }
-  );
+  User.All(data => {
+    if (data.status == "FAIL") {
+      console.log(status);
+      res.status(500).json({ status: "FAIL", message: status, data: null });
+    } else {
+      console.log(data);
+      return res.status(200).json({
+        status: "OK",
+        message: "Users found",
+        data: data.data
+      });
+    }
+  });
 };
 
 exports.UserFindByName = (req, res, next) => {
@@ -152,33 +166,34 @@ exports.UserFindByName = (req, res, next) => {
         res.status(500).json({ status: "FAIL", message: status, data: null });
       } else {
         if (data) {
-            console.log(data);
-            return res.status(200).json({
-              status: "OK",
-              message: "User found",
-              data: {
-                UserName: data.UserName,
-                Role: data.UserRole,
-                UserPasswd: Base64.encode(data.UserPasswd),
-                CompanyName: data.CompanyName,
-                RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
-                AccessString: data.AccessString,
-                ExpirateDate: data.ExpirateDate
-              }
-            });
-          } else {
-            return res
-              .status(401)
-              .json({ status: "FAIL", message: "Auth failed", data: null });
-          }
-        } 
+          console.log(data);
+          return res.status(200).json({
+            status: "OK",
+            message: "User found",
+            data: {
+              UserName: data.UserName,
+              Role: data.UserRole,
+              UserPasswd: Base64.encode(data.UserPasswd),
+              CompanyName: data.CompanyName,
+              RootPath:
+                data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
+              AccessString: data.AccessString,
+              ExpirateDate: data.ExpirateDate
+            }
+          });
+        } else {
+          return res
+            .status(401)
+            .json({ status: "FAIL", message: "Auth failed", data: null });
+        }
       }
+    }
   );
-}
+};
 
 exports.UserLogin = (req, res, next) => {
   User.Find(
-    `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`,
+    `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, UnixDate FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`,
     (status, data) => {
       //console.log("User Find : " + status);
       //console.dir(data);
@@ -190,6 +205,18 @@ exports.UserLogin = (req, res, next) => {
           //console.log(req.body.password);
           //console.log(Base64.decode(req.body.password))
           if (Base64.decode(req.body.password) === data.UserPasswd) {
+            let currentUnixDate = moment(Date()).unix();
+            console.log('data.UnixDate:',data.UnixDate);
+            console.log('currentUnixDate:',currentUnixDate);
+            if (data.UnixDate && data.UnixDate < currentUnixDate) {
+              return res
+                .status(403)
+                .json({
+                  status: "FAIL",
+                  message: "Expired user account",
+                  data: {"status":403}
+                });
+            }
             /* const token = jwt.sign({
                         UserName: data.UserName,
                         UserId: data._id
@@ -204,7 +231,8 @@ exports.UserLogin = (req, res, next) => {
                 UserId: data._id,
                 Role: data.UserRole,
                 wssURL: wsPath,
-                RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
+                RootPath:
+                  data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
                 AccessString: data.AccessString
               },
               JWT_KEY,
@@ -223,9 +251,10 @@ exports.UserLogin = (req, res, next) => {
                 Role: data.UserRole,
                 wssURL: wsPath,
                 CompanyName: data.CompanyName,
-                RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
+                RootPath:
+                  data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
                 AccessString: data.AccessString,
-                RunMode: 'DEBUG'
+                RunMode: "DEBUG"
               }
             });
           } else {
