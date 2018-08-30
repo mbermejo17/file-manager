@@ -45,8 +45,8 @@
   font-weight: normal;
   position: absolute;
   pointer-events: none;
-  left: 185px;
-  top: 105px;
+  left: 60px;
+  top: 100px;
   transition: all 0.2s ease;
 }
 /* active */
@@ -62,8 +62,8 @@
 .ModalDialog-input.used ~ .ModalDialog-label {
   top: -20px;
   transform: scale(0.75);
-  left: 162px;
-  top: 80px;
+  left: 45px;
+  top: 60px;
   /* font-size: 14px; */
   color: #4a89dc;
 }
@@ -71,7 +71,7 @@
 .ModalDialog-body {
   position: fixed;
   z-index: 9999;
-  min-width: 640px;
+  width: 340px;
   max-width: 720px;
   top: 50%;
   left: 50%;
@@ -116,13 +116,13 @@
   border-radius: 6px 6px 0 0;
 }
 .ModalDialog-content ,.ModalDialog-container {
-  padding: 24px 24px;
+  padding: 10px 10px 5px 10px;
   font-size: 1em;
 }
 .ModalDialog-button {
   position: relative;
-  padding: 24px;
-  font-size: 18px;
+  padding: 15px;
+  font-size: 1em;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -135,7 +135,7 @@
   color: #3cc51f;
   text-decoration: none;
   border-radius: 3px;
-  padding: 5px 24px;
+  padding: 2px 24px;
 }
 a.ModalDialog-button-cancel,
 a.ModalDialog-button-cancel:link {

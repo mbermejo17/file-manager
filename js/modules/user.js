@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Base64 } from "js-base64";
 import md5 from "../vendor/md5.min";
 import moment from "moment";
+import { modalDialog } from "../vendor/modalDialog";
 
 ////////////////////////////////////
 // Users manage module

@@ -686,7 +686,64 @@ window.appData = {
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptChangeUserPassword" href="#!">Accept</a>
                       </div>    `;
-    $u("#modal").html(htmlContent);
+
+                      let modalDialogOptions = {
+                        cancel: true,
+                        cancelText: "Cancel",
+                        confirm: true,
+                        confirmText: "OK",
+                        type: 'changePassword',
+                        width: '340px'
+                      };
+                        modalDialogOptions.confirmCallBack = async (e,data1,data2) => {
+                          await axios
+                          .post(
+                            "/changepasswd",
+                            {
+                              username: username,
+                              newpassword: Base64.encode(md5(data1))
+                            },
+                            {
+                              headers: {
+                                Authorization: "Bearer " + userData.Token,
+                                "Content-Type": "application/json"
+                              },
+                              timeout: 290000
+                            }
+                          )
+                          .then(d => {
+                            $u("#waiting").removeClass("active");
+                            if (userData.RunMode === "DEBUG") console.log("changePassword: ", d);
+                            if (d.data.status === "FAIL") {
+                              showToast("Change User Password", d.data.message, "error");
+                              d.querySelector("#message").innerHTML = d.data.message;
+                            } else {
+                              showToast("Change User Password", d.data.message, "success");
+                              if (userData.RunMode === "DEBUG") console.log(d.data.message);
+                            }
+                          })
+                          .catch(e => {
+                            $u("#waiting").removeClass("active");
+                            showToast("Change User Password", e, "error");
+                            if (userData.RunMode === "DEBUG") console.log(e);
+                          });
+                        };
+                        modalDialog(
+                          "Change User Password",
+                          '<div class="input-field col s12">' +
+                                '<input id="newpassword" type="password"/>' +
+                                '<label for="newpassword">New Password</label>' +
+                              '</div>' +
+                              '<div class="input-field col s12">' +
+                                '<input id="newpassword2" type="password"/>' +
+                                '<label for="newpassword2">Repeat Password</label>' +
+                              '</div>',
+                          modalDialogOptions
+                        );
+
+
+
+    /* $u("#modal").html(htmlContent);
     $u("#modal").removeClass("modal-changePassword");
     $u("#modal").addClass("modal-changePassword");
     $u(".modal-changePassword").css("height: " + h + "px;text-align: center;");
@@ -698,39 +755,7 @@ window.appData = {
       let newpassword = $("#newpassword").val();
       if (userData.RunMode === "DEBUG") console.log(username, newpassword);
       $u("#waiting").addClass("active");
-      axios
-        .post(
-          "/changepasswd",
-          {
-            username: username,
-            newpassword: Base64.encode(md5(newpassword))
-          },
-          {
-            headers: {
-              Authorization: "Bearer " + userData.Token,
-              "Content-Type": "application/json"
-            },
-            timeout: 290000
-          }
-        )
-        .then(d => {
-          $u("#waiting").removeClass("active");
-          if (userData.RunMode === "DEBUG") console.log("changePassword: ", d);
-          if (d.data.status === "FAIL") {
-            showToast("Change User Password", d.data.message, "error");
-            d.querySelector("#message").innerHTML = d.data.message;
-          } else {
-            showToast("Change User Password", d.data.message, "success");
-            if (userData.RunMode === "DEBUG") console.log(d.data.message);
-          }
-          $u("#modal").hide();
-          $u("#lean-overlay").hide();
-        })
-        .catch(e => {
-          $u("#waiting").removeClass("active");
-          showToast("Change User Password", e, "error");
-          if (userData.RunMode === "DEBUG") console.log(e);
-        });
+      
     });
     $u("#modalClose").on("click", () => {
       $u("#modal").hide();
@@ -739,7 +764,7 @@ window.appData = {
     $u("#ModalClose").on("click", () => {
       $u("#modal").hide();
       $u("#lean-overlay").hide();
-    });
+    }); */
   };
 
   const refreshBarMenu = () => {
