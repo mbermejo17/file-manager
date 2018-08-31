@@ -665,7 +665,7 @@ window.appData = {
   ////////////////////////////////////////
   const showChangeUserPassword = (w, h, t) => {
     let ModalTitle = t;
-    let ModalContent = `<div class="row">
+    /* let ModalContent = `<div class="row">
                               <div class="input-field col s12">
                                 <input id="newpassword" type="password"/>
                                 <label for="newpassword">New Password</label>
@@ -686,7 +686,7 @@ window.appData = {
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptChangeUserPassword" href="#!">Accept</a>
                       </div>    `;
-
+ */
                       let modalDialogOptions = {
                         cancel: true,
                         cancelText: "Cancel",
@@ -700,7 +700,7 @@ window.appData = {
                           .post(
                             "/changepasswd",
                             {
-                              username: username,
+                              username: userData.UserName,
                               newpassword: Base64.encode(md5(data1))
                             },
                             {
@@ -730,14 +730,14 @@ window.appData = {
                         };
                         modalDialog(
                           "Change User Password",
-                          '<div class="input-field col s12">' +
-                                '<input id="newpassword" type="password"/>' +
-                                '<label for="newpassword">New Password</label>' +
-                              '</div>' +
-                              '<div class="input-field col s12">' +
-                                '<input id="newpassword2" type="password"/>' +
-                                '<label for="newpassword2">Repeat Password</label>' +
-                              '</div>',
+                          '<div class="input-field">' +
+                                '<input id="newpassword" class="ModalDialog-input" type="password"/>' +
+                                '<label for="newpassword" class="ModalDialog-label">New Password</label>' +
+                          '</div>' +
+                          '<div class="input-field">' +
+                                '<input id="newpassword2" class="ModalDialog-input" type="password"/>' +
+                                '<label for="newpassword2" class="ModalDialog-label">Repeat Password</label>' +
+                          '</div>',
                           modalDialogOptions
                         );
 

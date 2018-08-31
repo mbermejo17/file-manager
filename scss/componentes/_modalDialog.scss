@@ -102,6 +102,10 @@
   cursor: pointer;
 }
 
+.ModalDialog-input-field {
+  margin: 12px 0 12px;
+}
+
 @media screen and (max-width: 480px) {
   .modal-dialog-alert-message-body {
       min-width: 320px;
@@ -111,8 +115,8 @@
 .ModalDialog-title {
   background-color: lightgrey;
   font-weight: bold;
-  font-size: 1.4em;
-  padding: 8px 24px;
+  font-size: 1em;
+  padding: 8px 10px;
   border-radius: 6px 6px 0 0;
 }
 .ModalDialog-content ,.ModalDialog-container {
