@@ -97,7 +97,8 @@ export function modalDialog(title, message, options) {
     if (typeof options.confirmCallBack === "function") {
       let el = document.querySelector("#ModalDialog-wrap");
       el.parentNode.removeChild(el);
-      if (ModalDialogObject.type === "prompt") {   
+      if (ModalDialogObject.type === "prompt") {
+
         options.confirmCallBack(event, ModalDialogObject.inputId.value.trim());
       } else {
         if (ModalDialogObject.type === "changePassword") {
@@ -115,6 +116,15 @@ export function modalDialog(title, message, options) {
 
     // Confirmed
     return true;
+  };
+
+  ModalDialogObject._IfUsed = function(event){
+    let el = event.target;
+    if (el.value.trim() !==''){
+      el.classList.add('used');
+    } else {
+      el.classList.remove('used');
+    }
   };
 
   // Button Close Window Dialog
@@ -146,7 +156,7 @@ export function modalDialog(title, message, options) {
       messageContent =
         '<div class="ModalDialog-container">' +
           '<div class="ModalDialog-content" id="ModalDialog-content">' +
-            '<div class="input-field">' +
+            '<div class="ModalDialog-input-field">' +
               '<input id="inputId" class="ModalDialog-input" type="text">' +
               '<label for="inputId" class="ModalDialog-label">' +
                 ModalDialogObject.message +
@@ -208,10 +218,13 @@ export function modalDialog(title, message, options) {
 
     if (ModalDialogObject.type === "prompt") {
       ModalDialogObject.inputId = document.querySelector("#inputId");
+      ModalDialogObject.inputId.onblur = ModalDialogObject._IfUsed;
     }  
    if (ModalDialogObject.type === "changePassword") {
       ModalDialogObject.newpassword = document.querySelector("#newpassword");
       ModalDialogObject.newpassword2 = document.querySelector("#newpassword2");
+      ModalDialogObject.newpassword.onblur = ModalDialogObject._IfUsed;
+      ModalDialogObject.newpassword2.onblur = ModalDialogObject._IfUsed;
    }
 
     // Enabled cancel button callback

@@ -43,10 +43,10 @@
   color: #999;
   font-size: 0.9em;
   font-weight: normal;
-  position: absolute;
+  position: relative;
   pointer-events: none;
-  left: 60px;
-  top: 100px;
+  left: 12px;
+  top: -28px;
   transition: all 0.2s ease;
 }
 /* active */
@@ -60,10 +60,10 @@
 
 .ModalDialog-input:focus ~ .ModalDialog-label,
 .ModalDialog-input.used ~ .ModalDialog-label {
-  top: -20px;
+  position: relative;
   transform: scale(0.75);
-  left: 45px;
-  top: 60px;
+  left: 10px;
+  top: -55px;
   /* font-size: 14px; */
   color: #4a89dc;
 }
@@ -103,6 +103,7 @@
 }
 
 .ModalDialog-input-field {
+  position:relative;
   margin: 12px 0 12px;
 }
 

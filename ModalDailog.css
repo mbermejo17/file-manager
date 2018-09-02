@@ -65,13 +65,14 @@
   font-weight: normal;
   position: absolute;
   pointer-events: none;
-  left: 185px;
-  top: 105px;
+  left: 25px;
+  top: 12px;
   transition: all 0.2s ease;
 }
 /* active */
 .input-field {
   margin: 0;
+  position:relative;
 }
 
 .input-field label .active {
@@ -80,10 +81,10 @@
 
 .ModalDialog-input:focus ~ .ModalDialog-label,
 .ModalDialog-input.used ~ .ModalDialog-label {
-  top: -20px;
+  position: absolute;
   transform: scale(0.75);
-  left: 162px;
-  top: 80px;
+  left: 10px;
+  top: -10px;
   /* font-size: 14px; */
   color: #4a89dc;
 }
