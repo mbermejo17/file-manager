@@ -268,15 +268,15 @@ export function upload(Token) {
   let ModalContent = `<label class="btn-input waves-effect waves-teal btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>
                         <span id="sFiles">Ningun archivo seleccionado</span>`;
   ModalContent += htmlUploadDownloadTemplate;
-  let htmlContent = `<div class="modal-dialog-alert">
-                        <div class="modal-dialog-alert-mask"></div>
-                        <div class="modal-dialog-alert-message-body">
+  let htmlContent = `<div class="ModalDialog-alert">
+                        <div class="ModalDialog-mask"></div>
+                        <div class="ModalDialog-body">
                         <div id="modal-header">
-                          <h5>${ModalTitle}</h5>
+                          <h5>Subida de archivos</h5>
                           <a class="modal_close" id="modalClose" href="#"></a>
                         </div>
                         <div class="files-progress-content">
-                          <p>${ModalContent}</p>
+                          <p>Subida de archivos</p>
                       </div>
                       <div class="modal-footer">
                               <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
@@ -286,6 +286,36 @@ export function upload(Token) {
 
   $u("#upload").removeClass("disabled");
   $u("#upload").addClass("disabled");
+
+
+ /*  let modalDialogOptions = {
+    cancel: true,
+    cancelText: "Cancel",
+    confirm: true,
+    confirmText: "OK",
+    type: 'upload',
+    width: '480px'
+  };
+    modalDialogOptions.confirmCallBack = async (e,data1,data2) => {
+      
+    };
+    modalDialog(
+      "Change User Password",
+      '<div class="input-field">' +
+            '<input id="newpassword" class="ModalDialog-input" type="password"/>' +
+            '<label for="newpassword" class="ModalDialog-label">New Password</label>' +
+      '</div>' +
+      '<div class="input-field">' +
+            '<input id="newpassword2" class="ModalDialog-input" type="password"/>' +
+            '<label for="newpassword2" class="ModalDialog-label">Repeat Password</label>' +
+      '</div>',
+      modalDialogOptions
+    );
+ */
+
+
+
+
 
   function fnUploadFile(formData, nFile, fileName) {
     $u("#li" + nFile).show();

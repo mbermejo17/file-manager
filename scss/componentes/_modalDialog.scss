@@ -45,8 +45,8 @@
   font-weight: normal;
   position: relative;
   pointer-events: none;
-  left: 12px;
-  top: -28px;
+  left: 45px;
+  top: -20px;
   transition: all 0.2s ease;
 }
 /* active */
@@ -62,8 +62,8 @@
 .ModalDialog-input.used ~ .ModalDialog-label {
   position: relative;
   transform: scale(0.75);
-  left: 10px;
-  top: -55px;
+  left: 45px;
+  top: -50px;
   /* font-size: 14px; */
   color: #4a89dc;
 }
@@ -71,7 +71,7 @@
 .ModalDialog-body {
   position: fixed;
   z-index: 9999;
-  width: 340px;
+  width: 420px;
   max-width: 720px;
   top: 50%;
   left: 50%;

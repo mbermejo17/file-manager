@@ -14,32 +14,35 @@ let htmlUserFormTemplate = `
           <div class="row">
               <form class="col s12 m12 l12" id="formAddUser">
                   <div class="row">
-                      <div class="input-field col s6"><input id="UserName" type="text" />
-                      <label for="UserName">Name</label></div>
-                      <div class="input-field col s6"><input id="CompanyName" type="text" />
-                      <label for="CompanyName">Company Name</label></div>
+                      <div class="userForm-input-field col s6"><input id="UserName" type="text" class="userForm-input"/>
+                      <label for="UserName" class="userForm-label">Name</label></div>
+                      <div class="input-field col s6"><input id="CompanyName" type="text" class="userForm-input"/>
+                      <label for="CompanyName" class="userForm-label">Company Name</label></div>
                   </div>
                   <div class="row">
-                      <div class="input-field col s6"><input id="UserPasswd" type="password" autocomplete="off" />
-                      <label for="UserPasswd">Password</label></div>
-                      <div class="input-field col s6"><input id="repeatUserPasswd" type="password" autocomplete="off" />
-                      <label for="repeatUserPasswd">Repeat Password</label></div>
+                      <div class="userForm-input-field"><input id="UserPasswd" type="password" autocomplete="off" class="userForm-input"/>
+                      <label for="UserPasswd" class="userForm-label">Password</label></div>
+                      <div class="userForm-input-field"><input id="repeatUserPasswd" type="password" autocomplete="off" class="userForm-input" />
+                      <label for="repeatUserPasswd" class="userForm-label">Repeat Password</label></div>
                   </div>
                   <div class="row">
-                      <div class="input-field col s4"><input id="rootpath" type="text" />
-                      <label for="rootpath">Root Path</label></div><i class="mdi-action-find-in-page col s2" id="FindPath"></i>
-                      <div class="input-field col s6 right">
-                        <input class="datepicker" id="ExpirateDate" type="date"/>
-                        <label for="ExpirateDate">Expiration Date</label>
+                      <div class="userForm-input-field">
+                      <input id="rootpath" type="text" class="userForm-input"/>
+                      <label for="rootpath" class="userForm-label">Root Path</label>
+                      </div>
+                      <i class="mdi-action-find-in-page col s2" id="FindPath"></i>
+                      <div class="userForm-input-field right">
+                        <input class="datepicker userForm-input" id="ExpirateDate" type="date"/>
+                        <label for="ExpirateDate" class="userForm-label">Expiration Date</label>
                       </div>
                   </div>
                   <div class="row">
                       <div class="rights">Access Rights</div>
                   </div>
                   <div class="row">
-                      <div class="input-field col s2 m2"></div>
-                      <div class="input-field col s8 m8" style="line-height: .9em;" >
-                        <input id="Role" type="hidden" value="" />
+                      <div class="userForm-input-field"></div>
+                      <div class="userForm-input-field" style="line-height: .9em;" >
+                        <input id="Role" type="hidden" value="" class="userForm-input"/>
                         <select id="RoleOptions" name="optionsname" required="">
                           <option value="opt1">User</option>
                           <option value="opt2">Admin</option>
@@ -48,51 +51,51 @@ let htmlUserFormTemplate = `
                         </select>
                         <label>User Role</label>
                       </div>
-                      <div class="input-field col s2 m2"></div>
+                      <div class="userForm-input-field"></div>
                   </div>
                   <br/>
                   <div class="row">
-                      <span class="label-switch col s2">Download</span>
-                      <div class="switch col s3">
+                      <span class="label-switch">Download</span>
+                      <div class="switch">
                         <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
                         <span class="lever"></span>On</label>
                       </div>
                       <span class="col s2"></span>
-                      <span class="label-switch col s2">Upload</span>
-                      <div class="switch col s3">
+                      <span class="label-switch">Upload</span>
+                      <div class="switch">
                         <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
                         <span class="lever"></span>On</label>
                       </div>
                   </div>
-                  <div class="row"><span class="label-switch col s2">Delete File</span>
-                      <div class="switch col s3">
+                  <div class="row"><span class="label-switch">Delete File</span>
+                      <div class="switch">
                         <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
                         <span class="lever"></span>On</label>
                       </div>
-                      <span class="col s2">   </span>
-                      <span class="label-switch col s2">Delete Folder</span>
-                      <div class="switch col s3">
+                      <span class="col">   </span>
+                      <span class="label-switch">Delete Folder</span>
+                      <div class="switch">
                         <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
                         <span class="lever"></span>On</label>
                       </div>
                   </div>
                   <div class="row">
-                      <span class="label-switch col s2">Add Folder</span>
-                      <div class="switch col s3">
+                      <span class="label-switch">Add Folder</span>
+                      <div class="switch">
                         <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
                         <span class="lever"></span>On</label>
                       </div>
                       <span class="col s2"></span>
-                      <span class="label-switch col s2">Share files</span>
-                      <div class="switch col s3">
+                      <span class="label-switch">Share files</span>
+                      <div class="switch">
                         <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
                         <span class="lever"></span>On</label>
                       </div>
                   </div>
                   <div class="row"><br/>
-                      <div class="input-field col s6 m6"></div>
-                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserCancel" type="submit" name="action">Cancel</button></div>
-                      <div class="input-field col s3 m3"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserAcept" type="submit" name="action">Accept</button></div>
+                      <div class="input-field"></div>
+                      <div class="input-field"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserCancel" type="submit" name="action">Cancel</button></div>
+                      <div class="input-field"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserAcept" type="submit" name="action">Accept</button></div>
                   </div>
               </form>
           </div>
