@@ -38,9 +38,25 @@
 .userForm-input:focus {
   outline: none;
 }
+.right {
+  justify-content: flex-end !important;
+}
+
+.left {
+  justify-content: flex-start !important;
+}
+
+.center {
+  justify-content: center !important;
+}
+
+.userForm-select, .userForm-select-label {
+  margin: 5px 10px 5px 10px;
+}
+
 .userForm-label {
   position: absolute;
-  left: 5px;
+  left: 20px;
   top: 28px;
   color: #999;
   font-size: 0.9em;
@@ -51,14 +67,17 @@
 .userForm-input:focus ~ .userForm-label, .userForm-input.used ~ .userForm-label {
   top: -5px;
   transform: scale(0.75);
-  left: 1px;
+  left: 20px;
  /* font-size: 14px;
   */
   color: #4a89dc;
 }
 .userForm-input-field {
+  display: flex;
   position: relative;
   margin: 10px;
+  justify-content: space-between;
+  flex-grow: 1;
 }
 .userForm-input-group {
   display: flex;
@@ -68,33 +87,26 @@
 .switch__lever {
   position: relative;
   display: inline-block;
-  width: 60px;
- /*60px*/
-  height: 20px;
- /*20px*/
-  margin: 0 0.625em;
- /*0 10px*/
-  border-radius: 1.25em;
+  width: 46px;
+  height: 16px;
+  margin: 0 5px;
+  border-radius: 8px;
   vertical-align: middle;
   background: #e6e6e6;
   box-shadow: 1px 0 2px #c5c3c3 inset, -1px 1px 4px #c5c3c3 inset;
-  transition: background 0.1s;
+  transition: background .5s;
 }
 .switch__lever:before {
   content: "";
   position: absolute;
-  top: -5px;
- /*-5px*/
+  top: -4px;
   left: -2px;
- /*-2px*/
-  width: 30px;
- /*30px*/
-  height: 30px;
- /*30px*/
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: #f7f5f5;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, .4);
-  transition: transform 0.1s ease;
+  transition: transform 0.5s ease;
 }
 .switch__lever:active:before {
   box-shadow: 0 0.0625em 0.1875em 0.0625em rgba(0, 0, 0, 0.4), 0 0 0 0.625em rgba(38, 166, 154, 0.1);
@@ -104,7 +116,7 @@
  /*84c7c1*/
 }
 [type="checkbox"]:checked ~ .switch__lever:before {
-  transform: translateX(111%);
+  transform: translateX(116%);
   background: #70b3ad;
 }
 .switch__on-text {

@@ -45,17 +45,18 @@
             <label for="ExpirateDate" class="userForm-label">Expiration Date</label>
           </div>
         </div>
+        <br>
         <div class="userForm-title">Access Rights</div>
         <div class="userForm-input-group">
-          <div class="userForm-input-field" style="line-height: .9em;">
+          <div class="userForm-input-field center" style="line-height: .9em;">
+            <label class="userForm-select-label">User Role</label>
             <input id="Role" type="hidden" value="" class="userForm-input">
-            <select id="RoleOptions" name="optionsname" required="">
+            <select id="RoleOptions" name="optionsname" required="" class="userForm-select">
               <option value="opt1">User</option>
               <option value="opt2">Admin</option>
               <option value="opt3">Advanced User</option>
               <option value="opt4">Custom</option>
             </select>
-            <label>User Role</label>
           </div>
         </div>
         <div class="userForm-input-group">
@@ -79,7 +80,7 @@
           </div>
         </div>
         <div class="userForm-input-group">
-          <div class="input-field">
+          <div class="userForm-input-field">
             <span class="switch-label">Delete File</span>
             <label class="switch jsSwitcher" role="switch" aria-label="regular switch" aria-checked="false">
               <input type="checkbox" class="off-screen" name="switcher" aria-hidden="true" />
@@ -120,10 +121,10 @@
         </div>
         <div class="userForm-input-group">
           <div class="userForm-input-field"></div>
-          <div class="userForm-input-field"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserCancel"
-              type="submit" name="action">Cancel</button></div>
-          <div class="userForm-input-field"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserAcept"
-              type="submit" name="action">Accept</button></div>
+          <div class="userForm-input-field right">
+            <button class="waves-effect waves-teal btn-flat btn2-unify" id="btn-addUserCancel" type="submit" name="action">Cancel</button>
+            <button class="waves-effect waves-teal btn-flat btn2-unify" id="btn-addUserAcept" type="submit" name="action">Accept</button>
+          </div>
         </div>
       </form>
     </div>
