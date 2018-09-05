@@ -8,7 +8,7 @@ import { modalDialog } from "../vendor/modalDialog";
 // Users manage module
 ///////////////////////////////////
 
-let htmlUserFormTemplate = `
+/* let htmlUserFormTemplate = `
       <div id="AddUserModal">
           <h4 id ="userFormTitle" class="header2">New User</h4>
           <div class="row">
@@ -99,7 +99,183 @@ let htmlUserFormTemplate = `
                   </div>
               </form>
           </div>
-      </div>`;
+      </div>`; */
+
+      let htmlUserFormTemplate = `
+    <div class="userForm-container">
+      <div class="userForm-content">
+        <div class="userForm-row">
+          <div class="userForm-title">New User</div>
+        </div>
+        <br>
+        <div class="userForm-row">
+          <div class="userForm-group">
+            <div class="userForm-field-content">
+                <div class="userForm-input-container">
+              <input id="UserName" type="text" class="userForm-input">
+                <label for="UserName" class="userForm-label">Name</label>
+            </div>   
+             </div>
+            <div class="userForm-field-content">
+                <div class="userForm-input-container">
+              <input id="CompanyName" type="text" class="userForm-input">
+                <label for="CompanyName" class="userForm-label">Company Name</label>
+            </div>   
+             </div>
+          </div>
+        </div>
+        <div class="userForm-row">
+         <div class="userForm-group"> 
+          <div class="userForm-field-content">
+            <div class="userForm-input-container">
+              <input id="UserPasswd" type="password" autocomplete="off" class="userForm-input">
+                <label for="UserPasswd" class="userForm-label">Password</label>
+            </div>    
+          </div>
+          <div class="userForm-field-content">
+                <div class="userForm-input-container">
+              <input id="repeatUserPasswd" type="password" autocomplete="off" class="userForm-input">
+                <label for="repeatUserPasswd" class="userForm-label">Repeat Password</label>
+            </div> 
+          </div>
+          </div>  
+        </div>
+        <div class="userForm-row">
+          <div class="userForm-group">
+            <div class="userForm-field-content">
+                <div class="userForm-input-container">
+              <input id="rootpath" type="text" class="userForm-input">
+                <label for="rootpath" class="userForm-label">Root Path</label>
+            </div> 
+             </div>
+            <div class="userForm-field-content">
+                <div class="userForm-input-container">
+              <i id="FindPath"></i>
+                <input class="datepicker userForm-input used" id="ExpirateDate" type="date">
+                <label for="ExpirateDateInput" class="userForm-label">Expiration Date</label>
+            </div> 
+             </div>
+          </div> 
+        </div>
+        <div class="userForm-row">
+          <div class="userForm-title">Access Rights</div>
+        </div>
+        <br>
+        <div class="userForm-row">            
+              <div class="userForm-input-field">
+                <label class="userForm-select-label">User Role</label>
+                <input id="Role" type="hidden" value="" class="userForm-input">
+                <select id="RoleOptions" name="optionsname" required="" class="userForm-select">
+                  <option value="opt1">User</option>
+                  <option value="opt2">Admin</option>
+                  <option value="opt3">Advanced User</option>
+                  <option value="opt4">Custom</option>
+                </select>
+              </div>
+            </div>
+        <br>
+        <div class="userForm-row">
+          <div class="userForm-group">
+            <div class="userForm-field-content">
+                <div class="userForm-input-container-switch">
+                  <label class="switch-label">Download</label>
+                <label class="switch jsSwitcher" role="switch" aria-label="regular switch" aria-checked="false">
+                  <input type="checkbox" class="off-screen AccessRightsSwitch" name="switcher" aria-hidden="true" />
+                  <span class="switch__off-text" aria-hidden="true">Deny</span>
+                  <span class="switch__lever"></span>
+                  <span class="switch__on-text" aria-hidden="true">Allow</span>
+                </label>
+                </div>
+            </div>
+            <div class="userForm-field-separator"></div>
+            <div class="userForm-field-content">
+                <div class="userForm-input-container-switch">
+                  <span class="switch-label">Upload</span>
+                <label class="switch jsSwitcher" role="switch" aria-label="regular switch" aria-checked="false">
+                  <input type="checkbox" class="off-screen AccessRightsSwitch" name="switcher" aria-hidden="true" />
+                  <span class="switch__off-text" aria-hidden="true">Deny</span>
+                  <span class="switch__lever"></span>
+                  <span class="switch__on-text" aria-hidden="true">Allow</span>
+                </label>
+                </div>
+            </div>
+          </div>  
+        </div>
+        <div class="userForm-row">
+          <div class="userForm-group">
+            <div class="userForm-field-content">
+                <div class="userForm-input-container-switch">
+                  <span class="switch-label">Delete File</span>
+                <label class="switch jsSwitcher" role="switch" aria-label="regular switch" aria-checked="false">
+                  <input type="checkbox" class="off-screen AccessRightsSwitch" name="switcher" aria-hidden="true" />
+                  <span class="switch__off-text" aria-hidden="true">Deny</span>
+                  <span class="switch__lever"></span>
+                  <span class="switch__on-text" aria-hidden="true">Allow</span>
+                </label>
+                </div>
+            </div>
+            <div class="userForm-field-separator"></div>
+            <div class="userForm-field-content">
+                <div class="userForm-input-container-switch">
+                  <span class="switch-label">Delete Folder</span>
+                <label class="switch jsSwitcher" role="switch" aria-label="regular switch" aria-checked="false">
+                  <input type="checkbox" class="off-screen AccessRightsSwitch" name="switcher" aria-hidden="true" />
+                  <span class="switch__off-text" aria-hidden="true">Deny</span>
+                  <span class="switch__lever"></span>
+                  <span class="switch__on-text" aria-hidden="true">Allow</span>
+                </label>
+                </div>
+            </div>
+          </div>  
+        </div>
+        <div class="userForm-row">
+          <div class="userForm-group">
+            <div class="userForm-field-content">
+                <div class="userForm-input-container-switch">
+                  <span class="switch-label">Add Folder</span>
+                <label class="switch jsSwitcher" role="switch" aria-label="regular switch" aria-checked="false">
+                  <input type="checkbox" class="off-screen AccessRightsSwitch" name="switcher" aria-hidden="true" />
+                  <span class="switch__off-text" aria-hidden="true">Deny</span>
+                  <span class="switch__lever"></span>
+                  <span class="switch__on-text" aria-hidden="true">Allow</span>
+                </label>
+                </div>
+            </div>
+            <div class="userForm-field-separator"></div>
+            <div class="userForm-field-content">
+                <div class="userForm-input-container-switch">
+                  <span class="switch-label">Share files</span>
+                <label class="switch jsSwitcher" role="switch" aria-label="regular switch" aria-checked="false">
+                  <input type="checkbox" class="off-screen AccessRightsSwitch" name="switcher" aria-hidden="true" />
+                  <span class="switch__off-text" aria-hidden="true">Deny</span>
+                  <span class="switch__lever"></span>
+                  <span class="switch__on-text" aria-hidden="true">Allow</span>
+                </label>
+                </div>
+            </div>
+          </div>  
+        </div>
+        <br>
+        <div class="userForm-footer">
+          <div class="userForm-group">
+            <div class="userForm-field-content">
+            </div>  
+            <div class="userForm-field-content">
+                <div class="userForm-input-container">
+                    <button class="waves-effect waves-teal btn-flat btn2-unify" id="btn-addUserCancel" type="submit" name="action">Cancel</button>
+                </div> 
+             </div>
+            <div class="userForm-field-content">
+                <div class="userForm-input-container">
+                    <button class="waves-effect waves-teal btn-flat btn2-unify" id="btn-addUserAcept" type="submit" name="action">Accept</button>
+                </div> 
+             </div>
+             <div class="userForm-field-content">
+            </div> 
+          </div>
+        </div>
+      </div>
+    </div>`;     
 
 let htmlSearchUserTemplate = `<div id="searchUserModal">
                                   <div class="row"> 

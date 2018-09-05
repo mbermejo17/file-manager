@@ -1,0 +1,233 @@
+/* GRID Structure */
+
+.userForm-container {
+  width: 580px;
+  margin: 0 auto;
+}
+
+.userForm-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.userForm-title {
+  width: 100%;
+  margin: 10px auto;
+}
+
+.userForm-row, .userForm-footer {
+  text-align: center;
+}
+
+.userForm-group {
+  /*border: 1px solid red;*/
+  display: flex;
+  flex-direction: row;
+  justify-content: space-betwen;
+}
+
+.userForm-field-content {
+  padding: 2px;
+  margin: 2px 2px 20px;
+  flex: 1 1;
+}
+
+.userForm-input-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.userForm-field-separator {
+  width: 40px;
+}
+
+.userForm-input-container-switch {
+  display: flex;
+  margin-top: 10px;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.userForm-footer {
+  /*border: 1px solid red;*/
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+/* Material Desing Look */
+
+.userForm-input {
+  padding: 0.9em 0.8em;
+  font-size: 0.9em;
+  margin-left: auto;
+  margin-right: auto;
+  -webkit-appearance: none;
+  display: block;
+  background: #fafafa;
+  color: #636363;
+  width: auto;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #757575;
+  outline: none;
+  &.datepicker {
+    position: absolute;
+    padding: 10px 10px 5px;
+    top: 10px;
+    left: 30px;
+    width: 70%;
+    border: none;
+  }
+  &:focus {
+    outline: none;
+  }
+}
+
+.userForm-label {
+  position: absolute;
+  left: 50px;
+  top: 28px;
+  color: #999;
+  font-size: 0.9em;
+  font-weight: normal;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.userForm-input {
+  &:focus ~ .userForm-label, &.used ~ .userForm-label {
+    top: -5px;
+    transform: scale(0.75);
+    left: 40px;
+    /* font-size: 14px;
+     */
+    color: #4a89dc;
+  }
+}
+
+/* Material Desing Switch */
+/* SWITCH CHECKBOX */
+
+.switch__lever {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 16px;
+  margin: 0 5px;
+  border-radius: 8px;
+  vertical-align: middle;
+  background: #e6e6e6;
+  box-shadow: 1px 0 2px #c5c3c3 inset, -1px 1px 4px #c5c3c3 inset;
+  transition: background .5s;
+  &:before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: -2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #f7f5f5;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+    transition: transform 0.5s ease;
+  }
+  &:active:before {
+    box-shadow: 0 0.0625em 0.1875em 0.0625em rgba(0, 0, 0, 0.4), 0 0 0 0.625em rgba(38, 166, 154, 0.1);
+  }
+}
+
+[type="checkbox"]:checked ~ .switch__lever {
+  background: #7dc8c1;
+  /*84c7c1*/
+  &:before {
+    transform: translateX(116%);
+    background: #70b3ad;
+  }
+}
+
+.switch__on-text {
+  color: #9e9e9e;
+}
+
+.switch__off-text {
+  color: #cd5c5c;
+}
+
+[type="checkbox"]:checked ~ {
+  .switch__on-text {
+    color: #70b3ad;
+  }
+  .switch__off-text {
+    color: #9e9e9e;
+  }
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  max-width: 10em;
+  /*150px*/
+  cursor: pointer;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  &.jsSwitcher {
+    text-align: right;
+  }
+  [type=checkbox]:not(:hover):not(:active):focus ~ .switch__lever {
+    box-shadow: 1px 0 2px #c5c3c3 inset, -1px 1px 4px #c5c3c3 inset, 0px 0px 0 8px #fff, 0px 0px 0 9px #6495ed;
+  }
+}
+
+.switch__off-text, .switch__on-text {
+  font-size: 0.6em;
+}
+
+.switch-label {
+  margin-right: 12px;
+  font-weight: bold;
+}
+
+/*START Elastic switch*/
+
+.switch--elastic {
+  [type="checkbox"]:checked ~ .switch__lever {
+    transition-delay: 0.1s;
+    /*for smoother background animation*/
+  }
+  &:active .switch__lever:before {
+    width: 2.3em;
+  }
+  .switch__lever:before {
+    transition: transform 0.3s, left 0.3s, width 0.3s;
+  }
+  [type="checkbox"]:checked ~ .switch__lever:before {
+    transform: translateX(-100%);
+    left: 100%;
+  }
+}
+
+/*END Elastic switch*/
+
+.off-screen {
+  /*another name for this class could be visually-hidden*/
+  position: fixed;
+  /*we can set it as fixed, that will prevent jumping when it's clicked/targeted (but it will screw up focusing on the element)*/
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+  clip-path: inset(100%);
+  clip: rect(0 0 0 0);
+  /*depreceted, only for IE9-11*/
+  white-space: nowrap;
+  /*For long content, line feeds are not interpreted as spaces and small width causes content to wrap 1 word per line: https://medium.com/@jessebeach/beware-smushed-off-screen-accessible-text-5952a4c2cbfe*/
+}
