@@ -7,100 +7,6 @@ import { modalDialog } from "../vendor/modalDialog";
 ////////////////////////////////////
 // Users manage module
 ///////////////////////////////////
-
-/* let htmlUserFormTemplate = `
-      <div id="AddUserModal">
-          <h4 id ="userFormTitle" class="header2">New User</h4>
-          <div class="row">
-              <form class="col s12 m12 l12" id="formAddUser">
-                  <div class="row">
-                      <div class="userForm-input-field col s6"><input id="UserName" type="text" class="userForm-input"/>
-                      <label for="UserName" class="userForm-label">Name</label></div>
-                      <div class="input-field col s6"><input id="CompanyName" type="text" class="userForm-input"/>
-                      <label for="CompanyName" class="userForm-label">Company Name</label></div>
-                  </div>
-                  <div class="row">
-                      <div class="userForm-input-field"><input id="UserPasswd" type="password" autocomplete="off" class="userForm-input"/>
-                      <label for="UserPasswd" class="userForm-label">Password</label></div>
-                      <div class="userForm-input-field"><input id="repeatUserPasswd" type="password" autocomplete="off" class="userForm-input" />
-                      <label for="repeatUserPasswd" class="userForm-label">Repeat Password</label></div>
-                  </div>
-                  <div class="row">
-                      <div class="userForm-input-field">
-                      <input id="rootpath" type="text" class="userForm-input"/>
-                      <label for="rootpath" class="userForm-label">Root Path</label>
-                      </div>
-                      <i class="mdi-action-find-in-page col s2" id="FindPath"></i>
-                      <div class="userForm-input-field right">
-                        <input class="datepicker userForm-input" id="ExpirateDate" type="date"/>
-                        <label for="ExpirateDate" class="userForm-label">Expiration Date</label>
-                      </div>
-                  </div>
-                  <div class="row">
-                      <div class="rights">Access Rights</div>
-                  </div>
-                  <div class="row">
-                      <div class="userForm-input-field"></div>
-                      <div class="userForm-input-field" style="line-height: .9em;" >
-                        <input id="Role" type="hidden" value="" class="userForm-input"/>
-                        <select id="RoleOptions" name="optionsname" required="">
-                          <option value="opt1">User</option>
-                          <option value="opt2">Admin</option>
-                          <option value="opt3">Advanced User</option>
-                          <option value="opt4">Custom</option>
-                        </select>
-                        <label>User Role</label>
-                      </div>
-                      <div class="userForm-input-field"></div>
-                  </div>
-                  <br/>
-                  <div class="row">
-                      <span class="label-switch">Download</span>
-                      <div class="switch">
-                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                        <span class="lever"></span>On</label>
-                      </div>
-                      <span class="col s2"></span>
-                      <span class="label-switch">Upload</span>
-                      <div class="switch">
-                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                        <span class="lever"></span>On</label>
-                      </div>
-                  </div>
-                  <div class="row"><span class="label-switch">Delete File</span>
-                      <div class="switch">
-                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                        <span class="lever"></span>On</label>
-                      </div>
-                      <span class="col">   </span>
-                      <span class="label-switch">Delete Folder</span>
-                      <div class="switch">
-                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                        <span class="lever"></span>On</label>
-                      </div>
-                  </div>
-                  <div class="row">
-                      <span class="label-switch">Add Folder</span>
-                      <div class="switch">
-                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                        <span class="lever"></span>On</label>
-                      </div>
-                      <span class="col s2"></span>
-                      <span class="label-switch">Share files</span>
-                      <div class="switch">
-                        <label>Off<input type="checkbox" class="AccessRightsSwitch"/>
-                        <span class="lever"></span>On</label>
-                      </div>
-                  </div>
-                  <div class="row"><br/>
-                      <div class="input-field"></div>
-                      <div class="input-field"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserCancel" type="submit" name="action">Cancel</button></div>
-                      <div class="input-field"><button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-addUserAcept" type="submit" name="action">Accept</button></div>
-                  </div>
-              </form>
-          </div>
-      </div>`; */
-
       let htmlUserFormTemplate = `
     <div class="userForm-container">
       <form id="formAddUser" class="userForm-content">
@@ -277,7 +183,7 @@ import { modalDialog } from "../vendor/modalDialog";
       </form>
     </div>`;     
 
-let htmlSearchUserTemplate = `<div id="searchUserModal">
+/* let htmlSearchUserTemplate = `<div id="searchUserModal">
                                   <div class="row"> 
                                     <div class="input-field col s12 m12"></div>
                                   </div>
@@ -299,7 +205,19 @@ let htmlSearchUserTemplate = `<div id="searchUserModal">
                                     </div>
                                     <div class="input-field col s1 m1"></div>
                                     </div>
-                                </div>`;
+                                </div>`; */
+let htmlSearchUserTemplate = `
+<div class="userForm-container">
+  <div id="users" class="userForm-content">
+  <input class="search" placeholder="Search" />
+  <span class="sort" data-sort="UserName">Sort by name</span>
+  <span class="sort" data-sort="CompanyName">Sort by Company Name</span>
+  <ul id="tableList" class="list">
+  </ul>
+  </div>
+</div>
+`;
+
 
 const checkAccessRights = (AccessSwitch, role, accessRights) => {
     let opt = "";
@@ -403,54 +321,63 @@ export function searchUserName(userName) {
     });
 }
 
-
-export function LoadUsersList(el) {
-
-    $u("#waiting").addClass("active");
-    axios.get('/users', {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + userData.Token
-        },
-        timeout: 30000
-    }).then((d) => {
-        $u("#waiting").removeClass("active");
-        if (userData.RunMode === "DEBUG") console.log(d);
-        if (d.data.atatus === 'OK') {
-            let users = d.data.data;
-            let options = '';
-            for (let x = 0; x < users.length; x++) {
-                options += `<option id="${users[x].UserId}">${users[x].UserName}</option>`;
-            }
-            el.innerHTML = options;
-        } else {
-            showToast(
-                "Users",
-                d.data.data.message,
-                "error"
-            );
-        }
-    }).catch((e) => {
-        $u("#waiting").removeClass("active");
-        if (userData.RunMode === "DEBUG") console.log(e);
-        showToast('Users', e, "error");
-    });
-}
-
 export function editUser() {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
-    let SearchUserModalContent = document.querySelector(
-        "#searchUserModalContent"
-    );
-
-
+    let SearchUserModalContent = document.querySelector("#searchUserModalContent");
     let containerOverlay = document.querySelector(".container-overlay");
-    AddUserModalContent.style.display = "none";
-    SearchUserModalContent.innerHTML = htmlSearchUserTemplate;
-    //LoadUsersList(document.getElementById('usersList'));
-    SearchUserModalContent.style.display = "block";
+
+    AddUserModalContent.innerHTML = htmlSearchUserTemplate;
+    SearchUserModalContent.style.display="none";
+    AddUserModalContent.style.display = "block";  
     containerOverlay.style.display = "block";
-    const config = {
+      const _editUser = (userId) =>{
+        
+      };
+   
+      $u("#waiting").addClass("active");
+      axios.get('/users', {
+          headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + userData.Token
+          },
+          timeout: 30000
+      }).then((d) => {
+          $u("#waiting").removeClass("active");
+          if (userData.RunMode === "DEBUG") console.log(d);
+          if (d.data.status === 'OK') {
+              let users = d.data.data;
+              let options = {
+                valueNames: [ 'UserName', 'UserId','UserPasswd','UserRole' ],
+                item: `<li class="user-row">
+                        <div class="UserId"></div> 
+                        <div class="UserName"></div>
+                        <div class="UserRole"></div>
+                      </li>`
+              };
+              
+              let userList = new List('users', options,users);
+              [].forEach.call(document.querySelectorAll(".user-row"), function(el) {
+                el.addEventListener("click", function(e) {
+                  let userId = e.target.parentNode.children[0].innerHTML;
+                  console.log('userId: ', userId);
+                  _editUser(userId);
+                });
+              });                
+          } else {
+              showToast(
+                  "Users",
+                  d.data.data.message,
+                  "error"
+              );
+          }
+      }).catch((e) => {
+          $u("#waiting").removeClass("active");
+          if (userData.RunMode === "DEBUG") console.log(e);
+          showToast('Users', e, "error");
+      });
+    
+
+    /* const config = {
         headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + userData.Token
@@ -472,8 +399,8 @@ export function editUser() {
             $u("#waiting").removeClass("active");
             console.log(err);
         });
-
-    SearchUserModalContent.addEventListener("keyup", e => {
+ */
+    /* SearchUserModalContent.addEventListener("keyup", e => {
         e.preventDefault();
 
         let input = document.getElementById('searchUserName');
@@ -487,21 +414,19 @@ export function editUser() {
                 a[i].style.dsiplay = 'none';
             }
         }
-        /* if (e.keyCode === 13) {
+         if (e.keyCode === 13) {
           searchUserName(document.getElementById("searchUserName").value);
-        } */
-    });
-    document.querySelector("#btnSearchUser").addEventListener("click", e => {
+        } 
+    }); */
+    /* document.querySelector("#btnSearchUser").addEventListener("click", e => {
         e.preventDefault();
         searchUserName(document.getElementById("searchUserName").value);
-    });
-    document
-        .querySelector("#btn-SearchUserCancel")
-        .addEventListener("click", e => {
+    }); */
+    /* document.querySelector("#btn-SearchUserCancel").addEventListener("click", e => {
             e.preventDefault();
             SearchUserModalContent.style.display = "none";
             containerOverlay.style.display = "none";
-        });
+        }); */
 }
 
 
