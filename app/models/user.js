@@ -8,7 +8,7 @@ let UserModel = {};
 let db;
 
 let dbOpen = function() {
-  console.log(dbPath);
+  console.log('dbPath: ',dbPath);
   console.log("db handler:", db);
   db = new sqlite3.Database(
     dbPath,

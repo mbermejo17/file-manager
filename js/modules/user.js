@@ -103,7 +103,7 @@ import { modalDialog } from "../vendor/modalDialog";
 
       let htmlUserFormTemplate = `
     <div class="userForm-container">
-      <div class="userForm-content">
+      <form id="formAddUser" class="userForm-content">
         <div class="userForm-row">
           <div class="userForm-title">New User</div>
         </div>
@@ -274,7 +274,7 @@ import { modalDialog } from "../vendor/modalDialog";
             </div> 
           </div>
         </div>
-      </div>
+      </form>
     </div>`;     
 
 let htmlSearchUserTemplate = `<div id="searchUserModal">
@@ -758,20 +758,28 @@ export function showAddUserForm(title, data) {
             timeout: 30000
         }).then((d) => {
             $u("#waiting").removeClass("active");
-            if (userData.RunMode === "DEBUG") console.log(d);
+            if (userData.RunMode === "DEBUG") console.log(d.data.status);
             if (d.data.status === 'OK') {
-                showToast("Usuario " + data.userName + " añadido.", "success");
+                showToast("Usuario " + d.data.message, "success");
                 document.getElementById("refresh").click();
                 document.querySelector("#formAddUser").reset();
                 changeAccessRights(
                     document.querySelectorAll(".AccessRightsSwitch"),
                     "opt1"
                 );
+            } else {
+                showToast("Usuario " + d.data.message, "success");
+                //document.getElementById("refresh").click();
+                //document.querySelector("#formAddUser").reset();
+                /* changeAccessRights(
+                    document.querySelectorAll(".AccessRightsSwitch"),
+                    "opt1"
+                ); */
             }
         }).catch((e) => {
             $u("#waiting").removeClass("active");
             showToast(
-                'User', "Error al añadir usuario " + data.userName + ".<br>Err:" + e,
+                'User', "Error al añadir usuario " + data.UserName + ".<br>Err:" + e,
                 "error"
             );
             if (userData.RunMode === "DEBUG") console.log(e);
