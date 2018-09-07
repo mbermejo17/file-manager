@@ -204,7 +204,7 @@ UserModel.ChangePasswd = function(userData, callback) {
 };
 
 UserModel.All = function(callback) {
-  let sql = `SELECT UserName, UserId, UserPasswd, UserRole 
+  let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate  
                FROM Users`;
   dbOpen();
   let allRows = [];

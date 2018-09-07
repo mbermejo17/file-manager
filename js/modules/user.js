@@ -3,6 +3,7 @@ import { Base64 } from "js-base64";
 import md5 from "../vendor/md5.min";
 import moment from "moment";
 import { modalDialog } from "../vendor/modalDialog";
+import DataTable from "../vendor/dataTables";
 
 ////////////////////////////////////
 // Users manage module
@@ -206,18 +207,54 @@ import { modalDialog } from "../vendor/modalDialog";
                                     <div class="input-field col s1 m1"></div>
                                     </div>
                                 </div>`; */
-let htmlSearchUserTemplate = `
+/*let htmlSearchUserTemplate = `
 <div class="userForm-container">
   <div id="users" class="userForm-content">
   <input class="search" placeholder="Search" />
   <span class="sort" data-sort="UserName">Sort by name</span>
   <span class="sort" data-sort="CompanyName">Sort by Company Name</span>
+  <div class="head-list">
+      <div>UserId</div> 
+      <div>UserName</div>
+      <div>CompanyName</div>
+      <div>RootPath</div>
+      <div>AccessString</div>
+      <div>ExpirateDate</div>
+  </div>     
   <ul id="tableList" class="list">
   </ul>
   </div>
 </div>
-`;
+`;*/
 
+
+let htmlSearchUserTemplate = `
+<div class="tableList-container">
+      <div class="head-Title">Edit Users</div> 
+      <table id="usersTableList" class="tableList">
+        <thead>
+          <tr>
+            <th>User Id</th>
+            <th>User Name</th>
+            <th>User Role</th>
+            <th>Company Name</th>
+            <th>Root Path</div>
+            <th data-type="date" data-format="YYYY/MM/DD">Expirate Date</th>
+          </tr>
+        </thead>
+        <tbody id="bodyList">    
+        </tbody>
+      </table>
+      <div class="AddUserModalContent-footer">
+        <div class="button-container">
+            <button class="waves-effect waves-teal btn-flat btn2-unify" id="btn-addUserCancel" type="submit" name="action">Cancel</button>
+        </div> 
+        <div class="button-container">
+            <button class="waves-effect waves-teal btn-flat btn2-unify" id="btn-addUserAcept" type="submit" name="action">Accept</button>
+        </div> 
+      </div>
+</div>
+`;
 
 const checkAccessRights = (AccessSwitch, role, accessRights) => {
     let opt = "";
@@ -328,6 +365,7 @@ export function editUser() {
 
     AddUserModalContent.innerHTML = htmlSearchUserTemplate;
     SearchUserModalContent.style.display="none";
+    $u("#AddUserModalContent").addClass("edit");
     AddUserModalContent.style.display = "block";  
     containerOverlay.style.display = "block";
       const _editUser = (userId) =>{
@@ -346,23 +384,41 @@ export function editUser() {
           if (userData.RunMode === "DEBUG") console.log(d);
           if (d.data.status === 'OK') {
               let users = d.data.data;
-              let options = {
-                valueNames: [ 'UserName', 'UserId','UserPasswd','UserRole' ],
-                item: `<li class="user-row">
-                        <div class="UserId"></div> 
-                        <div class="UserName"></div>
-                        <div class="UserRole"></div>
-                      </li>`
-              };
-              
-              let userList = new List('users', options,users);
-              [].forEach.call(document.querySelectorAll(".user-row"), function(el) {
+              let i;
+              let htmlListContent ='';
+              let bodyList = document.querySelector("#bodyList");
+              if (userData.RunMode === "DEBUG") console.log('users: ',users);
+              for(i = 0 ; i < users.length ; i++){
+                  htmlListContent += `
+                  <tr class="data-row">
+                    <td>${users[i].UserId}</td>
+                    <td>${users[i].UserName}</td>
+                    <td>${users[i].UserRole}</td>
+                    <td>${users[i].CompanyName}</td>
+                    <td>${users[i].RootPath}</td>
+                    <td>${users[i].ExpirateDate}</td>
+                  </tr>`;
+              }
+              if (userData.RunMode === "DEBUG") console.log('htmlListContent: ',htmlListContent);
+              bodyList.innerHTML= htmlListContent;
+
+              let table = new DataTable(document.querySelector("#usersTableList"),{
+                searchable: true,
+                fixedHeight: true,
+                info: false,
+                perPageSelect: null,
+                perPage: 200
+              });    
+
+              [].forEach.call(document.querySelectorAll(".data-row"), function(el) {
                 el.addEventListener("click", function(e) {
                   let userId = e.target.parentNode.children[0].innerHTML;
                   console.log('userId: ', userId);
                   _editUser(userId);
                 });
-              });                
+              });   
+
+                    
           } else {
               showToast(
                   "Users",

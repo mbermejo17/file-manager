@@ -617,7 +617,22 @@ div .progress-content .modal_close {
   border-radius: 3px;
   box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22),
     0 25px 55px 0 rgba(0, 0, 0, 0.21);
+  &.edit {
+    width: 1024px;
+    height: auto;
+    max-height: 760px;
+  }  
 }
+
+.AddUserModalContent-footer {
+  display:flex;
+  margin: 20px 10px;
+  justify-content: flex-end;
+  .button-container {
+    margin: 0 25px 0 0;
+  }
+}
+
 .rights {
   margin: 0 auto;
   text-align: center;
