@@ -137,8 +137,9 @@ $border_color_1: #aaa;
 		color: #fff;
 	}
 } */
-.tableList-container {
- 
+.dataTable-container {
+  max-height: 720px;
+  overflow-y: scroll; 
 }
 
 .dataTable-bottom>div:last-child, .dataTable-top>div:last-child {
@@ -166,7 +167,6 @@ $border_color_1: #aaa;
   margin: 20px auto;
   border-collapse: collapse;
   max-width: 790px;
-  overflow-y: scroll; 
   th {
     background-color: #ccc;
     padding: 3px 8px;
@@ -196,6 +196,7 @@ $border_color_1: #aaa;
     background-color: rgb(248, 248, 248);
   }
   tr:hover {
+    cursor: pointer;
     background-color: #cfe9c8;
   }
   tr:last-child {

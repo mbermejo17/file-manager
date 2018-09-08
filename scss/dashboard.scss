@@ -604,11 +604,9 @@ div .progress-content .modal_close {
   }
 }
 #AddUserModalContent {
-  width: 680px;
-  height: 630px;
   background-color: #fff;
   position: absolute;
-  top: 5px;
+  //top: 5px;
   z-index: 12001;
   margin-left: auto;
   margin-right: auto;
@@ -618,9 +616,15 @@ div .progress-content .modal_close {
   box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22),
     0 25px 55px 0 rgba(0, 0, 0, 0.21);
   &.edit {
+    margin: 30px auto;
     width: 1024px;
     height: auto;
-    max-height: 760px;
+    //max-height: 760px;
+  }
+  &.show {
+    margin: 30px auto;
+    width: 680px;
+    height: auto;
   }  
 }
 

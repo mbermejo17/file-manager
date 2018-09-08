@@ -14,7 +14,7 @@ router.get("/", checkUser,UserController.Index);
 router.get("/dashboard", checkUser,UserController.Dashboard);
 router.get("/users", UserController.UserGetAll);
 
-//router.get("/id/:userId", UserController.GetUserById);
+router.get("/user/:userId", UserController.UserFindById);
 
 router.get("/searchuser", UserController.UserFindByName);
 

@@ -82,10 +82,18 @@ UserModel.FindById = function(userId, callback) {
     } else {
       if (row) {
         dbClose();
-        callback(null, row);
+        callback({
+        status: "OK",
+        message: '',
+        data: row
+        });
       } else {
         dbClose();
-        callback(`Usuario con id ${userId} no encontrado`, null);
+        callback({
+          status: "FAIL",
+          message: err.message,
+          data: null
+        });
       }
     }
   });
@@ -137,10 +145,18 @@ UserModel.Remove = function(userId, callback) {
       if (row) {
         dbClose();
         console.log(row);
-        callback(null, row);
+        callback({
+          status: "OK",
+          message: `1 registro encontrado`,
+          data: row
+        });
       } else {
         dbClose();
-        callback(`Usuario con id ${userId} no encontrado`, null);
+        callback({
+          status: "FAIL",
+          message: `Usuario ${userName} no encontrado`,
+          data: null
+        });
       }
     }
   });

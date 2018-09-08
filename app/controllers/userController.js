@@ -191,6 +191,35 @@ exports.UserFindByName = (req, res, next) => {
   );
 };
 
+exports.UserFindById = (req, res, next) => {
+  let userId =req.params.userId;
+  User.FindById(userId,
+    (d) => {
+      if (d.status == 'FAIL') {
+        console.log(status);
+        res.status(500).json({ status: "FAIL", message: status, data: null });
+      } else {
+        if (d.data) {
+          console.log(d.data);
+          return res.status(200).json({
+            status: "OK",
+            message: "User found",
+            data: {
+              UserName: d.data.UserName,
+              Role: d.data.UserRole,
+              UserPasswd: Base64.encode(d.data.UserPasswd),
+              CompanyName: d.data.CompanyName,
+              RootPath: d.data.UserRole.toUpperCase() === "ADMIN" ? "/" : d.data.RootPath,
+              AccessString: d.data.AccessString,
+              ExpirateDate: d.data.ExpirateDate
+            }
+          });
+        } 
+      }
+    }
+  );
+};
+
 exports.UserLogin = (req, res, next) => {
   User.Find(
     `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, UnixDate FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`,
