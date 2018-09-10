@@ -15,12 +15,15 @@ const User = require("../models/user");
 const moment = require("moment");
 
 const makeUserPathIfNotExist = (p, callback) => {
-  let newFolder = normalize(pathPrefix + "/" + p.toUpperCase());
   let r;
-  if (!fs.existsSync(newFolder)) {
-    r = fs.mkdir(newFolder);
+  if(p) {
+    let newFolder = normalize(pathPrefix + "/" + p.toUpperCase());
+    if (!fs.existsSync(newFolder)) {
+      r = fs.mkdir(newFolder);
+    }
   }
-  console.log("makeNewPath: ", r);
+  console.log("makeNewPath: newpath ", p);
+  console.log("makeNewPath: result ", r);
   callback(r);
 };
 
@@ -104,43 +107,58 @@ exports.UserAdd = (req, res) => {
 exports.UserUpdate = (req, res) => {
   let data = req.body;
   let userName = data.userName;
+  let userId = data.userId;
   let queryString = data.queryString;
   let accessString = "";
   let response = [];
   let newData = {};
+  let newRootPath ='';
 
   for (var propertyName in queryString) {
-    accessString += `${propertyName} = '${queryString[propertyName]}',`;
+    if (propertyName == 'RootPath') { newRootPath = queryString[propertyName]; }
+    if(propertyName === 'AccessString') {
+      let newAccessString = decodeURI(queryString[propertyName]);
+      accessString += `${propertyName} = '${newAccessString}',`;
+    } else  {
+      accessString += `${propertyName} = '${queryString[propertyName]}',`;
+    }
+    
   }
 
   console.log("before:", accessString);
   accessString = accessString.slice(0, -1);
   console.log("after:", accessString);
-  newData = { userName: userName, queryString: accessString };
+  newData = { userId: userId, queryString: accessString };
 
   User.Update(newData, d => {
     response.push(d);
     console.log("d : ", d);
     if (d.status === "OK") {
-      makeUserPathIfNotExist(rootPath, result => {
-        if (!result) {
-          return res.status(200).json(response[0]);
-          console.log(result);
-        } else {
-          return res
-            .status(200)
-            .json({
-              status: "FAIL",
-              message: response[0].message + ".<br>Error al crear Carpeta.",
-              data: null
-            });
-        }
+      if(newRootPath === '') {
+        return res.status(200).json(response[0]);
+      } else {
+        makeUserPathIfNotExist(newRootPath, result => {
+            if (!result) {
+              return res.status(200).json(response[0]);
+              console.log(result);
+            } else {
+              return res
+                .status(200)
+                .json({
+                  status: "FAIL",
+                  message: response[0].message + ".<br>Error al crear Carpeta.",
+                  data: null
+                });
+            }
       });
+    }
     } else {
       return res.status(200).json(d);
     }
   });
 };
+
+
 exports.UserGetAll = (req, res, next) => {
   User.All(data => {
     if (data.status == "FAIL") {
@@ -175,8 +193,7 @@ exports.UserFindByName = (req, res, next) => {
               Role: data.UserRole,
               UserPasswd: Base64.encode(data.UserPasswd),
               CompanyName: data.CompanyName,
-              RootPath:
-                data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
+              RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
               AccessString: data.AccessString,
               ExpirateDate: data.ExpirateDate
             }
@@ -205,8 +222,9 @@ exports.UserFindById = (req, res, next) => {
             status: "OK",
             message: "User found",
             data: {
+              UserId: d.data.UserId,
               UserName: d.data.UserName,
-              Role: d.data.UserRole,
+              UserRole: d.data.UserRole,
               UserPasswd: Base64.encode(d.data.UserPasswd),
               CompanyName: d.data.CompanyName,
               RootPath: d.data.UserRole.toUpperCase() === "ADMIN" ? "/" : d.data.RootPath,
@@ -250,42 +268,42 @@ exports.UserLogin = (req, res, next) => {
                         UserName: data.UserName,
                         UserId: data._id
                     }, process.env.JWT_KEY, { expiresIn: "1h" }); */
-            let wsPath =
-              data.UserRole === "assistant"
-                ? config.wssURL + "/room"
-                : config.wssURL + "/client";
-            const token = jwt.sign(
-              {
-                UserName: data.UserName,
-                UserId: data._id,
-                Role: data.UserRole,
-                wssURL: wsPath,
-                RootPath:
-                  data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
-                AccessString: data.AccessString
-              },
-              JWT_KEY,
-              { expiresIn: "24h" }
-            );
-            console.log("token", token);
-            res.cookie("sessionId", Base64.encode(data.UserName), {
-              maxAge: 900000
-            });
-            return res.status(200).json({
-              status: "OK",
-              message: "User authenticated",
-              data: {
-                UserName: data.UserName,
-                Token: token,
-                Role: data.UserRole,
-                wssURL: wsPath,
-                CompanyName: data.CompanyName,
-                RootPath:
-                  data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
-                AccessString: data.AccessString,
-                RunMode: "DEBUG"
-              }
-            });
+
+            makeUserPathIfNotExist(data.RootPath,(result)=>{
+              console.log("result: ",result);
+              let wsPath = data.UserRole === "assistant" ? config.wssURL + "/room" : config.wssURL + "/client";
+              const token = jwt.sign(
+                {
+                  UserName: data.UserName,
+                  UserId: data._id,
+                  Role: data.UserRole,
+                  wssURL: wsPath,
+                  RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
+                  AccessString: data.AccessString
+                },
+                JWT_KEY,
+                { expiresIn: "24h" }
+              );
+              console.log("token", token);
+              res.cookie("sessionId", Base64.encode(data.UserName), {
+                maxAge: 900000
+               });
+              return res.status(200).json({
+                status: "OK",
+                message: "User authenticated",
+                data: {
+                  UserName: data.UserName,
+                  Token: token,
+                  Role: data.UserRole,
+                  wssURL: wsPath,
+                  CompanyName: data.CompanyName,
+                  RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
+                  AccessString: data.AccessString,
+                  RunMode: "DEBUG"
+                }
+              });
+            });        
+            
           } else {
             return res
               .status(401)

@@ -51,8 +51,8 @@ let htmlUserFormTemplate = `
           <div class="userForm-group">
             <div class="userForm-field-content">
                 <div class="userForm-input-container">
-              <input id="rootpath" type="text" class="userForm-input">
-                <label for="rootpath" class="userForm-label">Root Path</label>
+              <input id="RootPath" type="text" class="userForm-input">
+                <label for="RootPath" class="userForm-label">Root Path</label>
             </div> 
              </div>
             <div class="userForm-field-content">
@@ -285,14 +285,14 @@ const changeAccessRights = (AccessSwitch, opt) => {
   }
   switch (opt) {
     case "opt1":
-      AccessSwitch[0].checked = true;
-      AccessSwitch[1].checked = true;
-      AccessSwitch[2].checked = false;
+      AccessSwitch[0].checked = true;     //Download
+      AccessSwitch[1].checked = true;     //Upload
+      AccessSwitch[2].checked = false;    
       AccessSwitch[3].checked = false;
-      AccessSwitch[4].checked = false;
       AccessSwitch[5].checked = false;
       AccessSwitch[2].disabled = true;
       AccessSwitch[3].disabled = true;
+      AccessSwitch[4].checked = true;    // Add Folders
       AccessSwitch[4].disabled = true;
       AccessSwitch[5].disabled = true;
       break;
@@ -307,12 +307,13 @@ const changeAccessRights = (AccessSwitch, opt) => {
     case "opt3":
       AccessSwitch[0].checked = true;
       AccessSwitch[1].checked = true;
-      AccessSwitch[2].checked = false;
-      AccessSwitch[2].disabled = true;
-      AccessSwitch[3].checked = false;
+      AccessSwitch[2].checked = false;   // Delete Files
+      AccessSwitch[2].disabled = true;    
+      AccessSwitch[3].checked = false;   // Delete Folders
       AccessSwitch[3].disabled = true;
-      AccessSwitch[4].checked = true;
-      AccessSwitch[5].checked = false;
+      AccessSwitch[4].checked = true;    // Add Folders
+      AccessSwitch[4].disabled = true;
+      AccessSwitch[5].checked = true;    // Shared Files
       AccessSwitch[5].disabled = true;
       break;
     case "opt4":
@@ -507,18 +508,18 @@ export function showAddUserForm(title, data) {
     document.querySelector("#CompanyName").value = data.CompanyName;
     document.querySelector("#UserPasswd").value = data.UserPasswd;
     document.querySelector("#repeatUserPasswd").value = data.UserPasswd;
-    document.querySelector("#rootpath").value = data.RootPath;
+    document.querySelector("#RootPath").value = data.RootPath;
     document.querySelector("#ExpirateDate").value = data.ExpirateDate;
     //document.querySelector("#expirationDate")
-    selectRole(document.querySelector("#RoleOptions"), data.Role);
-    if (data.Role.toUpperCase() === "CUSTOM")
+    selectRole(document.querySelector("#RoleOptions"), data.UserRole);
+    if (data.UserRole.toUpperCase() === "CUSTOM")
       checkAccessRights(data.AccessString);
     
-    document.querySelector("label[for=UserName]").classList.add("active");
-    document.querySelector("label[for=CompanyName]").classList.add("active");
-    document.querySelector("label[for=UserPasswd]").classList.add("active");
-    document.querySelector("label[for=repeatUserPasswd]").classList.add("active");
-    document.querySelector("label[for=rootpath]").classList.add("active");
+      document.querySelector("#UserName").classList.add("used");
+      document.querySelector("#CompanyName").classList.add("used");
+      document.querySelector("#UserPasswd").classList.add("used");
+      document.querySelector("#repeatUserPasswd").classList.add("used");
+      document.querySelector("#RootPath").classList.add("used");
     document.querySelector("#UserName").disabled = true;
     containerOverlay.style.display = "block";
     $u("#AddUserModalContent").removeClass("edit");
@@ -538,6 +539,11 @@ export function showAddUserForm(title, data) {
       _updateUser(oldData);
     });
   } else {
+    document.querySelector("#UserName").classList.remove("used");
+    document.querySelector("#CompanyName").classList.remove("used");
+    document.querySelector("#UserPasswd").classList.remove("used");
+    document.querySelector("#repeatUserPasswd").classList.remove("used");
+    document.querySelector("#RootPath").classList.remove("used");
     containerOverlay.style.display = "block";
     AddUserModalContent.style.display = "block";
     $u("#AddUserModalContent").addClass("show");
@@ -588,16 +594,18 @@ export function showAddUserForm(title, data) {
     for (let prop in oldData) {
       if (hasOwnProperty.call(oldData, prop)) {
         console.log(prop);
-        if (prop === "Role") {
+        if (prop === "UserRole") {
           if (oldData[prop].toUpperCase() !== userRole.toUpperCase()) {
-            queryString.Role = userRole;
+            queryString.UserRole = userRole;
             console.warn(oldData[prop], userRole);
           } else {
             console.log(oldData[prop], userRole);
           }
         } else {
           if (prop === "AccessString") {
-            if (oldData[prop] !== accessString) {
+            console.log('old accessString: ',oldData[prop]);
+            console.log('new accessString: ',decodeURI(accessString));
+            if (oldData[prop] !== decodeURI(accessString)) {
               console.warn(oldData[prop], accessString);
               queryString.AccessString = accessString;
             } else {
@@ -616,17 +624,29 @@ export function showAddUserForm(title, data) {
                 console.log(oldData[prop], document.getElementById(prop).value);
               }
             } else {
-              if (
-                oldData[prop].toUpperCase() !==
-                document.getElementById(prop).value.toUpperCase()
-              ) {
-                queryString[prop] = document.getElementById(prop).value;
-                console.warn(
-                  oldData[prop],
-                  document.getElementById(prop).value
-                );
-              } else {
-                console.log(oldData[prop], document.getElementById(prop).value);
+              if( prop !== "UserId"){
+                if( prop === "UserPasswd") 
+                { 
+                  let oPasswd = oldData[prop] ;
+                  let nPasswd = md5(document.getElementById(prop).value);
+                  console.log('Old Pass: ',oPasswd);
+                  console.log('New Pass: ',nPasswd);
+                  if( oPasswd !== nPasswd) {
+                    queryString[prop] = md5(document.getElementById(prop).value);
+                  }
+                } else {
+                  console.log(prop);
+                  if (oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase())
+                  {
+                    queryString[prop] = document.getElementById(prop).value;
+                    console.warn(
+                      oldData[prop],
+                      document.getElementById(prop).value
+                    );
+                  } else {
+                    console.log(oldData[prop], document.getElementById(prop).value);
+                  }
+                } 
               }
             }
           }
@@ -642,6 +662,7 @@ export function showAddUserForm(title, data) {
     if (queryString) {
       let data = {
         userName: oData.UserName,
+        userId: oData.UserId,  
         queryString: queryString
       };
       $u("#waiting").addClass("active");
@@ -713,7 +734,7 @@ export function showAddUserForm(title, data) {
     let companyName = document.querySelector("#CompanyName").value;
     let userPassword = document.querySelector("#UserPasswd").value;
     let userRole = sel[sel.selectedIndex].innerHTML;
-    let userRootPath = document.querySelector("#rootpath").value;
+    let userRootPath = document.querySelector("#RootPath").value;
     let expirateDate = document.querySelector("#ExpirateDate").value;
     let result = _getAccessString(AccessSwitch);
 

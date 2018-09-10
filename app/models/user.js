@@ -69,8 +69,13 @@ UserModel.Find = function(queryString, callback) {
   });
 };
 
+
+
+/////////////////////////////////////////
+//  Search User by userId
+/////////////////////////////////////////
 UserModel.FindById = function(userId, callback) {
-  let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate
+  let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate
                FROM Users
                WHERE UserId  = ?`;
   dbOpen();
@@ -99,13 +104,17 @@ UserModel.FindById = function(userId, callback) {
   });
 };
 
+
+/////////////////////////////////////////
+//  Update user Data
+/////////////////////////////////////////
 UserModel.Update = function(data, callback) {
   console.log(data);
   let sql =
     "UPDATE Users SET " +
     data.queryString +
-    " WHERE UPPER(UserName) = '" +
-    data.userName.toUpperCase() +
+    " WHERE UserId = '" +
+    data.userId +
     "';";
   console.log(sql);
   dbOpen();
@@ -124,7 +133,7 @@ UserModel.Update = function(data, callback) {
       dbClose();
       callback({
         status: "OK",
-        message: "Usuario " + data.userName + "actualizado",
+        message: "Usuario " + data.userName + " actualizado",
         data: null
       });
     }
