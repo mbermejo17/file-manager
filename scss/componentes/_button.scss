@@ -59,6 +59,9 @@ a:hover.btn-unify  {
   height: 25px;
   font-size: .8em !important;
   line-height: 25px;
+  padding: $button-padding;
+  border-radius: $button-radius;
+  text-transform: uppercase;
   &:hover {
       text-decoration: underline;
       color: $color_4 !important;

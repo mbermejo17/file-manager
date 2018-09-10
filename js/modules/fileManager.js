@@ -51,8 +51,10 @@ let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileLis
             <div class="li-filename" id="li-filename0"></div>
             <div class="progress-content">
                 <div class="progress-bar" id="progress-bar0"></div>
-                <div class="percent" id="percent0"></div>
-                <a class="modal_close" id="abort0" href="#"></a>
+                <div class="percent" id="percent0"></div>               
+            </div>
+            <div class="abort-task">
+                  <a class="modal_close file-abort" id="abort0" href="#"></a>
             </div>
         </div>
     </li>
@@ -62,8 +64,10 @@ let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileLis
             <div class="progress-content">
                 <div class="progress-bar" id="progress-bar1"></div>
                 <div class="percent" id="percent1"></div>
-                <a class="modal_close" id="abort1" href="#"></a>
             </div>
+            <div class="abort-task">
+              <a class="modal_close file-abort" id="abort1" href="#"></a>
+            </div> 
         </div>
     </li>
     <li id="li2">
@@ -72,8 +76,10 @@ let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileLis
             <div class="progress-content">
                 <div class="progress-bar" id="progress-bar2"></div>
                 <div class="percent" id="percent2"></div>
-                <a class="modal_close" id="abort2" href="#"></a>
-            </div>   
+            </div>  
+            <div class="abort-task">
+              <a class="modal_close file-abort" id="abort2" href="#"></a>
+            </div> 
         </div>
     </li>
     <li id="li3">
@@ -82,8 +88,10 @@ let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileLis
             <div class="progress-content">
                 <div class="progress-bar" id="progress-bar3"></div>
                 <div class="percent" id="percent3"></div>
-                <a class="modal_close" id="abort3" href="#"></a>
-            </div>   
+            </div>
+            <div class="abort-task">
+                  <a class="modal_close file-abort" id="abort3" href="#"></a>
+                </div>   
         </div>
     </li>
     <li id="li4">
@@ -91,9 +99,11 @@ let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileLis
             <div class="li-filename" id="li-filename4"></div>
             <div class="progress-content">
                 <div class="progress-bar" id="progress-bar4"></div>
-                <div class="percent" id="percent4"></div>
-                <a class="modal_close" id="abort4" href="#"></a>
+                <div class="percent" id="percent4"></div>  
             </div>
+            <div class="abort-task">
+                  <a class="modal_close file-abort" id="abort4" href="#"></a>
+                </div> 
         </div>
     </li>
 </ul>`;
@@ -127,9 +137,7 @@ export function shareFile() {
   AddUserModalContent.style.display = "none";
   searchUserModalContent.style.display = "block";
   containerOverlay.style.display = "block";
-  document
-    .getElementById("btn-ShareFileCancel")
-    .addEventListener("click", e => {
+  document.getElementById("btn-ShareFileCancel").addEventListener("click", e => {
       e.preventDefault();
       searchUserModalContent.style.display = "none";
       containerOverlay.style.display = "none";
@@ -141,9 +149,7 @@ export function shareFile() {
     containerOverlay.style.display = "none";
   });
 
-  document
-    .getElementById("btn-ShareFileAccept")
-    .addEventListener("click", e => {
+  document.getElementById("btn-ShareFileAccept").addEventListener("click", e => {
       e.preventDefault();
       let tmpDate = new Date(document.getElementById("FileExpirateDate").value);
       let strTime = "";
@@ -264,56 +270,36 @@ export function upload(Token) {
   let h = 440;
   let aListHandler = [];
   let handlerCounter = 0;
-  let ModalTitle = "Subida de archivos";
-  let ModalContent = `<label class="btn-input waves-effect waves-teal btn2-unify">Select files<input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close"></label>
-                        <span id="sFiles">Ningun archivo seleccionado</span>`;
+
+  let ModalTitle = "Upload Files";
+  let ModalContent = `<label class="btn-input waves-effect waves-teal btn2-unify">
+                        Select files
+                        <input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close">
+                      </label>
+                      <span id="sFiles" class="upload-input-message">Ningun archivo seleccionado</span>`;
   ModalContent += htmlUploadDownloadTemplate;
   let htmlContent = `<div class="ModalDialog-alert">
                         <div class="ModalDialog-mask"></div>
-                        <div class="ModalDialog-body">
-                        <div id="modal-header">
-                          <h5>Subida de archivos</h5>
+                        <div class="ModalDialog-body download">
+                          <div class="ModalDialog-title">
+                            ${ModalTitle}
+                          </div>
                           <a class="modal_close" id="modalClose" href="#"></a>
+                          <div class="ModalDialog-container">
+                            <div class="files-progress-content">
+                              ${ModalContent}
+                            </div>
+                          </div>      
+                          <div class="ModalDialog-button">
+                                <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
+                                <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel uploads</a>  
+                                <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Close</a>
+                          </div>
                         </div>
-                        <div class="files-progress-content">
-                          <p>Subida de archivos</p>
-                      </div>
-                      <div class="modal-footer">
-                              <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
-                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel uploads</a>  
-                              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Close</a>
-                      </div></div></div>`;
+                     </div>`;
 
   $u("#upload").removeClass("disabled");
   $u("#upload").addClass("disabled");
-
-
- /*  let modalDialogOptions = {
-    cancel: true,
-    cancelText: "Cancel",
-    confirm: true,
-    confirmText: "OK",
-    type: 'upload',
-    width: '480px'
-  };
-    modalDialogOptions.confirmCallBack = async (e,data1,data2) => {
-      
-    };
-    modalDialog(
-      "Change User Password",
-      '<div class="input-field">' +
-            '<input id="newpassword" class="ModalDialog-input" type="password"/>' +
-            '<label for="newpassword" class="ModalDialog-label">New Password</label>' +
-      '</div>' +
-      '<div class="input-field">' +
-            '<input id="newpassword2" class="ModalDialog-input" type="password"/>' +
-            '<label for="newpassword2" class="ModalDialog-label">Repeat Password</label>' +
-      '</div>',
-      modalDialogOptions
-    );
- */
-
-
 
 
 
@@ -329,6 +315,7 @@ export function upload(Token) {
     if (userData.RunMode === "DEBUG")
       console.log("Upload:realPath " + realpath);
     let CancelToken = axios.CancelToken;
+    document.querySelector("#upload-input").disabled = true;
     axios
       .post("/files/upload?destPath=" + realpath, formData, {
         headers: {
@@ -341,13 +328,13 @@ export function upload(Token) {
         }),
         onUploadProgress: function(progressEvent) {
           let _this = this;
-          console.log("progressEvent: ", progressEvent);
+          //console.log("progressEvent: ", progressEvent);
           let percentComplete = 0;
           let evt = progressEvent;
           //aListHandler[nFile].upload.addEventListener(
           //  "progress",
           //  function(evt) {
-          console.log(fileName + " File size: ", evt.total);
+          //console.log(fileName + " File size: ", evt.total);
           if (evt.total > 700000000) {
             showToast(
               "Error",
@@ -362,17 +349,19 @@ export function upload(Token) {
             progressBar.style.color = "red";
             progressBar.style.width = "100%";
             progressBar.style.backgroundColor = "white";
+            document.querySelector('#abort'+nFile).style.display='block';
+
             handlerCounter = handlerCounter - 1;
             if (handlerCounter == 0) {
-              $u("#btnCancelAll").removeClass("disabled");
-              $u("#btnCancelAll").addClass("disabled");
+              document.querySelector("#btnCancelAll").classList.remove("disabled");
+              document.querySelector("#btnCancelAll").classList.add("disabled");
             }
           } else {
             if (evt.lengthComputable) {
               percentComplete = evt.loaded / evt.total;
               percentComplete = parseInt(percentComplete * 100);
-              $("#percent" + nFile).text(percentComplete + "%");
-              $("#progress-bar" + nFile).width(percentComplete + "%");
+              document.querySelector("#percent" + nFile).innerHTML= percentComplete + "%";
+              document.querySelector("#progress-bar" + nFile).style.width = percentComplete + "%";
             }
           }
           //false
@@ -382,29 +371,29 @@ export function upload(Token) {
       })
       .then(data => {
         //let data = JSON.parse(d);
-        if (userData.RunMode === "DEBUG")
-          console.log("Upload successful!\n", data);
-        console.log("handlerCounter1: ", handlerCounter);
+        if (userData.RunMode === "DEBUG") console.log("Upload successful!\n", data);
+        if (userData.RunMode === "DEBUG") console.log("handlerCounter1: ", handlerCounter);
+
         if (data.data.status == "OK") {
           showToast("Upload", fileName + " uploaded sucessfully", "success");
-          $u("#abort" + nFile).hide();
+          if (userData.RunMode === "DEBUG") console.log("ocultando abort",nFile);
+          if (userData.RunMode === "DEBUG") console.log(document.querySelector('#abort'+nFile));
+          //document.querySelector("#abort" + nFile).style.display='none';
           $u("#refresh").trigger("click");
           handlerCounter = handlerCounter - 1;
           console.log("handlerCounter2: ", handlerCounter);
           if (handlerCounter == 0) {
-            $("#btnCancelAll")
-              .removeClass("disabled")
-              .addClass("disabled");
+            $u("#btnCancelAll").removeClass("disabled");
+            $u("#btnCancelAll").addClass("disabled");
           }
         } else {
           if (data.data.status == "FAIL") {
             showToast("Error", "Error: " + data.data.message, "error");
-            $("#abort" + nFile).hide();
+            document.querySelector('#abort' + nFile).style.dsiplay='none';
             handlerCounter = handlerCounter - 1;
             if (handlerCounter == 0) {
-              $("#btnCancelAll")
-                .removeClass("disabled")
-                .addClass("disabled");
+              document.querySelector('#btnCancelAll').classList.remove("disabled");
+              document.querySelector('#btnCancelAll').classList.add("disabled");
             }
           }
         }
@@ -414,42 +403,54 @@ export function upload(Token) {
       });
   }
 
-  $("#modal")
-    .html(htmlContent)
-    .css("width: " + w + "%;height: " + h + "px;text-align: center;");
-  //$('.modal-content').css('width: 350px;');
-  $(".modal-container").css("width: 40% !important");
-  $(".file-input").show();
-  $("#modal").show();
-  $("#lean-overlay").show();
-  $("#btnCloseUpload").on("click", e => {
-    $("#upload").removeClass("disabled");
-    $("#modal").hide();
-    $("#lean-overlay").hide();
-  });
-  $("#modalClose").on("click", e => {
-    $("#upload").removeClass("disabled");
-    $("#modal").hide();
-    $("#lean-overlay").hide();
-  });
-  $("#btnCancelAll").removeClass("disabled");
-  $(".modal_close").on("click", e => {
+  let element = document.createElement("div");
+    element.id = "ModalDialog-wrap";
+    element.innerHTML = htmlContent;
+    document.body.appendChild(element);
+
+
+  document.querySelector("#upload-input").style.display='block';
+  
+  document.querySelector("#btnCloseUpload").addEventListener("click", (e) => {
     e.preventDefault();
-    if (userData.RunMode === "DEBUG") console.log(e);
-    let n = parseInt(e.target.id.slice(-1));
-    aListHandler[n]();
-    let percentLabel = document.querySelector("#percent" + n);
-    let progressBar = document.querySelector("#progress-bar" + n);
-    progressBar.innerHTML = "Canceled by user";
-    percentLabel.innerHTML = "";
-    progressBar.style.color = "red";
-    progressBar.style.width = "100%";
-    progressBar.style.backgroundColor = "white";
-    $(e.target).hide();
+    let el = document.querySelector("#ModalDialog-wrap");
+    el.parentNode.removeChild(el);
+    document.querySelector("#upload").classList.remove("disabled");
   });
-  $("#btnCancelAll").on("click", e => {
+
+  document.querySelector("#modalClose").addEventListener("click", (e) => {
+    e.preventDefault();
+    let el = document.querySelector("#ModalDialog-wrap");
+    el.parentNode.removeChild(el);
+    document.querySelector("#upload").classList.remove("disabled");
+  });
+
+  document.querySelector("#btnCancelAll").classList.remove("disabled");
+
+  [].forEach.call(document.querySelectorAll(".file-abort"), function(el) {
+    if (userData.RunMode === "DEBUG") console.log('el: ',el);
+    document.querySelector('#'+ el.id).addEventListener("ckick", function(e) {
+      alert('hola');
+      e.preventDefault();
+      let n = parseInt(e.target.id.slice(-1));
+      if (userData.RunMode === "DEBUG") console.log('abort' + n +' file click: ',e.target);
+      
+      aListHandler[n].abort();
+      let percentLabel = document.querySelector("#percent" + n);
+      let progressBar = document.querySelector("#progress-bar" + n);
+      progressBar.innerHTML = "Canceled by user";
+      percentLabel.innerHTML = "";
+      progressBar.style.color = "red";
+      progressBar.style.width = "100%";
+      progressBar.style.backgroundColor = "white";
+      document.querySelector("#abort" + n).style.display='none';
+    });
+  });
+
+  document.querySelector("#btnCancelAll").addEventListener("ckick", (e)=> {
+    e.preventDefault();
     for (let x = 0; x < 4; x++) {
-      aListHandler[x]();
+      aListHandler[x].abort();
       let percentLabel = document.querySelector("#percent" + x);
       let progressBar = document.querySelector("#progress-bar" + x);
       progressBar.innerHTML = "Canceled by user";
@@ -458,20 +459,33 @@ export function upload(Token) {
       progressBar.style.width = "100%";
       progressBar.style.backgroundColor = "white";
     }
-    $("#btnCancelAll").addClass("disabled");
+    document.querySelector("#btnCancelAll").classList.add("disabled");
   });
-  $("#upload-input").on("change", function(e) {
-    let files = $("#upload-input").get(0).files;
+
+
+  const _uploadInputClick = () =>{
+
+  };
+
+  document.querySelector("#upload-input").addEventListener("change", (e)=> {
+    e.preventDefault();
+    let files = document.querySelector("#upload-input").files;
     handlerCounter = files.length;
-    let htmlText =
-      files.length > 0 ? files.length + " archivos seleccionados." : files[0];
-    $("#sFiles").html(htmlText);
+    let htmlText = files.length > 0 ? '<a href="" onclick="_uploadInputClick">' : '';
+    htmlText += files.length > 0 ? files.length + " archivos seleccionados." : files[0];
+    htmlText += files.length > 0 ? '</a>' : '';
+    
+    if(files.lenght > 0) {
+      $u("#sFiles").addClass('select');
+    } else {
+      $u("#sFiles").removeClass('select');
+    }  
+    $u("#sFiles").html(htmlText);
     if (userData.RunMode === "DEBUG") console.log(files.length);
-    $(".file-input").hide();
+    $u("#upload-input").hide();
     if (files.length > 0 && files.length <= 5) {
-      $("#btnCloseUpload")
-        .removeClass("disabled")
-        .addClass("disabled");
+      $("#btnCloseUpload").removeClass("disabled")
+      $("#btnCloseUpload").addClass("disabled");
       for (let i = 0; i < files.length; i++) {
         let file = files[i];
         let formData = new FormData();
@@ -677,7 +691,7 @@ export function download(fileList, text) {
     appData.aSelectedFiles = [];
   });
   $("#modalClose").on("click", e => {
-    $("#download").removeClass("disabled");
+    document.querySelector("#upload").classList.remove("disabled");
     $("#modal").hide();
     $("#lean-overlay").hide();
     $("#refresh").trigger("click");
@@ -708,6 +722,7 @@ export function download(fileList, text) {
     progressBar.style.color = "red";
     progressBar.style.width = "100%";
     progressBar.style.backgroundColor = "white";
+    document.querySelector("#upload").classList.remove("disabled");
   });
 
   $("#btnCancelAll").removeClass("disabled");

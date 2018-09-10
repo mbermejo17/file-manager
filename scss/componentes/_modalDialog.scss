@@ -85,6 +85,10 @@
   -webkit-animation: modal-dialog-show 0.1s;
   animation: modal-dialog-show 0.1s;
 }
+.ModalDialog-body.download {
+  width: 980px;
+  max-width: 980px
+}
 
 .btn-input [type=file] {
   cursor: inherit;
@@ -116,11 +120,15 @@
 .ModalDialog-title {
   background-color: lightgrey;
   font-weight: bold;
-  font-size: 1em;
+  font-size: 1.3em;
   padding: 8px 10px;
   border-radius: 6px 6px 0 0;
 }
-.ModalDialog-content ,.ModalDialog-container {
+.ModalDialog-container {
+  widows: 100%;
+} 
+
+.ModalDialog-content {
   padding: 10px 10px 5px 10px;
   font-size: 1em;
 }

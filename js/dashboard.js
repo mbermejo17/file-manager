@@ -571,6 +571,7 @@ window.appData = {
   ////////////////////////////////////////
   const showUserProfile = (w, h, t) => {
     let ModalTitle = t;
+    console.log('access string: ', userData.AccessString);
     let ModalContent = `<table id="tableUserProfile" class="striped highlight">
                     <tr><td>User Name:</td><td>${userData.UserName}</td></tr>
                     <tr><td>User Role:</td><td>${userData.UserRole}</td></tr> 
@@ -579,35 +580,26 @@ window.appData = {
                     }</td></tr>
                     <tr><td colspan="2" style="text-align:center;border-botom:1px solid #CCC">&nbsp;</td></tr>
                     <tr><td>Allow new Folder:</td><td>`;
-    ModalContent += AllowNewFolder === true ? "Allow" : "Deny";
+    ModalContent += userData.AccessString.addfolder === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow Share Files:</td><td>`;
-    ModalContent += AllowShareFile === true ? "Allow" : "Deny";
+    ModalContent += userData.AccessString.sharefiles === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow delete Folder:</td><td>`;
-    ModalContent += AllowDeleteFolder === true ? "Allow" : "Deny";
+    ModalContent += userData.AccessString.deletefolder === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow delete File:</td><td>`;
-    ModalContent += AllowDeleteFile === true ? "Allow" : "Deny";
+    ModalContent += userData.AccessString.deletefile === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow Upload:</td><td>`;
-    ModalContent += AllowUpload === true ? "Allow" : "Deny";
+    ModalContent += userData.AccessString.upload === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                     <tr><td>Allow Download:</td><td>`;
-    ModalContent += AllowDownload === true ? "Allow" : "Deny";
+    ModalContent += userData.AccessString.download === true ? "Allow" : "Deny";
     ModalContent += `</td></tr>
                 </table>`;
-    let htmlContent = `<div id="modal-header">
-                        <h5>${ModalTitle}</h5>
-                        <a class="modal_close" id="modalClose" href="#hola"></a>
-                      </div>
-                      <div class="modal-content">
-                        <p>${ModalContent}</p>
-                      </div>
-                      <div class="modal-footer">
-                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
-                      </div>    `;
-    $u("#modal")
+    let htmlContent = `${ModalContent}`;
+    /* $u("#modal")
       .html(htmlContent)
       .css("width: " + w + "%;height: " + h + "px;");
     $u("#modal").show();
@@ -619,7 +611,22 @@ window.appData = {
     $u("#modalClose").on("click", () => {
       $u("#modal").hide();
       $u("#lean-overlay").hide();
-    });
+    }); */
+
+    let modalDialogOptions = {
+      cancel: true,
+      cancelText: "Close",
+      confirm: false,
+      confirmText: "",
+      type: '',
+      width: '400px'
+    };
+    modalDialog(
+      "User Profile",
+      htmlContent,
+      modalDialogOptions
+    );
+   
   };
 
   ////////////////////////////////////////
@@ -768,38 +775,36 @@ window.appData = {
   };
 
   const refreshBarMenu = () => {
-    if (AllowNewFolder === true) {
+    if (userData.AccessString.addfolder === true) {
       $u("#newFolder").removeClass("disabled");
     } else {
       $u("#newFolder").removeClass("disabled");
       $u("#newFolder").addClass("disabled");
     }
-    if (AllowDeleteFolder === true && AllowDeleteFile === true) {
+    if (userData.AccessString.deletefolder === true && userData.AccessString.deletefile === true) {
       $u("#delete").removeClass("disabled");
     } else {
       $u("#delete").removeClass("disabled");
       $u("#delete").addClass("disabled");
     }
-    if (AllowShareFile === true) {
+    if (userData.AccessString.sahrefiles === true) {
       $u("#share").removeClass("disabled");
     } else {
       $u("#share").removeClass("disabled");
       $u("#share").addClass("disabled");
     }
-    if (AllowUpload == true) {
+    if (userData.AccessString.upload == true) {
       $u("#upload").removeClass("disabled");
     } else {
-      $u("#upload")
-        .removeClass("disabled")
-        .addClass("disabled");
+      $u("#upload").removeClass("disabled")
+      $u("#upload").addClass("disabled");
     }
 
-    if (AllowDownload == true) {
+    if (userData.AccessString.download == true) {
       $u("#download").removeClass("disabled");
     } else {
-      $u("#download")
-        .removeClass("disabled")
-        .addClass("disabled");
+      $u("#download").removeClass("disabled")
+      $u("#download").addClass("disabled");
     }
     if (userData.UserRole.toUpperCase() == "ADMIN") {
       $u("#settings").removeClass("hide");
@@ -923,21 +928,23 @@ window.appData = {
 
   $u("#share").on("click", e => {
     e.preventDefault();
-    if (appData.aSelectedFiles.length > 0) {
-      if (appData.aSelectedFiles.length > 1) {
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      if (appData.aSelectedFiles.length > 0) {
+        if (appData.aSelectedFiles.length > 1) {
+          showToast(
+            "Share File",
+            "No pueden seleccionarse más de un archivo",
+            "warning"
+          );
+        }
+        shareFile();
+      } else {
         showToast(
           "Share File",
-          "No pueden seleccionarse más de un archivo",
+          "No se ha seleccionado archivo para compartir",
           "warning"
         );
       }
-      shareFile();
-    } else {
-      showToast(
-        "Share File",
-        "No se ha seleccionado archivo para compartir",
-        "warning"
-      );
     }
   });
 
