@@ -125,6 +125,7 @@ body {
   justify-content: center;
 }
 .line-path {
+  max-width: 90vw;
   display: flex;
   justify-content: space-between;
   height: 35px;
@@ -237,6 +238,7 @@ table.striped {
     border-collapse: collapse;
     border-spacing: 0;
     margin: 0 auto;
+    width: 100%;
   thead {
     th {
       text-align: center;
@@ -510,6 +512,13 @@ table.striped {
     }
   }
 }
+.progress-bar.abort {
+  line-height: 1.8em;
+  width: 100%;
+  color: red;
+  background-color: white;
+}
+
 .file-input {
   overflow: hidden;
   position: relative;
@@ -558,6 +567,14 @@ table.striped {
 }
 
 .file-abort {
+  position: relative;
+  top: 0px;
+  right: -10px;
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: url(../img/modal_close.png);
+  //z-index: 2;
   z-index: 1999;
 }
 

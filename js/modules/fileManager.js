@@ -54,7 +54,7 @@ let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileLis
                 <div class="percent" id="percent0"></div>               
             </div>
             <div class="abort-task">
-                  <a class="modal_close file-abort" id="abort0" href="#"></a>
+                  <a class="file-abort" id="abort0" href="#" title="Cancel file download"></a>
             </div>
         </div>
     </li>
@@ -66,7 +66,7 @@ let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileLis
                 <div class="percent" id="percent1"></div>
             </div>
             <div class="abort-task">
-              <a class="modal_close file-abort" id="abort1" href="#"></a>
+              <a class="file-abort" id="abort1" href="#" title="Cancel file download"></a>
             </div> 
         </div>
     </li>
@@ -78,7 +78,7 @@ let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileLis
                 <div class="percent" id="percent2"></div>
             </div>  
             <div class="abort-task">
-              <a class="modal_close file-abort" id="abort2" href="#"></a>
+              <a class="file-abort" id="abort2" href="#" title="Cancel file download"></a>
             </div> 
         </div>
     </li>
@@ -90,7 +90,7 @@ let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileLis
                 <div class="percent" id="percent3"></div>
             </div>
             <div class="abort-task">
-                  <a class="modal_close file-abort" id="abort3" href="#"></a>
+                  <a class="file-abort" id="abort3" href="#" title="Cancel file download"></a>
                 </div>   
         </div>
     </li>
@@ -102,7 +102,7 @@ let htmlUploadDownloadTemplate = `<ul class="preloader-file" id="DownloadfileLis
                 <div class="percent" id="percent4"></div>  
             </div>
             <div class="abort-task">
-                  <a class="modal_close file-abort" id="abort4" href="#"></a>
+                  <a class="file-abort" id="abort4" href="#" title="Cancel file download"></a>
                 </div> 
         </div>
     </li>
@@ -270,9 +270,10 @@ export function upload(Token) {
   let h = 440;
   let aListHandler = [];
   let handlerCounter = 0;
+  let uploadFiles = [];
 
   let ModalTitle = "Upload Files";
-  let ModalContent = `<label class="btn-input waves-effect waves-teal btn2-unify">
+  let ModalContent = `<label id="label-upload-input" class="btn-input waves-effect waves-teal btn2-unify">
                         Select files
                         <input id="upload-input" type="file" name="uploads[]" multiple="multiple" class="modal-action modal-close">
                       </label>
@@ -292,7 +293,7 @@ export function upload(Token) {
                           </div>      
                           <div class="ModalDialog-button">
                                 <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
-                                <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel uploads</a>  
+                                <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify disabled" id="btnCancelAll" href="#!">Cancel uploads</a>  
                                 <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseUpload" href="#!">Close</a>
                           </div>
                         </div>
@@ -315,7 +316,12 @@ export function upload(Token) {
     if (userData.RunMode === "DEBUG")
       console.log("Upload:realPath " + realpath);
     let CancelToken = axios.CancelToken;
+    let progressBar = document.querySelector("#progress-bar" + nFile);
+    let percentLabel = document.querySelector("#percent" + nFile);
+
     document.querySelector("#upload-input").disabled = true;
+
+
     axios
       .post("/files/upload?destPath=" + realpath, formData, {
         headers: {
@@ -342,26 +348,28 @@ export function upload(Token) {
               "error"
             );
             aListHandler[nFile]();
-            let percentLabel = document.querySelector("#percent" + nFile);
-            let progressBar = document.querySelector("#progress-bar" + nFile);
             progressBar.innerHTML = "Aborted by server";
-            percentLabel.innerHTML = "";
+            percentLabel.style.display = "none";
+            progressBar.style.backgroundColor = "white";
             progressBar.style.color = "red";
             progressBar.style.width = "100%";
-            progressBar.style.backgroundColor = "white";
-            document.querySelector('#abort'+nFile).style.display='block';
+            document.querySelector('#abort'+nFile).style.display='none';
 
             handlerCounter = handlerCounter - 1;
             if (handlerCounter == 0) {
               document.querySelector("#btnCancelAll").classList.remove("disabled");
               document.querySelector("#btnCancelAll").classList.add("disabled");
             }
+             //audit(userData.UserName,'UPLOAD',uploadFiles[nFile].fileName + ' [' + uploadFiles[nFile].fileSize + '] ->Upload canceled by Server','FAIL');
+             console.log('AUDIT: '+ userData.UserName + 'UPLOAD' + uploadFiles[nFile].fileName + ' [' + uploadFiles[nFile].fileSize + '] ->Upload canceled by Server,FAIL');
           } else {
             if (evt.lengthComputable) {
-              percentComplete = evt.loaded / evt.total;
-              percentComplete = parseInt(percentComplete * 100);
-              document.querySelector("#percent" + nFile).innerHTML= percentComplete + "%";
-              document.querySelector("#progress-bar" + nFile).style.width = percentComplete + "%";
+              if(progressBar.style.width !== "100%"){
+                percentComplete = evt.loaded / evt.total;
+                percentComplete = parseInt(percentComplete * 100);
+                percentLabel.innerHTML= percentComplete + "%";
+                progressBar.style.width = percentComplete + "%";
+              }
             }
           }
           //false
@@ -376,9 +384,10 @@ export function upload(Token) {
 
         if (data.data.status == "OK") {
           showToast("Upload", fileName + " uploaded sucessfully", "success");
+          //audit(userData.UserName,'UPLOAD',uploadFiles[nFile].fileName + ' [' + uploadFiles[nFile].fileSize +']','OK');
           if (userData.RunMode === "DEBUG") console.log("ocultando abort",nFile);
-          if (userData.RunMode === "DEBUG") console.log(document.querySelector('#abort'+nFile));
-          //document.querySelector("#abort" + nFile).style.display='none';
+          if (userData.RunMode === "DEBUG") console.log('AUDIT: ' + userData.UserName +',UPLOAD,',uploadFiles[nFile].fileName + ' [' + uploadFiles[nFile].fileSize +'],OK');
+          document.querySelector('#abort'+nFile).style.display='none';
           $u("#refresh").trigger("click");
           handlerCounter = handlerCounter - 1;
           console.log("handlerCounter2: ", handlerCounter);
@@ -390,6 +399,7 @@ export function upload(Token) {
           if (data.data.status == "FAIL") {
             showToast("Error", "Error: " + data.data.message, "error");
             document.querySelector('#abort' + nFile).style.dsiplay='none';
+            //audit(userData.UserName,'UPLOAD',uploadFiles[nFile].fileName + ' [' + uploadFiles[nFile].fileSize + '] ->' + data.data.message,'FAIL');
             handlerCounter = handlerCounter - 1;
             if (handlerCounter == 0) {
               document.querySelector('#btnCancelAll').classList.remove("disabled");
@@ -425,73 +435,107 @@ export function upload(Token) {
     document.querySelector("#upload").classList.remove("disabled");
   });
 
-  document.querySelector("#btnCancelAll").classList.remove("disabled");
 
   [].forEach.call(document.querySelectorAll(".file-abort"), function(el) {
-    if (userData.RunMode === "DEBUG") console.log('el: ',el);
-    document.querySelector('#'+ el.id).addEventListener("ckick", function(e) {
-      alert('hola');
+    document.querySelector('#'+ el.id).addEventListener("click", function(e) {
       e.preventDefault();
       let n = parseInt(e.target.id.slice(-1));
-      if (userData.RunMode === "DEBUG") console.log('abort' + n +' file click: ',e.target);
-      
-      aListHandler[n].abort();
       let percentLabel = document.querySelector("#percent" + n);
       let progressBar = document.querySelector("#progress-bar" + n);
-      progressBar.innerHTML = "Canceled by user";
-      percentLabel.innerHTML = "";
-      progressBar.style.color = "red";
-      progressBar.style.width = "100%";
+      aListHandler[n]();
       progressBar.style.backgroundColor = "white";
+      progressBar.style.color = "red";
+      percentLabel.style.display = "none";
+      progressBar.innerHTML = "Canceled by user";
+      progressBar.style.width = "100%";
       document.querySelector("#abort" + n).style.display='none';
+      handlerCounter = handlerCounter - 1;
+      console.log('handlerCounter: ',handlerCounter);
+      if (handlerCounter == 0) {
+        document.querySelector("#btnCancelAll").classList.remove("disabled");
+        document.querySelector("#btnCancelAll").classList.add("disabled");
+      }
+      //audit(userData.UserName,'UPLOAD',uploadFiles[n].fileName + ' [' + uploadFiles[n].fileSize + '] ->Upload canceled by User','FAIL');
+     console.log('AUDIT: '+ userData.UserName + 'UPLOAD' + uploadFiles[n].fileName + ' [' + uploadFiles[n].fileSize + '] ->Upload canceled by User,FAIL');
     });
   });
 
-  document.querySelector("#btnCancelAll").addEventListener("ckick", (e)=> {
+  document.querySelector("#btnCancelAll").addEventListener("click", (e)=> {
     e.preventDefault();
-    for (let x = 0; x < 4; x++) {
-      aListHandler[x].abort();
+    for (let x = 0; x < 5; x++) {
       let percentLabel = document.querySelector("#percent" + x);
       let progressBar = document.querySelector("#progress-bar" + x);
-      progressBar.innerHTML = "Canceled by user";
-      percentLabel.innerHTML = "";
-      progressBar.style.color = "red";
-      progressBar.style.width = "100%";
-      progressBar.style.backgroundColor = "white";
+      if (aListHandler[x]) {
+          aListHandler[x]();
+          percentLabel.style.display = "none";
+          progressBar.style.backgroundColor = "white";
+          progressBar.style.color = "red";
+          progressBar.innerHTML = "Canceled by user";
+          progressBar.style.width = "100%";
+          document.querySelector("#abort" + x).style.display='none';
+          //audit(userData.UserName,'UPLOAD',uploadFiles[x].fileName + ' [' + uploadFiles[x].fileSize + '] ->Upload canceled by User','FAIL');
+          console.log('AUDIT: '+ userData.UserName + 'UPLOAD' + uploadFiles[x].fileName + ' [' + uploadFiles[x].fileSize + '] ->Upload canceled by User,FAIL');
+      }
     }
+    handlerCounter = 0;
+    document.querySelector("#btnCancelAll").classList.remove("disabled");
     document.querySelector("#btnCancelAll").classList.add("disabled");
   });
 
-
-  const _uploadInputClick = () =>{
-
-  };
 
   document.querySelector("#upload-input").addEventListener("change", (e)=> {
     e.preventDefault();
     let files = document.querySelector("#upload-input").files;
     handlerCounter = files.length;
-    let htmlText = files.length > 0 ? '<a href="" onclick="_uploadInputClick">' : '';
+    let htmlText = files.length > 0 ? '<a href="#" id="selectedFiles">' : '';
     htmlText += files.length > 0 ? files.length + " archivos seleccionados." : files[0];
     htmlText += files.length > 0 ? '</a>' : '';
+     
+    if(document.querySelector("#selectedFiles")) {
+      document.querySelector("#selectedFiles").addEventListener("click",(e)=>{
+        e.preventDefault();
+        $u("#sFiles").removeClass('select');
+        document.querySelector("#label-upload-input").classList.remove("disabled");
+        document.querySelector("#label-upload-input").onclick();
+      }); 
+    }
+
     
-    if(files.lenght > 0) {
+
+   /*  if(files.lenght > 0) {
       $u("#sFiles").addClass('select');
+      document.querySelector("#label-upload-input").classList.add("disabled");
+      document.querySelector("#btnCancelAll").classList.remove("disabled");
     } else {
       $u("#sFiles").removeClass('select');
-    }  
-    $u("#sFiles").html(htmlText);
+      document.querySelector("#label-upload-input").classList.remove("disabled");
+      document.querySelector("#btnCancelAll").classList.add("disabled");
+    }   */
+
+    document.querySelector("#sFiles").innerHTML= htmlText;
+
     if (userData.RunMode === "DEBUG") console.log(files.length);
-    $u("#upload-input").hide();
     if (files.length > 0 && files.length <= 5) {
-      $("#btnCloseUpload").removeClass("disabled")
-      $("#btnCloseUpload").addClass("disabled");
+      document.querySelector("#btnCloseUpload").classList.remove("disabled");
+      document.querySelector("#btnCloseUpload").classList.add("disabled");
+      document.querySelector("#btnCancelAll").classList.remove("disabled");
+
       for (let i = 0; i < files.length; i++) {
         let file = files[i];
         let formData = new FormData();
         // add the files to formData object for the data payload
-
+        /* if(file.size > 1000) {
+          showToast(
+            "Error",
+            "El tamaño de archivo excede del límite",
+            "error"
+          );
+        } */
         formData.append("uploads[]", file, file.name);
+        uploadFiles.push({
+          fileName: file.name,
+          fileSize: file.size
+        });
         fnUploadFile(formData, i, file.name);
       }
       $("#btnCloseUpload").removeClass("disabled");
