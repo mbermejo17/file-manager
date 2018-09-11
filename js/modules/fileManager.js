@@ -303,6 +303,14 @@ export function upload(Token) {
   $u("#upload").addClass("disabled");
 
 
+  const _showAbortMessage = (el,msg) => {
+    el.style.backgroundColor = "white";
+    el.style.color = "red";
+    el.innerHTML = msg;
+    el.style.width = "100%";
+   };
+
+
 
   function fnUploadFile(formData, nFile, fileName) {
     $u("#li" + nFile).show();
@@ -348,11 +356,8 @@ export function upload(Token) {
               "error"
             );
             aListHandler[nFile]();
-            progressBar.innerHTML = "Aborted by server";
+            _showAbortMessage(progressBar,'Aborted by server');
             percentLabel.style.display = "none";
-            progressBar.style.backgroundColor = "white";
-            progressBar.style.color = "red";
-            progressBar.style.width = "100%";
             document.querySelector('#abort'+nFile).style.display='none';
 
             handlerCounter = handlerCounter - 1;
@@ -443,11 +448,8 @@ export function upload(Token) {
       let percentLabel = document.querySelector("#percent" + n);
       let progressBar = document.querySelector("#progress-bar" + n);
       aListHandler[n]();
-      progressBar.style.backgroundColor = "white";
-      progressBar.style.color = "red";
+      _showAbortMessage(progressBar,'Canceled by user');
       percentLabel.style.display = "none";
-      progressBar.innerHTML = "Canceled by user";
-      progressBar.style.width = "100%";
       document.querySelector("#abort" + n).style.display='none';
       handlerCounter = handlerCounter - 1;
       console.log('handlerCounter: ',handlerCounter);
@@ -460,6 +462,7 @@ export function upload(Token) {
     });
   });
 
+ 
   document.querySelector("#btnCancelAll").addEventListener("click", (e)=> {
     e.preventDefault();
     for (let x = 0; x < 5; x++) {
@@ -467,11 +470,9 @@ export function upload(Token) {
       let progressBar = document.querySelector("#progress-bar" + x);
       if (aListHandler[x]) {
           aListHandler[x]();
+          _showAbortMessage(progressBar,'Canceled by User');
           percentLabel.style.display = "none";
-          progressBar.style.backgroundColor = "white";
-          progressBar.style.color = "red";
-          progressBar.innerHTML = "Canceled by user";
-          progressBar.style.width = "100%";
+          
           document.querySelector("#abort" + x).style.display='none';
           //audit(userData.UserName,'UPLOAD',uploadFiles[x].fileName + ' [' + uploadFiles[x].fileSize + '] ->Upload canceled by User','FAIL');
           console.log('AUDIT: '+ userData.UserName + 'UPLOAD' + uploadFiles[x].fileName + ' [' + uploadFiles[x].fileSize + '] ->Upload canceled by User,FAIL');
