@@ -115,6 +115,29 @@ const sendEmail = (toEmail, fromEmail, subject, body_message) => {
   if (win && window.open && !window.closed) window.close();
 };
 
+
+const _deselectAllFolders = ()=>{
+    let allElements = document.querySelectorAll(".dashboard-path");
+    allElements.forEach(function(v, i) {
+      if (v.children[0].checked) {
+        v.children[0].checked = false;
+      } 
+    });
+    document.querySelector('#selectAllFiles').checked = false;
+    appData.aSelectedFolders = [];
+};
+
+const _deselectAllFiles = ()=>{
+  let allElements = document.querySelectorAll(".typeFile");
+  allElements.forEach(function(element, i) {
+    if (element.parentElement.parentElement.children[0].children[0].children[0].checked) {
+      element.parentElement.parentElement.children[0].children[0].children[0].checked = false;
+    } 
+  });
+  document.querySelector('#selectAllFiles').checked = false;
+  appData.aSelectedFiles = [];
+};
+
 let validateSize = f => {
   return true;
 };
@@ -235,6 +258,7 @@ export function deleteSelected() {
     let result = 0;
     modalDialogOptions.confirmCallBack = async () => {
       await deleteFolder(appData.currentPath);
+      await _deselectAllFolders();
       if (appData.aSelectedFiles.length > 0) {
         modalDialogOptions.confirmCallBack = async () => {
           await deleteFile(appData.currentPath);
@@ -244,6 +268,20 @@ export function deleteSelected() {
           "Delete selected files?",
           modalDialogOptions
         );
+      }else {
+        document.getElementById("refresh").click();
+      }
+    };
+    modalDialogOptions.cancelCallBack = async () => {
+      await _deselectAllFolders();
+      if (appData.aSelectedFiles.length > 0) {
+        modalDialogOptions.confirmCallBack = async () => {
+          await deleteFile(appData.currentPath);
+        };
+        modalDialogOptions.cancelCallBack = async () => {
+          await _deselectAllFiles();
+        };
+        modalDialog("Delete Files", "Delete selected files?", modalDialogOptions);
       }
     };
     modalDialog(
@@ -253,8 +291,12 @@ export function deleteSelected() {
     );
   } else {
     if (appData.aSelectedFiles.length > 0) {
-      modalDialogOptions.confirmCallBack = () => {
-        deleteFile(appData.currentPath);
+      modalDialogOptions.confirmCallBack = async () => {
+        await deleteFile(appData.currentPath);
+        document.getElementById("refresh").click();
+      };
+      modalDialogOptions.cancelCallBack = async () => {
+        await _deselectAllFiles();
       };
       modalDialog("Delete Files", "Delete selected files?", modalDialogOptions);
     }

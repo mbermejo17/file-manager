@@ -309,10 +309,8 @@ window.appData = {
           element.parentElement.parentElement.children[0].children[0]
             .children[0].checked
         );
-      if (
-        element.parentElement.parentElement.children[0].children[0].children[0]
-          .checked
-      ) {
+      if (element.parentElement.parentElement.children[0].children[0].children[0].checked)
+       {
         appData.aSelectedFiles.push(element.innerHTML);
         checkedFiles.push(element.innerHTML);
         // c(element.children[1].innerHTML)

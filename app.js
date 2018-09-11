@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 //const ApiRoutes = require("./routes/api");
 const userRoutes = require('./app/routes/userRoutes');
 const fileRoutes = require('./app/routes/fileRoutes');
+const auditRoutes = require('./app/routes/auditRoutes');
 //const MntRoutes = require('./routes/mnt');
 const path = require('path');
 const debug = require('debug');
@@ -42,7 +43,7 @@ app.use((req, res, next) => {
 
 app.use("/", userRoutes);
 app.use("/files", fileRoutes);
-//app.use("/api", ApiRoutes);
+app.use("/audit", auditRoutes);
 //app.use("/mnt", MntRoutes);
 
 
