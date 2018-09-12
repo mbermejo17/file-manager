@@ -1,8 +1,12 @@
 import axios from "axios";
-import { Base64 } from "js-base64";
+import {
+    Base64
+} from "js-base64";
 import md5 from "../vendor/md5.min";
 import moment from "moment";
-import { modalDialog } from "../vendor/modalDialog";
+import {
+    modalDialog
+} from "../vendor/modalDialog";
 import DataTable from "../vendor/dataTables";
 
 ////////////////////////////////////
@@ -253,169 +257,169 @@ let htmlSearchUserTemplate = `
 `;
 
 const checkAccessRights = (AccessSwitch, role, accessRights) => {
-  let opt = "";
-  let aAccessRights = split(accessRights, ",");
-  if (role !== "Custom") {
-    switch (role.toUpperCase()) {
-      case "USER":
-        opt = "opt1";
-        break;
-      case "ADMIN":
-        opt = "opt2";
-        break;
-      case "ADVANCED USER":
-        opt = "opt3";
-        break;
+    let opt = "";
+    let aAccessRights = split(accessRights, ",");
+    if (role !== "Custom") {
+        switch (role.toUpperCase()) {
+            case "USER":
+                opt = "opt1";
+                break;
+            case "ADMIN":
+                opt = "opt2";
+                break;
+            case "ADVANCED USER":
+                opt = "opt3";
+                break;
+        }
+        changeAccessRights(AccessSwitch, opt);
+    } else {
+        for (let x = 0; x < AccessSwitch.length; x++) {
+            if (aAccessRights[x] == 1) {
+                AccessSwitch[x].checked = true;
+            } else {
+                AccessSwitch[x].checked = false;
+            }
+        }
     }
-    changeAccessRights(AccessSwitch, opt);
-  } else {
-    for (let x = 0; x < AccessSwitch.length; x++) {
-      if (aAccessRights[x] == 1) {
-        AccessSwitch[x].checked = true;
-      } else {
-        AccessSwitch[x].checked = false;
-      }
-    }
-  }
 };
 
 const changeAccessRights = (AccessSwitch, opt) => {
-  for (let x = 0; x < AccessSwitch.length; x++) {
-    AccessSwitch[x].disabled = false;
-  }
-  switch (opt) {
-    case "opt1":
-      AccessSwitch[0].checked = true;     //Download
-      AccessSwitch[1].checked = true;     //Upload
-      AccessSwitch[2].checked = false;    
-      AccessSwitch[3].checked = false;
-      AccessSwitch[5].checked = false;
-      AccessSwitch[2].disabled = true;
-      AccessSwitch[3].disabled = true;
-      AccessSwitch[4].checked = true;    // Add Folders
-      AccessSwitch[4].disabled = true;
-      AccessSwitch[5].disabled = true;
-      break;
-    case "opt2":
-      AccessSwitch[0].checked = true;
-      AccessSwitch[1].checked = true;
-      AccessSwitch[2].checked = true;
-      AccessSwitch[3].checked = true;
-      AccessSwitch[4].checked = true;
-      AccessSwitch[5].checked = true;
-      break;
-    case "opt3":
-      AccessSwitch[0].checked = true;
-      AccessSwitch[1].checked = true;
-      AccessSwitch[2].checked = false;   // Delete Files
-      AccessSwitch[2].disabled = true;    
-      AccessSwitch[3].checked = false;   // Delete Folders
-      AccessSwitch[3].disabled = true;
-      AccessSwitch[4].checked = true;    // Add Folders
-      AccessSwitch[4].disabled = true;
-      AccessSwitch[5].checked = true;    // Shared Files
-      AccessSwitch[5].disabled = true;
-      break;
-    case "opt4":
-      AccessSwitch[0].checked = false;
-      AccessSwitch[1].checked = false;
-      AccessSwitch[2].checked = false;
-      AccessSwitch[3].checked = false;
-      AccessSwitch[4].checked = false;
-      AccessSwitch[5].checked = false;
-      break;
-  }
+    for (let x = 0; x < AccessSwitch.length; x++) {
+        AccessSwitch[x].disabled = false;
+    }
+    switch (opt) {
+        case "opt1":
+            AccessSwitch[0].checked = true; //Download
+            AccessSwitch[1].checked = true; //Upload
+            AccessSwitch[2].checked = false;
+            AccessSwitch[3].checked = false;
+            AccessSwitch[5].checked = false;
+            AccessSwitch[2].disabled = true;
+            AccessSwitch[3].disabled = true;
+            AccessSwitch[4].checked = true; // Add Folders
+            AccessSwitch[4].disabled = true;
+            AccessSwitch[5].disabled = true;
+            break;
+        case "opt2":
+            AccessSwitch[0].checked = true;
+            AccessSwitch[1].checked = true;
+            AccessSwitch[2].checked = true;
+            AccessSwitch[3].checked = true;
+            AccessSwitch[4].checked = true;
+            AccessSwitch[5].checked = true;
+            break;
+        case "opt3":
+            AccessSwitch[0].checked = true;
+            AccessSwitch[1].checked = true;
+            AccessSwitch[2].checked = false; // Delete Files
+            AccessSwitch[2].disabled = true;
+            AccessSwitch[3].checked = false; // Delete Folders
+            AccessSwitch[3].disabled = true;
+            AccessSwitch[4].checked = true; // Add Folders
+            AccessSwitch[4].disabled = true;
+            AccessSwitch[5].checked = true; // Shared Files
+            AccessSwitch[5].disabled = true;
+            break;
+        case "opt4":
+            AccessSwitch[0].checked = false;
+            AccessSwitch[1].checked = false;
+            AccessSwitch[2].checked = false;
+            AccessSwitch[3].checked = false;
+            AccessSwitch[4].checked = false;
+            AccessSwitch[5].checked = false;
+            break;
+    }
 };
 
-const _editUser = (userId,callback) => {
-  $u("#waiting").addClass("active");
-  axios
-    .get("/user/"+userId, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + userData.Token
-      },
-      timeout: 30000
-    })
-    .then((d) => {
-      $u("#waiting").removeClass("active");
-      if (userData.RunMode === "DEBUG") console.log(d.data.data);
-      callback(d.data.data);
-    })
-    .catch((e) =>{
-      $u("#waiting").removeClass("active");
-      showToast(
-        "Search Users",
-        "Error al buscar usuario.<br>Err:" + e,
-        "error"
-      );
-      if (userData.RunMode === "DEBUG") console.log(e);
-    });
+const _editUser = (userId, callback) => {
+    $u("#waiting").addClass("active");
+    axios
+        .get("/user/" + userId, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + userData.Token
+            },
+            timeout: 30000
+        })
+        .then((d) => {
+            $u("#waiting").removeClass("active");
+            if (userData.RunMode === "DEBUG") console.log(d.data.data);
+            callback(d.data.data);
+        })
+        .catch((e) => {
+            $u("#waiting").removeClass("active");
+            showToast(
+                "Search Users",
+                "Error al buscar usuario.<br>Err:" + e,
+                "error"
+            );
+            if (userData.RunMode === "DEBUG") console.log(e);
+        });
 };
 
 export function searchUserName(userName) {
-  if (userData.RunMode === "DEBUG") console.log(userName);
-  $u("#waiting").addClass("active");
-  axios
-    .get('/searchuser?userName=" + userName', {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + userData.Token
-      },
-      timeout: 30000
-    })
-    .then(d => {
-      $u("#waiting").removeClass("active");
-      if (userData.RunMode === "DEBUG") console.log(d);
-      if (d.data.status == "OK") {
-        showAddUserForm("Edit User", d.data);
-      } else {
-        showToast("Search Users", d.data.message, "error");
-      }
-    })
-    .catch(e => {
-      $u("#waiting").removeClass("active");
-      showToast(
-        "Search Users",
-        "Error al buscar usuario " + userName + ".<br>Err:" + e,
-        "error"
-      );
-      if (userData.RunMode === "DEBUG") console.log(e);
-    });
+    if (userData.RunMode === "DEBUG") console.log(userName);
+    $u("#waiting").addClass("active");
+    axios
+        .get('/searchuser?userName=" + userName', {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + userData.Token
+            },
+            timeout: 30000
+        })
+        .then(d => {
+            $u("#waiting").removeClass("active");
+            if (userData.RunMode === "DEBUG") console.log(d);
+            if (d.data.status == "OK") {
+                showAddUserForm("Edit User", d.data);
+            } else {
+                showToast("Search Users", d.data.message, "error");
+            }
+        })
+        .catch(e => {
+            $u("#waiting").removeClass("active");
+            showToast(
+                "Search Users",
+                "Error al buscar usuario " + userName + ".<br>Err:" + e,
+                "error"
+            );
+            if (userData.RunMode === "DEBUG") console.log(e);
+        });
 }
 
 export function editUser() {
-  let AddUserModalContent = document.querySelector("#AddUserModalContent");
-  let SearchUserModalContent = document.querySelector(
-    "#searchUserModalContent"
-  );
-  let containerOverlay = document.querySelector(".container-overlay");
+    let AddUserModalContent = document.querySelector("#AddUserModalContent");
+    let SearchUserModalContent = document.querySelector(
+        "#searchUserModalContent"
+    );
+    let containerOverlay = document.querySelector(".container-overlay");
 
-  AddUserModalContent.innerHTML = htmlSearchUserTemplate;
-  SearchUserModalContent.style.display = "none";
-  $u("#AddUserModalContent").addClass("edit");
-  AddUserModalContent.style.display = "block";
-  containerOverlay.style.display = "block";
-  $u("#waiting").addClass("active");
-  axios
-    .get("/users", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + userData.Token
-      },
-      timeout: 30000
-    })
-    .then(d => {
-      $u("#waiting").removeClass("active");
-      if (userData.RunMode === "DEBUG") console.log(d);
-      if (d.data.status === "OK") {
-        let users = d.data.data;
-        let i;
-        let htmlListContent = "";
-        let bodyList = document.querySelector("#bodyList");
-        if (userData.RunMode === "DEBUG") console.log("users: ", users);
-        for (i = 0; i < users.length; i++) {
-          htmlListContent += `
+    AddUserModalContent.innerHTML = htmlSearchUserTemplate;
+    SearchUserModalContent.style.display = "none";
+    $u("#AddUserModalContent").addClass("edit");
+    AddUserModalContent.style.display = "block";
+    containerOverlay.style.display = "block";
+    $u("#waiting").addClass("active");
+    axios
+        .get("/users", {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + userData.Token
+            },
+            timeout: 30000
+        })
+        .then(d => {
+            $u("#waiting").removeClass("active");
+            if (userData.RunMode === "DEBUG") console.log(d);
+            if (d.data.status === "OK") {
+                let users = d.data.data;
+                let i;
+                let htmlListContent = "";
+                let bodyList = document.querySelector("#bodyList");
+                if (userData.RunMode === "DEBUG") console.log("users: ", users);
+                for (i = 0; i < users.length; i++) {
+                    htmlListContent += `
                   <tr class="data-row">
                     <td>${users[i].UserId}</td>
                     <td>${users[i].UserName}</td>
@@ -424,284 +428,282 @@ export function editUser() {
                     <td>${users[i].RootPath}</td>
                     <td>${users[i].ExpirateDate}</td>
                   </tr>`;
-        }
-        if (userData.RunMode === "DEBUG")
-          console.log("htmlListContent: ", htmlListContent);
-        bodyList.innerHTML = htmlListContent;
+                }
+                if (userData.RunMode === "DEBUG")
+                    console.log("htmlListContent: ", htmlListContent);
+                bodyList.innerHTML = htmlListContent;
 
-        let table = new DataTable(document.querySelector("#usersTableList"), {
-          searchable: true,
-          fixedHeight: true,
-          info: false,
-          perPageSelect: null,
-          perPage: 200
-        });
+                let table = new DataTable(document.querySelector("#usersTableList"), {
+                    searchable: true,
+                    fixedHeight: true,
+                    info: false,
+                    perPageSelect: null,
+                    perPage: 200
+                });
 
         [].forEach.call(document.querySelectorAll(".data-row"), function(el) {
-          el.addEventListener("click", function(e) {
-            let userId = e.target.parentNode.children[0].innerHTML;
-            console.log("userId: ", userId);
-            _editUser(userId, (d)=>{
-                document.querySelector("#AddUserModalContent").style.display = "none";
-                $u("#AddUserModalContent").removeClass("edit");
-                document.querySelector(".container-overlay").style.display = "none";
-                showAddUserForm('Edit User', d);
-            });
-          });
+                    el.addEventListener("click", function(e) {
+                        let userId = e.target.parentNode.children[0].innerHTML;
+                        console.log("userId: ", userId);
+                        _editUser(userId, (d) => {
+                            document.querySelector("#AddUserModalContent").style.display = "none";
+                            $u("#AddUserModalContent").removeClass("edit");
+                            document.querySelector(".container-overlay").style.display = "none";
+                            showAddUserForm('Edit User', d);
+                        });
+                    });
+                });
+                document
+                    .querySelector("#btn-EditUserCancel")
+                    .addEventListener("click", e => {
+                        e.preventDefault();
+                        AddUserModalContent.style.display = "none";
+                        $u("#AddUserModalContent").removeClass("edit");
+                        containerOverlay.style.display = "none";
+                    });
+            } else {
+                showToast("Users", d.data.data.message, "error");
+            }
+        })
+        .catch(e => {
+            $u("#waiting").removeClass("active");
+            if (userData.RunMode === "DEBUG") console.log(e);
+            showToast("Users", e, "error");
         });
-        document
-          .querySelector("#btn-EditUserCancel")
-          .addEventListener("click", e => {
-            e.preventDefault();
-            AddUserModalContent.style.display = "none";
-            $u("#AddUserModalContent").removeClass("edit");
-            containerOverlay.style.display = "none";
-          });
-      } else {
-        showToast("Users", d.data.data.message, "error");
-      }
-    })
-    .catch(e => {
-      $u("#waiting").removeClass("active");
-      if (userData.RunMode === "DEBUG") console.log(e);
-      showToast("Users", e, "error");
-    });
 }
 
 export function selectRole(element, role) {
-  if (userData.RunMode === "DEBUG") console.log(role);
-  for (let x = 0; x < element.options.length; x++) {
-    if (userData.RunMode === "DEBUG")
-      console.log("option: ", element.options[x].text);
-    if (element.options[x].text.toUpperCase() === role.toUpperCase()) {
-      element.options[x].selected = "selected";
-      element.selectedIndex = x;
-      if (userData.RunMode === "DEBUG")
-        console.log("option selected: ", element.options[x].text);
-      if (role.toUpperCase() !== "CUSTOM") {
-        changeAccessRights(
-          document.querySelectorAll(".AccessRightsSwitch"),
-          element.options[x].value
-        );
-      }
-      break;
+    if (userData.RunMode === "DEBUG") console.log(role);
+    for (let x = 0; x < element.options.length; x++) {
+        if (userData.RunMode === "DEBUG")
+            console.log("option: ", element.options[x].text);
+        if (element.options[x].text.toUpperCase() === role.toUpperCase()) {
+            element.options[x].selected = "selected";
+            element.selectedIndex = x;
+            if (userData.RunMode === "DEBUG")
+                console.log("option selected: ", element.options[x].text);
+            if (role.toUpperCase() !== "CUSTOM") {
+                changeAccessRights(
+                    document.querySelectorAll(".AccessRightsSwitch"),
+                    element.options[x].value
+                );
+            }
+            break;
+        }
     }
-  }
 }
 
 export function showAddUserForm(title, data) {
-  let AddUserModalContent = document.querySelector("#AddUserModalContent");
-  let containerOverlay = document.querySelector(".container-overlay");
-  let SearchUserModalContent = document.querySelector(
-    "#searchUserModalContent"
-  );
-  let mode = data ? "edit" : "add";
-  let oldData = null;
-  SearchUserModalContent.style.display = "none";
-
-  AddUserModalContent.innerHTML = htmlUserFormTemplate;
-  if (data) {
-    if (userData.RunMode === "DEBUG") console.log('showAddUserForm: ',data);
-    oldData = Object.assign({}, data);
-    document.querySelector(".userForm-title").innerHTML = title;
-    document.querySelector("#UserName").value = data.UserName;
-    document.querySelector("#CompanyName").value = data.CompanyName;
-    document.querySelector("#UserPasswd").value = data.UserPasswd;
-    document.querySelector("#repeatUserPasswd").value = data.UserPasswd;
-    document.querySelector("#RootPath").value = data.RootPath;
-    document.querySelector("#ExpirateDate").value = data.ExpirateDate;
-    //document.querySelector("#expirationDate")
-    selectRole(document.querySelector("#RoleOptions"), data.UserRole);
-    if (data.UserRole.toUpperCase() === "CUSTOM")
-      checkAccessRights(data.AccessString);
-    
-      document.querySelector("#UserName").classList.add("used");
-      document.querySelector("#CompanyName").classList.add("used");
-      document.querySelector("#UserPasswd").classList.add("used");
-      document.querySelector("#repeatUserPasswd").classList.add("used");
-      document.querySelector("#RootPath").classList.add("used");
-    document.querySelector("#UserName").disabled = true;
-    containerOverlay.style.display = "block";
-    $u("#AddUserModalContent").removeClass("edit");
-    $u("#AddUserModalContent").addClass("show");
-    AddUserModalContent.style.display = "block";
-
-    document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
-        e.preventDefault();
-        //containerOverlay.style.display = "none";
-        AddUserModalContent.style.display = "none";
-        $u("#AddUserModalContent").removeClass("show");
-        containerOverlay.style.display = "none";
-      });
-
-    document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
-      e.preventDefault();
-      _updateUser(oldData);
-    });
-  } else {
-    document.querySelector("#UserName").classList.remove("used");
-    document.querySelector("#CompanyName").classList.remove("used");
-    document.querySelector("#UserPasswd").classList.remove("used");
-    document.querySelector("#repeatUserPasswd").classList.remove("used");
-    document.querySelector("#RootPath").classList.remove("used");
-    containerOverlay.style.display = "block";
-    AddUserModalContent.style.display = "block";
-    $u("#AddUserModalContent").addClass("show");
-    changeAccessRights(
-      document.querySelectorAll(".AccessRightsSwitch"),
-      "opt1"
+    let AddUserModalContent = document.querySelector("#AddUserModalContent");
+    let containerOverlay = document.querySelector(".container-overlay");
+    let SearchUserModalContent = document.querySelector(
+        "#searchUserModalContent"
     );
-    document
-      .querySelector("#btn-addUserCancel")
-      .addEventListener("click", e => {
-        e.preventDefault();
-        containerOverlay.style.display = "none";
-        $u("#AddUserModalContent").removeClass("show");
-        AddUserModalContent.style.display = "none";
-      });
-    document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
-      e.preventDefault();
-      _addUser();
-    });
-  }
+    let mode = data ? "edit" : "add";
+    let oldData = null;
+    SearchUserModalContent.style.display = "none";
 
-  let sel = document.querySelector("select");
+    AddUserModalContent.innerHTML = htmlUserFormTemplate;
+    if (data) {
+        if (userData.RunMode === "DEBUG") console.log('showAddUserForm: ', data);
+        oldData = Object.assign({}, data);
+        document.querySelector(".userForm-title").innerHTML = title;
+        document.querySelector("#UserName").value = data.UserName;
+        document.querySelector("#CompanyName").value = data.CompanyName;
+        document.querySelector("#UserPasswd").value = data.UserPasswd;
+        document.querySelector("#repeatUserPasswd").value = data.UserPasswd;
+        document.querySelector("#RootPath").value = data.RootPath;
+        document.querySelector("#ExpirateDate").value = data.ExpirateDate;
+        //document.querySelector("#expirationDate")
+        selectRole(document.querySelector("#RoleOptions"), data.UserRole);
+        if (data.UserRole.toUpperCase() === "CUSTOM")
+            checkAccessRights(data.AccessString);
 
-  $(".AccessRightsSwitch").change(function() {
-    if ($(this).is(":checked")) {
-      if (userData.RunMode === "DEBUG") console.log("Is checked");
+        document.querySelector("#UserName").classList.add("used");
+        document.querySelector("#CompanyName").classList.add("used");
+        document.querySelector("#UserPasswd").classList.add("used");
+        document.querySelector("#repeatUserPasswd").classList.add("used");
+        document.querySelector("#RootPath").classList.add("used");
+        document.querySelector("#UserName").disabled = true;
+        containerOverlay.style.display = "block";
+        $u("#AddUserModalContent").removeClass("edit");
+        $u("#AddUserModalContent").addClass("show");
+        AddUserModalContent.style.display = "block";
+
+        document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
+            e.preventDefault();
+            //containerOverlay.style.display = "none";
+            AddUserModalContent.style.display = "none";
+            $u("#AddUserModalContent").removeClass("show");
+            containerOverlay.style.display = "none";
+        });
+
+        document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
+            e.preventDefault();
+            _updateUser(oldData);
+        });
     } else {
-      if (userData.RunMode === "DEBUG") console.log("Is Not checked");
-    }
-  });
-
-  sel.addEventListener("change", e => {
-    let opt = e.target[e.target.selectedIndex].value;
-    let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
-    changeAccessRights(AccessSwitch, opt);
-  });
-
-  const _getUserRole = () => {
-    return sel.options[sel.selectedIndex].text;
-  };
-
-  const _getChanges = () => {
-    let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
-    let accessString = _getAccessString(AccessSwitch);
-    let userRole = _getUserRole();
-    let queryString = {};
-    if (userData.RunMode === "DEBUG") console.log(oldData);
-    for (let prop in oldData) {
-      if (hasOwnProperty.call(oldData, prop)) {
-        console.log(prop);
-        if (prop === "UserRole") {
-          if (oldData[prop].toUpperCase() !== userRole.toUpperCase()) {
-            queryString.UserRole = userRole;
-            console.warn(oldData[prop], userRole);
-          } else {
-            console.log(oldData[prop], userRole);
-          }
-        } else {
-          if (prop === "AccessString") {
-            console.log('old accessString: ',oldData[prop]);
-            console.log('new accessString: ',decodeURI(accessString));
-            if (oldData[prop] !== decodeURI(accessString)) {
-              console.warn(oldData[prop], accessString);
-              queryString.AccessString = accessString;
-            } else {
-              console.log(oldData[prop], accessString);
-            }
-          } else {
-            if (prop === "ExpirateDate") {
-              if (oldData[prop] === null) oldData[prop] = "";
-              if (oldData[prop] !== document.getElementById(prop).value) {
-                queryString.ExpirateDate = document.getElementById(prop).value;
-                console.warn(
-                  oldData[prop],
-                  document.getElementById(prop).value
-                );
-              } else {
-                console.log(oldData[prop], document.getElementById(prop).value);
-              }
-            } else {
-              if( prop !== "UserId"){
-                if( prop === "UserPasswd") 
-                { 
-                  let oPasswd = oldData[prop] ;
-                  let nPasswd = md5(document.getElementById(prop).value);
-                  console.log('Old Pass: ',oPasswd);
-                  console.log('New Pass: ',nPasswd);
-                  if( oPasswd !== nPasswd) {
-                    queryString[prop] = md5(document.getElementById(prop).value);
-                  }
-                } else {
-                  console.log(prop);
-                  if (oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase())
-                  {
-                    queryString[prop] = document.getElementById(prop).value;
-                    console.warn(
-                      oldData[prop],
-                      document.getElementById(prop).value
-                    );
-                  } else {
-                    console.log(oldData[prop], document.getElementById(prop).value);
-                  }
-                } 
-              }
-            }
-          }
-        }
-      }
-    }
-    if (userData.RunMode === "DEBUG") console.log(queryString);
-    return queryString;
-  };
-
-  const _updateUser = oData => {
-    let queryString = _getChanges();
-    if (queryString) {
-      let data = {
-        userName: oData.UserName,
-        userId: oData.UserId,  
-        queryString: queryString
-      };
-      $u("#waiting").addClass("active");
-      axios
-        .post("/updateuser", data, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + userData.Token
-          },
-          timeout: 30000
-        })
-        .then(d => {
-          $u("#waiting").removeClass("active");
-          if (userData.RunMode === "DEBUG") console.log(d);
-          if (d.data.status === "OK") {
-            showToast(
-              "User",
-              "Datos usuario " + data.userName + " actualizados.",
-              "success"
-            );
-            document.getElementById("refresh").click();
-          }
-        })
-        .catch(e => {
-          $u("#waiting").removeClass("active");
-          if (userData.RunMode === "DEBUG") console.log(e);
-          showToast(
-            "Error al grabar los cambios para el usuario " +
-              data.userName +
-              ".<br>Err:" +
-              e,
-            "error"
-          );
+        document.querySelector("#UserName").classList.remove("used");
+        document.querySelector("#CompanyName").classList.remove("used");
+        document.querySelector("#UserPasswd").classList.remove("used");
+        document.querySelector("#repeatUserPasswd").classList.remove("used");
+        document.querySelector("#RootPath").classList.remove("used");
+        containerOverlay.style.display = "block";
+        AddUserModalContent.style.display = "block";
+        $u("#AddUserModalContent").addClass("show");
+        changeAccessRights(
+            document.querySelectorAll(".AccessRightsSwitch"),
+            "opt1"
+        );
+        document
+            .querySelector("#btn-addUserCancel")
+            .addEventListener("click", e => {
+                e.preventDefault();
+                containerOverlay.style.display = "none";
+                $u("#AddUserModalContent").removeClass("show");
+                AddUserModalContent.style.display = "none";
+            });
+        document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
+            e.preventDefault();
+            _addUser();
         });
     }
-  };
 
-  const _getAccessString = AccessSwitch => {
-    let accessName = [
+    let sel = document.querySelector("select");
+
+    $(".AccessRightsSwitch").change(function() {
+        if ($(this).is(":checked")) {
+            if (userData.RunMode === "DEBUG") console.log("Is checked");
+        } else {
+            if (userData.RunMode === "DEBUG") console.log("Is Not checked");
+        }
+    });
+
+    sel.addEventListener("change", e => {
+        let opt = e.target[e.target.selectedIndex].value;
+        let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
+        changeAccessRights(AccessSwitch, opt);
+    });
+
+    const _getUserRole = () => {
+        return sel.options[sel.selectedIndex].text;
+    };
+
+    const _getChanges = () => {
+        let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
+        let accessString = _getAccessString(AccessSwitch);
+        let userRole = _getUserRole();
+        let queryString = {};
+        if (userData.RunMode === "DEBUG") console.log(oldData);
+        for (let prop in oldData) {
+            if (hasOwnProperty.call(oldData, prop)) {
+                console.log(prop);
+                if (prop === "UserRole") {
+                    if (oldData[prop].toUpperCase() !== userRole.toUpperCase()) {
+                        queryString.UserRole = userRole;
+                        console.warn(oldData[prop], userRole);
+                    } else {
+                        console.log(oldData[prop], userRole);
+                    }
+                } else {
+                    if (prop === "AccessString") {
+                        console.log('old accessString: ', oldData[prop]);
+                        console.log('new accessString: ', decodeURI(accessString));
+                        if (oldData[prop] !== decodeURI(accessString)) {
+                            console.warn(oldData[prop], accessString);
+                            queryString.AccessString = accessString;
+                        } else {
+                            console.log(oldData[prop], accessString);
+                        }
+                    } else {
+                        if (prop === "ExpirateDate") {
+                            if (oldData[prop] === null) oldData[prop] = "";
+                            if (oldData[prop] !== document.getElementById(prop).value) {
+                                queryString.ExpirateDate = document.getElementById(prop).value;
+                                console.warn(
+                                    oldData[prop],
+                                    document.getElementById(prop).value
+                                );
+                            } else {
+                                console.log(oldData[prop], document.getElementById(prop).value);
+                            }
+                        } else {
+                            if (prop !== "UserId") {
+                                if (prop === "UserPasswd") {
+                                    let oPasswd = oldData[prop];
+                                    let nPasswd = md5(document.getElementById(prop).value);
+                                    console.log('Old Pass: ', oPasswd);
+                                    console.log('New Pass: ', nPasswd);
+                                    if (oPasswd !== nPasswd) {
+                                        queryString[prop] = md5(document.getElementById(prop).value);
+                                    }
+                                } else {
+                                    console.log(prop);
+                                    if (oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
+                                        queryString[prop] = document.getElementById(prop).value;
+                                        console.warn(
+                                            oldData[prop],
+                                            document.getElementById(prop).value
+                                        );
+                                    } else {
+                                        console.log(oldData[prop], document.getElementById(prop).value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (userData.RunMode === "DEBUG") console.log(queryString);
+        return queryString;
+    };
+
+    const _updateUser = oData => {
+        let queryString = _getChanges();
+        if (queryString) {
+            let data = {
+                userName: oData.UserName,
+                userId: oData.UserId,
+                queryString: queryString
+            };
+            $u("#waiting").addClass("active");
+            axios
+                .post("/updateuser", data, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + userData.Token
+                    },
+                    timeout: 30000
+                })
+                .then(d => {
+                    $u("#waiting").removeClass("active");
+                    if (userData.RunMode === "DEBUG") console.log(d);
+                    if (d.data.status === "OK") {
+                        showToast(
+                            "User",
+                            "Datos usuario " + data.userName + " actualizados.",
+                            "success"
+                        );
+                        document.getElementById("refresh").click();
+                    }
+                })
+                .catch(e => {
+                    $u("#waiting").removeClass("active");
+                    if (userData.RunMode === "DEBUG") console.log(e);
+                    showToast(
+                        "Error al grabar los cambios para el usuario " +
+                        data.userName +
+                        ".<br>Err:" +
+                        e,
+                        "error"
+                    );
+                });
+        }
+    };
+
+    const _getAccessString = AccessSwitch => {
+        let accessName = [
       "download",
       "upload",
       "deletefile",
@@ -709,94 +711,85 @@ export function showAddUserForm(title, data) {
       "addfolder",
       "sharefiles"
     ];
-    let result = "";
-    let v = false;
+        let result = "";
+        let v = false;
 
-    for (let x = 0; x < AccessSwitch.length; x++) {
-      if (AccessSwitch[x].checked) {
-        v = true;
-      } else {
-        v = false;
-      }
-      if (x != 0) {
-        result += ',"' + accessName[x] + '":' + v;
-      } else {
-        result += '"' + accessName[x] + '":' + v;
-      }
-    }
-    console.log("getAccessString: ", result);
-    return encodeURI("{" + result + "}");
-  };
-
-  const _addUser = () => {
-    let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
-    let userName = document.querySelector("#UserName").value;
-    let companyName = document.querySelector("#CompanyName").value;
-    let userPassword = document.querySelector("#UserPasswd").value;
-    let userRole = sel[sel.selectedIndex].innerHTML;
-    let userRootPath = document.querySelector("#RootPath").value;
-    let expirateDate = document.querySelector("#ExpirateDate").value;
-    let result = _getAccessString(AccessSwitch);
-
-    if (userData.RunMode === "DEBUG") console.log("User Name: " + userName);
-    if (userData.RunMode === "DEBUG")
-      console.log("Company Name: " + companyName);
-    if (userData.RunMode === "DEBUG") console.log("Password: " + userPassword);
-    if (userData.RunMode === "DEBUG") console.log("Root Path: " + userRootPath);
-    if (userData.RunMode === "DEBUG")
-      console.log("Expirate Date: " + expirateDate);
-    if (userData.RunMode === "DEBUG") console.log("Role: " + userRole);
-    if (userData.RunMode === "DEBUG") console.log("Access Rights: " + result);
-    let data = {
-      userName: userName,
-      userPassword: Base64.encode(md5(userPassword)),
-      companyName: companyName,
-      userRole: userRole,
-      expirateDate: expirateDate,
-      rootPath: userRootPath,
-      accessRights: result,
-      unixDate: moment(expirateDate).unix()
-    };
-    $u("#waiting").addClass("active");
-    axios
-      .post("/adduser", data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + userData.Token
-        },
-        timeout: 30000
-      })
-      .then(d => {
-        $u("#waiting").removeClass("active");
-        if (userData.RunMode === "DEBUG") console.log(d.data.status);
-        if (d.data.status === "OK") {
-          showToast("Usuario " + d.data.message, "success");
-          document.getElementById("refresh").click();
-          document.querySelector("#formAddUser").reset();
-          changeAccessRights(
-            document.querySelectorAll(".AccessRightsSwitch"),
-            "opt1"
-          );
-        } else {
-          showToast("Usuario " + d.data.message, "success");
-          //document.getElementById("refresh").click();
-          //document.querySelector("#formAddUser").reset();
-          /* changeAccessRights(
-                    document.querySelectorAll(".AccessRightsSwitch"),
-                    "opt1"
-                ); */
+        for (let x = 0; x < AccessSwitch.length; x++) {
+            if (AccessSwitch[x].checked) {
+                v = true;
+            } else {
+                v = false;
+            }
+            if (x != 0) {
+                result += ',"' + accessName[x] + '":' + v;
+            } else {
+                result += '"' + accessName[x] + '":' + v;
+            }
         }
-      })
-      .catch(e => {
-        $u("#waiting").removeClass("active");
-        showToast(
-          "User",
-          "Error al añadir usuario " + data.UserName + ".<br>Err:" + e,
-          "error"
-        );
-        if (userData.RunMode === "DEBUG") console.log(e);
-      });
-  };
+        console.log("getAccessString: ", result);
+        return encodeURI("{" + result + "}");
+    };
+
+    const _addUser = () => {
+        let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
+        let userName = document.querySelector("#UserName").value;
+        let companyName = document.querySelector("#CompanyName").value;
+        let userPassword = document.querySelector("#UserPasswd").value;
+        let userRole = sel[sel.selectedIndex].innerHTML;
+        let userRootPath = document.querySelector("#RootPath").value;
+        let expirateDate = document.querySelector("#ExpirateDate").value;
+        let result = _getAccessString(AccessSwitch);
+
+        if (userData.RunMode === "DEBUG") console.log("User Name: " + userName);
+        if (userData.RunMode === "DEBUG")
+            console.log("Company Name: " + companyName);
+        if (userData.RunMode === "DEBUG") console.log("Password: " + userPassword);
+        if (userData.RunMode === "DEBUG") console.log("Root Path: " + userRootPath);
+        if (userData.RunMode === "DEBUG")
+            console.log("Expirate Date: " + expirateDate);
+        if (userData.RunMode === "DEBUG") console.log("Role: " + userRole);
+        if (userData.RunMode === "DEBUG") console.log("Access Rights: " + result);
+        let data = {
+            userName: userName,
+            userPassword: Base64.encode(md5(userPassword)),
+            companyName: companyName,
+            userRole: userRole,
+            expirateDate: expirateDate,
+            rootPath: userRootPath,
+            accessRights: result,
+            unixDate: moment(expirateDate).unix()
+        };
+        $u("#waiting").addClass("active");
+        axios
+            .post("/adduser", data, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + userData.Token
+                },
+                timeout: 30000
+            })
+            .then(d => {
+                $u("#waiting").removeClass("active");
+                if (userData.RunMode === "DEBUG") console.log(d.data.status);
+                if (d.data.status === "OK") {
+                    showToast("Usuario " + d.data.message, "success");
+                    document.getElementById("refresh").click();
+                    document.querySelector("#formAddUser").reset();
+                    changeAccessRights(document.querySelectorAll(".AccessRightsSwitch"),"opt1");
+                } else {
+                    showToast("Usuario " + d.data.message, "success");
+                }
+            })
+            .catch(e => {
+                $u("#waiting").removeClass("active");
+                showToast(
+                    "User",
+                    "Error al añadir usuario " + data.UserName + ".<br>Err:" + e,
+                    "error"
+                );
+                if (userData.RunMode === "DEBUG") console.log(e);
+            });
+    };
 }
 
 ////////////////////////////////////

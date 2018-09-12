@@ -122,10 +122,10 @@ const sendEmail = (toEmail, fromEmail, subject, body_message) => {
 };
 
 const _showAbortMessage = (el, msg) => {
-  el.style.backgroundColor = "white";
-  el.style.color = "red";
-  el.innerHTML = msg;
-  el.style.width = "100%";
+    el.style.backgroundColor = "white";
+    el.style.color = "red";
+    el.innerHTML = msg;
+    el.style.width = "100%";
 };
 
 const _deselectAllFolders = () => {
@@ -312,51 +312,51 @@ export function deleteSelected() {
 /////////////////////////////////////
 
 export function newFolder(folderName) {
-  const headers = new Headers();
-  headers.append("Authorization", "Bearer " + userData.Token);
-  headers.append("Content-Type", "application/json");
-  fetch("/files/newfolder", {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify({
-              path: getRealPath(appData.currentPath),
-              folderName: folderName
-          }),
-          timeout: 10000
-      })
-      .then(r => r.json())
-      .then(data => {
-          if (userData.RunMode === "DEBUG") console.log(data);
-          if (data.status == "OK") {
-              $u("#modal").hide();
-              $u("#lean-overlay").hide();
-              $u("#refresh").trigger("click");
-              showToast(
-                  "New Folder",
-                  "Creada nueva carpeta " + data.data.folderName,
-                  "success"
-              );
-          } else {
-              showToast(
-                  "Error",
-                  "Error al crear la carpeta " +
-                  folderName +
-                  " <br>Error: " +
-                  data.message,
-                  "error"
-              );
-          }
-      })
-      .catch(err => {
-          showToast(
-              "Error",
-              "Error al crear la carpeta " +
-              folderName +
-              " <br>Error: error no identificado",
-              "error"
-          );
-          if (userData.RunMode === "DEBUG") console.log(err);
-      });
+    const headers = new Headers();
+    headers.append("Authorization", "Bearer " + userData.Token);
+    headers.append("Content-Type", "application/json");
+    fetch("/files/newfolder", {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify({
+                path: getRealPath(appData.currentPath),
+                folderName: folderName
+            }),
+            timeout: 10000
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (userData.RunMode === "DEBUG") console.log(data);
+            if (data.status == "OK") {
+                $u("#modal").hide();
+                $u("#lean-overlay").hide();
+                $u("#refresh").trigger("click");
+                showToast(
+                    "New Folder",
+                    "Creada nueva carpeta " + data.data.folderName,
+                    "success"
+                );
+            } else {
+                showToast(
+                    "Error",
+                    "Error al crear la carpeta " +
+                    folderName +
+                    " <br>Error: " +
+                    data.message,
+                    "error"
+                );
+            }
+        })
+        .catch(err => {
+            showToast(
+                "Error",
+                "Error al crear la carpeta " +
+                folderName +
+                " <br>Error: error no identificado",
+                "error"
+            );
+            if (userData.RunMode === "DEBUG") console.log(err);
+        });
 }
 
 /////////////////////////////////////
@@ -364,45 +364,45 @@ export function newFolder(folderName) {
 /////////////////////////////////////
 
 export function deleteFile(path) {
-  const headers = new Headers();
-  let x = 0;
-  let aF = appData.aSelectedFiles.slice();
-  if (userData.RunMode === "DEBUG") console.log(aF);
-  headers.append("Authorization", "Bearer " + userData.Token);
-  headers.append("Content-Type", "application/json");
-  $("#waiting").addClass("active");
-  for (x = 0; x < aF.length; x++) {
-      if (userData.RunMode === "DEBUG")
-          console.log("Deleting file " + aF[x] + " ...");
-      fetch("/files/delete", {
-              method: "POST",
-              headers: headers,
-              body: JSON.stringify({
-                  path: getRealPath(path),
-                  fileName: aF[x]
-              }),
-              timeout: 720000
-          })
-          .then(FetchHandleErrors)
-          .then(r => r.json())
-          .then(d => {
-              if (userData.RunMode === "DEBUG") console.log(d);
-              if (d.status == "OK") {
-                  appData.aSelectedFiles.shift();
-                  showToast(
-                      "Delete file",
-                      "Archivo " + d.data.fileName + " borrado",
-                      "success"
-                  );
-                  $u("#refresh").trigger("click");
-              }
-          })
-          .catch(err => {
-              if (userData.RunMode === "DEBUG") console.log(err);
-              showToast("Error", err, "error");
-          });
-  }
-  $("#waiting").removeClass("active");
+    const headers = new Headers();
+    let x = 0;
+    let aF = appData.aSelectedFiles.slice();
+    if (userData.RunMode === "DEBUG") console.log(aF);
+    headers.append("Authorization", "Bearer " + userData.Token);
+    headers.append("Content-Type", "application/json");
+    $("#waiting").addClass("active");
+    for (x = 0; x < aF.length; x++) {
+        if (userData.RunMode === "DEBUG")
+            console.log("Deleting file " + aF[x] + " ...");
+        fetch("/files/delete", {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify({
+                    path: getRealPath(path),
+                    fileName: aF[x]
+                }),
+                timeout: 720000
+            })
+            .then(FetchHandleErrors)
+            .then(r => r.json())
+            .then(d => {
+                if (userData.RunMode === "DEBUG") console.log(d);
+                if (d.status == "OK") {
+                    appData.aSelectedFiles.shift();
+                    showToast(
+                        "Delete file",
+                        "Archivo " + d.data.fileName + " borrado",
+                        "success"
+                    );
+                    $u("#refresh").trigger("click");
+                }
+            })
+            .catch(err => {
+                if (userData.RunMode === "DEBUG") console.log(err);
+                showToast("Error", err, "error");
+            });
+    }
+    $("#waiting").removeClass("active");
 }
 
 /////////////////////////////////////
@@ -410,48 +410,48 @@ export function deleteFile(path) {
 /////////////////////////////////////
 
 export function deleteFolder(path) {
-  const headers = new Headers();
-  let x = 0;
-  let aF = appData.aSelectedFolders.slice();
-  if (userData.RunMode === "DEBUG") console.log(aF);
-  headers.append("Authorization", "Bearer " + userData.Token);
-  headers.append("Content-Type", "application/json");
-  $("#waiting").addClass("active");
-  for (x = 0; x < aF.length; x++) {
-      if (userData.RunMode === "DEBUG")
-          console.log("Deleting folder " + aF[x] + " ...");
-      fetch("/files/delete", {
-              method: "POST",
-              headers: headers,
-              body: JSON.stringify({
-                  path: getRealPath(path),
-                  fileName: aF[x]
-              }),
-              timeout: 720000
-          })
-          .then(FetchHandleErrors)
-          .then(r => r.json())
-          .then(data => {
-              if (userData.RunMode === "DEBUG") console.log(data);
-              if (data.status == "OK") {
-                  showToast(
-                      "Delete Folder",
-                      "Carpeta " + data.data.fileName + " borrada",
-                      "success"
-                  );
-                  appData.aSelectedFolders.shift();
-                  $("#waiting").removeClass("active");
-                  if (appData.aSelectedFiles.length === 0) {
-                      $u("#refresh").trigger("click");
-                  }
-              }
-          })
-          .catch(err => {
-              if (userData.RunMode === "DEBUG") console.log(err);
-              $("#waiting").removeClass("active");
-          });
-  }
-  $("#waiting").removeClass("active");
+    const headers = new Headers();
+    let x = 0;
+    let aF = appData.aSelectedFolders.slice();
+    if (userData.RunMode === "DEBUG") console.log(aF);
+    headers.append("Authorization", "Bearer " + userData.Token);
+    headers.append("Content-Type", "application/json");
+    $("#waiting").addClass("active");
+    for (x = 0; x < aF.length; x++) {
+        if (userData.RunMode === "DEBUG")
+            console.log("Deleting folder " + aF[x] + " ...");
+        fetch("/files/delete", {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify({
+                    path: getRealPath(path),
+                    fileName: aF[x]
+                }),
+                timeout: 720000
+            })
+            .then(FetchHandleErrors)
+            .then(r => r.json())
+            .then(data => {
+                if (userData.RunMode === "DEBUG") console.log(data);
+                if (data.status == "OK") {
+                    showToast(
+                        "Delete Folder",
+                        "Carpeta " + data.data.fileName + " borrada",
+                        "success"
+                    );
+                    appData.aSelectedFolders.shift();
+                    $("#waiting").removeClass("active");
+                    if (appData.aSelectedFiles.length === 0) {
+                        $u("#refresh").trigger("click");
+                    }
+                }
+            })
+            .catch(err => {
+                if (userData.RunMode === "DEBUG") console.log(err);
+                $("#waiting").removeClass("active");
+            });
+    }
+    $("#waiting").removeClass("active");
 }
 
 
@@ -736,9 +736,6 @@ export function upload(Token) {
     });
 }
 
-//TODO: Optimizar renderizado de elementos li
-//incorporando el contenido en el bucle _loop
-
 /////////////////////////////////////
 // Download selected Files
 /////////////////////////////////////
@@ -778,8 +775,8 @@ export function download(fileList, text) {
     element.innerHTML = htmlContent;
     document.body.appendChild(element);
 
-    const _closeModal = ()=>{
-      let el = document.querySelector("#ModalDialog-wrap");
+    const _closeModal = () => {
+        let el = document.querySelector("#ModalDialog-wrap");
         el.parentNode.removeChild(el);
         document.querySelector("#download").classList.remove("disabled");
         _deselectAllFiles();
@@ -802,15 +799,15 @@ export function download(fileList, text) {
 
     document.querySelector("#btnCancelAll").addEventListener("click", (e) => {
         for (let x = 0; x < reqList.length; x++) {
-          if(reqList[x]){
-            reqList[x].abort();
-            let percentLabel = document.querySelector("#percent" + x);
-            let progressBar = document.querySelector("#progress-bar" + x);
-            _showAbortMessage(progressBar, 'Canceled by user');
-            percentLabel.innerHTML = "";
-            //audit(userData.UserName,'DOWNLOAD',fileList[x] + ' ->Download canceled by User','FAIL');
-          console.log('AUDIT: ' + userData.UserName + 'DOWNLOAD' + fileList[x] + ' ->Upload canceled by User,FAIL');
-          }
+            if (reqList[x]) {
+                reqList[x].abort();
+                let percentLabel = document.querySelector("#percent" + x);
+                let progressBar = document.querySelector("#progress-bar" + x);
+                _showAbortMessage(progressBar, 'Canceled by user');
+                percentLabel.innerHTML = "";
+                //audit(userData.UserName,'DOWNLOAD',fileList[x] + ' ->Download canceled by User','FAIL');
+                console.log('AUDIT: ' + userData.UserName + 'DOWNLOAD' + fileList[x] + ' ->Upload canceled by User,FAIL');
+            }
         }
         document.querySelector("#btnCancelAll").classList.add("disabled");
     });
@@ -827,12 +824,12 @@ export function download(fileList, text) {
             document.querySelector("#abort" + n).style.display = 'none';
             handlerCounter = handlerCounter - 1;
             if (handlerCounter == 0) {
-              document.querySelector("#btnCancelAll").classList.remove("disabled");
-              document.querySelector("#btnCancelAll").classList.add("disabled");
+                document.querySelector("#btnCancelAll").classList.remove("disabled");
+                document.querySelector("#btnCancelAll").classList.add("disabled");
             }
             document.querySelector("#upload").classList.remove("disabled");
             //audit(userData.UserName,'DOWNLOAD',fileList[n] + ' ->Download canceled by User','FAIL');
-          console.log('AUDIT: ' + userData.UserName + 'DOWNLOAD' + fileList[n] + ' ->Upload canceled by User,FAIL');
+            console.log('AUDIT: ' + userData.UserName + 'DOWNLOAD' + fileList[n] + ' ->Upload canceled by User,FAIL');
         });
     });
 
@@ -851,35 +848,35 @@ export function download(fileList, text) {
         liNumber.style.display = "block";
         liFilename.innerHTML = fName;
         reqList[i].timeout = 36000;
-        reqList[i].ontimeout = function() {
+        reqList[i].ontimeout = function() {        // Download Timeout
             if (userData.RunMode === "DEBUG")
                 console.log("** Timeout error ->File:" + fName + " " + reqList[i].status + " " + reqList[i].statusText);
             // handlerCount = handlerCount - 1
-            progressBar.innerHTML = "Timeout Error";
-            percentLabel.innerHTML = "";
-            progressBar.style.color = "red";
-            progressBar.style.width = "100%";
-            progressBar.style.backgroundColor = "white";
+            _showAbortMessage(progressBar, 'Timeout Error');
             progressBar.classList.add("blink");
             responseTimeout[i] = true;
         };
-        reqList[i].onprogress = function(evt) {
+        reqList[i].onprogress = function(evt) {   // Download progress
             if (evt.lengthComputable) {
                 let percentComplete = parseInt((evt.loaded / evt.total) * 100);
                 progressBar.style.width = percentComplete + "%";
                 percentLabel.innerHTML = percentComplete + "%";
             }
         };
-        reqList[i].onerror = function() {
+        reqList[i].onabort = function(){         // Download abort  
+          showToast("Download File", "Descarga de archivo " + fName + " cancelada", "warning");
+        };
+        reqList[i].onerror = function() {        // Download error
             if (userData.RunMode === "DEBUG")
                 console.log("** An error occurred during the transaction ->File:" + fName + " " + req.status + " " + req.statusText);
             handlerCounter = handlerCounter - 1;
             percentLabel.innerHTML = "Error";
             percentLabel.style.color = "red";
             document.querySelector("#abort" + i).style.display = "none";
+            showToast("Download File", "Error al descargar archivo " + fName + " " + req.statusText, "error");
         };
-        reqList[i].onloadend = function(e) {
-            console.log('File n:'+i+' ->',e);
+        reqList[i].onloadend = function(e) {     // Download End 
+            console.log('File n:' + i + ' ->', reqList[i].readyState);
             handlerCounter = handlerCounter - 1;
             if (!responseTimeout[i]) {
                 progressBar.style.width = "100%";
@@ -889,7 +886,6 @@ export function download(fileList, text) {
             if (handlerCounter === 0) {
                 document.querySelector("#btnCancelAll").classList.add("disabled");
             }
-            showToast("Download File", "Archivo " + fName + " descargado", "success");
         };
         reqList[i].onloadstart = function() {
             handlerCounter = handlerCounter + 1;
@@ -898,6 +894,7 @@ export function download(fileList, text) {
         };
         reqList[i].onload = function() {
             if (reqList[i].readyState === 4 && reqList[i].status === 200) {
+                showToast("Download File", "Archivo " + fName + " descargado", "success");
                 let filename = "";
                 let disposition = reqList[i].getResponseHeader("Content-Disposition");
                 if (disposition && disposition.indexOf("attachment") !== -1) {
@@ -929,16 +926,14 @@ export function download(fileList, text) {
                             a.download = filename;
                             document.body.appendChild(a);
                             a.click();
-                            // preloader.style.display = 'none'
                         }
                     } else {
                         window.open = downloadUrl;
-                        // preloader.style.display = 'none'
                     }
 
                     setTimeout(function() {
                         URL.revokeObjectURL(downloadUrl);
-                    }, 100); // cleanup
+                    }, 100); // cleanup 
                 }
             }
         };

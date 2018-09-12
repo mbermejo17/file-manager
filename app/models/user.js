@@ -271,7 +271,7 @@ UserModel.All = function(callback) {
 
 UserModel.Add = function(userData, callback) {
   let response = {};
-  if (!db) dbOpen();
+  dbOpen();
   console.log("db handler: ", db);
   let stmt = db.prepare("SELECT * FROM Users WHERE UserName = ?");
   console.log("PASSWD:", userData.userPassword);
@@ -298,7 +298,7 @@ UserModel.Add = function(userData, callback) {
           Base64.decode(userData.userPassword),
           userData.userRole,
           userData.companyName,
-          userData.rootPath,
+          userData.rootPath.toUpperCase(),
           decodeURI(userData.accessRights),
           userData.expirateDate,
           userData.unixDate
