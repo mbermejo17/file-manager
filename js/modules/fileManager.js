@@ -121,6 +121,12 @@ const sendEmail = (toEmail, fromEmail, subject, body_message) => {
     if (win && window.open && !window.closed) window.close();
 };
 
+const _showAbortMessage = (el, msg) => {
+  el.style.backgroundColor = "white";
+  el.style.color = "red";
+  el.innerHTML = msg;
+  el.style.width = "100%";
+};
 
 const _deselectAllFolders = () => {
     let allElements = document.querySelectorAll(".dashboard-path");
@@ -300,6 +306,155 @@ export function deleteSelected() {
     }
 }
 
+
+/////////////////////////////////////
+// Add new Folder
+/////////////////////////////////////
+
+export function newFolder(folderName) {
+  const headers = new Headers();
+  headers.append("Authorization", "Bearer " + userData.Token);
+  headers.append("Content-Type", "application/json");
+  fetch("/files/newfolder", {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+              path: getRealPath(appData.currentPath),
+              folderName: folderName
+          }),
+          timeout: 10000
+      })
+      .then(r => r.json())
+      .then(data => {
+          if (userData.RunMode === "DEBUG") console.log(data);
+          if (data.status == "OK") {
+              $u("#modal").hide();
+              $u("#lean-overlay").hide();
+              $u("#refresh").trigger("click");
+              showToast(
+                  "New Folder",
+                  "Creada nueva carpeta " + data.data.folderName,
+                  "success"
+              );
+          } else {
+              showToast(
+                  "Error",
+                  "Error al crear la carpeta " +
+                  folderName +
+                  " <br>Error: " +
+                  data.message,
+                  "error"
+              );
+          }
+      })
+      .catch(err => {
+          showToast(
+              "Error",
+              "Error al crear la carpeta " +
+              folderName +
+              " <br>Error: error no identificado",
+              "error"
+          );
+          if (userData.RunMode === "DEBUG") console.log(err);
+      });
+}
+
+/////////////////////////////////////
+// Delete selected Files
+/////////////////////////////////////
+
+export function deleteFile(path) {
+  const headers = new Headers();
+  let x = 0;
+  let aF = appData.aSelectedFiles.slice();
+  if (userData.RunMode === "DEBUG") console.log(aF);
+  headers.append("Authorization", "Bearer " + userData.Token);
+  headers.append("Content-Type", "application/json");
+  $("#waiting").addClass("active");
+  for (x = 0; x < aF.length; x++) {
+      if (userData.RunMode === "DEBUG")
+          console.log("Deleting file " + aF[x] + " ...");
+      fetch("/files/delete", {
+              method: "POST",
+              headers: headers,
+              body: JSON.stringify({
+                  path: getRealPath(path),
+                  fileName: aF[x]
+              }),
+              timeout: 720000
+          })
+          .then(FetchHandleErrors)
+          .then(r => r.json())
+          .then(d => {
+              if (userData.RunMode === "DEBUG") console.log(d);
+              if (d.status == "OK") {
+                  appData.aSelectedFiles.shift();
+                  showToast(
+                      "Delete file",
+                      "Archivo " + d.data.fileName + " borrado",
+                      "success"
+                  );
+                  $u("#refresh").trigger("click");
+              }
+          })
+          .catch(err => {
+              if (userData.RunMode === "DEBUG") console.log(err);
+              showToast("Error", err, "error");
+          });
+  }
+  $("#waiting").removeClass("active");
+}
+
+/////////////////////////////////////
+// Delete selected Folders
+/////////////////////////////////////
+
+export function deleteFolder(path) {
+  const headers = new Headers();
+  let x = 0;
+  let aF = appData.aSelectedFolders.slice();
+  if (userData.RunMode === "DEBUG") console.log(aF);
+  headers.append("Authorization", "Bearer " + userData.Token);
+  headers.append("Content-Type", "application/json");
+  $("#waiting").addClass("active");
+  for (x = 0; x < aF.length; x++) {
+      if (userData.RunMode === "DEBUG")
+          console.log("Deleting folder " + aF[x] + " ...");
+      fetch("/files/delete", {
+              method: "POST",
+              headers: headers,
+              body: JSON.stringify({
+                  path: getRealPath(path),
+                  fileName: aF[x]
+              }),
+              timeout: 720000
+          })
+          .then(FetchHandleErrors)
+          .then(r => r.json())
+          .then(data => {
+              if (userData.RunMode === "DEBUG") console.log(data);
+              if (data.status == "OK") {
+                  showToast(
+                      "Delete Folder",
+                      "Carpeta " + data.data.fileName + " borrada",
+                      "success"
+                  );
+                  appData.aSelectedFolders.shift();
+                  $("#waiting").removeClass("active");
+                  if (appData.aSelectedFiles.length === 0) {
+                      $u("#refresh").trigger("click");
+                  }
+              }
+          })
+          .catch(err => {
+              if (userData.RunMode === "DEBUG") console.log(err);
+              $("#waiting").removeClass("active");
+          });
+  }
+  $("#waiting").removeClass("active");
+}
+
+
 /////////////////////////////////////
 // Upload Files
 /////////////////////////////////////
@@ -343,16 +498,6 @@ export function upload(Token) {
 
     $u("#upload").removeClass("disabled");
     $u("#upload").addClass("disabled");
-
-
-    const _showAbortMessage = (el, msg) => {
-        el.style.backgroundColor = "white";
-        el.style.color = "red";
-        el.innerHTML = msg;
-        el.style.width = "100%";
-    };
-
-
 
     function fnUploadFile(formData, nFile, fileName) {
         $u("#li" + nFile).show();
@@ -591,239 +736,115 @@ export function upload(Token) {
     });
 }
 
-/////////////////////////////////////
-// Add new Folder
-/////////////////////////////////////
-
-export function newFolder(folderName) {
-    const headers = new Headers();
-    headers.append("Authorization", "Bearer " + userData.Token);
-    headers.append("Content-Type", "application/json");
-    fetch("/files/newfolder", {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify({
-                path: getRealPath(appData.currentPath),
-                folderName: folderName
-            }),
-            timeout: 10000
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (userData.RunMode === "DEBUG") console.log(data);
-            if (data.status == "OK") {
-                $u("#modal").hide();
-                $u("#lean-overlay").hide();
-                $u("#refresh").trigger("click");
-                showToast(
-                    "New Folder",
-                    "Creada nueva carpeta " + data.data.folderName,
-                    "success"
-                );
-            } else {
-                showToast(
-                    "Error",
-                    "Error al crear la carpeta " +
-                    folderName +
-                    " <br>Error: " +
-                    data.message,
-                    "error"
-                );
-            }
-        })
-        .catch(err => {
-            showToast(
-                "Error",
-                "Error al crear la carpeta " +
-                folderName +
-                " <br>Error: error no identificado",
-                "error"
-            );
-            if (userData.RunMode === "DEBUG") console.log(err);
-        });
-}
-
-/////////////////////////////////////
-// Delete selected Files
-/////////////////////////////////////
-
-export function deleteFile(path) {
-    const headers = new Headers();
-    let x = 0;
-    let aF = appData.aSelectedFiles.slice();
-    if (userData.RunMode === "DEBUG") console.log(aF);
-    headers.append("Authorization", "Bearer " + userData.Token);
-    headers.append("Content-Type", "application/json");
-    $("#waiting").addClass("active");
-    for (x = 0; x < aF.length; x++) {
-        if (userData.RunMode === "DEBUG")
-            console.log("Deleting file " + aF[x] + " ...");
-        fetch("/files/delete", {
-                method: "POST",
-                headers: headers,
-                body: JSON.stringify({
-                    path: getRealPath(path),
-                    fileName: aF[x]
-                }),
-                timeout: 720000
-            })
-            .then(FetchHandleErrors)
-            .then(r => r.json())
-            .then(d => {
-                if (userData.RunMode === "DEBUG") console.log(d);
-                if (d.status == "OK") {
-                    appData.aSelectedFiles.shift();
-                    showToast(
-                        "Delete file",
-                        "Archivo " + d.data.fileName + " borrado",
-                        "success"
-                    );
-                    $u("#refresh").trigger("click");
-                }
-            })
-            .catch(err => {
-                if (userData.RunMode === "DEBUG") console.log(err);
-                showToast("Error", err, "error");
-            });
-    }
-    $("#waiting").removeClass("active");
-}
-
-/////////////////////////////////////
-// Delete selected Folders
-/////////////////////////////////////
-
-export function deleteFolder(path) {
-    const headers = new Headers();
-    let x = 0;
-    let aF = appData.aSelectedFolders.slice();
-    if (userData.RunMode === "DEBUG") console.log(aF);
-    headers.append("Authorization", "Bearer " + userData.Token);
-    headers.append("Content-Type", "application/json");
-    $("#waiting").addClass("active");
-    for (x = 0; x < aF.length; x++) {
-        if (userData.RunMode === "DEBUG")
-            console.log("Deleting folder " + aF[x] + " ...");
-        fetch("/files/delete", {
-                method: "POST",
-                headers: headers,
-                body: JSON.stringify({
-                    path: getRealPath(path),
-                    fileName: aF[x]
-                }),
-                timeout: 720000
-            })
-            .then(FetchHandleErrors)
-            .then(r => r.json())
-            .then(data => {
-                if (userData.RunMode === "DEBUG") console.log(data);
-                if (data.status == "OK") {
-                    showToast(
-                        "Delete Folder",
-                        "Carpeta " + data.data.fileName + " borrada",
-                        "success"
-                    );
-                    appData.aSelectedFolders.shift();
-                    $("#waiting").removeClass("active");
-                    if (appData.aSelectedFiles.length === 0) {
-                        $u("#refresh").trigger("click");
-                    }
-                }
-            })
-            .catch(err => {
-                if (userData.RunMode === "DEBUG") console.log(err);
-                $("#waiting").removeClass("active");
-            });
-    }
-    $("#waiting").removeClass("active");
-}
-
 //TODO: Optimizar renderizado de elementos li
 //incorporando el contenido en el bucle _loop
+
+/////////////////////////////////////
+// Download selected Files
+/////////////////////////////////////
+
+
 export function download(fileList, text) {
     let reqList = [],
-        handlerCount = 0,
+        handlerCounter = 0,
         responseTimeout = [];
     let w = 32;
     let h = 440;
-    let ModalTitle = "Descarga de archivos seleccionados";
+    let ModalTitle = "Download selected files";
     let ModalContent = htmlUploadDownloadTemplate;
     let htmlContent = `
-    <div id="modal-header">
-        <h5>${ModalTitle}</h5>
+    <div class="ModalDialog-alert">
+      <div class="ModalDialog-mask"></div>
+      <div class="ModalDialog-body download">
+        <div class="ModalDialog-title">
+          ${ModalTitle}
+        </div>
         <a class="modal_close" id="modalClose" href="#"></a>
-    </div>
-    <div class="modal-content">
-        <p>${ModalContent}</p>
-    </div>
-    <div class="modal-footer">
-        <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCancelAll" href="#!">Cancel downloads</a>
-        <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Cerrar</a>
+        <div class="ModalDialog-container">
+          <div class="files-progress-content">
+            ${ModalContent}
+          </div>
+        </div>      
+        <div class="ModalDialog-button">
+              <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
+              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify disabled" id="btnCancelAll" href="#!">Cancel uploads</a>  
+              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Close</a>
+        </div>
+      </div>
     </div>`;
 
-    $("#modal").html(htmlContent).css("width: " + w + "%;height: " + h + "px;text-align: center;");
-    //$('.modal-content').css('width: 350px;');
-    $(".modal").css("width: 40% !important");
-    document.querySelector("#modal").style.display = "block";
-    document.querySelector("#lean-overlay").style.display = "block";
-    document.querySelector("#btnCancelAll").classList.add("disabled");
+    let element = document.createElement("div");
+    element.id = "ModalDialog-wrap";
+    element.innerHTML = htmlContent;
+    document.body.appendChild(element);
 
-    $("#download").addClass("disabled");
-    $("#btnCloseDownload").on("click", e => {
-        $("#download").removeClass("disabled");
-        $("#modal").hide();
-        $("#lean-overlay").hide();
-        $("#refresh").trigger("click");
-        appData.aSelectedFiles = [];
+    const _closeModal = ()=>{
+      let el = document.querySelector("#ModalDialog-wrap");
+        el.parentNode.removeChild(el);
+        document.querySelector("#download").classList.remove("disabled");
+        _deselectAllFiles();
+    };
+
+    document.querySelector("#btnCloseDownload").addEventListener("click", (e) => {
+        e.preventDefault();
+        _closeModal();
     });
-    $("#modalClose").on("click", e => {
-        document.querySelector("#upload").classList.remove("disabled");
-        $("#modal").hide();
-        $("#lean-overlay").hide();
-        $("#refresh").trigger("click");
-        appData.aSelectedFiles = [];
+
+    document.querySelector("#modalClose").addEventListener("click", (e) => {
+        e.preventDefault();
+        _closeModal();
     });
-    $("#waiting").addClass("active");
-    $("#btnCancelAll").on("click", e => {
-        for (let x = 0; x < 4; x++) {
+
+
+    document.querySelector("#btnCancelAll").classList.add("disabled");
+    document.querySelector("#download").classList.add("disabled");
+    document.querySelector("#waiting").classList.add("active");
+
+    document.querySelector("#btnCancelAll").addEventListener("click", (e) => {
+        for (let x = 0; x < reqList.length; x++) {
+          if(reqList[x]){
             reqList[x].abort();
             let percentLabel = document.querySelector("#percent" + x);
             let progressBar = document.querySelector("#progress-bar" + x);
-            progressBar.innerHTML = "Canceled by user";
+            _showAbortMessage(progressBar, 'Canceled by user');
             percentLabel.innerHTML = "";
-            progressBar.style.color = "red";
-            progressBar.style.width = "100%";
-            progressBar.style.backgroundColor = "white";
+            //audit(userData.UserName,'DOWNLOAD',fileList[x] + ' ->Download canceled by User','FAIL');
+          console.log('AUDIT: ' + userData.UserName + 'DOWNLOAD' + fileList[x] + ' ->Upload canceled by User,FAIL');
+          }
         }
-        $("#btnCancelAll").addClass("disabled");
-    });
-    $(".modal_close").on("click", e => {
-        e.preventDefault();
-        let n = parseInt(e.target.id.slice(-1));
-        reqList[n].abort();
-        let percentLabel = document.querySelector("#percent" + n);
-        let progressBar = document.querySelector("#progress-bar" + n);
-        progressBar.innerHTML = "Canceled by user";
-        percentLabel.innerHTML = "";
-        progressBar.style.color = "red";
-        progressBar.style.width = "100%";
-        progressBar.style.backgroundColor = "white";
-        document.querySelector("#upload").classList.remove("disabled");
+        document.querySelector("#btnCancelAll").classList.add("disabled");
     });
 
-    $("#btnCancelAll").removeClass("disabled");
-    let _loop = i => {
+    [].forEach.call(document.querySelectorAll(".file-abort"), function(el) {
+        document.querySelector('#' + el.id).addEventListener("click", function(e) {
+            e.preventDefault();
+            let n = parseInt(e.target.id.slice(-1));
+            reqList[n].abort();
+            let percentLabel = document.querySelector("#percent" + n);
+            let progressBar = document.querySelector("#progress-bar" + n);
+            _showAbortMessage(progressBar, 'Canceled by user');
+            percentLabel.innerHTML = "";
+            document.querySelector("#abort" + n).style.display = 'none';
+            handlerCounter = handlerCounter - 1;
+            if (handlerCounter == 0) {
+              document.querySelector("#btnCancelAll").classList.remove("disabled");
+              document.querySelector("#btnCancelAll").classList.add("disabled");
+            }
+            document.querySelector("#upload").classList.remove("disabled");
+            //audit(userData.UserName,'DOWNLOAD',fileList[n] + ' ->Download canceled by User','FAIL');
+          console.log('AUDIT: ' + userData.UserName + 'DOWNLOAD' + fileList[n] + ' ->Upload canceled by User,FAIL');
+        });
+    });
+
+
+    let _Download_Loop = i => {
         let fName = fileList[i];
         let liNumber = document.querySelector("#li" + i);
         let liFilename = document.querySelector("#li-filename" + i);
         let progressBar = document.querySelector("#progress-bar" + i);
         let percentLabel = document.querySelector("#percent" + i);
         responseTimeout[i] = false;
-        fName = fName
-            .split("\\")
-            .pop()
-            .split("/")
-            .pop();
+        fName = fName.split("\\").pop().split("/").pop();
         reqList[i] = new XMLHttpRequest();
         reqList[i].open("POST", "/files/download", true);
         reqList[i].responseType = "arraybuffer";
@@ -832,14 +853,7 @@ export function download(fileList, text) {
         reqList[i].timeout = 36000;
         reqList[i].ontimeout = function() {
             if (userData.RunMode === "DEBUG")
-                console.log(
-                    "** Timeout error ->File:" +
-                    fName +
-                    " " +
-                    reqList[i].status +
-                    " " +
-                    reqList[i].statusText
-                );
+                console.log("** Timeout error ->File:" + fName + " " + reqList[i].status + " " + reqList[i].statusText);
             // handlerCount = handlerCount - 1
             progressBar.innerHTML = "Timeout Error";
             percentLabel.innerHTML = "";
@@ -858,39 +872,27 @@ export function download(fileList, text) {
         };
         reqList[i].onerror = function() {
             if (userData.RunMode === "DEBUG")
-                console.log(
-                    "** An error occurred during the transaction ->File:" +
-                    fName +
-                    " " +
-                    req.status +
-                    " " +
-                    req.statusText
-                );
-            handlerCount = handlerCount - 1;
+                console.log("** An error occurred during the transaction ->File:" + fName + " " + req.status + " " + req.statusText);
+            handlerCounter = handlerCounter - 1;
             percentLabel.innerHTML = "Error";
             percentLabel.style.color = "red";
-            $("#abort" + i).hide();
+            document.querySelector("#abort" + i).style.display = "none";
         };
-        reqList[i].onloadend = function() {
-            handlerCount = handlerCount - 1;
+        reqList[i].onloadend = function(e) {
+            console.log('File n:'+i+' ->',e);
+            handlerCounter = handlerCounter - 1;
             if (!responseTimeout[i]) {
                 progressBar.style.width = "100%";
                 percentLabel.innerHTML = "100%";
-                $("#abort" + i).hide();
+                document.querySelector("#abort" + i).style.display = "none";
             }
-            if (handlerCount === 0) {
-                $("#download-end").show();
-                $("#btnCancelAll")
-                    .removeClass("disabled")
-                    .addClass("disabled");
-                $("#refresh").trigger("click");
+            if (handlerCounter === 0) {
+                document.querySelector("#btnCancelAll").classList.add("disabled");
             }
             showToast("Download File", "Archivo " + fName + " descargado", "success");
-            if (userData.RunMode === "DEBUG")
-                console.log("File " + handlerCount + " downloaded");
         };
         reqList[i].onloadstart = function() {
-            handlerCount = handlerCount + 1;
+            handlerCounter = handlerCounter + 1;
             progressBar.style.width = "0";
             percentLabel.innerHTML = "0%";
         };
@@ -952,12 +954,14 @@ export function download(fileList, text) {
             })
         );
     };
+
+    document.querySelector("#btnCancelAll").classList.remove("disabled");
     for (let i = 0; i < fileList.length; i++) {
-        _loop(i);
+        _Download_Loop(i);
     }
-    $("#waiting").removeClass("active");
+    document.querySelector("#waiting").classList.remove("active");
 }
 
 ///////////////////////////////////
-// End Files and fFolders module
+// End Files and Folders module
 /////////////////////////////////

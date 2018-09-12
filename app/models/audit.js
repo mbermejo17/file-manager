@@ -219,6 +219,6 @@ AuditModel.All = function(callback) {
       }
     }
   }); */
-};
+
 
 module.exports = AuditModel;

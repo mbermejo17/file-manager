@@ -11,7 +11,7 @@ const JWT_KEY = config.jwtKey;
 const fs = require("fs");
 const normalize = require("normalize-path");
 const pathPrefix = ".\\repository\\";
-const User = require("../models/user");
+const Audit = require("../models/audit");
 const moment = require("moment");
 
 const makeUserPathIfNotExist = (p, callback) => {
@@ -71,7 +71,7 @@ exports.changePasswd = (req, res, next) => {
   });
 };
 
-exports.UserAdd = (req, res) => {
+exports.auditAdd = (req, res) => {
   let data = req.body;
   let userName = data.userName;
   let userPassword = Base64.decode(data.userPassword);
@@ -104,62 +104,7 @@ exports.UserAdd = (req, res) => {
   });
 };
 
-exports.UserUpdate = (req, res) => {
-  let data = req.body;
-  let userName = data.userName;
-  let userId = data.userId;
-  let queryString = data.queryString;
-  let accessString = "";
-  let response = [];
-  let newData = {};
-  let newRootPath ='';
-
-  for (var propertyName in queryString) {
-    if (propertyName == 'RootPath') { newRootPath = queryString[propertyName]; }
-    if(propertyName === 'AccessString') {
-      let newAccessString = decodeURI(queryString[propertyName]);
-      accessString += `${propertyName} = '${newAccessString}',`;
-    } else  {
-      accessString += `${propertyName} = '${queryString[propertyName]}',`;
-    }
-    
-  }
-
-  console.log("before:", accessString);
-  accessString = accessString.slice(0, -1);
-  console.log("after:", accessString);
-  newData = { userId: userId, queryString: accessString };
-
-  User.Update(newData, d => {
-    response.push(d);
-    console.log("d : ", d);
-    if (d.status === "OK") {
-      if(newRootPath === '') {
-        return res.status(200).json(response[0]);
-      } else {
-        makeUserPathIfNotExist(newRootPath, result => {
-            if (!result) {
-              return res.status(200).json(response[0]);
-              console.log(result);
-            } else {
-              return res
-                .status(200)
-                .json({
-                  status: "FAIL",
-                  message: response[0].message + ".<br>Error al crear Carpeta.",
-                  data: null
-                });
-            }
-      });
-    }
-    } else {
-      return res.status(200).json(d);
-    }
-  });
-};
-
-
-exports.UserGetAll = (req, res, next) => {
+exports.auditGetAll = (req, res, next) => {
   User.All(data => {
     if (data.status == "FAIL") {
       console.log(status);
@@ -175,8 +120,8 @@ exports.UserGetAll = (req, res, next) => {
   });
 };
 
-exports.UserFindByName = (req, res, next) => {
-  User.Find(
+exports.auditFindByName = (req, res, next) => {
+  Audit.Find(
     `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate FROM Users WHERE UPPER(UserName) = '${req.query.userName.toUpperCase()}'`,
     (status, data) => {
       if (status) {
@@ -208,7 +153,7 @@ exports.UserFindByName = (req, res, next) => {
   );
 };
 
-exports.UserFindById = (req, res, next) => {
+exports.auditFindById = (req, res, next) => {
   let userId =req.params.userId;
   User.FindById(userId,
     (d) => {
@@ -233,87 +178,6 @@ exports.UserFindById = (req, res, next) => {
             }
           });
         } 
-      }
-    }
-  );
-};
-
-exports.UserLogin = (req, res, next) => {
-  User.Find(
-    `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, UnixDate FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`,
-    (status, data) => {
-      //console.log("User Find : " + status);
-      //console.dir(data);
-      if (status) {
-        console.log(status);
-        res.status(500).json({ status: "FAIL", message: status });
-      } else {
-        if (data) {
-          //console.log(req.body.password);
-          //console.log(Base64.decode(req.body.password))
-          if (Base64.decode(req.body.password) === data.UserPasswd) {
-            let currentUnixDate = moment(Date()).unix();
-            console.log('data.UnixDate:',data.UnixDate);
-            console.log('currentUnixDate:',currentUnixDate);
-            if (data.UnixDate && data.UnixDate < currentUnixDate) {
-              return res
-                .status(403)
-                .json({
-                  status: "FAIL",
-                  message: "Expired user account",
-                  data: {"status":403}
-                });
-            }
-            /* const token = jwt.sign({
-                        UserName: data.UserName,
-                        UserId: data._id
-                    }, process.env.JWT_KEY, { expiresIn: "1h" }); */
-
-            makeUserPathIfNotExist(data.RootPath,(result)=>{
-              console.log("result: ",result);
-              let wsPath = data.UserRole === "assistant" ? config.wssURL + "/room" : config.wssURL + "/client";
-              const token = jwt.sign(
-                {
-                  UserName: data.UserName,
-                  UserId: data._id,
-                  Role: data.UserRole,
-                  wssURL: wsPath,
-                  RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
-                  AccessString: data.AccessString
-                },
-                JWT_KEY,
-                { expiresIn: "24h" }
-              );
-              console.log("token", token);
-              res.cookie("sessionId", Base64.encode(data.UserName), {
-                maxAge: 900000
-               });
-              return res.status(200).json({
-                status: "OK",
-                message: "User authenticated",
-                data: {
-                  UserName: data.UserName,
-                  Token: token,
-                  Role: data.UserRole,
-                  wssURL: wsPath,
-                  CompanyName: data.CompanyName,
-                  RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
-                  AccessString: data.AccessString,
-                  RunMode: "DEBUG"
-                }
-              });
-            });        
-            
-          } else {
-            return res
-              .status(401)
-              .json({ status: "FAIL", message: "Auth failed", data: null });
-          }
-        } else {
-          return res
-            .status(401)
-            .json({ status: "FAIL", message: "Auth failed", data: null });
-        }
       }
     }
   );
