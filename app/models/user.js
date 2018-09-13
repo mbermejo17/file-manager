@@ -75,7 +75,7 @@ UserModel.Find = function(queryString, callback) {
 //  Search User by userId
 /////////////////////////////////////////
 UserModel.FindById = function(userId, callback) {
-  let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate
+  let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate
                FROM Users
                WHERE UserId  = ?`;
   dbOpen();

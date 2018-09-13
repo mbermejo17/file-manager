@@ -785,7 +785,7 @@ window.appData = {
       $u("#delete").removeClass("disabled");
       $u("#delete").addClass("disabled");
     }
-    if (userData.AccessString.sahrefiles === true) {
+    if (userData.AccessString.sharefiles === true) {
       $u("#share").removeClass("disabled");
     } else {
       $u("#share").removeClass("disabled");

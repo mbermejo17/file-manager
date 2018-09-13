@@ -429,8 +429,6 @@ export function editUser() {
                     <td>${users[i].ExpirateDate}</td>
                   </tr>`;
                 }
-                if (userData.RunMode === "DEBUG")
-                    console.log("htmlListContent: ", htmlListContent);
                 bodyList.innerHTML = htmlListContent;
 
                 let table = new DataTable(document.querySelector("#usersTableList"), {
@@ -501,7 +499,6 @@ export function showAddUserForm(title, data) {
     );
     let mode = data ? "edit" : "add";
     let oldData = null;
-    SearchUserModalContent.style.display = "none";
 
     AddUserModalContent.innerHTML = htmlUserFormTemplate;
     if (data) {
@@ -510,7 +507,7 @@ export function showAddUserForm(title, data) {
         document.querySelector(".userForm-title").innerHTML = title;
         document.querySelector("#UserName").value = data.UserName;
         document.querySelector("#CompanyName").value = data.CompanyName;
-        document.querySelector("#UserPasswd").value = data.UserPasswd;
+        document.querySelector("#UserPasswd").value = Base64.decode(data.UserPasswd);
         document.querySelector("#repeatUserPasswd").value = data.UserPasswd;
         document.querySelector("#RootPath").value = data.RootPath;
         document.querySelector("#ExpirateDate").value = data.ExpirateDate;
@@ -620,6 +617,7 @@ export function showAddUserForm(title, data) {
                             if (oldData[prop] === null) oldData[prop] = "";
                             if (oldData[prop] !== document.getElementById(prop).value) {
                                 queryString.ExpirateDate = document.getElementById(prop).value;
+                                queryString.UnixDate = moment(queryString.ExpirateDate).unix()
                                 console.warn(
                                     oldData[prop],
                                     document.getElementById(prop).value
@@ -630,8 +628,8 @@ export function showAddUserForm(title, data) {
                         } else {
                             if (prop !== "UserId") {
                                 if (prop === "UserPasswd") {
-                                    let oPasswd = oldData[prop];
-                                    let nPasswd = md5(document.getElementById(prop).value);
+                                    let oPasswd = Base64.decode(oldData[prop]);
+                                    let nPasswd = document.getElementById(prop).value;
                                     console.log('Old Pass: ', oPasswd);
                                     console.log('New Pass: ', nPasswd);
                                     if (oPasswd !== nPasswd) {
@@ -660,8 +658,16 @@ export function showAddUserForm(title, data) {
     };
 
     const _updateUser = oData => {
+
+        let _goBack = () =>{
+          document.querySelector("#AddUserModalContent").style.display= "none";
+          document.querySelector("#AddUserModalContent").classList.remove("show");
+          document.querySelector(".container-overlay").style.display= "none";
+          document.querySelector("#userMod").click();
+        };  
+
         let queryString = _getChanges();
-        if (queryString) {
+        if (Object.keys(queryString).length >0) {
             let data = {
                 userName: oData.UserName,
                 userId: oData.UserId,
@@ -685,7 +691,10 @@ export function showAddUserForm(title, data) {
                             "Datos usuario " + data.userName + " actualizados.",
                             "success"
                         );
-                        document.getElementById("refresh").click();
+                        if(queryString.hasOwnProperty('RootPath')){
+                          document.getElementById("refresh").click();
+                        }
+                        _goBack();
                     }
                 })
                 .catch(e => {
@@ -699,6 +708,8 @@ export function showAddUserForm(title, data) {
                         "error"
                     );
                 });
+        } else {
+          _goBack();
         }
     };
 
@@ -738,17 +749,21 @@ export function showAddUserForm(title, data) {
         let userRole = sel[sel.selectedIndex].innerHTML;
         let userRootPath = document.querySelector("#RootPath").value;
         let expirateDate = document.querySelector("#ExpirateDate").value;
+        
+        if(userRootPath .trim() === "" && userRole !== "Admin") {
+          showToast("New User","Empty RootPath " , "error");
+          return false;
+        }
+
         let result = _getAccessString(AccessSwitch);
 
-        if (userData.RunMode === "DEBUG") console.log("User Name: " + userName);
-        if (userData.RunMode === "DEBUG")
-            console.log("Company Name: " + companyName);
+        /* if (userData.RunMode === "DEBUG") console.log("User Name: " + userName);
+        if (userData.RunMode === "DEBUG") console.log("Company Name: " + companyName);
         if (userData.RunMode === "DEBUG") console.log("Password: " + userPassword);
         if (userData.RunMode === "DEBUG") console.log("Root Path: " + userRootPath);
-        if (userData.RunMode === "DEBUG")
-            console.log("Expirate Date: " + expirateDate);
+        if (userData.RunMode === "DEBUG") console.log("Expirate Date: " + expirateDate);
         if (userData.RunMode === "DEBUG") console.log("Role: " + userRole);
-        if (userData.RunMode === "DEBUG") console.log("Access Rights: " + result);
+        if (userData.RunMode === "DEBUG") console.log("Access Rights: " + result); */
         let data = {
             userName: userName,
             userPassword: Base64.encode(md5(userPassword)),
