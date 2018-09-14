@@ -16,6 +16,8 @@ router.get("/users", UserController.UserGetAll);
 
 router.get("/user/:userId", UserController.UserFindById);
 
+router.delete("/user/:userId", UserController.UserRemove);
+
 router.get("/searchuser", UserController.UserFindByName);
 
 router.post("/changepasswd", UserController.changePasswd);

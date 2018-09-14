@@ -7,6 +7,12 @@ const Base64 = require("js-base64").Base64;
 let UserModel = {};
 let db;
 
+
+
+/////////////////////////////////////////
+//  Open DB connection
+/////////////////////////////////////////
+
 let dbOpen = function() {
   console.log('dbPath: ',dbPath);
   console.log("db handler:", db);
@@ -24,6 +30,15 @@ let dbOpen = function() {
   );
 };
 
+UserModel.Open = function() {
+  dbOpen();
+};
+
+
+/////////////////////////////////////////
+//  Close DB connection
+/////////////////////////////////////////
+
 let dbClose = function() {
   db.close(err => {
     if (err) {
@@ -33,9 +48,15 @@ let dbClose = function() {
   });
 };
 
-UserModel.Open = function() {
-  dbOpen();
+UserModel.Close = function() {
+  dbClose();
 };
+
+
+
+/////////////////////////////////////////
+//  Drop and create table Users
+/////////////////////////////////////////
 
 UserModel.CreateTable = function() {
   db.run("DROP TABLE IF EXISTS Users");
@@ -45,9 +66,11 @@ UserModel.CreateTable = function() {
   console.log("La tabla usuarios ha sido correctamente creada");
 };
 
-UserModel.Close = function() {
-  dbClose();
-};
+
+
+/////////////////////////////////////////
+//  Search users with filters
+/////////////////////////////////////////
 
 UserModel.Find = function(queryString, callback) {
   dbOpen();
@@ -74,6 +97,7 @@ UserModel.Find = function(queryString, callback) {
 /////////////////////////////////////////
 //  Search User by userId
 /////////////////////////////////////////
+
 UserModel.FindById = function(userId, callback) {
   let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate
                FROM Users
@@ -108,6 +132,7 @@ UserModel.FindById = function(userId, callback) {
 /////////////////////////////////////////
 //  Update user Data
 /////////////////////////////////////////
+
 UserModel.Update = function(data, callback) {
   console.log(data);
   let sql =
@@ -140,18 +165,28 @@ UserModel.Update = function(data, callback) {
   });
 };
 
+
+/////////////////////////////////////////
+//  Remove User
+/////////////////////////////////////////
+
 UserModel.Remove = function(userId, callback) {
-  let sql = `DELETE *
+  let sql = `DELETE
              FROM Users
              WHERE UserId  = ?`;
   dbOpen();
-  db.get(sql, [userId], (err, row) => {
+  let stmt = db.prepare(sql);
+  stmt.bind(userId);
+  stmt.run(function(err,row) {
     if (err) {
       dbClose();
       console.error(err.message);
-      callback(err.message, null);
+      callback({
+        status: "FAIL",
+        message: err.message,
+        data: null
+      });
     } else {
-      if (row) {
         dbClose();
         console.log(row);
         callback({
@@ -159,21 +194,18 @@ UserModel.Remove = function(userId, callback) {
           message: `1 registro encontrado`,
           data: row
         });
-      } else {
-        dbClose();
-        callback({
-          status: "FAIL",
-          message: `Usuario ${userName} no encontrado`,
-          data: null
-        });
-      }
     }
   });
 };
 
+
+/////////////////////////////////////////
+//  Find User by Name
+/////////////////////////////////////////
+
 UserModel.FindByName = function(userName, callback) {
   console.log(userName);
-  let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate
+  let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate
                FROM Users
                WHERE UPPER(UserName)  = ?`;
   dbOpen();
@@ -197,6 +229,11 @@ UserModel.FindByName = function(userName, callback) {
     }
   });
 };
+
+
+/////////////////////////////////////////
+//  Cahnge User password
+/////////////////////////////////////////
 
 UserModel.ChangePasswd = function(userData, callback) {
   console.log(userData.userName, userData.userPasswd);
@@ -228,8 +265,13 @@ UserModel.ChangePasswd = function(userData, callback) {
   });
 };
 
+
+/////////////////////////////////////////
+//  Get All Users
+/////////////////////////////////////////
+
 UserModel.All = function(callback) {
-  let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate  
+  let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate  
                FROM Users`;
   dbOpen();
   let allRows = [];
@@ -268,6 +310,11 @@ UserModel.All = function(callback) {
     }
   );
 };
+
+
+/////////////////////////////////////////
+//  Add User
+/////////////////////////////////////////
 
 UserModel.Add = function(userData, callback) {
   let response = {};

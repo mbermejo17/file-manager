@@ -6,6 +6,7 @@ import "babel-polyfill";
 
 //import ajax from "./vendor/ajax";
 import axios from "axios";
+//import axiosMethodOverride from 'axios-method-override';
 import { Base64 } from "js-base64";
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
@@ -38,6 +39,7 @@ window.appData = {
   aSelectedFolders: []
 };
 
+
 (function(w, d) {
   let 
     AllowDownload = userData.AccessString.download,
@@ -64,6 +66,12 @@ window.appData = {
     Cookies.remove("AccessString");
     document.location.href = "/";
   };
+
+
+  /* axiosMethodOverride(axios);
+
+  const instance = axios.create();
+  axiosMethodOverride(instance); */
 
   //////////////////////////////////
   //  Tools module

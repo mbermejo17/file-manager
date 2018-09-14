@@ -243,6 +243,7 @@ let htmlSearchUserTemplate = `
             <th>Company Name</th>
             <th>Root Path</div>
             <th data-type="date" data-format="YYYY/MM/DD">Expirate Date</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="bodyList">    
@@ -332,7 +333,7 @@ const changeAccessRights = (AccessSwitch, opt) => {
 };
 
 const _editUser = (userId, callback) => {
-    $u("#waiting").addClass("active");
+    document.querySelector("#waiting").classList.add("active");
     axios
         .get("/user/" + userId, {
             headers: {
@@ -342,12 +343,12 @@ const _editUser = (userId, callback) => {
             timeout: 30000
         })
         .then((d) => {
-            $u("#waiting").removeClass("active");
+            document.querySelector("#waiting").classList.remove("active");
             if (userData.RunMode === "DEBUG") console.log(d.data.data);
             callback(d.data.data);
         })
         .catch((e) => {
-            $u("#waiting").removeClass("active");
+            document.querySelector("#waiting").classList.remove("active");
             showToast(
                 "Search Users",
                 "Error al buscar usuario.<br>Err:" + e,
@@ -357,9 +358,41 @@ const _editUser = (userId, callback) => {
         });
 };
 
+const _removeUser = (userId, userName, callback) => {
+    document.querySelector("#waiting").classList.add("active");
+    axios({
+            url: "/user/" + userId,
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + userData.Token
+            },
+            timeout: 30000,
+            method: 'delete',
+            data: {
+              userName: userName
+            }
+        })
+        .then((d) => {
+            document.querySelector("#waiting").classList.remove("active");
+            if (userData.RunMode === "DEBUG") console.log(d);
+            callback(d.data.data);
+        })
+        .catch((e) => {
+            document.querySelector("#waiting").classList.remove("active");
+            showToast(
+                "Search Users",
+                "Error al borrar usuario.<br>Err:" + e,
+                "error"
+            );
+            if (userData.RunMode === "DEBUG") console.log(e);
+        });
+};
+
+
+
 export function searchUserName(userName) {
     if (userData.RunMode === "DEBUG") console.log(userName);
-    $u("#waiting").addClass("active");
+    document.querySelector("#waiting").classList.add("active");
     axios
         .get('/searchuser?userName=" + userName', {
             headers: {
@@ -369,7 +402,7 @@ export function searchUserName(userName) {
             timeout: 30000
         })
         .then(d => {
-            $u("#waiting").removeClass("active");
+            document.querySelector("#waiting").classList.remove("active");
             if (userData.RunMode === "DEBUG") console.log(d);
             if (d.data.status == "OK") {
                 showAddUserForm("Edit User", d.data);
@@ -378,7 +411,7 @@ export function searchUserName(userName) {
             }
         })
         .catch(e => {
-            $u("#waiting").removeClass("active");
+            document.querySelector("#waiting").classList.remove("active");
             showToast(
                 "Search Users",
                 "Error al buscar usuario " + userName + ".<br>Err:" + e,
@@ -390,17 +423,13 @@ export function searchUserName(userName) {
 
 export function editUser() {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
-    let SearchUserModalContent = document.querySelector(
-        "#searchUserModalContent"
-    );
     let containerOverlay = document.querySelector(".container-overlay");
 
     AddUserModalContent.innerHTML = htmlSearchUserTemplate;
-    SearchUserModalContent.style.display = "none";
     $u("#AddUserModalContent").addClass("edit");
     AddUserModalContent.style.display = "block";
     containerOverlay.style.display = "block";
-    $u("#waiting").addClass("active");
+    document.querySelector("#waiting").classList.add("active");
     axios
         .get("/users", {
             headers: {
@@ -410,7 +439,7 @@ export function editUser() {
             timeout: 30000
         })
         .then(d => {
-            $u("#waiting").removeClass("active");
+            document.querySelector("#waiting").classList.remove("active");
             if (userData.RunMode === "DEBUG") console.log(d);
             if (d.data.status === "OK") {
                 let users = d.data.data;
@@ -419,6 +448,7 @@ export function editUser() {
                 let bodyList = document.querySelector("#bodyList");
                 if (userData.RunMode === "DEBUG") console.log("users: ", users);
                 for (i = 0; i < users.length; i++) {
+                  let sDate = (users[i].ExpirateDate)? users[i].ExpirateDate : 'never';  
                     htmlListContent += `
                   <tr class="data-row">
                     <td>${users[i].UserId}</td>
@@ -426,7 +456,10 @@ export function editUser() {
                     <td>${users[i].UserRole}</td>
                     <td>${users[i].CompanyName}</td>
                     <td>${users[i].RootPath}</td>
-                    <td>${users[i].ExpirateDate}</td>
+                    <td>${sDate}</td>
+                    <td>
+                    <i id="${users[i].UserId}-id" class="fas fa-user-edit edit-user-icon" title="Editar Usuario"></i>
+                    <i id="${users[i].UserId}-id" class="fas fa-user-times del-user-icon" title="Borrar Usuario"></i></td>
                   </tr>`;
                 }
                 bodyList.innerHTML = htmlListContent;
@@ -439,7 +472,39 @@ export function editUser() {
                     perPage: 200
                 });
 
-        [].forEach.call(document.querySelectorAll(".data-row"), function(el) {
+                [].forEach.call(document.querySelectorAll(".del-user-icon"), function(el) {
+                    el.addEventListener("click", function(e) {
+                        let userId = e.target.id.slice(0, -3);
+                        let userName = e.target.parentNode.parentNode.children[1].innerHTML;
+                        userName = userName.charAt(0).toUpperCase() + userName.slice(1);
+                        console.log("userId: ", userId);
+                        _removeUser(userId, userName, (d) => {
+                          showToast(
+                            "Delete User",
+                            `Usuario ${userName} borrado`,
+                            "success"
+                        );
+                          AddUserModalContent.style.display = "none";
+                          $u("#AddUserModalContent").removeClass("edit");
+                          containerOverlay.style.display = "none";
+                        });
+                    });
+                });
+
+                [].forEach.call(document.querySelectorAll(".edit-user-icon"), function(el) {
+                  el.addEventListener("click", function(e) {
+                      let userId = e.target.id.slice(0, -3);
+                      console.log("userId: ", userId);
+                      _editUser(userId, (d) => {
+                        document.querySelector("#AddUserModalContent").style.display = "none";
+                        $u("#AddUserModalContent").removeClass("edit");
+                        document.querySelector(".container-overlay").style.display = "none";
+                        showAddUserForm('Edit User', d);
+                    });
+                  });
+              });
+
+                /* [].forEach.call(document.querySelectorAll(".data-row"), function(el) {
                     el.addEventListener("click", function(e) {
                         let userId = e.target.parentNode.children[0].innerHTML;
                         console.log("userId: ", userId);
@@ -450,21 +515,19 @@ export function editUser() {
                             showAddUserForm('Edit User', d);
                         });
                     });
+                }); */
+                document.querySelector("#btn-EditUserCancel").addEventListener("click", e => {
+                    e.preventDefault();
+                    AddUserModalContent.style.display = "none";
+                    $u("#AddUserModalContent").removeClass("edit");
+                    containerOverlay.style.display = "none";
                 });
-                document
-                    .querySelector("#btn-EditUserCancel")
-                    .addEventListener("click", e => {
-                        e.preventDefault();
-                        AddUserModalContent.style.display = "none";
-                        $u("#AddUserModalContent").removeClass("edit");
-                        containerOverlay.style.display = "none";
-                    });
             } else {
                 showToast("Users", d.data.data.message, "error");
             }
         })
         .catch(e => {
-            $u("#waiting").removeClass("active");
+            document.querySelector("#waiting").classList.remove("active");
             if (userData.RunMode === "DEBUG") console.log(e);
             showToast("Users", e, "error");
         });
@@ -494,13 +557,13 @@ export function selectRole(element, role) {
 export function showAddUserForm(title, data) {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let containerOverlay = document.querySelector(".container-overlay");
-    let SearchUserModalContent = document.querySelector(
-        "#searchUserModalContent"
-    );
+    
     let mode = data ? "edit" : "add";
     let oldData = null;
 
     AddUserModalContent.innerHTML = htmlUserFormTemplate;
+    document.querySelector("#AddUserModalContent").classList.remove("edit");
+    document.querySelector("#AddUserModalContent").classList.add("show");
     if (data) {
         if (userData.RunMode === "DEBUG") console.log('showAddUserForm: ', data);
         oldData = Object.assign({}, data);
@@ -523,8 +586,6 @@ export function showAddUserForm(title, data) {
         document.querySelector("#RootPath").classList.add("used");
         document.querySelector("#UserName").disabled = true;
         containerOverlay.style.display = "block";
-        $u("#AddUserModalContent").removeClass("edit");
-        $u("#AddUserModalContent").addClass("show");
         AddUserModalContent.style.display = "block";
 
         document.querySelector("#btn-addUserCancel").addEventListener("click", e => {
@@ -547,7 +608,6 @@ export function showAddUserForm(title, data) {
         document.querySelector("#RootPath").classList.remove("used");
         containerOverlay.style.display = "block";
         AddUserModalContent.style.display = "block";
-        $u("#AddUserModalContent").addClass("show");
         changeAccessRights(
             document.querySelectorAll(".AccessRightsSwitch"),
             "opt1"
@@ -659,21 +719,21 @@ export function showAddUserForm(title, data) {
 
     const _updateUser = oData => {
 
-        let _goBack = () =>{
-          document.querySelector("#AddUserModalContent").style.display= "none";
-          document.querySelector("#AddUserModalContent").classList.remove("show");
-          document.querySelector(".container-overlay").style.display= "none";
-          document.querySelector("#userMod").click();
-        };  
+        let _goBack = () => {
+            document.querySelector("#AddUserModalContent").style.display = "none";
+            document.querySelector("#AddUserModalContent").classList.remove("show");
+            document.querySelector(".container-overlay").style.display = "none";
+            document.querySelector("#userMod").click();
+        };
 
         let queryString = _getChanges();
-        if (Object.keys(queryString).length >0) {
+        if (Object.keys(queryString).length > 0) {
             let data = {
                 userName: oData.UserName,
                 userId: oData.UserId,
                 queryString: queryString
             };
-            $u("#waiting").addClass("active");
+            document.querySelector("#waiting").classList.add("active");
             axios
                 .post("/updateuser", data, {
                     headers: {
@@ -683,7 +743,7 @@ export function showAddUserForm(title, data) {
                     timeout: 30000
                 })
                 .then(d => {
-                    $u("#waiting").removeClass("active");
+                    document.querySelector("#waiting").classList.remove("active");
                     if (userData.RunMode === "DEBUG") console.log(d);
                     if (d.data.status === "OK") {
                         showToast(
@@ -691,14 +751,14 @@ export function showAddUserForm(title, data) {
                             "Datos usuario " + data.userName + " actualizados.",
                             "success"
                         );
-                        if(queryString.hasOwnProperty('RootPath')){
-                          document.getElementById("refresh").click();
+                        if (queryString.hasOwnProperty('RootPath')) {
+                            document.getElementById("refresh").click();
                         }
                         _goBack();
                     }
                 })
                 .catch(e => {
-                    $u("#waiting").removeClass("active");
+                    document.querySelector("#waiting").classList.remove("active");
                     if (userData.RunMode === "DEBUG") console.log(e);
                     showToast(
                         "Error al grabar los cambios para el usuario " +
@@ -709,7 +769,7 @@ export function showAddUserForm(title, data) {
                     );
                 });
         } else {
-          _goBack();
+            _goBack();
         }
     };
 
@@ -749,21 +809,14 @@ export function showAddUserForm(title, data) {
         let userRole = sel[sel.selectedIndex].innerHTML;
         let userRootPath = document.querySelector("#RootPath").value;
         let expirateDate = document.querySelector("#ExpirateDate").value;
-        
-        if(userRootPath .trim() === "" && userRole !== "Admin") {
-          showToast("New User","Empty RootPath " , "error");
-          return false;
+
+        if (userRootPath.trim() === "" && userRole !== "Admin") {
+            showToast("New User", "Empty RootPath ", "error");
+            return false;
         }
 
         let result = _getAccessString(AccessSwitch);
 
-        /* if (userData.RunMode === "DEBUG") console.log("User Name: " + userName);
-        if (userData.RunMode === "DEBUG") console.log("Company Name: " + companyName);
-        if (userData.RunMode === "DEBUG") console.log("Password: " + userPassword);
-        if (userData.RunMode === "DEBUG") console.log("Root Path: " + userRootPath);
-        if (userData.RunMode === "DEBUG") console.log("Expirate Date: " + expirateDate);
-        if (userData.RunMode === "DEBUG") console.log("Role: " + userRole);
-        if (userData.RunMode === "DEBUG") console.log("Access Rights: " + result); */
         let data = {
             userName: userName,
             userPassword: Base64.encode(md5(userPassword)),
@@ -774,9 +827,8 @@ export function showAddUserForm(title, data) {
             accessRights: result,
             unixDate: moment(expirateDate).unix()
         };
-        $u("#waiting").addClass("active");
-        axios
-            .post("/adduser", data, {
+        document.querySelector("#waiting").classList.add("active");
+        axios.post("/adduser", data, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: "Bearer " + userData.Token
@@ -784,19 +836,19 @@ export function showAddUserForm(title, data) {
                 timeout: 30000
             })
             .then(d => {
-                $u("#waiting").removeClass("active");
+                document.querySelector("#waiting").classList.remove("active");
                 if (userData.RunMode === "DEBUG") console.log(d.data.status);
                 if (d.data.status === "OK") {
                     showToast("Usuario " + d.data.message, "success");
                     document.getElementById("refresh").click();
                     document.querySelector("#formAddUser").reset();
-                    changeAccessRights(document.querySelectorAll(".AccessRightsSwitch"),"opt1");
+                    changeAccessRights(document.querySelectorAll(".AccessRightsSwitch"), "opt1");
                 } else {
                     showToast("Usuario " + d.data.message, "success");
                 }
             })
             .catch(e => {
-                $u("#waiting").removeClass("active");
+                document.querySelector("#waiting").classList.remove("active");
                 showToast(
                     "User",
                     "Error al añadir usuario " + data.UserName + ".<br>Err:" + e,

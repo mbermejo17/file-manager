@@ -176,6 +176,10 @@ $border_color_1: #aaa;
     width: 200px;
     font-weight: bold;
     font-size: .8em;
+    &:last-child {
+      padding: 1px;
+      width: 10%;
+    }
   }
 }
 
@@ -187,6 +191,8 @@ $border_color_1: #aaa;
     font-size: .8em;
     &:last-child {
       border-right: 1px solid rgb(151, 150, 150);
+      max-width: 15px !important;
+      padding: 1px;
     }
     &:first-child {
       border-left: 1px solid rgb(151, 150, 150);
@@ -202,4 +208,12 @@ $border_color_1: #aaa;
   tr:last-child {
     border-bottom: 1px solid rgb(151, 150, 150);
   }
+}
+
+
+.del-user-icon,
+.edit-user-icon {
+  margin-left: 3px;
+  margin-right: 3px;
+  color: var(--main-color);
 }
