@@ -202,7 +202,6 @@ $border_color_1: #aaa;
     background-color: rgb(248, 248, 248);
   }
   tr:hover {
-    cursor: pointer;
     background-color: #cfe9c8;
   }
   tr:last-child {
@@ -216,4 +215,9 @@ $border_color_1: #aaa;
   margin-left: 3px;
   margin-right: 3px;
   color: var(--main-color);
+}
+
+.del-user-icon:hover,
+.edit-user-icon:hover {
+  cursor: pointer;
 }

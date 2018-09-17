@@ -504,18 +504,6 @@ export function editUser() {
                   });
               });
 
-                /* [].forEach.call(document.querySelectorAll(".data-row"), function(el) {
-                    el.addEventListener("click", function(e) {
-                        let userId = e.target.parentNode.children[0].innerHTML;
-                        console.log("userId: ", userId);
-                        _editUser(userId, (d) => {
-                            document.querySelector("#AddUserModalContent").style.display = "none";
-                            $u("#AddUserModalContent").removeClass("edit");
-                            document.querySelector(".container-overlay").style.display = "none";
-                            showAddUserForm('Edit User', d);
-                        });
-                    });
-                }); */
                 document.querySelector("#btn-EditUserCancel").addEventListener("click", e => {
                     e.preventDefault();
                     AddUserModalContent.style.display = "none";
@@ -844,7 +832,7 @@ export function showAddUserForm(title, data) {
                     document.querySelector("#formAddUser").reset();
                     changeAccessRights(document.querySelectorAll(".AccessRightsSwitch"), "opt1");
                 } else {
-                    showToast("Usuario " + d.data.message, "success");
+                    showToast("Usuario ", "Error al añadir usurio "+ d.data.message, "error");
                 }
             })
             .catch(e => {

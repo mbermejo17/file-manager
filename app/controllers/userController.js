@@ -9,6 +9,7 @@ const fs = require("fs");
 const normalize = require("normalize-path");
 const pathPrefix = ".\\repository\\";
 const User = require("../models/user");
+const Audit = require("../controllers/auditController");
 const moment = require("moment");
 
 const makeUserPathIfNotExist = (p, callback) => {
@@ -73,33 +74,88 @@ exports.changePasswd = (req, res, next) => {
 
 exports.UserAdd = (req, res) => {
     let data = req.body;
-    let userName = data.userName;
+    let userName = req.cookies.UserName;
     let userPassword = Base64.decode(data.userPassword);
     let userRole = data.userRole;
     let rootPath = data.rootPath;
     let expirationDate = data.expirateDate;
     let accessRights = data.accessRights;
     let response = [];
+    let browserIP = (req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress).split(",")[1];
+
+    let clientIP = req.connection.remoteAddress;
+    let currentDate = (new Date()).toString();
+    let currentUnixDate = moment(currentDate).unix();
+
     User.Add(data, d => {
         response.push(d);
-        console.log("d : ", d);
+        console.log("user Controller response user ADD : ", d);
         if (d.status === "OK") {
             makeUserPathIfNotExist(rootPath, result => {
                 if (!result) {
-                    return res.status(200).json(response[0]);
+                    // audit
+                    console.log('opcion 1');
+                    Audit.Add({userName: userName}, {
+                        clientIP: clientIP || '',
+                        browserIP: browserIP || ''
+                    }, {
+                        fileName: rootPath || '',
+                        fileSize: 0
+                    }, {
+                        dateString: currentDate,
+                        unixDate: currentUnixDate
+                    }, response[0], 'Add User','OK',()=>{
+                      return res.status(200).json(response[0]);
                     console.log(result);
+                    });
+                    
                 } else {
-                    return res
+                    // audit
+                    console.log('opcion 2');
+                    Audit.Add({userName: userName}, {
+                        clientIP: clientIP || '',
+                        browserIP: browserIP || ''
+                    }, {
+                        fileName: rootPath || '',
+                        fileSize: 0
+                    }, {
+                        dateString: currentdate,
+                        unixDate: currentUnixDate
+                    },  response[0].message, 'Add User','FAIL',()=>{
+                      return res
                         .status(200)
                         .json({
                             status: "FAIL",
                             message: response[0].message + ".<br>Error al crear Carpeta.",
                             data: null
                         });
+                    });
+                    
                 }
             });
         } else {
-            return res.status(200).json(d);
+            console.log('hola');
+            // audit
+            console.log('opcion 3');
+            Audit.Add({userName: userName}, {
+              clientIP: clientIP || '',
+              browserIP: browserIP || ''
+          }, {
+              fileName: rootPath || '',
+              fileSize: 0
+          }, {
+              dateString: currentDate,
+              unixDate: currentUnixDate
+          }, response[0], 'Add User','FAIL',()=>{
+
+            console.log('hola2');
+            return res.status(200).json(response[0]);
+          
+          });
+            
         }
     });
 };
@@ -113,6 +169,8 @@ exports.UserUpdate = (req, res) => {
     let response = [];
     let newData = {};
     let newRootPath = '';
+    let browserIP = req.header('x-forwarded-for') || req.connection.remoteAddress;
+    let clientIP = req.connection.remoteAddress;
 
     for (var propertyName in queryString) {
         if (propertyName == 'RootPath') {
@@ -139,6 +197,7 @@ exports.UserUpdate = (req, res) => {
         response.push(d);
         console.log("d : ", d);
         if (d.status === "OK") {
+            // audit
             if (newRootPath === '') {
                 return res.status(200).json(response[0]);
             } else {
@@ -158,6 +217,7 @@ exports.UserUpdate = (req, res) => {
                 });
             }
         } else {
+            //audit
             return res.status(200).json(d);
         }
     });
@@ -263,16 +323,20 @@ exports.UserFindById = (req, res, next) => {
 exports.UserRemove = (req, res, next) => {
     let userId = req.params.userId;
     let userName = req.body.userName;
+    let browserIP = req.header('x-forwarded-for') || req.connection.remoteAddress;
+    let clientIP = req.connection.remoteAddress;
     User.Remove(userId,
         (d) => {
             console.log(d);
             if (d.status == 'FAIL') {
+                // audit
                 res.status(500).json({
                     status: "FAIL",
                     message: d.message,
                     data: d.data
                 });
             } else {
+                // audit
                 return res.status(200).json({
                     status: "OK",
                     message: `User ${userName} removed`,
@@ -284,12 +348,15 @@ exports.UserRemove = (req, res, next) => {
 };
 
 exports.UserLogin = (req, res, next) => {
+    let browserIP = req.header('x-forwarded-for') || req.connection.remoteAddress;
+    let clientIP = req.connection.remoteAddress;
     User.Find(
         `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, UnixDate FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`,
         (status, data) => {
             //console.log("User Find : " + status);
             //console.dir(data);
             if (status) {
+                //audit 
                 console.log(status);
                 res.status(500).json({
                     status: "FAIL",
@@ -304,6 +371,7 @@ exports.UserLogin = (req, res, next) => {
                         console.log('data.UnixDate:', data.UnixDate);
                         console.log('currentUnixDate:', currentUnixDate);
                         if (data.UnixDate && data.UnixDate < currentUnixDate) {
+                            // audit
                             return res
                                 .status(403)
                                 .json({
@@ -334,6 +402,7 @@ exports.UserLogin = (req, res, next) => {
                                     expiresIn: "24h"
                                 }
                             );
+                            // audit
                             console.log("token", token);
                             res.cookie("sessionId", Base64.encode(data.UserName), {
                                 maxAge: 900000
@@ -355,6 +424,7 @@ exports.UserLogin = (req, res, next) => {
                         });
 
                     } else {
+                        // audit
                         return res
                             .status(401)
                             .json({
@@ -364,6 +434,7 @@ exports.UserLogin = (req, res, next) => {
                             });
                     }
                 } else {
+                    // audit
                     return res
                         .status(401)
                         .json({
