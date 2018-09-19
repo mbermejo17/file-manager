@@ -5,7 +5,6 @@ const sqlite3 = require("sqlite3").verbose();
 const Base64 = require("js-base64").Base64;
 
 let UserModel = {};
-let db;
 
 
 
@@ -14,10 +13,11 @@ let db;
 /////////////////////////////////////////
 
 let dbOpen = function() {
+  let db = global.db;
     console.log('dbPath: ', dbPath);
     console.log("db handler:", db);
-    if (!db) {
-        db = new sqlite3.Database(
+    if (!db || !db.open) {
+      db = new sqlite3.Database(
             dbPath,
             sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
             err => {
@@ -25,7 +25,8 @@ let dbOpen = function() {
                     return false;
                     console.error(err.message);
                 }
-                return true;
+                global.db = db;
+                return db;
                 console.log(`Connected to ${config.dbName} database.`);
             }
         );
@@ -42,13 +43,15 @@ UserModel.Open = function() {
 /////////////////////////////////////////
 
 let dbClose = function() {
-  if(db) {
+  let db = global.db;
+  if(db.open) {
     db.close(err => {
         if (err) {
             console.error(err.message);
         }
         console.log("Database connection closed.");
     });
+    global.db = db;
   }
 };
 
@@ -63,6 +66,7 @@ UserModel.Close = function() {
 /////////////////////////////////////////
 
 UserModel.CreateTable = function() {
+  let db = global.db;
     db.run("DROP TABLE IF EXISTS Users");
     db.run(
         "CREATE TABLE IF NOT EXISTS Users (UserId INTEGER PRIMARY KEY AUTOINCREMENT, UserName NCHAR(55), UserPasswd NCHAR(55),  UserRole NCHAR(55))"
@@ -77,7 +81,8 @@ UserModel.CreateTable = function() {
 /////////////////////////////////////////
 
 UserModel.Find = function(queryString, callback) {
-    dbOpen();
+  let db = global.db;
+    if (!db || !db.open) dbOpen();
 
     db.get(queryString, (err, row) => {
         if (err) {
@@ -103,6 +108,7 @@ UserModel.Find = function(queryString, callback) {
 /////////////////////////////////////////
 
 UserModel.FindById = function(userId, callback) {
+  let db = global.db;
     let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate
                FROM Users
                WHERE UserId  = ?`;
@@ -138,6 +144,7 @@ UserModel.FindById = function(userId, callback) {
 /////////////////////////////////////////
 
 UserModel.Update = function(data, callback) {
+  let db = global.db;
     console.log(data);
     let sql =
         "UPDATE Users SET " +
@@ -175,10 +182,11 @@ UserModel.Update = function(data, callback) {
 /////////////////////////////////////////
 
 UserModel.Remove = function(userId, callback) {
+  let db = global.db;
     let sql = `DELETE
              FROM Users
-             WHERE UserId  = ?`;
-    dbOpen();
+             WHERE UserId  = ?`;      
+    if (!db.open) dbOpen();
     let stmt = db.prepare(sql);
     stmt.bind(userId);
     stmt.run(function(err, row) {
@@ -208,6 +216,7 @@ UserModel.Remove = function(userId, callback) {
 /////////////////////////////////////////
 
 UserModel.FindByName = function(userName, callback) {
+  let db = global.db;
     console.log(userName);
     let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate
                FROM Users
@@ -244,6 +253,7 @@ UserModel.FindByName = function(userName, callback) {
 /////////////////////////////////////////
 
 UserModel.ChangePasswd = function(userData, callback) {
+  let db = global.db;
     console.log(userData.userName, userData.userPasswd);
     let sql = `UPDATE Users SET UserPasswd = ? WHERE UPPER(UserName)  = ?`;
     dbOpen();
@@ -279,6 +289,7 @@ UserModel.ChangePasswd = function(userData, callback) {
 /////////////////////////////////////////
 
 UserModel.All = function(callback) {
+  let db = global.db;
     let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate  
                FROM Users`;
     dbOpen();
@@ -325,8 +336,9 @@ UserModel.All = function(callback) {
 /////////////////////////////////////////
 
 UserModel.Add = function(userData, callback) {
+  let db = global.db;
     let response = {};
-    if(!db) dbOpen();
+    if(!db || !db.open) dbOpen();
     console.log("db handler: ", db);
     let stmt = db.prepare("SELECT * FROM Users WHERE UserName = ?");
     console.log("PASSWD:", userData.userPassword);

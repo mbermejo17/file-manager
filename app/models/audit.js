@@ -5,9 +5,10 @@ const sqlite3 = require("sqlite3").verbose();
 const Base64 = require("js-base64").Base64;
 
 let AuditModel = {};
-let db;
+
 
 let dbOpen = function() {
+  let db = global.db;
     console.log('dbPath: ', dbPath);
     console.log("db handler:", db);
     if (!db) {
@@ -20,6 +21,7 @@ let dbOpen = function() {
                   console.error(err.message);
               }
               //db.run('PRAGMA journal_mode = WAL;');
+              global.db = db;
               return db;
               console.log(`Connected to ${config.dbName} database.`);
           }
@@ -28,6 +30,7 @@ let dbOpen = function() {
 };
 
 let dbClose = function() {
+  let db = global.db;
   if(db){ 
     db.close(err => {
         if (err) {
@@ -35,6 +38,7 @@ let dbClose = function() {
         }
         console.log("Database connection closed.");
     });
+    global.db= db;
   } 
 };
 
@@ -43,6 +47,7 @@ AuditModel.Open = function() {
 };
 
 AuditModel.CreateTable = function() {
+  let db = global.db;
     db.run("DROP TABLE IF EXISTS Audit");
     db.run(
         "CREATE TABLE IF NOT EXISTS Audit ( 'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 'UserName' TEXT, 'FileName' TEXT, 'Size' INTEGER, 'DateString' TEXT, 'Result' TEXT )");
@@ -54,7 +59,8 @@ AuditModel.Close = function() {
 };
 
 AuditModel.Find = function(queryString, callback) {
-    dbOpen();
+  let db = global.db;
+    if(!db || !db.open) dbOpen();
 
     db.get(queryString, (err, row) => {
         if (err) {
@@ -75,6 +81,7 @@ AuditModel.Find = function(queryString, callback) {
 
 
 AuditModel.Remove = function(Id, callback) {
+  let db = global.db;
     let sql = `DELETE *
              FROM audit
              WHERE id  = ?`;
@@ -106,6 +113,7 @@ AuditModel.Remove = function(Id, callback) {
 };
 
 AuditModel.FindByName = function(userName, callback) {
+  let db = global.db;
     console.log(userName);
     let sql = `SELECT UserName, Filename, Size, DateString , Result, Message
                FROM Audit
@@ -139,6 +147,7 @@ AuditModel.FindByName = function(userName, callback) {
 
 
 AuditModel.All = function(callback) {
+  let db = global.db;
     let sql = `SELECT *  
                FROM Audit`;
     dbOpen();
@@ -182,6 +191,7 @@ AuditModel.All = function(callback) {
 
 
 const _insert = async (data,callback) =>{
+  let db = global.db;
   try {
     if(!db) dbOpen();
     //db.configure("busyTimeout", 60000);

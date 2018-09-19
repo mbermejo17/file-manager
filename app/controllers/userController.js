@@ -227,7 +227,7 @@ exports.UserUpdate = (req, res) => {
 exports.UserGetAll = (req, res, next) => {
     User.All(data => {
         if (data.status == "FAIL") {
-            console.log(status);
+            console.log(data.status);
             res.status(500).json({
                 status: "FAIL",
                 message: status,
@@ -323,13 +323,34 @@ exports.UserFindById = (req, res, next) => {
 exports.UserRemove = (req, res, next) => {
     let userId = req.params.userId;
     let userName = req.body.userName;
-    let browserIP = req.header('x-forwarded-for') || req.connection.remoteAddress;
+    let browserIP = (req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress).split(",")[1];
+
     let clientIP = req.connection.remoteAddress;
+    let currentDate = (new Date()).toString();
+    let currentUnixDate = moment(currentDate).unix();
     User.Remove(userId,
         (d) => {
             console.log(d);
             if (d.status == 'FAIL') {
                 // audit
+                Audit.Add({userName: userName}, {
+                  clientIP: clientIP || '',
+                  browserIP: browserIP || ''
+              }, {
+                  fileName: '',
+                  fileSize: 0
+              }, {
+                  dateString: currentDate,
+                  unixDate: currentUnixDate
+              }, response[0], 'Delete User','FAIL',()=>{
+    
+                console.log('hola2');
+                return res.status(200).json(response[0]);
+              
+              });
                 res.status(500).json({
                     status: "FAIL",
                     message: d.message,
@@ -337,6 +358,21 @@ exports.UserRemove = (req, res, next) => {
                 });
             } else {
                 // audit
+                Audit.Add({userName: userName}, {
+                  clientIP: clientIP || '',
+                  browserIP: browserIP || ''
+              }, {
+                  fileName: '',
+                  fileSize: 0
+              }, {
+                  dateString: currentDate,
+                  unixDate: currentUnixDate
+              }, response[0], 'Delete User','OK',()=>{
+    
+                console.log('hola2');
+                return res.status(200).json(response[0]);
+              
+              });
                 return res.status(200).json({
                     status: "OK",
                     message: `User ${userName} removed`,

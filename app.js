@@ -10,6 +10,7 @@ const auditRoutes = require('./app/routes/auditRoutes');
 //const MntRoutes = require('./routes/mnt');
 const path = require('path');
 const debug = require('debug');
+global.db = null;
 
 app.use(morgan("dev"));
 app.use(cookieParser());
