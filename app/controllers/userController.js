@@ -230,7 +230,7 @@ exports.UserGetAll = (req, res, next) => {
             console.log(data.status);
             res.status(500).json({
                 status: "FAIL",
-                message: status,
+                message: data.status,
                 data: null
             });
         } else {
@@ -367,7 +367,7 @@ exports.UserRemove = (req, res, next) => {
               }, {
                   dateString: currentDate,
                   unixDate: currentUnixDate
-              }, response[0], 'Delete User','OK',()=>{
+              }, d, 'Delete User','OK',()=>{
     
                 console.log('hola2');
                 return res.status(200).json(response[0]);

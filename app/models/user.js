@@ -13,11 +13,10 @@ let UserModel = {};
 /////////////////////////////////////////
 
 let dbOpen = function() {
-  let db = global.db;
     console.log('dbPath: ', dbPath);
-    console.log("db handler:", db);
-    if (!db || !db.open) {
-      db = new sqlite3.Database(
+    console.log("db handler:", global.db);
+    if (global.db == null || (global.db !== null && !global.db.open )) {
+      global.db = new sqlite3.Database(
             dbPath,
             sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
             err => {
@@ -25,9 +24,8 @@ let dbOpen = function() {
                     return false;
                     console.error(err.message);
                 }
-                global.db = db;
-                return db;
-                console.log(`Connected to ${config.dbName} database.`);
+                console.log(`****** Connected to ${config.dbName} database. *********`);
+                return global.db;
             }
         );
     }
@@ -43,16 +41,14 @@ UserModel.Open = function() {
 /////////////////////////////////////////
 
 let dbClose = function() {
-  let db = global.db;
-  if(db.open) {
-    db.close(err => {
-        if (err) {
-            console.error(err.message);
-        }
-        console.log("Database connection closed.");
-    });
-    global.db = db;
-  }
+    if (global.db.open) {
+      global.db.close(err => {
+            if (err) {
+                console.error(err.message);
+            }
+            console.log("******** Database connection closed. **********");
+        });
+    }
 };
 
 UserModel.Close = function() {
@@ -66,9 +62,8 @@ UserModel.Close = function() {
 /////////////////////////////////////////
 
 UserModel.CreateTable = function() {
-  let db = global.db;
-    db.run("DROP TABLE IF EXISTS Users");
-    db.run(
+  global.db.run("DROP TABLE IF EXISTS Users");
+  global.db.run(
         "CREATE TABLE IF NOT EXISTS Users (UserId INTEGER PRIMARY KEY AUTOINCREMENT, UserName NCHAR(55), UserPasswd NCHAR(55),  UserRole NCHAR(55))"
     );
     console.log("La tabla usuarios ha sido correctamente creada");
@@ -81,20 +76,19 @@ UserModel.CreateTable = function() {
 /////////////////////////////////////////
 
 UserModel.Find = function(queryString, callback) {
-  let db = global.db;
-    if (!db || !db.open) dbOpen();
+    if (global.db === null ) dbOpen();
 
-    db.get(queryString, (err, row) => {
+    global.db.get(queryString, (err, row) => {
         if (err) {
-            if(db) dbClose();
+            if (global.db.open) dbClose();
             console.error(err.message);
             callback(err.message, null);
         } else {
             if (row) {
-              if(db) dbClose();
+                if (global.db.open) dbClose();
                 callback(null, row);
             } else {
-              if(db) dbClose();
+                if (global.db.open) dbClose();
                 callback(`No se encuentran registros`, null);
             }
         }
@@ -108,26 +102,25 @@ UserModel.Find = function(queryString, callback) {
 /////////////////////////////////////////
 
 UserModel.FindById = function(userId, callback) {
-  let db = global.db;
     let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate
                FROM Users
                WHERE UserId  = ?`;
     dbOpen();
-    db.get(sql, [userId], (err, row) => {
+    global.db.get(sql, [userId], (err, row) => {
         if (err) {
-          if(db) dbClose();
+            if (global.db.open) dbClose();
             console.error(err.message);
             callback(err.message, null);
         } else {
             if (row) {
-              if(db) dbClose();
+                if (global.db.open) dbClose();
                 callback({
                     status: "OK",
                     message: '',
                     data: row
                 });
             } else {
-              if(db) dbClose();
+                if (global.db.open) dbClose();
                 callback({
                     status: "FAIL",
                     message: err.message,
@@ -144,7 +137,6 @@ UserModel.FindById = function(userId, callback) {
 /////////////////////////////////////////
 
 UserModel.Update = function(data, callback) {
-  let db = global.db;
     console.log(data);
     let sql =
         "UPDATE Users SET " +
@@ -153,12 +145,12 @@ UserModel.Update = function(data, callback) {
         data.userId +
         "';";
     console.log(sql);
-    dbOpen();
-    db.run(sql, (err, row) => {
+    if (!global.db.open) dbOpen();
+    global.db.run(sql, (err, row) => {
         console.log("err", err);
         console.log("row", row);
         if (err) {
-          if(db) dbClose();
+            if (global.db.open) dbClose();
             console.error(err.message);
             callback({
                 status: "FAIL",
@@ -166,7 +158,7 @@ UserModel.Update = function(data, callback) {
                 data: null
             });
         } else {
-          if(db) dbClose();
+            if (global.db.open) dbClose();
             callback({
                 status: "OK",
                 message: "Usuario " + data.userName + " actualizado",
@@ -182,16 +174,16 @@ UserModel.Update = function(data, callback) {
 /////////////////////////////////////////
 
 UserModel.Remove = function(userId, callback) {
-  let db = global.db;
     let sql = `DELETE
              FROM Users
-             WHERE UserId  = ?`;      
-    if (!db.open) dbOpen();
-    let stmt = db.prepare(sql);
+             WHERE UserId  = ?`;
+    console.log('global.db: ',global.db);         
+    dbOpen();
+    let stmt = global.db.prepare(sql);
     stmt.bind(userId);
     stmt.run(function(err, row) {
         if (err) {
-          if(db) dbClose();
+            if (global.db.open) dbClose();
             console.error(err.message);
             callback({
                 status: "FAIL",
@@ -199,7 +191,7 @@ UserModel.Remove = function(userId, callback) {
                 data: null
             });
         } else {
-          if(db) dbClose();
+            if (global.db.open) dbClose();
             console.log(row);
             callback({
                 status: "OK",
@@ -216,16 +208,15 @@ UserModel.Remove = function(userId, callback) {
 /////////////////////////////////////////
 
 UserModel.FindByName = function(userName, callback) {
-  let db = global.db;
     console.log(userName);
     let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate
                FROM Users
                WHERE UPPER(UserName)  = ?`;
     dbOpen();
-    db.get(sql, [userName.toUpperCase()], (err, row) => {
+    global.db.get(sql, [userName.toUpperCase()], (err, row) => {
         if (err) {
             console.error(err.message);
-            if(db) dbClose();
+            if (global.db.open) dbClose();
             callback({
                 status: "FAIL",
                 message: err.message,
@@ -233,10 +224,10 @@ UserModel.FindByName = function(userName, callback) {
             });
         } else {
             if (row) {
-              if(db) dbClose();
+                if (global.db.open) dbClose();
                 callback(null, row);
             } else {
-              if(db) dbClose();
+                if (global.db.open) dbClose();
                 callback({
                     status: "FAIL",
                     message: `Usuario ${userName} no encontrado`,
@@ -253,11 +244,10 @@ UserModel.FindByName = function(userName, callback) {
 /////////////////////////////////////////
 
 UserModel.ChangePasswd = function(userData, callback) {
-  let db = global.db;
     console.log(userData.userName, userData.userPasswd);
     let sql = `UPDATE Users SET UserPasswd = ? WHERE UPPER(UserName)  = ?`;
     dbOpen();
-    let stmt = db.prepare(sql);
+    let stmt = global.db.prepare(sql);
     stmt.bind(userData.userPasswd, userData.userName.toUpperCase());
     stmt.run(function(err) {
         if (err) {
@@ -265,7 +255,7 @@ UserModel.ChangePasswd = function(userData, callback) {
             //dbClose();
             callback(err.message, null);
         }
-        //dbClose();
+        if (global.db.open) dbClose();
         if (this.changes === 1) {
             console.log(`Row(s) updated: ${this.changes}`);
             callback({
@@ -289,16 +279,38 @@ UserModel.ChangePasswd = function(userData, callback) {
 /////////////////////////////////////////
 
 UserModel.All = function(callback) {
-  let db = global.db;
     let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate  
                FROM Users`;
     dbOpen();
+    console.log('db: ',global.db); 
     let allRows = [];
-    db.each(
-        sql,
+
+    global.db.all(sql, [], (err, rows) => {
+        if (err) {
+          global.db.close();
+            callback({
+                status: "FAIL",
+                message: err.message,
+                data: null
+            });
+        }
+        rows.forEach((row) => {
+            allRows.push(row);
+        });
+        global.db.close();
+        callback({
+            status: "OK",
+            message: `${allRows.length} registros encontrados`,
+            data: allRows
+        });
+    });
+
+
+
+    /* db.each(sql,
         (err, row) => {
             if (err) {
-              if(db) dbClose();
+              if(db.open) dbClose();
                 console.error(err.message);
                 callback({
                     status: "FAIL",
@@ -327,7 +339,7 @@ UserModel.All = function(callback) {
                 });
             }
         }
-    );
+    ); */
 };
 
 
@@ -336,22 +348,21 @@ UserModel.All = function(callback) {
 /////////////////////////////////////////
 
 UserModel.Add = function(userData, callback) {
-  let db = global.db;
     let response = {};
-    if(!db || !db.open) dbOpen();
-    console.log("db handler: ", db);
-    let stmt = db.prepare("SELECT * FROM Users WHERE UserName = ?");
+    if (!global.db.open) dbOpen();
+    console.log("db handler: ", global.db);
+    let stmt = global.db.prepare("SELECT * FROM Users WHERE UserName = ?");
     console.log("PASSWD:", userData.userPassword);
     stmt.bind(userData.userName);
     stmt.get(function(error, rows) {
         console.log("error: ", error);
         if (error) {
-            if (db) dbClose();
+            if (global.db.open) dbClose();
             callback({
-              status: "FAIL",
-              msg: `Error ${error}`,
-              data: null
-          });
+                status: "FAIL",
+                msg: `Error ${error}`,
+                data: null
+            });
         } else {
             if (rows) {
                 console.log("rows: ", rows);
@@ -362,8 +373,8 @@ UserModel.Add = function(userData, callback) {
                     data: null
                 });
             } else {
-                if (!db) dbOpen();
-                stmt = db.prepare("INSERT INTO Users VALUES (?,?,?,?,?,?,?,?,?)");
+                if (!global.db.open) dbOpen();
+                stmt = global.db.prepare("INSERT INTO Users VALUES (?,?,?,?,?,?,?,?,?)");
                 stmt.bind(
                     null,
                     userData.userName,
@@ -376,13 +387,13 @@ UserModel.Add = function(userData, callback) {
                     userData.unixDate
                 );
                 stmt.run(function(err, result) {
-                    if (db) dbClose();
+                    if (global.db.open) dbClose();
                     if (err) {
-                      callback({
-                        status: "FAIL",
-                        msg: `Error ${err}`,
-                        data: null
-                    });
+                        callback({
+                            status: "FAIL",
+                            msg: `Error ${err}`,
+                            data: null
+                        });
                     } else {
                         callback({
                             status: "OK",
