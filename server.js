@@ -13,6 +13,7 @@ let httpsServer = https.createServer({
   key: fs.readFileSync(global.appRoot + '/app/certs/fileManagerServer.key'),
   cert: fs.readFileSync(global.appRoot + '/app/certs/fileManagerServer.cert')
 }, app).listen(port, function () {
+  console.log('Enviroment: ',process.env.NODE_ENV);
   console.log("https server listening on port " + port + "...");
 });
 

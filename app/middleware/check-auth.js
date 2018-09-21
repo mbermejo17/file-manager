@@ -5,9 +5,9 @@ const JWT_KEY = config.jwtKey;
 module.exports = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
-        console.log('Token:',token);
+        if (process.env.NODE_ENV === 'dev') console.log('Token:',token);
         const decoded = jwt.verify(token.trim(), JWT_KEY);
-        console.log('Token Decoded:',decoded);
+        if (process.env.NODE_ENV === 'dev') console.log('Token Decoded:',decoded);
         req.userData = JSON.stringify(decoded);
         next();
     } catch (error) {

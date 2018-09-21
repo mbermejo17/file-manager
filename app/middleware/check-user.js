@@ -1,16 +1,16 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
-    console.log('middleware:check-user');
+  if (process.env.NODE_ENV === 'dev') console.log('middleware:check-user');
     const sessionId = req.cookies.sessionId;
     const Token = req.cookies.token;
-    console.log('middleware:check-user:sessionId',sessionId)
-    console.log('middleware:check-user:Token',Token)
+    if (process.env.NODE_ENV === 'dev') console.log('middleware:check-user:sessionId',sessionId)
+    if (process.env.NODE_ENV === 'dev') console.log('middleware:check-user:Token',Token)
     if (sessionId && Token) {
-        console.log('Token: ' + Token);
+      if (process.env.NODE_ENV === 'dev') console.log('Token: ' + Token);
         next();
     } else {
-        console.log("render logon");
+      if (process.env.NODE_ENV === 'dev') console.log("render logon");
         res.render("logon", {});
     }
     /* try {

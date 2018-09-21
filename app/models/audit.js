@@ -9,8 +9,8 @@ let AuditModel = {};
 
 let dbOpen = function() {
   let db = global.db;
-    console.log('dbPath: ', dbPath);
-    console.log("db handler:", db);
+    if (process.env.NODE_ENV === 'dev') console.log('dbPath: ', dbPath);
+    if (process.env.NODE_ENV === 'dev') console.log("db handler:", db);
     if (!db) {
       db = new sqlite3.Database(
           dbPath,
@@ -34,9 +34,9 @@ let dbClose = function() {
   if(db){ 
     db.close(err => {
         if (err) {
-            console.error(err.message);
+          if (process.env.NODE_ENV === 'dev') console.error(err.message);
         }
-        console.log("Database connection closed.");
+        if (process.env.NODE_ENV === 'dev') console.log("Database connection closed.");
     });
     global.db= db;
   } 
@@ -51,7 +51,7 @@ AuditModel.CreateTable = function() {
     db.run("DROP TABLE IF EXISTS Audit");
     db.run(
         "CREATE TABLE IF NOT EXISTS Audit ( 'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 'UserName' TEXT, 'FileName' TEXT, 'Size' INTEGER, 'DateString' TEXT, 'Result' TEXT )");
-    console.log("La tabla usuarios ha sido correctamente creada");
+        if (process.env.NODE_ENV === 'dev') console.log("La tabla usuarios ha sido correctamente creada");
 };
 
 AuditModel.Close = function() {
@@ -65,7 +65,7 @@ AuditModel.Find = function(queryString, callback) {
     db.get(queryString, (err, row) => {
         if (err) {
             dbClose();
-            console.error(err.message);
+            if (process.env.NODE_ENV === 'dev') console.error(err.message);
             callback(err.message, null);
         } else {
             if (row) {
@@ -89,12 +89,12 @@ AuditModel.Remove = function(Id, callback) {
     db.get(sql, [Id], (err, row) => {
         if (err) {
             dbClose();
-            console.error(err.message);
+            if (process.env.NODE_ENV === 'dev') console.error(err.message);
             callback(err.message, null);
         } else {
             if (row) {
                 dbClose();
-                console.log(row);
+                if (process.env.NODE_ENV === 'dev') console.log(row);
                 callback({
                     status: "OK",
                     message: `1 registro encontrado`,
@@ -114,14 +114,14 @@ AuditModel.Remove = function(Id, callback) {
 
 AuditModel.FindByName = function(userName, callback) {
   let db = global.db;
-    console.log(userName);
+  if (process.env.NODE_ENV === 'dev') console.log(userName);
     let sql = `SELECT UserName, Filename, Size, DateString , Result, Message
                FROM Audit
                WHERE UPPER(UserName)  = ?`;
     dbOpen();
     db.get(sql, [userName.toUpperCase()], (err, row) => {
         if (err) {
-            console.error(err.message);
+          if (process.env.NODE_ENV === 'dev') console.error(err.message);
             dbClose();
             callback({
                 status: "FAIL",
@@ -157,7 +157,7 @@ AuditModel.All = function(callback) {
         (err, row) => {
             if (err) {
                 dbClose();
-                console.error(err.message);
+                if (process.env.NODE_ENV === 'dev') console.error(err.message);
                 callback({
                     status: "FAIL",
                     message: err.message,
@@ -170,7 +170,7 @@ AuditModel.All = function(callback) {
         (err, count) => {
             if (allRows.length >= 1) {
                 dbClose();
-                console.log(allRows);
+                if (process.env.NODE_ENV === 'dev') console.log(allRows);
                 callback({
                     status: "OK",
                     message: `${allRows.length} registros encontrados`,
@@ -196,7 +196,7 @@ const _insert = async (data,callback) =>{
     if(!db) dbOpen();
     //db.configure("busyTimeout", 60000);
       let sql = `INSERT INTO Audit (BrowserIP,ClientIP,UserName,FileName,Size,DateString,UnixDate,Message,Action,Result) VALUES ('${data.browserIP}','${data.clientIP}','${data.userName}','${data.fileName}',${data.fileSize},'${data.dateString}',${data.unixDate},'${data.message}','${data.action}','${data.result}');`;
-      console.log('Audit add:',sql);
+      if (process.env.NODE_ENV === 'dev') console.log('Audit add:',sql);
       await db.run(sql);
       callback({
         status: "OK",
@@ -204,7 +204,7 @@ const _insert = async (data,callback) =>{
         data: null
     });
   } catch(e) {
-    console.log('ERROR :',e);
+    if (process.env.NODE_ENV === 'dev') console.log('ERROR :',e);
     callback({
       status: "FAIL",
       message: e,

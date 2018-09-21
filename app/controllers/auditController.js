@@ -5,9 +5,9 @@ const moment = require("moment");
 exports.Add = (user, ip, file, d, msg, action, result, callback) => {
     let data = {};
     let response;
-    console.log('========================================');
-    console.log('                  AUDIT INIT');
-    console.log('========================================');
+    if (process.env.NODE_ENV === 'dev') console.log('========================================');
+    if (process.env.NODE_ENV === 'dev') console.log('                  AUDIT INIT');
+    if (process.env.NODE_ENV === 'dev') console.log('========================================');
     data.browserIP = ip.browserIP;
     data.clientIP = ip.clientIP;
     data.userName = user.userName;
@@ -20,10 +20,10 @@ exports.Add = (user, ip, file, d, msg, action, result, callback) => {
     data.result = result;
 
     Audit.Add(data, (d) => {
-        console.log("audit controller response : ", d);
-        console.log('========================================');
-        console.log('                  AUDIT END');
-        console.log('========================================');
+      if (process.env.NODE_ENV === 'dev') console.log("audit controller response : ", d);
+      if (process.env.NODE_ENV === 'dev') console.log('========================================');
+      if (process.env.NODE_ENV === 'dev') console.log('                  AUDIT END');
+      if (process.env.NODE_ENV === 'dev') console.log('========================================');
         callback(d);
     });
 };
@@ -31,14 +31,14 @@ exports.Add = (user, ip, file, d, msg, action, result, callback) => {
 exports.getAll = () => {
     Audit.All(data => {
         if (data.status == "FAIL") {
-            console.log(status);
+          if (process.env.NODE_ENV === 'dev') console.log(status);
             res.status(500).json({
                 status: "FAIL",
                 message: status,
                 data: null
             });
         } else {
-            console.log(data);
+          if (process.env.NODE_ENV === 'dev') console.log(data);
             return res.status(200).json({
                 status: "OK",
                 message: "Users found",
@@ -53,7 +53,7 @@ exports.findByName = (userName) => {
         `SELECT * FROM Users WHERE UPPER(UserName) = '${userName.toUpperCase()}'`,
         (status, data) => {
             if (status) {
-                console.log(status);
+              if (process.env.NODE_ENV === 'dev') console.log(status);
                 res.status(500).json({
                     status: "FAIL",
                     message: status,
@@ -61,7 +61,7 @@ exports.findByName = (userName) => {
                 });
             } else {
                 if (data) {
-                    console.log(data);
+                  if (process.env.NODE_ENV === 'dev') console.log(data);
                     return res.status(200).json({
                         status: "OK",
                         message: "User found",

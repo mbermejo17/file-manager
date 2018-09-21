@@ -369,7 +369,7 @@ const _removeUser = (userId, userName, callback) => {
             timeout: 30000,
             method: 'delete',
             data: {
-              userName: userName
+                userName: userName
             }
         })
         .then((d) => {
@@ -448,7 +448,7 @@ export function editUser() {
                 let bodyList = document.querySelector("#bodyList");
                 if (userData.RunMode === "DEBUG") console.log("users: ", users);
                 for (i = 0; i < users.length; i++) {
-                  let sDate = (users[i].ExpirateDate)? users[i].ExpirateDate : 'never';  
+                    let sDate = (users[i].ExpirateDate) ? users[i].ExpirateDate : 'never';
                     htmlListContent += `
                   <tr class="data-row">
                     <td>${users[i].UserId}</td>
@@ -458,9 +458,15 @@ export function editUser() {
                     <td>${users[i].RootPath}</td>
                     <td>${sDate}</td>
                     <td>
-                    <i id="${users[i].UserId}-id" class="fas fa-user-edit edit-user-icon" title="Editar Usuario"></i>
+                    <i id="${users[i].UserId}-id" class="fas fa-user-edit edit-user-icon" title="Editar Usuario"></i>`;
+                    if (users[i].UserRole.trim().toUpperCase() !== 'ADMIN') {
+                        htmlListContent += `
                     <i id="${users[i].UserId}-id" class="fas fa-user-times del-user-icon" title="Borrar Usuario"></i></td>
                   </tr>`;
+                    } else {
+                        htmlListContent += `&nbsp;</td></tr>`;
+                    }
+                    //console.log('User Role. ',users[i].UserRole.trim().toUpperCase());
                 }
                 bodyList.innerHTML = htmlListContent;
 
@@ -479,30 +485,31 @@ export function editUser() {
                         userName = userName.charAt(0).toUpperCase() + userName.slice(1);
                         console.log("userId: ", userId);
                         _removeUser(userId, userName, (d) => {
-                          showToast(
-                            "Delete User",
-                            `Usuario ${userName} borrado`,
-                            "success"
-                        );
-                          AddUserModalContent.style.display = "none";
-                          $u("#AddUserModalContent").removeClass("edit");
-                          containerOverlay.style.display = "none";
+                            showToast(
+                                "Delete User",
+                                `Usuario ${userName} borrado`,
+                                "success"
+                            );
+                            AddUserModalContent.style.display = "none";
+                            $u("#AddUserModalContent").removeClass("edit");
+                            containerOverlay.style.display = "none";
+                            document.getElementById("userMod").click();
                         });
                     });
                 });
 
                 [].forEach.call(document.querySelectorAll(".edit-user-icon"), function(el) {
-                  el.addEventListener("click", function(e) {
-                      let userId = e.target.id.slice(0, -3);
-                      console.log("userId: ", userId);
-                      _editUser(userId, (d) => {
-                        document.querySelector("#AddUserModalContent").style.display = "none";
-                        $u("#AddUserModalContent").removeClass("edit");
-                        document.querySelector(".container-overlay").style.display = "none";
-                        showAddUserForm('Edit User', d);
+                    el.addEventListener("click", function(e) {
+                        let userId = e.target.id.slice(0, -3);
+                        console.log("userId: ", userId);
+                        _editUser(userId, (d) => {
+                            document.querySelector("#AddUserModalContent").style.display = "none";
+                            $u("#AddUserModalContent").removeClass("edit");
+                            document.querySelector(".container-overlay").style.display = "none";
+                            showAddUserForm('Edit User', d);
+                        });
                     });
-                  });
-              });
+                });
 
                 document.querySelector("#btn-EditUserCancel").addEventListener("click", e => {
                     e.preventDefault();
@@ -545,7 +552,7 @@ export function selectRole(element, role) {
 export function showAddUserForm(title, data) {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let containerOverlay = document.querySelector(".container-overlay");
-    
+
     let mode = data ? "edit" : "add";
     let oldData = null;
 
@@ -613,6 +620,13 @@ export function showAddUserForm(title, data) {
             _addUser();
         });
     }
+
+    [].forEach.call(document.querySelectorAll(".userForm-input"), function(el) {
+      el.addEventListener("blur", function(e) {
+        if (e.target.value && e.target.id !== 'ExpirateDate') document.querySelector("#" + e.target.id).classList.add("used");
+        else document.querySelector("#" + e.target.id).classList.remove("used");
+      });
+    }); 
 
     let sel = document.querySelector("select");
 
@@ -711,7 +725,7 @@ export function showAddUserForm(title, data) {
             document.querySelector("#AddUserModalContent").style.display = "none";
             document.querySelector("#AddUserModalContent").classList.remove("show");
             document.querySelector(".container-overlay").style.display = "none";
-            document.querySelector("#userMod").click();
+            document.getElementById("userMod").click();
         };
 
         let queryString = _getChanges();
@@ -830,9 +844,14 @@ export function showAddUserForm(title, data) {
                     showToast("Usuario " + d.data.message, "success");
                     document.getElementById("refresh").click();
                     document.querySelector("#formAddUser").reset();
+                    [].forEach.call(document.querySelectorAll(".userForm-input"), function(el) {
+                       if(el.id !== 'ExpirateDate'){ 
+                        document.querySelector("#" + el.id).classList.remove("used");
+                       }
+                    }); 
                     changeAccessRights(document.querySelectorAll(".AccessRightsSwitch"), "opt1");
                 } else {
-                    showToast("Usuario ", "Error al añadir usurio "+ d.data.message, "error");
+                    showToast("Usuario ", "Error al añadir usurio " + d.data.message, "error");
                 }
             })
             .catch(e => {

@@ -165,48 +165,30 @@ export function shareFile() {
     ]
     };
 
-    /**/
-    searchUserModalContent.innerHTML = htmlShareFile;
+    const _shareFile = (d) => {
 
-    AddUserModalContent.style.display = "none";
-    searchUserModalContent.style.display = "block";
-    containerOverlay.style.display = "block";
-    document.getElementById("btn-ShareFileCancel").addEventListener("click", e => {
-        e.preventDefault();
-        searchUserModalContent.style.display = "none";
-        containerOverlay.style.display = "none";
-    });
-
-    document.getElementById("sharedModalClose").addEventListener("click", e => {
-        e.preventDefault();
-        searchUserModalContent.style.display = "none";
-        containerOverlay.style.display = "none";
-    });
-
-    document.getElementById("btn-ShareFileAccept").addEventListener("click", e => {
-        e.preventDefault();
-        let tmpDate = new Date(document.getElementById("FileExpirateDate").value);
+        let tmpDate = new Date(d.FileExpirateDate);
         let strTime = "";
-        if (document.getElementById("FileExpirateDate").value === "") {
-            strTime = moment(Date.now()).format("YYYY/MM/DD h:mm");
+        if (d.FileExpirateDate === "") {
+            strTime = moment(Date.now()).format("YYYY/MM/DD HH:mm:ss");
         } else {
-            strTime = moment(document.getElementById("FileExpirateDate").value).format("YYYY/MM/DD h:mm");
+            strTime = moment(d.FileExpirateDate).format("YYYY/MM/DD HH:mm:ss");
         }
 
-        if (document.getElementById("destUserName").value !== "") {
+        if (d.destUserName !== "") {
             if (userData.RunMode === "DEBUG")
-                console.log(document.getElementById("destUserName").value);
+                console.log(d.destUserName);
             if (userData.RunMode === "DEBUG")
-                console.log(document.getElementById("FileExpirateDate").value);
+                console.log(d.FileExpirateDate);
             let data = {
                 fileName: appData.aSelectedFiles[0],
                 fileSize: null,
                 path: appData.currentPath,
                 userName: userData.UserName,
-                destUserName: document.getElementById("destUserName").value,
+                destUserName: d.destUserName,
                 expirationDate: strTime,
-                unixDate: moment(strTime).unix(),
-                deleteExpiredFile: document.getElementById("delFileAfterExpired").checked ? 1 : 0
+                unixDate: moment(strTime).format('x'),
+                deleteExpiredFile: (d.delFileAfterExpired) ? 1 : 0
             };
             axios.post("/files/share", data, {
                     headers: {
@@ -218,8 +200,9 @@ export function shareFile() {
                 .then(d => {
                     if (userData.RunMode === "DEBUG") console.log(d.data);
                     if (d.data.status === "OK") {
-                        searchUserModalContent.style.display = "none";
-                        containerOverlay.style.display = "none";
+                        //searchUserModalContent.style.display = "none";
+                        //containerOverlay.style.display = "none";
+                        document.querySelector('#urlFile').innerHTML = `URL: https://filebox.unifyspain.es/files/share/${d.data.data.UrlCode}`;
                         sendEmail(
                             d.data.data.DestUser,
                             "mbermejo17@gmail.com",
@@ -228,7 +211,7 @@ export function shareFile() {
                         );
                         appData.aSelectedFiles = [];
                         appData.aSelectedFolders = [];
-                        document.getElementById("refresh").click();
+                        //document.getElementById("refresh").click();
                     }
                 })
                 .catch(e => {
@@ -239,8 +222,51 @@ export function shareFile() {
                     );
                     if (userData.RunMode === "DEBUG") console.log(e);
                 });
-        }
-    });
+        };
+      };
+
+        let modalDialogOptions = {
+            cancel: true,
+            cancelText: "Cancel",
+            confirm: true,
+            confirmText: "OK",
+            type: 'shareFile'
+        };
+
+        modalDialogOptions.confirmCallBack = async function(e, data) {
+            if (userData.RunMode === "DEBUG") console.log("shareFile: ", data);
+            if (data || data.destUserName.trim() !== '') {
+                _shareFile(data);
+            }
+        };
+        modalDialogOptions.cancelCallBack = async function(e, data){
+            console.log(data);
+        };
+        modalDialog(
+            "Share File",
+            `<div class="input-field">
+              <input id="destUserName" type="email" autocomplete="off" pattern=".+@globex.com" required/>
+              <label for="destUserName">Send URL to</label>
+            </div>
+            <div class="input-field">
+              <input class="datepicker" id="FileExpirateDate" type="date"/>
+              <label for="FileExpirateDate">Expiration Date</label>
+            </div>
+            <div>
+              <input id="delFileAfterExpired" type="checkbox">
+              <label for="delFileAfterExpired">Delete File</label>
+            </div>
+            <div>
+              <label id="urlFile"></label>
+            </div>`,
+            modalDialogOptions
+        );
+
+
+
+
+        /**/
+        //htmlShareFile;
 }
 
 /////////////////////////////////////
@@ -848,7 +874,7 @@ export function download(fileList, text) {
         liNumber.style.display = "block";
         liFilename.innerHTML = fName;
         reqList[i].timeout = 36000;
-        reqList[i].ontimeout = function() {        // Download Timeout
+        reqList[i].ontimeout = function() { // Download Timeout
             if (userData.RunMode === "DEBUG")
                 console.log("** Timeout error ->File:" + fName + " " + reqList[i].status + " " + reqList[i].statusText);
             // handlerCount = handlerCount - 1
@@ -856,17 +882,17 @@ export function download(fileList, text) {
             progressBar.classList.add("blink");
             responseTimeout[i] = true;
         };
-        reqList[i].onprogress = function(evt) {   // Download progress
+        reqList[i].onprogress = function(evt) { // Download progress
             if (evt.lengthComputable) {
                 let percentComplete = parseInt((evt.loaded / evt.total) * 100);
                 progressBar.style.width = percentComplete + "%";
                 percentLabel.innerHTML = percentComplete + "%";
             }
         };
-        reqList[i].onabort = function(){         // Download abort  
-          showToast("Download File", "Descarga de archivo " + fName + " cancelada", "warning");
+        reqList[i].onabort = function() { // Download abort  
+            showToast("Download File", "Descarga de archivo " + fName + " cancelada", "warning");
         };
-        reqList[i].onerror = function() {        // Download error
+        reqList[i].onerror = function() { // Download error
             if (userData.RunMode === "DEBUG")
                 console.log("** An error occurred during the transaction ->File:" + fName + " " + req.status + " " + req.statusText);
             handlerCounter = handlerCounter - 1;
@@ -875,7 +901,7 @@ export function download(fileList, text) {
             document.querySelector("#abort" + i).style.display = "none";
             showToast("Download File", "Error al descargar archivo " + fName + " " + req.statusText, "error");
         };
-        reqList[i].onloadend = function(e) {     // Download End 
+        reqList[i].onloadend = function(e) { // Download End 
             console.log('File n:' + i + ' ->', reqList[i].readyState);
             handlerCounter = handlerCounter - 1;
             if (!responseTimeout[i]) {

@@ -6,32 +6,36 @@ const Base64 = require("js-base64").Base64;
 const moment = require("moment");
 
 let UtilModel = {};
-let db;
 
-let dbOpen = function () {
-  console.log(dbPath);
-  console.log("db handler:", db);
-  db = new sqlite3.Database(
-    dbPath,
-    sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
-    err => {
-      if (err) {
-        return false;
-        console.error(err.message);
-      }
-      return true;
-      console.log(`Connected to ${config.dbName} database.`);
-    }
-  );
+
+let dbOpen = function() {
+  if (process.env.NODE_ENV === 'dev') console.log('dbPath: ', dbPath);
+  if (process.env.NODE_ENV === 'dev') console.log("db handler:", global.db);
+  if (global.db == null || (global.db !== null && !global.db.open)) {
+      global.db = new sqlite3.Database(
+          dbPath,
+          sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+          err => {
+              if (err) {
+                  if (process.env.NODE_ENV === 'dev') console.error(err.message);
+                  return false;
+              }
+              if (process.env.NODE_ENV === 'dev') console.log(`****** Connected to ${config.dbName} database. *********`);
+              return global.db;
+          }
+      );
+  }
 };
 
-let dbClose = function () {
-  db.close(err => {
-    if (err) {
-      console.error(err.message);
-    }
-    console.log("Database connection closed.");
-  });
+let dbClose = function() {
+  if (!global.db == null || global.db.open) {
+      global.db.close(err => {
+          if (err) {
+              if (process.env.NODE_ENV === 'dev') console.error(err.message);
+          }
+          if (process.env.NODE_ENV === 'dev') console.log("******** Database connection closed. **********");
+      });
+  }
 };
 
 UtilModel.Open = function () {
@@ -39,8 +43,8 @@ UtilModel.Open = function () {
 };
 
 UtilModel.CreateTable = function () {
-  db.run("DROP TABLE IF EXISTS share");
-  db.run(
+  global.db.run("DROP TABLE IF EXISTS share");
+  global.db.run(
     "CREATE TABLE IF NOT EXISTS share (UserId INTEGER PRIMARY KEY AUTOINCREMENT, UserName NCHAR(55), UserPasswd NCHAR(55),  UserRole NCHAR(55))"
   );
   console.log("La tabla share ha sido correctamente creada");
@@ -56,9 +60,9 @@ UtilModel.getById = function (fileId, callback) {
   let sql = `SELECT *
                FROM Shared
                WHERE UrlCode  = ?`;
-  if (!db) dbOpen();
+  dbOpen();
   console.log("db handler: ", db);
-  db.get(sql, [fileId], (err, row) => {
+  global.db.get(sql, [fileId], (err, row) => {
     if (err) {
       dbClose();
       console.error(err.message);
@@ -90,13 +94,13 @@ UtilModel.getById = function (fileId, callback) {
 UtilModel.CleanExpiredFiles = function (query, callback) {
   let response = {};
   
-  if (!db) dbOpen();
-  let stmt = db.prepare(query);
+  dbOpen();
+  let stmt = global.db.prepare(query);
   stmt.bind(moment(Date.now()).unix());
   stmt.run(function(err) {
     console.log('Cambios: ',this.changes);
     if (err) {
-      //dbClose();
+      dbClose();
       console.error(err.message);
       callback({
         status: 'FAIL',
@@ -104,16 +108,15 @@ UtilModel.CleanExpiredFiles = function (query, callback) {
         data: null
       });
     } else {
-    //dbClose();
     if (this.changes >0 ) {
-      //dbClose();
+      dbClose();
         callback({
           status: "OK",
           message: "Borrados " + this.changes + " archivos caducados.",
           data: this.changes
         });
     } else {
-      //dbClose();
+      dbClose();
         callback({
           status: "OK",
           message: "No se han encontrado archivos caducados.",
@@ -128,9 +131,9 @@ UtilModel.CleanExpiredFiles = function (query, callback) {
 
 UtilModel.Add = function (shareData, callback) {
   let response = {};
-  if (!db) dbOpen();
-  console.log("db handler: ", db);
-  stmt = db.prepare("INSERT INTO Shared VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+  dbOpen();
+  console.log("db handler: ", global.db);
+  stmt = global.db.prepare("INSERT INTO Shared VALUES (?,?,?,?,?,?,?,?,?,?,?)");
   stmt.bind(
     null,
     shareData.UrlCode,
@@ -145,7 +148,7 @@ UtilModel.Add = function (shareData, callback) {
     shareData.deleteExpiredFile
   );
   stmt.run(function (err, result) {
-    //dbClose();
+    dbClose();
     if (err) {
       throw err;
     } else {
