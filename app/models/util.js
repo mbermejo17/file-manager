@@ -150,7 +150,15 @@ UtilModel.Add = function (shareData, callback) {
   stmt.run(function (err, result) {
     dbClose();
     if (err) {
-      throw err;
+      //throw err;
+      callback({
+        status: "FAIL",
+        message: err,
+        data: {
+          DestUser: shareData.DestUser,
+          UrlCode: shareData.UrlCode
+        }
+      });
     } else {
       callback({
         status: "OK",

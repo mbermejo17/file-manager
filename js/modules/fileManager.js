@@ -200,7 +200,6 @@ export function shareFile() {
                 .then(d => {
                     if (userData.RunMode === "DEBUG") console.log(d.data);
                     if (d.data.status === "OK") {
-                        //searchUserModalContent.style.display = "none";
                         //containerOverlay.style.display = "none";
                         document.querySelector('#urlFile').innerHTML = `URL: https://filebox.unifyspain.es/files/share/${d.data.data.UrlCode}`;
                         sendEmail(
@@ -212,9 +211,23 @@ export function shareFile() {
                         appData.aSelectedFiles = [];
                         appData.aSelectedFolders = [];
                         //document.getElementById("refresh").click();
+                    } else {
+                      let el = document.querySelector("#ModalDialog-wrap");
+                      el.parentNode.removeChild(el);
+                      _deselectAllFiles();
+                      _deselectAllFolders();
+                      showToast(
+                        "Share files",
+                        "Error al compartir archivo " + data.fileName + ".<br>Err:" + d.data.message,
+                        "error"
+                      );
                     }
                 })
                 .catch(e => {
+                    let el = document.querySelector("#ModalDialog-wrap");
+                    el.parentNode.removeChild(el);
+                    _deselectAllFiles();
+                    _deselectAllFolders();
                     showToast(
                         "Share files",
                         "Error al compartir archivo " + data.fileName + ".<br>Err:" + e,
