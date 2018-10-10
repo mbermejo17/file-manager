@@ -145,7 +145,7 @@ body {
     color: var(--main-color);
   }
   i:hover {
-    color: darken($color_2,10%);
+    color: darken($color_2, 10%);
   }
 }
 .main-container {
@@ -212,7 +212,7 @@ body {
 }
 .breadcrumb-line-path {
   color: $color_5 !important;
-  font-size: .8em;
+  font-size: 0.8em;
 }
 .table-content {
   width: 100%;
@@ -226,7 +226,7 @@ body {
 table.highlight {
   tbody {
     tr {
-        transition: background-color .25s ease;          
+      transition: background-color 0.25s ease;
       &:hover {
         background-color: $background_color_3;
       }
@@ -234,11 +234,11 @@ table.highlight {
   }
 }
 table.striped {
-    display: table;
-    border-collapse: collapse;
-    border-spacing: 0;
-    margin: 0 auto;
-    width: 100%;
+  display: table;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0 auto;
+  width: 100%;
   thead {
     th {
       text-align: center;
@@ -248,7 +248,7 @@ table.striped {
       }
     }
     border-bottom: 1px solid black;
-    th:first-child {    
+    th:first-child {
       width: 5%;
     }
     th:nth-child(2) {
@@ -266,11 +266,11 @@ table.striped {
   tbody {
     font-size: 0.76em;
     tr:nth-child(odd) {
-        background-color: $table-striped-color;
-        &:hover {
-            background-color: $background_color_3;
-          }
+      background-color: $table-striped-color;
+      &:hover {
+        background-color: $background_color_3;
       }
+    }
     td {
       text-align: center;
       padding-left: 2px;
@@ -310,7 +310,6 @@ table.striped {
 .files-progress-content {
   margin: 10px 25px;
 }
-
 
 #modal-header {
   background: url(../img/hd-bg.png);
@@ -551,7 +550,7 @@ table.striped {
 
 .upload-input-message {
   line-height: 2.9em;
-  color: #CCC;
+  color: #ccc;
 }
 .selected {
   color: $color_4;
@@ -560,10 +559,58 @@ table.striped {
   width: 35px;
 }
 
-.abort-task >.modal_close {
+.abort-task > .modal_close {
   position: relative;
-  top:0;
+  top: 0;
   left: 10px;
+}
+
+.ModalDialog-body.shareFile {
+  width: 500px;
+}
+.ModalDialog-label.share {
+  left: 100px;
+}
+
+.ModalDialog-label.datepicker.share {
+  left: 100px;
+  top: -50px;
+  color: #4a89dc;
+}
+.ModalDialog-check-input.share {
+  font-size: 0.9em;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 25px;
+  padding: 10px 10px 5px 5px;
+  display: block;
+  background: #fafafa;
+  color: #636363;
+  width: 280px;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid #757575;
+}
+
+.ModalDialog-check-label.share {
+  position: absolute;
+    left: 150px;
+    top: 226px;
+    color: #4a89dc;
+}
+
+.label-url-share {
+  font-size: .7em;
+  font-weight: bold;
+  color: #4a89dc;
+  text-align: center;
+  margin-top: 35px;
+  margin-left:30px;
+}
+
+.ModalDialog-input.used ~ .ModalDialog-label.share,
+.ModalDialog-input:focus ~ .ModalDialog-label.share {
+  left: 100px;
 }
 
 .file-abort {
@@ -661,11 +708,11 @@ div .progress-content .modal_close {
     margin: 30px auto;
     width: 680px;
     height: auto;
-  }  
+  }
 }
 
 .AddUserModalContent-footer {
-  display:flex;
+  display: flex;
   margin: 20px 10px;
   justify-content: flex-end;
   .button-container {

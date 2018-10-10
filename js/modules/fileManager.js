@@ -21,16 +21,16 @@ let htmlShareFile = `
     <a class="modal_close" id="sharedModalClose" href="#hola"></a>
   </div>
   <br>
-  <div class="row" id="">
+  <div class="userForm-row" id="">
     <div class="input-field col s1 m1">
     </div>
     <div class="input-field col s5">
       
-      <input id="destUserName" type="email" autocomplete="off" pattern=".+@globex.com" required/>
+      <input id="destUserName" type="email" autocomplete="off" pattern=".+@globex.com" class="userForm-input" required/>
       <label for="destUserName">Send URL to</label>
     </div>
     <div class="input-field col s3 m3">
-        <input class="datepicker" id="FileExpirateDate" type="date"/>
+        <input class="datepicker" id="FileExpirateDate" type="date" class="userForm-input"/>
         <label for="FileExpirateDate">Expiration Date</label>
     </div>
     <div class="input-field col s3 m3">
@@ -201,7 +201,7 @@ export function shareFile() {
                     if (userData.RunMode === "DEBUG") console.log(d.data);
                     if (d.data.status === "OK") {
                         //containerOverlay.style.display = "none";
-                        document.querySelector('#urlFile').innerHTML = `URL: https://filebox.unifyspain.es/files/share/${d.data.data.UrlCode}`;
+                        document.querySelector('#urlFile').innerHTML = `https://filebox.unifyspain.es/files/share/${d.data.data.UrlCode}`;
                         sendEmail(
                             d.data.data.DestUser,
                             "mbermejo17@gmail.com",
@@ -210,7 +210,9 @@ export function shareFile() {
                         );
                         appData.aSelectedFiles = [];
                         appData.aSelectedFolders = [];
-                        //document.getElementById("refresh").click();
+                        document.getElementById("refresh").click();
+                        document.getElementById("ModalDialog-button-confirm").style.display="none";
+                        document.getElementById("ModalDialog-button-cancel").innerHTML = "OK";    
                     } else {
                       let el = document.querySelector("#ModalDialog-wrap");
                       el.parentNode.removeChild(el);
@@ -257,21 +259,15 @@ export function shareFile() {
         };
         modalDialog(
             "Share File",
-            `<div class="input-field">
-              <input id="destUserName" type="email" autocomplete="off" pattern=".+@globex.com" required/>
-              <label for="destUserName">Send URL to</label>
-            </div>
-            <div class="input-field">
-              <input class="datepicker" id="FileExpirateDate" type="date"/>
-              <label for="FileExpirateDate">Expiration Date</label>
-            </div>
-            <div>
-              <input id="delFileAfterExpired" type="checkbox">
-              <label for="delFileAfterExpired">Delete File</label>
-            </div>
-            <div>
-              <label id="urlFile"></label>
-            </div>`,
+             `      <input id="destUserName" type="email" autocomplete="off" pattern=".+@globex.com" required class="ModalDialog-input"/>
+                    <label for="destUserName" class="ModalDialog-label share">Send URL to</label>
+                    <input class="datepicker ModalDialog-input" id="FileExpirateDate" type="date"/>
+                    <label for="FileExpirateDate" class="ModalDialog-label datepicker share">Expiration Date</label>
+                    <br>
+                    <input id="delFileAfterExpired" type="checkbox" class="ModalDialog-check-input share">
+                    <label for="delFileAfterExpired" class="ModalDialog-check-label share">Delete File</label>
+                    <br><br>
+                    <label id="urlFile" class="label-url-share"></label>`,
             modalDialogOptions
         );
 
