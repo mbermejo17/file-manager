@@ -257,9 +257,10 @@ let htmlSearchUserTemplate = `
 </div>
 `;
 
-const checkAccessRights = (AccessSwitch, role, accessRights) => {
+const checkAccessRights = (aSwitch, role, accessRights) => {
     let opt = "";
-    let aAccessRights = split(accessRights, ",");
+    //let aAccessRights = split(accessRights, ",");
+    
     if (role !== "Custom") {
         switch (role.toUpperCase()) {
             case "USER":
@@ -272,15 +273,14 @@ const checkAccessRights = (AccessSwitch, role, accessRights) => {
                 opt = "opt3";
                 break;
         }
-        changeAccessRights(AccessSwitch, opt);
+        changeAccessRights(aSwitch, opt);
     } else {
-        for (let x = 0; x < AccessSwitch.length; x++) {
-            if (aAccessRights[x] == 1) {
-                AccessSwitch[x].checked = true;
-            } else {
-                AccessSwitch[x].checked = false;
-            }
-        }
+      aSwitch[0].checked = accessRights.download ;
+      aSwitch[1].checked = accessRights.upload;
+      aSwitch[2].checked = accessRights.deletefile;
+      aSwitch[3].checked = accessRights.deletefolder ;
+      aSwitch[4].checked = accessRights.addfolder;
+      aSwitch[5].checked = accessRights.sharefiles;    
     }
 };
 
@@ -571,8 +571,10 @@ export function showAddUserForm(title, data) {
         document.querySelector("#ExpirateDate").value = data.ExpirateDate;
         //document.querySelector("#expirationDate")
         selectRole(document.querySelector("#RoleOptions"), data.UserRole);
-        if (data.UserRole.toUpperCase() === "CUSTOM")
-            checkAccessRights(data.AccessString);
+        let aSwitch =  document.querySelectorAll(".AccessRightsSwitch");
+        if (data.UserRole.toUpperCase() === "CUSTOM"){
+          checkAccessRights(aSwitch, data.UserRole,JSON.parse(data.AccessString));
+        }
 
         document.querySelector("#UserName").classList.add("used");
         document.querySelector("#CompanyName").classList.add("used");

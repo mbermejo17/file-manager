@@ -267,6 +267,12 @@ exports.UserFindByName = (req, res, next) => {
             } else {
                 if (data) {
                     if (process.env.NODE_ENV === 'dev') console.log(data);
+                    let rootPath ='';
+                    if ((data.UserRole.toUpperCase() === "ADMIN") || (data.UserRole.toUpperCase() === "CUSTOM") ) {
+                      rootPath = data.RootPath ? data.RootPath : "/";
+                    } else {
+                      rootPath = data.RootPath ? data.RootPath : "GUEST";
+                    }
                     return res.status(200).json({
                         status: "OK",
                         message: "User found",
@@ -275,7 +281,7 @@ exports.UserFindByName = (req, res, next) => {
                             Role: data.UserRole,
                             UserPasswd: Base64.encode(data.UserPasswd),
                             CompanyName: data.CompanyName,
-                            RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
+                            RootPath: rootPath,
                             AccessString: data.AccessString,
                             ExpirateDate: data.ExpirateDate
                         }
@@ -308,6 +314,12 @@ exports.UserFindById = (req, res, next) => {
             } else {
                 if (d.data) {
                     if (process.env.NODE_ENV === 'dev') console.log(d.data);
+                    let rootPath ='';
+                    if ((d.data.UserRole.toUpperCase() === "ADMIN") || (d.data.UserRole.toUpperCase() === "CUSTOM") ) {
+                      rootPath = d.data.RootPath ? d.data.RootPath : "/";
+                    } else {
+                      rootPath = d.data.RootPath ? d.data.RootPath : "GUEST";
+                    }
                     return res.status(200).json({
                         status: "OK",
                         message: "User found",
@@ -317,7 +329,7 @@ exports.UserFindById = (req, res, next) => {
                             UserRole: d.data.UserRole,
                             UserPasswd: Base64.encode(d.data.UserPasswd),
                             CompanyName: d.data.CompanyName,
-                            RootPath: d.data.UserRole.toUpperCase() === "ADMIN" ? "/" : d.data.RootPath,
+                            RootPath: rootPath,
                             AccessString: d.data.AccessString,
                             ExpirateDate: d.data.ExpirateDate
                         }
@@ -454,6 +466,12 @@ exports.UserLogin = (req, res, next) => {
                             res.cookie("sessionId", Base64.encode(data.UserName), {
                                 maxAge: 900000
                             });
+                            let rootPath ='';
+                            if ((data.UserRole.toUpperCase() === "ADMIN") || (data.UserRole.toUpperCase() === "CUSTOM") ) {
+                              rootPath = data.RootPath ? data.RootPath : "/";
+                            } else {
+                              rootPath = data.RootPath ? data.RootPath : "GUEST";
+                            }
                             return res.status(200).json({
                                 status: "OK",
                                 message: "User authenticated",
@@ -463,7 +481,7 @@ exports.UserLogin = (req, res, next) => {
                                     Role: data.UserRole,
                                     wssURL: wsPath,
                                     CompanyName: data.CompanyName,
-                                    RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
+                                    RootPath: rootPath,
                                     AccessString: data.AccessString,
                                     RunMode: "DEBUG"
                                 }

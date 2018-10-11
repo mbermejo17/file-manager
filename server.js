@@ -7,6 +7,7 @@ const port = process.env.PORT || 8443;
 const path = require('path');
 
 global.appRoot = path.resolve(__dirname);
+process.env.NODE_ENV = "dev";
 
 //const server = http.createServer(app);
 let httpsServer = https.createServer({

@@ -53,7 +53,7 @@ class FileController {
         let result = {},
             response = [],
             // dirPath = req.body.dirPath
-            dirPath = req.query.path
+            dirPath = req.query.path;
 
         if (process.env.NODE_ENV === 'dev') console.log('fileController::req.userData: ', req.userData)
         if (process.env.NODE_ENV === 'dev') console.log('fileController::getFiles:dirPath: ', dirPath)
