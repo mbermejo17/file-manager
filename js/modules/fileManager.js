@@ -140,12 +140,17 @@ const _deselectAllFolders = () => {
 };
 
 const _deselectAllFiles = () => {
-    let allElements = document.querySelectorAll(".typeFile");
-    allElements.forEach(function(element, i) {
+    //let allElements = document.querySelectorAll(".typeFile");
+    [].call.forEach(document.querySelectorAll(".typeFile"), function(element){
         if (element.parentElement.parentElement.children[0].children[0].children[0].checked) {
             element.parentElement.parentElement.children[0].children[0].children[0].checked = false;
         }
     });
+    /* allElements.forEach(function(element, i) {
+        if (element.parentElement.parentElement.children[0].children[0].children[0].checked) {
+            element.parentElement.parentElement.children[0].children[0].children[0].checked = false;
+        }
+    }); */
     document.querySelector('#selectAllFiles').checked = false;
     appData.aSelectedFiles = [];
 };
@@ -799,7 +804,7 @@ export function download(fileList, text) {
         </div>      
         <div class="ModalDialog-button">
               <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
-              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify disabled" id="btnCancelAll" href="#!">Cancel uploads</a>  
+              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify disabled" id="btnCancelAll" href="#!">Cancel Downloads</a>  
               <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Close</a>
         </div>
       </div>

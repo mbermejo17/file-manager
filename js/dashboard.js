@@ -95,7 +95,7 @@ window.appData = {
 
   // TODO --> replace execFetch by axios
 
-  window.execFetch = async function(uri, met, data) {
+  /* window.execFetch = async function(uri, met, data) {
     const header = new Headers();
     const bodyData = data ? JSON.stringify(data) : null;
     header.append("Content-Type", "application/json");
@@ -111,7 +111,7 @@ window.appData = {
     const json = await resp.json();
     return json;
   };
-
+ */
 
   ////////////////////////////////////////
   // Global Function Show Toast notifications
@@ -257,8 +257,8 @@ window.appData = {
       changePath(e.target.innerText);
     });
 
-    const headers = new Headers();
-    headers.append("Authorization", "Bearer " + userData.Token);
+    //const headers = new Headers();
+    //headers.append("Authorization", "Bearer " + userData.Token);
     let realpath = getRealPath(cPath);
 
     if (userData.RunMode === "DEBUG")
@@ -268,16 +268,25 @@ window.appData = {
           " realpath:" +
           realpath
       );
-    fetch("/files?path=" + encodeURI(realpath), {
+      /* fetch("/files?path=" + encodeURI(realpath), {
       method: "GET",
-      headers: headers,
+      headers: {"Authorization": "Bearer " + userData.Token},
       timeout: 720000
-    })
-      .then(FetchHandleErrors)
-      .then(r => r.json())
+    }) */
+      
+      axios.get(
+        "/files?path=" + encodeURI(realpath),
+        {
+          headers: {
+            "Authorization": "Bearer " + userData.Token,
+            "Content-Type": "application/json"
+          },
+          timeout: 720000
+        }
+      )  
       .then(data => {
         if (userData.RunMode === "DEBUG") console.log(data);
-        refreshFilesTable(data);
+        refreshFilesTable(data.data);
         $u("#waiting").removeClass("active");
       })
       .catch(err => {
