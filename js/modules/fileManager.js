@@ -283,6 +283,120 @@ export function shareFile() {
         //htmlShareFile;
 }
 
+//////////////////////
+// Show Shared Files
+//////////////////////
+
+export function ShowSharedFiles() {
+    let AddUserModalContent = document.querySelector("#AddUserModalContent");
+    let containerOverlay = document.querySelector(".container-overlay");
+
+    AddUserModalContent.innerHTML = htmlSearchUserTemplate;
+    $u("#AddUserModalContent").addClass("edit");
+    AddUserModalContent.style.display = "block";
+    containerOverlay.style.display = "block";
+    document.querySelector("#waiting").classList.add("active");
+    axios
+        .get("/shared/user/{:id}", {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + userData.Token
+            },
+            timeout: 30000
+        })
+        .then(d => {
+            document.querySelector("#waiting").classList.remove("active");
+            if (userData.RunMode === "DEBUG") console.log(d);
+            if (d.data.status === "OK") {
+                let users = d.data.data;
+                let i;
+                let htmlListContent = "";
+                let bodyList = document.querySelector("#bodyList");
+                if (userData.RunMode === "DEBUG") console.log("users: ", users);
+                for (i = 0; i < users.length; i++) {
+                    let sDate = (users[i].ExpirateDate) ? users[i].ExpirateDate : 'never';
+                    htmlListContent += `
+                  <tr class="data-row">
+                    <td>${users[i].UserId}</td>
+                    <td>${users[i].UserName}</td>
+                    <td>${users[i].UserRole}</td>
+                    <td>${users[i].CompanyName}</td>
+                    <td>${users[i].RootPath}</td>
+                    <td>${sDate}</td>
+                    <td>
+                    <i id="${users[i].UserId}-id" class="fas fa-user-edit edit-user-icon" title="Editar Usuario"></i>`;
+                    if (users[i].UserRole.trim().toUpperCase() !== 'ADMIN') {
+                        htmlListContent += `
+                    <i id="${users[i].UserId}-id" class="fas fa-user-times del-user-icon" title="Borrar Usuario"></i></td>
+                  </tr>`;
+                    } else {
+                        htmlListContent += `&nbsp;</td></tr>`;
+                    }
+                    //console.log('User Role. ',users[i].UserRole.trim().toUpperCase());
+                }
+                bodyList.innerHTML = htmlListContent;
+
+                let table = new DataTable(document.querySelector("#usersTableList"), {
+                    searchable: true,
+                    fixedHeight: true,
+                    info: false,
+                    perPageSelect: null,
+                    perPage: 200
+                });
+
+                [].forEach.call(document.querySelectorAll(".del-user-icon"), function(el) {
+                    el.addEventListener("click", function(e) {
+                        let userId = e.target.id.slice(0, -3);
+                        let userName = e.target.parentNode.parentNode.children[1].innerHTML;
+                        userName = userName.charAt(0).toUpperCase() + userName.slice(1);
+                        console.log("userId: ", userId);
+                        _removeUser(userId, userName, (d) => {
+                            showToast(
+                                "Delete User",
+                                `Usuario ${userName} borrado`,
+                                "success"
+                            );
+                            AddUserModalContent.style.display = "none";
+                            $u("#AddUserModalContent").removeClass("edit");
+                            containerOverlay.style.display = "none";
+                            document.getElementById("userMod").click();
+                        });
+                    });
+                });
+
+                [].forEach.call(document.querySelectorAll(".edit-user-icon"), function(el) {
+                    el.addEventListener("click", function(e) {
+                        let userId = e.target.id.slice(0, -3);
+                        console.log("userId: ", userId);
+                        _editUser(userId, (d) => {
+                            document.querySelector("#AddUserModalContent").style.display = "none";
+                            $u("#AddUserModalContent").removeClass("edit");
+                            document.querySelector(".container-overlay").style.display = "none";
+                            showAddUserForm('Edit User', d);
+                        });
+                    });
+                });
+
+                document.querySelector("#btn-EditUserCancel").addEventListener("click", e => {
+                    e.preventDefault();
+                    AddUserModalContent.style.display = "none";
+                    $u("#AddUserModalContent").removeClass("edit");
+                    containerOverlay.style.display = "none";
+                });
+            } else {
+                showToast("Users", d.data.data.message, "error");
+            }
+        })
+        .catch(e => {
+            document.querySelector("#waiting").classList.remove("active");
+            if (userData.RunMode === "DEBUG") console.log(e);
+            showToast("Users", e, "error");
+        });
+}
+
+
+
+
 /////////////////////////////////////
 // Delete Files & Folders selected
 /////////////////////////////////////
