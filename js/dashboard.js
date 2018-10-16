@@ -1025,6 +1025,20 @@ window.appData = {
         }
     });
 
+
+    // Manage Shared Files
+
+    $u("#userSharedFiles").on("click", e => {
+        e.preventDefault();
+        if (!$u("#" + e.target.id).hasClass("disabled")) {
+            $u("#Usersdropdown").hide();
+            showSharedFiles(32, 380, "Manage Shared Files");
+        } else {
+            showToast("Change User Password", "Opcion no permitida", "error");
+        }
+    });
+
+
     // Show User Profile
 
     $u("#userProfile").on("click", e => {

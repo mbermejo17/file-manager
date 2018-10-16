@@ -255,6 +255,26 @@ class FileController {
 
     }
 
+    shareFileManage(req,res,next) {
+        let userName = req.params.name;
+        if (process.env.NODE_ENV === 'dev') console.log(userName);
+        Util.getByUserName(userName,(d) =>{
+            if(d.status == 'OK') {
+                return  res.status(200).json({
+                    "status": "OK",
+                    "message": "",
+                    "data": d.data
+                });
+            } else {
+                return res.status(200).json({
+                    "status": "FAIL",
+                    "message": d.message + "No hay archivos compartidos.",
+                    "data": null
+                });
+            }
+        })
+    }
+
     shareFile(req, res, next) {
         if (process.env.NODE_ENV === 'dev') console.log(req.get('host'));
         let fileName = req.body.fileName

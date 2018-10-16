@@ -91,6 +91,42 @@ UtilModel.getById = function (fileId, callback) {
   });
 }
 
+UtilModel.getByUserName = function (userName, callback) {
+  let response = {};
+  let sql = `SELECT *
+               FROM Shared
+               WHERE User  = ?`;
+  dbOpen();
+  console.log("db handler: ", db);
+  global.db.get(sql, [fileId], (err, row) => {
+    if (err) {
+      dbClose();
+      console.error(err.message);
+      callback({
+        status: 'FAIL',
+        message: `Error ${err.message}`,
+        data: null
+      });
+    } else {
+      if (row) {
+        dbClose();
+        callback({
+          status: "OK",
+          message: "Archivo " + fileId + "encontrado.",
+          data: row
+        });
+      } else {
+        dbClose();
+        callback({
+          status: 'FAIL',
+          message: `Archivo con id ${fileId} no encontrado`,
+          data: null
+        });
+      }
+    }
+  });
+}
+
 UtilModel.CleanExpiredFiles = function (query, callback) {
   let response = {};
   

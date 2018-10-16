@@ -287,7 +287,7 @@ export function shareFile() {
 // Show Shared Files
 //////////////////////
 
-export function ShowSharedFiles() {
+export function showSharedFiles() {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let containerOverlay = document.querySelector(".container-overlay");
 
