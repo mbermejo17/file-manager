@@ -184,7 +184,7 @@ class FileController {
         form.multiples = true
 
         // store all uploads in the /uploads directory
-        form.uploadDir = normalize(pathPrefix + repoPath)
+        form.uploadDir = normalize(pathPrefix + repoPath);
 
 
         if (process.env.NODE_ENV === 'dev') console.log('upload:repoPath ' + form.uploadDir)
@@ -193,7 +193,13 @@ class FileController {
         form.on('file', function(field, file) {
             if (process.env.NODE_ENV === 'dev') console.log(file);
             fileName = file.name;
-            fs.rename(file.path, path.join(form.uploadDir, file.name))
+            fs.rename(file.path, path.join(form.uploadDir, file.name), function (err) {
+                if (err) throw err;
+                fs.stat(path.join(form.uploadDir, file.name), function (err, stats) {
+                  if (err) throw err;
+                  console.log('stats: ' + JSON.stringify(stats));
+                });
+            });
         });
 
         // log any errors that occur

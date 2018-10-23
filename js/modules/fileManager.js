@@ -441,9 +441,12 @@ export function deleteSelected() {
                 modalDialog("Delete Files", "Delete selected files?", modalDialogOptions);
             }
         };
+        modalDialogOptions.confirmText =  "Yes, I'm very sure";
         modalDialog(
             "Delete Folders",
-            "Delete selected folders?",
+            `<span class="warning-label">WARNING:</span>
+            <span class="warning-message">All selected folders and their contents will be deleted.</span><br><br>
+            Are you sure?`,
             modalDialogOptions
         );
     } else {
