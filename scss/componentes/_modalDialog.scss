@@ -24,7 +24,6 @@
   border-bottom: 1px solid #757575;
 }
 
-
 .ModalDialog-close {
   position: absolute;
   top: 12px;
@@ -87,15 +86,16 @@
   animation: modal-dialog-show 0.1s;
 }
 .ModalDialog-body.download {
-  width: 980px;
-  max-width: 980px
+  width: auto;
+  max-width: 980px;
+  min-width: 400px;
 }
 .ModalDialog-body.shareFile {
   width: 780px;
-  max-width: 980px
+  max-width: 980px;
 }
 
-.btn-input [type=file] {
+.btn-input [type="file"] {
   cursor: inherit;
   display: block;
   font-size: 999px;
@@ -106,20 +106,20 @@
   position: absolute;
   right: 0;
   text-align: right;
-  line-height: .9em;
+  line-height: 0.9em;
   top: 0;
   cursor: pointer;
 }
 
 .ModalDialog-input-field {
-  position:relative;
+  position: relative;
   margin: 12px 0 12px;
 }
 
 @media screen and (max-width: 480px) {
   .modal-dialog-alert-message-body {
-      min-width: 320px;
-      max-width: 100%;
+    min-width: 320px;
+    max-width: 100%;
   }
 }
 .ModalDialog-title {
@@ -131,7 +131,7 @@
 }
 .ModalDialog-container {
   widows: 100%;
-} 
+}
 
 .ModalDialog-content {
   padding: 10px 10px 5px 10px;
@@ -157,48 +157,48 @@
 }
 a.ModalDialog-button-cancel,
 a.ModalDialog-button-cancel:link {
-  color: #FFFFFF;
-  background-color: #95A5A6;
+  color: #ffffff;
+  background-color: #95a5a6;
 }
 a.ModalDialog-button-cancel:hover {
-  color: #FFFFFF;
-  background-color: #7F8C8D;
+  color: #ffffff;
+  background-color: #7f8c8d;
   text-decoration: none;
 }
 
 a.ModalDialog-button-confirm,
 a.ModalDialog-button-confirm:link {
-  color: #FFFFFF;
-  background-color: #34495E;
+  color: #ffffff;
+  background-color: #34495e;
 }
 a.ModalDialog-button-confirm:hover {
-  color: #FFFFFF;
-  background-color: #2C3E50;
+  color: #ffffff;
+  background-color: #2c3e50;
   text-decoration: none;
 }
 
 @-webkit-keyframes modal-dialog-show {
   0% {
-      -webkit-filter: opacity(.2);
-      filter: opacity(.2);
-      margin-top: -16px;
+    -webkit-filter: opacity(0.2);
+    filter: opacity(0.2);
+    margin-top: -16px;
   }
   100% {
-      -webkit-filter: opacity(1);
-      filter: opacity(1);
-      margin-top: 0;
+    -webkit-filter: opacity(1);
+    filter: opacity(1);
+    margin-top: 0;
   }
 }
 @keyframes modal-dialog-show {
   0% {
-      -webkit-filter: opacity(.2);
-      filter: opacity(.2);
-      margin-top: -16px;
+    -webkit-filter: opacity(0.2);
+    filter: opacity(0.2);
+    margin-top: -16px;
   }
   100% {
-      -webkit-filter: opacity(1);
-      filter: opacity(1);
-      margin-top: 0;
+    -webkit-filter: opacity(1);
+    filter: opacity(1);
+    margin-top: 0;
   }
 }
 
@@ -206,16 +206,24 @@ a.ModalDialog-button-confirm:hover {
   overflow: hidden;
 }
 
-.warning-label {
+.warning-lbl {
   color: red;
-    font-weight: bold;
-    font-size: 1.3em;
-    text-align: center;
+  margin: 0;
+  padding: 0;
+  font-size: 1.3em;
+  text-align: center;
+  font-weight: bold;
 }
 
-.warning-message {
+.warning-msg {
+  margin: 10px auto;
   color: red;
-  font-weight: bold;
+  font-weight: 700;
   font-size: 1.2em;
   text-align: center;
+  width: 315px;
+}
+.msg {
+  text-align: center;
+  font-weight: bold;
 }

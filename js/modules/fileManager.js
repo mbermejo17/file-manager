@@ -420,6 +420,7 @@ export function deleteSelected() {
                 modalDialogOptions.confirmCallBack = async () => {
                     await deleteFile(appData.currentPath);
                 };
+                modalDialogOptions.confirmText = "OK";
                 modalDialog(
                     "Delete Files",
                     "Delete selected files?",
@@ -438,15 +439,16 @@ export function deleteSelected() {
                 modalDialogOptions.cancelCallBack = async () => {
                     await _deselectAllFiles();
                 };
+                modalDialogOptions.confirmText = "OK";
                 modalDialog("Delete Files", "Delete selected files?", modalDialogOptions);
             }
         };
         modalDialogOptions.confirmText =  "Yes, I'm very sure";
         modalDialog(
             "Delete Folders",
-            `<span class="warning-label">WARNING:</span>
-            <span class="warning-message">All selected folders and their contents will be deleted.</span><br><br>
-            Are you sure?`,
+            `<div class="warning-lbl">WARNING:</div>
+            <div class="warning-msg">All selected folders and their contents will be deleted.</div>
+            <div class="msg">Are you sure?</div>`,
             modalDialogOptions
         );
     } else {
