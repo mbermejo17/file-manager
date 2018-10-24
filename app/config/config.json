@@ -4,5 +4,6 @@
     "dbName": "app.db",
     "dbPath": "./app/db",
     "jwtKey": "Ejz1IpiziX_niPnMw3TGss2UQ",
-    "repositoryPath": "./repository"
+    "repositoryPath": "./repository",
+    "maxFileSize": 200
 }

@@ -42,7 +42,8 @@ exports.Index = (req, res, next) => {
                 UserName: req.UserName,
                 Token: req.cookies.token,
                 Role: req.cookies.UserRole,
-                wssURL: req.cookies.wssURL
+                wssURL: req.cookies.wssURL,
+                MaxFileSize: req.cookies.MaxFileSize
             });
         }
     }
@@ -55,7 +56,8 @@ exports.Dashboard = (req, res, next) => {
         UserName: req.cookies.UserName,
         Token: req.cookies.token,
         Role: req.cookies.UserRole,
-        wssURL: req.cookies.wssURL
+        wssURL: req.cookies.wssURL,
+        MaxFileSize: req.cookies.MaxFileSize
     });
 };
 
@@ -283,7 +285,8 @@ exports.UserFindByName = (req, res, next) => {
                             CompanyName: data.CompanyName,
                             RootPath: rootPath,
                             AccessString: data.AccessString,
-                            ExpirateDate: data.ExpirateDate
+                            ExpirateDate: data.ExpirateDate,
+                            MaxFileSize: settings.maxFileSize * 1024 * 1024
                         }
                     });
                 } else {
@@ -331,7 +334,8 @@ exports.UserFindById = (req, res, next) => {
                             CompanyName: d.data.CompanyName,
                             RootPath: rootPath,
                             AccessString: d.data.AccessString,
-                            ExpirateDate: d.data.ExpirateDate
+                            ExpirateDate: d.data.ExpirateDate,
+                            MaxFileSize: settings.maxFileSize * 1024 * 1024
                         }
                     });
                 }
@@ -455,7 +459,8 @@ exports.UserLogin = (req, res, next) => {
                                     Role: data.UserRole,
                                     wssURL: wsPath,
                                     RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
-                                    AccessString: data.AccessString
+                                    AccessString: data.AccessString,
+                                    MaxFileSize: settings.maxFileSize * 1024 * 1024
                                 },
                                 JWT_KEY, {
                                     expiresIn: "24h"
@@ -472,18 +477,21 @@ exports.UserLogin = (req, res, next) => {
                             } else {
                               rootPath = data.RootPath ? data.RootPath : "GUEST";
                             }
-                            return res.status(200).json({
-                                status: "OK",
-                                message: "User authenticated",
-                                data: {
-                                    UserName: data.UserName,
-                                    Token: token,
-                                    Role: data.UserRole,
-                                    wssURL: wsPath,
-                                    CompanyName: data.CompanyName,
-                                    RootPath: rootPath,
-                                    AccessString: data.AccessString,
-                                    RunMode: "DEBUG"
+                            if (process.env.NODE_ENV === 'dev') console.log("===========================> MaxFileSize:", settings.maxFileSize * 1024 * 1024);
+                            
+                            return res.json({
+                                "status": "OK",
+                                "message": "User authenticated",
+                                "data": {
+                                    "UserName": data.UserName,
+                                    "Token": token,
+                                    "Role": data.UserRole,
+                                    "wssURL": wsPath,
+                                    "CompanyName": data.CompanyName,
+                                    "RootPath": rootPath,
+                                    "MaxFileSize": settings.maxFileSize * 1024 * 1024,
+                                    "AccessString": data.AccessString,
+                                    "RunMode": "DEBUG"
                                 }
                             });
                         });

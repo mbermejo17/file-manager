@@ -42,6 +42,7 @@ import Cookies from "./vendor/js-cookie";
     Cookies.remove("RootPath");
     Cookies.remove("CompanyName");
     Cookies.remove("AccessString");
+    Cookies.remove("MaxFileSize");
     document.location.href = "/";
   };
 
@@ -55,6 +56,7 @@ import Cookies from "./vendor/js-cookie";
     Cookies.set("RootPath", data.RootPath);
     Cookies.set("AccessString", data.AccessString);
     Cookies.set("RunMode", data.RunMode);
+    Cookies.set("MaxFileSize", data.MaxFileSize);
     window.location.href = "/dashboard";
   };
 
@@ -94,8 +96,9 @@ import Cookies from "./vendor/js-cookie";
         }
       )
       .then(d => {
+        //let d = JSON.parse(responseData);
         $u("#waiting").addClass("active");
-        console.log(d);
+        console.log('Login:',d.data.data);
         if (d.data.status === "OK") {
           showDashboard(d.data.data);
         } else {

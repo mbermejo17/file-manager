@@ -10,6 +10,7 @@ import {
     modalDialog
 } from "../vendor/modalDialog";
 
+
 ////////////////////////////////////
 // Files and Folder module
 ///////////////////////////////////
@@ -447,7 +448,7 @@ export function deleteSelected() {
         modalDialog(
             "Delete Folders",
             `<div class="warning-lbl">WARNING:</div>
-            <div class="warning-msg">All selected folders and their contents will be deleted.</div>
+            <div class="warning-msg">All selected folders and their contents will be deleted.!!</div>
             <div class="msg">Are you sure?</div>`,
             modalDialogOptions
         );
@@ -694,10 +695,10 @@ export function upload(Token) {
                     //  "progress",
                     //  function(evt) {
                     //console.log(fileName + " File size: ", evt.total);
-                    if (evt.total > 700000000) {
+                    if (evt.total > userData.MaxFileSize) {
                         showToast(
                             "Error",
-                            fileName + " excede del tamaño soportado (700MB)",
+                            `${fileName} excede del tamaño soportado (${userData.MaxFileSize} Bytes)`,
                             "error"
                         );
                         aListHandler[nFile]();

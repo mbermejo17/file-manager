@@ -39,7 +39,8 @@ window.userData = {
     RealRootPath: Cookies.get("RootPath"),
     Token: Cookies.get("token"),
     AccessString: JSON.parse(Cookies.get("AccessString")),
-    RunMode: Cookies.get("RunMode")
+    RunMode: Cookies.get("RunMode"),
+    MaxFileSize: Cookies.get('MaxFileSize')
 };
 
 window.appData = {
@@ -74,6 +75,7 @@ window.appData = {
         Cookies.remove("RootPath");
         Cookies.remove("CompanyName");
         Cookies.remove("AccessString");
+        Cookies.remove("MaxFileSize");
         document.location.href = "/";
     };
 

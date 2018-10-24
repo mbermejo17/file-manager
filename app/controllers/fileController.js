@@ -179,7 +179,7 @@ class FileController {
         let repoPath = req.query.destPath
         let fileName = ''
 
-        form.maxFileSize = 700 * 1024 * 1024;
+        form.maxFileSize = settings.maxFileSize * 1024 * 1024;
         // specify that we want to allow the user to upload multiple files in a single request
         form.multiples = true
 
