@@ -10,6 +10,8 @@ import {
     modalDialog
 } from "../vendor/modalDialog";
 
+import {uuidv4} from '../vendor/uuid/v4';
+
 
 ////////////////////////////////////
 // Files and Folder module
@@ -116,6 +118,11 @@ let htmlUploadDownloadTemplate = `
     </li>
 </ul>`;
 
+const _getUID = () => {
+    let uid = uuidv4();
+    return uid.replace(/-/g, '');
+};
+
 const sendEmail = (toEmail, fromEmail, subject, body_message) => {
     let mailto_link = "mailto:" + toEmail + "?subject=" + subject + "&body=" + body_message;
     let win = window.open(mailto_link, "emailWindow");
@@ -175,6 +182,8 @@ export function shareFile() {
 
         let tmpDate = new Date(d.FileExpirateDate);
         let strTime = "";
+        let groupID = null;
+        let data = {};
         if (d.FileExpirateDate === "") {
             strTime = moment(Date.now()).format("YYYY/MM/DD HH:mm:ss");
         } else {
@@ -185,8 +194,12 @@ export function shareFile() {
             if (userData.RunMode === "DEBUG")
                 console.log(d.destUserName);
             if (userData.RunMode === "DEBUG")
-                console.log(d.FileExpirateDate);
-            let data = {
+                console.log("FileExpirateDate: ",d.FileExpirateDate);
+            if (appData.aSelectedFiles.length >1 ) {
+                groupID = _getUID()
+            }  
+            for(let x=0;x < appData.aSelectedFiles.length; x++ ){ 
+            data = {
                 fileName: appData.aSelectedFiles[0],
                 fileSize: null,
                 path: appData.currentPath,
@@ -194,7 +207,8 @@ export function shareFile() {
                 destUserName: d.destUserName,
                 expirationDate: strTime,
                 unixDate: moment(strTime).format('x'),
-                deleteExpiredFile: (d.delFileAfterExpired) ? 1 : 0
+                deleteExpiredFile: (d.delFileAfterExpired) ? 1 : 0,
+                groupID: groupID
             };
             axios.post("/files/share", data, {
                     headers: {
@@ -243,6 +257,7 @@ export function shareFile() {
                     );
                     if (userData.RunMode === "DEBUG") console.log(e);
                 });
+            }
         };
       };
 

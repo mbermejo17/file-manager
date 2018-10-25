@@ -953,13 +953,13 @@ window.appData = {
         e.preventDefault();
         if (!$u("#" + e.target.id).hasClass("disabled")) {
             if (appData.aSelectedFiles.length > 0) {
-                if (appData.aSelectedFiles.length > 1) {
+                /* if (appData.aSelectedFiles.length > 1) {
                     showToast(
                         "Share File",
                         "No pueden seleccionarse más de un archivo",
                         "warning"
                     );
-                }
+                } */
                 shareFile();
             } else {
                 showToast(

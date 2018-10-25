@@ -169,7 +169,7 @@ UtilModel.Add = function (shareData, callback) {
   let response = {};
   dbOpen();
   console.log("db handler: ", global.db);
-  stmt = global.db.prepare("INSERT INTO Shared VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+  stmt = global.db.prepare("INSERT INTO Shared VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
   stmt.bind(
     null,
     shareData.UrlCode,
@@ -181,7 +181,8 @@ UtilModel.Add = function (shareData, callback) {
     shareData.State,
     shareData.ExpirationDate,
     shareData.UnixDate,
-    shareData.deleteExpiredFile
+    shareData.deleteExpiredFile,
+    shareData.groupID,
   );
   stmt.run(function (err, result) {
     dbClose();

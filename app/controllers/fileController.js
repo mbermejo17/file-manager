@@ -290,6 +290,7 @@ class FileController {
         let destUserName = req.body.destUserName
         let expirationDate = req.body.expirationDate
         let deleteExpiredFile = req.body.deleteExpiredFile
+        let groupID = req.body.groupID
         let uid = _getUID()
         let date = new Date();
         let newDate = new Date(date.setDate(date.getDate() + 1));
