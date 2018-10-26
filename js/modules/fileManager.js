@@ -10,7 +10,7 @@ import {
     modalDialog
 } from "../vendor/modalDialog";
 
-import {uuidv4} from '../vendor/uuid/v4';
+import uuidv4 from 'uuid/v4';
 
 
 ////////////////////////////////////
