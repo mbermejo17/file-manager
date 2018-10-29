@@ -5,5 +5,9 @@
     "dbPath": "./app/db",
     "jwtKey": "Ejz1IpiziX_niPnMw3TGss2UQ",
     "repositoryPath": "./repository",
-    "maxFileSize": 200
+    "maxFileSize": 200,
+    "emailServer": "172.100.10.234",
+    "emailPort": 25,
+    "emailUserName":"filemanager@filebox.unifyspain.es",
+    "emailUserPassword":"qazWsx$1"
 }

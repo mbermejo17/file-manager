@@ -200,7 +200,7 @@ export function shareFile() {
             }  
             for(let x=0;x < appData.aSelectedFiles.length; x++ ){ 
             data = {
-                fileName: appData.aSelectedFiles[0],
+                fileName: appData.aSelectedFiles[x],
                 fileSize: null,
                 path: appData.currentPath,
                 userName: userData.UserName,
@@ -210,6 +210,7 @@ export function shareFile() {
                 deleteExpiredFile: (d.delFileAfterExpired) ? 1 : 0,
                 groupID: groupID
             };
+            if (userData.RunMode === "DEBUG") console.log(data);
             axios.post("/files/share", data, {
                     headers: {
                         "Content-Type": "application/json",
@@ -224,9 +225,9 @@ export function shareFile() {
                         document.querySelector('#urlFile').innerHTML = `https://filebox.unifyspain.es/files/share/${d.data.data.UrlCode}`;
                         sendEmail(
                             d.data.data.DestUser,
-                            "mbermejo17@gmail.com",
+                            "filemanager@filebox.unifyspain.es",
                             "URL para descarga de archivo",
-                            `Descarga de archivo https://filebox.unifyspain.es/files/share/${d.data.data.UrlCode}`
+                            `El usuario ${userData.UserName} ha compartido el archivo https://filebox.unifyspain.es/files/share/${d.data.data.UrlCode}`
                         );
                         appData.aSelectedFiles = [];
                         appData.aSelectedFolders = [];

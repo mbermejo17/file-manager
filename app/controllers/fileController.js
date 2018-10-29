@@ -11,8 +11,17 @@ const fs = require('fs'),
     formidable = require('formidable'),
     uuidv4 = require('uuid/v4'),
     Util = require('./../models/util'),
-    moment = require('moment')
-
+    moment = require('moment'),
+    mail = require('mail').Mail({
+        host: settings.emailServer,
+        port: settings.emailPort,
+        username: settings.emailUserName,
+        password: settings.emailUserPassword,
+        secure: true,
+        insecureAuth: true
+      });
+    
+    
 let _getStats = (p) => {
     fs.stat(p, (err, stats) => {
         return {
@@ -47,6 +56,28 @@ fs.readdirSync(dir)
       files.concat(path.join(dir, file)),
     []);
  */
+
+const _sendMail = async function(userName,destName, aFile, Url) {
+    /* await mail.message({
+        from: "filemanager@filebox.unifyspain.es",
+        to: [ destName],
+        subject: "URL para descarga de archivos" 
+    })
+    .body(`El usuario ${userName} ha compartido el archivo ${aFile}, para descargarlo use la  URL: ${Url}
+    NOTA: Favor, no responder este mensaje. Este mensaje ha sido emitido 
+    automáticamente por la apliación File Manager.
+
+    The user ${userName} has shared the file ${aFile}, to download it use the URL: ${Url}
+     NOTE: Please, do not answer this message. This message has been issued
+     automatically by the File Manager application.
+    `)
+    .send(function(err){
+        if(err) {
+            console.log(err);
+        }
+    }); */
+};
+
 
 class FileController {
     getFiles(req, res, next) {
@@ -320,6 +351,8 @@ class FileController {
                         "data": null
                     });
                 } else {
+                    // send email
+                    _sendMail(userName,destUserName,fileName,`https://filebox.unifyspain.es/files/share/${uid}`);
                     d.data.hostServer = req.get('host');
                     return res.status(200).json(d);
                 }
