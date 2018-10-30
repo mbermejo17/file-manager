@@ -165,7 +165,7 @@ UtilModel.CleanExpiredFiles = function (query, callback) {
 
 
 
-UtilModel.Add = function (shareData, callback) {
+UtilModel.AddSharedFiles = function (shareData, callback) {
   let response = {};
   dbOpen();
   console.log("db handler: ", global.db);

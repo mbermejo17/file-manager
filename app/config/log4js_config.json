@@ -1,0 +1,15 @@
+{
+    "appenders":
+     {
+      "filelog": {"type": "dateFile",
+      "filename": "FileManager",
+      "pattern": "-yyyy-MM-dd.log",
+      "backups": 365,
+      "alwaysIncludePattern": true
+      }},
+      "categories": {
+        "file": { "appenders": ["fileLog"], "level": "error" },
+        "another": { "appenders": ["console"], "level": "trace" },
+        "default": { "appenders": ["console", "fileLog"], "level": "trace" }
+        }
+  }

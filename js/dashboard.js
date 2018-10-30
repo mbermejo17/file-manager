@@ -26,7 +26,8 @@ import {
     deleteSelected,
     download,
     upload,
-    newFolder
+    newFolder,
+    showSharedFiles
 } from "./modules/fileManager";
 import {
     modalDialog

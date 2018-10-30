@@ -169,12 +169,14 @@ class FileController {
         fsextra.remove(fullName, function(err) {
             if (err) {
                 if (process.env.NODE_ENV === 'dev') console.error(err)
+                global.logger.error('fileController::FileController deleteFiles() ->Error deleting file ' + fullName + ' ' + err );
                 res.send(JSON.stringify({
                     status: 'FAIL',
                     data: err
                 }))
             }
             if (process.env.NODE_ENV === 'dev') console.log('File deleted successfully!')
+            global.logger.info('fileController::FileController deleteFiles() ->' + fullName + ' File deleted successfully!');
             res.send(JSON.stringify({
                 status: 'OK',
                 data: {
@@ -336,13 +338,14 @@ class FileController {
             ExpirationDate: expirationDate,
             UnixDate: moment(expirationDate).unix(),
             State: 'Pending',
-            deleteExpiredFile: deleteExpiredFile
+            deleteExpiredFile: deleteExpiredFile,
+            groupID: groupID
         }
         let sqlQuery = 'DELETE FROM Shared WHERE (UnixDate  < ?);';
         if (process.env.NODE_ENV === 'dev') console.log(sqlQuery);
         _cleanExpiredSharedFiles(sqlQuery, (response) => {
             if (process.env.NODE_ENV === 'dev') console.log(response);
-            Util.Add(data, (d) => {
+            Util.AddSharedFiles(data, (d) => {
                 if (process.env.NODE_ENV === 'dev') console.log("d : ", d);
                 if (d.status === 'FAIL') {
                     return res.status(200).json({

@@ -18,6 +18,13 @@ let httpsServer = https.createServer({
   console.log("https server listening on port " + port + "...");
 });
 
+// ********************************   Configuracion logger
+const log4js = require('log4js');
+log4js.configure('./app/config/log4js_config.json', { cwd: __dirname + '/app/logs' });
+global.logger = log4js.getLogger('FileManager');
+global.logger.setLevel('ALL');
+
+logger.info('Shutdown() -> Received kill signal, shutting down gracefully.');
 
 let noop = () => { };
 

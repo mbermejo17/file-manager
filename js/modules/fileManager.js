@@ -54,6 +54,33 @@ let htmlShareFile = `
   </div>    
 </div>`;
 
+let htmlSearchSharedFilesTemplate = `
+<div>
+      <div class="head-Title">Edit Shared Files</div> 
+      <table id="SharedFilesTableList" class="tableList">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Dest User Name</th>
+            <th>File Name</th>
+            <th>State</th>
+            <th data-type="date" data-format="YYYY/MM/DD">Expirate Date</th>
+            <th>Delete</div>
+            <th>Group Id</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="bodyList">    
+        </tbody>
+      </table>
+      <div class="AddUserModalContent-footer">
+        <div class="button-container">
+            <button class="waves-effect waves-teal btn-flat btn2-unify" id="btn-EditSharedFileCancel" type="submit" name="action">Close</button>
+        </div> 
+      </div>
+</div>
+`;
+
 let htmlUploadDownloadTemplate = `
 <ul class="preloader-file" id="DownloadfileList">
     <li id="li0">
@@ -210,7 +237,7 @@ export function shareFile() {
                 deleteExpiredFile: (d.delFileAfterExpired) ? 1 : 0,
                 groupID: groupID
             };
-            if (userData.RunMode === "DEBUG") console.log(data);
+            if (userData.RunMode === "DEBUG") console.log('_shareFile.data: ',data);
             axios.post("/files/share", data, {
                     headers: {
                         "Content-Type": "application/json",
@@ -308,13 +335,13 @@ export function showSharedFiles() {
     let AddUserModalContent = document.querySelector("#AddUserModalContent");
     let containerOverlay = document.querySelector(".container-overlay");
 
-    AddUserModalContent.innerHTML = htmlSearchUserTemplate;
+    AddUserModalContent.innerHTML = htmlSearchSharedFilesTemplate;
     $u("#AddUserModalContent").addClass("edit");
     AddUserModalContent.style.display = "block";
     containerOverlay.style.display = "block";
     document.querySelector("#waiting").classList.add("active");
     axios
-        .get("/shared/user/{:id}", {
+        .get("/shared/user/" + userData.UserName , {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + userData.Token
@@ -325,26 +352,27 @@ export function showSharedFiles() {
             document.querySelector("#waiting").classList.remove("active");
             if (userData.RunMode === "DEBUG") console.log(d);
             if (d.data.status === "OK") {
-                let users = d.data.data;
+                let files = d.data.data;
                 let i;
                 let htmlListContent = "";
                 let bodyList = document.querySelector("#bodyList");
-                if (userData.RunMode === "DEBUG") console.log("users: ", users);
-                for (i = 0; i < users.length; i++) {
-                    let sDate = (users[i].ExpirateDate) ? users[i].ExpirateDate : 'never';
+                if (userData.RunMode === "DEBUG") console.log("files: ", files);
+                for (i = 0; i < files.length; i++) {
+                    let sDate = (files[i].ExpirateDate) ? files[i].ExpirateDate : 'never';
                     htmlListContent += `
                   <tr class="data-row">
-                    <td>${users[i].UserId}</td>
-                    <td>${users[i].UserName}</td>
-                    <td>${users[i].UserRole}</td>
-                    <td>${users[i].CompanyName}</td>
-                    <td>${users[i].RootPath}</td>
-                    <td>${sDate}</td>
+                    <td>${files[i].Id}</td>
+                    <td>${files[i].DestUser}</td>
+                    <td>${files[i].FileName}</td>
+                    <td>${files[i].State}</td>
+                    <td>${files[i].ExpirateDate}</td>
+                    <td>${files[i].DeleteExpiredFile}</td>
+                    <td>${files[i].GorupId}</td>
                     <td>
-                    <i id="${users[i].UserId}-id" class="fas fa-user-edit edit-user-icon" title="Editar Usuario"></i>`;
+                    <i id="${files[i].Id}-id" class="fas fa-pencil edit-ShareFile-icon" title="Editar Archivo"></i>`;
                     if (users[i].UserRole.trim().toUpperCase() !== 'ADMIN') {
                         htmlListContent += `
-                    <i id="${users[i].UserId}-id" class="fas fa-user-times del-user-icon" title="Borrar Usuario"></i></td>
+                    <i id="${files[i].Id}-id" class="fas fa-times del-SharedFile-icon" title="Borrar Archivo"></i></td>
                   </tr>`;
                     } else {
                         htmlListContent += `&nbsp;</td></tr>`;
@@ -353,7 +381,7 @@ export function showSharedFiles() {
                 }
                 bodyList.innerHTML = htmlListContent;
 
-                let table = new DataTable(document.querySelector("#usersTableList"), {
+                let table = new DataTable(document.querySelector("#SharedFilesTableList"), {
                     searchable: true,
                     fixedHeight: true,
                     info: false,
@@ -361,7 +389,7 @@ export function showSharedFiles() {
                     perPage: 200
                 });
 
-                [].forEach.call(document.querySelectorAll(".del-user-icon"), function(el) {
+                [].forEach.call(document.querySelectorAll(".del-SahredFile-icon"), function(el) {
                     el.addEventListener("click", function(e) {
                         let userId = e.target.id.slice(0, -3);
                         let userName = e.target.parentNode.parentNode.children[1].innerHTML;
@@ -381,7 +409,7 @@ export function showSharedFiles() {
                     });
                 });
 
-                [].forEach.call(document.querySelectorAll(".edit-user-icon"), function(el) {
+                [].forEach.call(document.querySelectorAll(".edit-SharedFile-icon"), function(el) {
                     el.addEventListener("click", function(e) {
                         let userId = e.target.id.slice(0, -3);
                         console.log("userId: ", userId);
@@ -394,7 +422,7 @@ export function showSharedFiles() {
                     });
                 });
 
-                document.querySelector("#btn-EditUserCancel").addEventListener("click", e => {
+                document.querySelector("#btn-EditSharedFileCancel").addEventListener("click", e => {
                     e.preventDefault();
                     AddUserModalContent.style.display = "none";
                     $u("#AddUserModalContent").removeClass("edit");

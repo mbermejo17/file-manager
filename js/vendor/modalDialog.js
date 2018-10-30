@@ -118,7 +118,7 @@ export function modalDialog(title, message, options) {
                         {
                           destUserName: ModalDialogObject.destUserName.value.trim(),
                           FileExpirateDate: ModalDialogObject.FileExpirateDate.value.trim(),
-                          delFileAfterExpired: ModalDialogObject.delFileAfterExpired
+                          delFileAfterExpired: ModalDialogObject.delFileAfterExpired.checked
                         }
                     );
                     break;    
