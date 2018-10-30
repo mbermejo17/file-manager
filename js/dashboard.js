@@ -23,6 +23,7 @@ import {
 } from "./modules/general";
 import {
     shareFile,
+    shareFileManage,
     deleteSelected,
     download,
     upload,

@@ -341,7 +341,7 @@ export function showSharedFiles() {
     containerOverlay.style.display = "block";
     document.querySelector("#waiting").classList.add("active");
     axios
-        .get("/shared/user/" + userData.UserName , {
+        .get("/files/shared/user/" + userData.UserName , {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + userData.Token
@@ -352,11 +352,11 @@ export function showSharedFiles() {
             document.querySelector("#waiting").classList.remove("active");
             if (userData.RunMode === "DEBUG") console.log(d);
             if (d.data.status === "OK") {
-                let files = d.data.data;
+                let files = d.data.data.data;
                 let i;
                 let htmlListContent = "";
                 let bodyList = document.querySelector("#bodyList");
-                if (userData.RunMode === "DEBUG") console.log("files: ", files);
+                if (userData.RunMode === "DEBUG") console.log("files: ", files[0].FileName);
                 for (i = 0; i < files.length; i++) {
                     let sDate = (files[i].ExpirateDate) ? files[i].ExpirateDate : 'never';
                     htmlListContent += `

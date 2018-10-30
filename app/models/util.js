@@ -93,12 +93,13 @@ UtilModel.getById = function (fileId, callback) {
 
 UtilModel.getByUserName = function (userName, callback) {
   let response = {};
+  let allRows = [];
   let sql = `SELECT *
                FROM Shared
                WHERE User  = ?`;
   dbOpen();
   console.log("db handler: ", db);
-  global.db.get(sql, [fileId], (err, row) => {
+  global.db.all(sql, [userName], (err, rows) => {
     if (err) {
       dbClose();
       console.error(err.message);
@@ -108,12 +109,16 @@ UtilModel.getByUserName = function (userName, callback) {
         data: null
       });
     } else {
-      if (row) {
+      if (rows) {
         dbClose();
+        rows.forEach((row) => {
+          allRows.push(row);
+        });
+        //console.log(allRows);
         callback({
           status: "OK",
-          message: "Archivo " + fileId + "encontrado.",
-          data: row
+          message: `${allRows.length} registros encontrados`,
+          data: allRows
         });
       } else {
         dbClose();

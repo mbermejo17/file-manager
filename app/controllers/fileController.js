@@ -296,9 +296,11 @@ class FileController {
 
     shareFileManage(req,res,next) {
         let userName = req.params.name;
+        console.log('hello');
         if (process.env.NODE_ENV === 'dev') console.log(userName);
         Util.getByUserName(userName,(d) =>{
             if(d.status == 'OK') {
+                if (process.env.NODE_ENV === 'dev') console.log('shareFileManage->',d.data);
                 return  res.status(200).json({
                     "status": "OK",
                     "message": "",
