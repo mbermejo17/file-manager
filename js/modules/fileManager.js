@@ -11,6 +11,7 @@ import {
 } from "../vendor/modalDialog";
 
 import uuidv4 from 'uuid/v4';
+import DataTable from "../vendor/dataTables";
 
 
 ////////////////////////////////////
@@ -61,6 +62,7 @@ let htmlSearchSharedFilesTemplate = `
         <thead>
           <tr>
             <th>Id</th>
+            <th>User</th>
             <th>Dest User Name</th>
             <th>File Name</th>
             <th>State</th>
@@ -350,33 +352,32 @@ export function showSharedFiles() {
         })
         .then(d => {
             document.querySelector("#waiting").classList.remove("active");
-            if (userData.RunMode === "DEBUG") console.log(d);
+            if (userData.RunMode === "DEBUG") console.log("Hello: ",d.data.status);
             if (d.data.status === "OK") {
-                let files = d.data.data.data;
+                let files = d.data.data;
                 let i;
                 let htmlListContent = "";
                 let bodyList = document.querySelector("#bodyList");
-                if (userData.RunMode === "DEBUG") console.log("files: ", files[0].FileName);
+                if (userData.RunMode === "DEBUG") console.log("files: ", files.length);
                 for (i = 0; i < files.length; i++) {
                     let sDate = (files[i].ExpirateDate) ? files[i].ExpirateDate : 'never';
+                    let d = (files[i].DeleteExpiredFile === 1)? true : false; 
                     htmlListContent += `
                   <tr class="data-row">
-                    <td>${files[i].Id}</td>
+                    <td>${files[i].id}</td>
+                    <td>${files[i].User}</td>
                     <td>${files[i].DestUser}</td>
                     <td>${files[i].FileName}</td>
                     <td>${files[i].State}</td>
                     <td>${files[i].ExpirateDate}</td>
-                    <td>${files[i].DeleteExpiredFile}</td>
-                    <td>${files[i].GorupId}</td>
+                    <td>${d}</td>
+                    <td>${files[i].GroupId}</td>
                     <td>
                     <i id="${files[i].Id}-id" class="fas fa-pencil edit-ShareFile-icon" title="Editar Archivo"></i>`;
-                    if (users[i].UserRole.trim().toUpperCase() !== 'ADMIN') {
-                        htmlListContent += `
+                    htmlListContent += `
                     <i id="${files[i].Id}-id" class="fas fa-times del-SharedFile-icon" title="Borrar Archivo"></i></td>
                   </tr>`;
-                    } else {
-                        htmlListContent += `&nbsp;</td></tr>`;
-                    }
+                    
                     //console.log('User Role. ',users[i].UserRole.trim().toUpperCase());
                 }
                 bodyList.innerHTML = htmlListContent;

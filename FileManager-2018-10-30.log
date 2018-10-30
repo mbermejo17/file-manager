@@ -100,3 +100,57 @@
 [2018-10-30T13:52:20.237] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
 [2018-10-30T13:52:20.238] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
 [2018-10-30T13:52:20.238] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T14:58:12.273] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T14:58:12.275] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T14:59:40.860] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-10-30T14:59:40.874] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-10-30T14:59:40.874] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T14:59:59.286] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T14:59:59.288] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T15:01:07.855] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-10-30T15:01:07.856] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-10-30T15:01:07.856] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T15:01:32.318] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T15:01:32.320] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T15:03:13.115] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-10-30T15:03:13.133] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-10-30T15:03:13.133] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T15:03:40.996] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T15:03:40.998] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T15:10:08.079] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-10-30T15:10:08.079] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-10-30T15:10:08.079] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T15:10:13.628] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T15:10:13.629] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T15:10:49.399] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-10-30T15:10:49.399] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-10-30T15:10:49.399] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T15:11:26.001] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T15:11:26.002] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T15:13:52.051] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-10-30T15:13:52.063] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-10-30T15:13:52.063] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T15:14:20.212] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T15:14:20.213] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T15:22:16.804] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T15:22:16.805] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T15:33:18.772] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-10-30T15:33:18.774] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-10-30T15:33:18.774] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T15:33:36.460] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T15:33:36.461] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T15:39:49.788] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-10-30T15:39:49.789] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-10-30T15:39:49.790] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T15:40:35.790] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T15:40:35.791] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T15:42:42.131] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-10-30T15:42:42.132] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-10-30T15:42:42.132] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T15:42:52.872] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T15:42:52.874] [INFO] FileManager - Server listen on port 8443
+[2018-10-30T15:48:40.855] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-10-30T15:48:40.856] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-10-30T15:48:40.856] [INFO] FileManager - *************** Shutdown finished **************
+[2018-10-30T15:48:53.310] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-10-30T15:48:53.312] [INFO] FileManager - Server listen on port 8443

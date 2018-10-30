@@ -829,7 +829,8 @@ export function showAddUserForm(title, data) {
             expirateDate: expirateDate,
             rootPath: userRootPath,
             accessRights: result,
-            unixDate: moment(expirateDate).unix()
+            unixDate: moment(expirateDate).unix(),
+            userEmail: userName
         };
         document.querySelector("#waiting").classList.add("active");
         axios.post("/adduser", data, {

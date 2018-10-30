@@ -94,11 +94,19 @@ UtilModel.getById = function (fileId, callback) {
 UtilModel.getByUserName = function (userName, callback) {
   let response = {};
   let allRows = [];
+  let where = '';
   let sql = `SELECT *
                FROM Shared
-               WHERE User  = ?`;
+               `;
   dbOpen();
   console.log("db handler: ", db);
+  if (userName.toUpperCase() === 'ADMIN' ) {
+    userName = '%';
+    where = ` WHERE User like ?`;
+  } else {
+    where = ` WHERE User = ?`; 
+  };
+  sql += where;
   global.db.all(sql, [userName], (err, rows) => {
     if (err) {
       dbClose();

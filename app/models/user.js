@@ -337,7 +337,7 @@ UserModel.Add = function(userData, callback) {
                 });
             } else {
                 dbOpen();
-                stmt = global.db.prepare("INSERT INTO Users VALUES (?,?,?,?,?,?,?,?,?)");
+                stmt = global.db.prepare("INSERT INTO Users VALUES (?,?,?,?,?,?,?,?,?,?)");
                 stmt.bind(
                     null,
                     userData.userName,
@@ -347,7 +347,8 @@ UserModel.Add = function(userData, callback) {
                     userData.rootPath.toUpperCase(),
                     decodeURI(userData.accessRights),
                     userData.expirateDate,
-                    userData.unixDate
+                    userData.unixDate,
+                    userData.userEmail
                 );
                 stmt.run(function(err, result) {
                     dbClose();
