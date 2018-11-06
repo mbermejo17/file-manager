@@ -723,6 +723,8 @@ export function showAddUserForm(title, data) {
 
     const _updateUser = oData => {
 
+        console.log("oData: ",oData);
+
         let _goBack = () => {
             document.querySelector("#AddUserModalContent").style.display = "none";
             document.querySelector("#AddUserModalContent").classList.remove("show");

@@ -136,7 +136,7 @@ UserModel.FindById = function(userId, callback) {
 /////////////////////////////////////////
 
 UserModel.Update = function(data, callback) {
-    if (process.env.NODE_ENV === 'dev') console.log(data);
+    if (process.env.NODE_ENV === 'dev') console.log('data: ',data);
     let sql =
         "UPDATE Users SET " +
         data.queryString +

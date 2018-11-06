@@ -201,6 +201,6 @@ process.on('SIGTERM', Shutdown);
 // listen for INT signal e.g. Ctrl-C
 process.on('SIGINT', Shutdown);
 
-//process.on('uncaughtException', function (err) {
-//    console.log('Caught exception: ' + err);
-//});
+process.on('uncaughtException', function (err) {
+    console.log('Caught exception: ' + err);
+});
