@@ -8,39 +8,39 @@ let AuditModel = {};
 
 
 let dbOpen = function() {
-  let db = global.db;
     if (process.env.NODE_ENV === 'dev') console.log('dbPath: ', dbPath);
-    if (process.env.NODE_ENV === 'dev') console.log("db handler:", db);
-    if (!db) {
-      db = new sqlite3.Database(
-          dbPath,
-          sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
-          err => {
-              if (err) {
-                  return false;
-                  console.error(err.message);
-              }
-              //db.run('PRAGMA journal_mode = WAL;');
-              global.db = db;
-              return db;
-              console.log(`Connected to ${config.dbName} database.`);
-          }
-      );
-    } 
+    if (process.env.NODE_ENV === 'dev') console.log("db handler:", global.db);
+    if (global.db == null || (global.db !== null && !global.db.open)) {
+        global.db = new sqlite3.Database(
+            dbPath,
+            sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+            err => {
+                if (err) {
+                    if (process.env.NODE_ENV === 'dev') console.error(err.message);
+                    return false;
+                }
+                if (process.env.NODE_ENV === 'dev') console.log(`****** Connected to ${config.dbName} database. *********`);
+                return global.db;
+            }
+        );
+    }
 };
 
+/////////////////////////////////////////
+//  Close DB connection
+/////////////////////////////////////////
+
 let dbClose = function() {
-  let db = global.db;
-  if(db){ 
-    db.close(err => {
-        if (err) {
-          if (process.env.NODE_ENV === 'dev') console.error(err.message);
-        }
-        if (process.env.NODE_ENV === 'dev') console.log("Database connection closed.");
-    });
-    global.db= db;
-  } 
+    if (!global.db == null || global.db.open) {
+        global.db.close(err => {
+            if (err) {
+                if (process.env.NODE_ENV === 'dev') console.error(err.message);
+            }
+            if (process.env.NODE_ENV === 'dev') console.log("******** Database connection closed. **********");
+        });
+    }
 };
+
 
 AuditModel.Open = function() {
     dbOpen();
@@ -191,13 +191,12 @@ AuditModel.All = function(callback) {
 
 
 const _insert = async (data,callback) =>{
-  let db = global.db;
+  dbOpen();
   try {
-    if(!db) dbOpen();
     //db.configure("busyTimeout", 60000);
       let sql = `INSERT INTO Audit (BrowserIP,ClientIP,UserName,FileName,Size,DateString,UnixDate,Message,Action,Result) VALUES ('${data.browserIP}','${data.clientIP}','${data.userName}','${data.fileName}',${data.fileSize},'${data.dateString}',${data.unixDate},'${data.message}','${data.action}','${data.result}');`;
       if (process.env.NODE_ENV === 'dev') console.log('Audit add:',sql);
-      await db.run(sql);
+      await global.db.run(sql);
       callback({
         status: "OK",
         message: `Registro añadido`,

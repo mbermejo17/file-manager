@@ -690,7 +690,7 @@ export function showAddUserForm(title, data) {
                                 console.log(oldData[prop], document.getElementById(prop).value);
                             }
                         } else {
-                            if (prop !== "UserId") {
+                            if (prop !== "UserId" && prop !== 'MaxFileSize') {
                                 if (prop === "UserPasswd") {
                                     let oPasswd = Base64.decode(oldData[prop]);
                                     let nPasswd = document.getElementById(prop).value;
@@ -700,7 +700,7 @@ export function showAddUserForm(title, data) {
                                         queryString[prop] = md5(document.getElementById(prop).value);
                                     }
                                 } else {
-                                    console.log(prop);
+                                    console.log('prop: ',prop);
                                     if (oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
                                         queryString[prop] = document.getElementById(prop).value;
                                         console.warn(

@@ -20,7 +20,8 @@ const fs = require('fs'),
         secure: true,
         insecureAuth: true
       });
-    
+const Audit = require("../controllers/auditController");   
+
     
 let _getStats = (p) => {
     fs.stat(p, (err, stats) => {
@@ -125,13 +126,36 @@ class FileController {
     }
 
     newFolder(req, res, next) {
+        let userName = req.cookies.UserName;
+        let browserIP = (req.headers['x-forwarded-for'] ||
+                req.connection.remoteAddress ||
+                req.socket.remoteAddress ||
+                req.connection.socket.remoteAddress).split(",")[1];
+
+        let clientIP = req.connection.remoteAddress;
         let destPath = req.body.path
         let folderName = req.body.folderName
         let newFolder = normalize(pathPrefix + destPath + '/' + folderName.toUpperCase())
+        let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
+        let currentUnixDate = moment().format('x');
         if (process.env.NODE_ENV === 'dev') console.log('Creating new folder ' + newFolder + ' ...')
         fs.mkdir(newFolder, function(err) {
             if (err) {
                 if (process.env.NODE_ENV === 'dev') console.error(err)
+                Audit.Add({
+                    userName: userName
+                }, {
+                    clientIP: clientIP || '',
+                    browserIP: browserIP || ''
+                }, {
+                    fileName: newFolder || '',
+                    fileSize: 0
+                }, {
+                    dateString: currentDate,
+                    unixDate: currentUnixDate
+                }, err, 'Add new Folder', 'FAIL', (result) => {
+                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                });
                 if (err.code == 'EEXIST') {
                     res.send(JSON.stringify({
                         status: 'FAIL',
@@ -147,6 +171,20 @@ class FileController {
                 }
             } else {
                 if (process.env.NODE_ENV === 'dev') console.log('Directory created successfully!')
+                Audit.Add({
+                    userName: userName
+                }, {
+                    clientIP: clientIP || '',
+                    browserIP: browserIP || ''
+                }, {
+                    fileName: newFolder || '',
+                    fileSize: 0
+                }, {
+                    dateString: currentDate,
+                    unixDate: currentUnixDate
+                }, 'Carpeta ' + folderName + ' creada' , 'Add new Folder', 'OK', (result) => {
+                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                });
                 res.send(JSON.stringify({
                     status: 'OK',
                     message: 'Carpeta ' + folderName + ' creada',
@@ -165,11 +203,34 @@ class FileController {
         let destPath = req.body.path
         let fileName = req.body.fileName
         let fullName = normalize(pathPrefix + destPath + '/' + fileName)
+        let userName = req.cookies.UserName;
+        let browserIP = (req.headers['x-forwarded-for'] ||
+                req.connection.remoteAddress ||
+                req.socket.remoteAddress ||
+                req.connection.socket.remoteAddress).split(",")[1];
+
+        let clientIP = req.connection.remoteAddress;
+        let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
+        let currentUnixDate = moment().format('x');
         if (process.env.NODE_ENV === 'dev') console.log('Deleting file ' + fullName + ' ...')
         fsextra.remove(fullName, function(err) {
             if (err) {
                 if (process.env.NODE_ENV === 'dev') console.error(err)
                 global.logger.error('fileController::FileController deleteFiles() ->Error deleting file ' + fullName + ' ' + err );
+                Audit.Add({
+                    userName: userName
+                }, {
+                    clientIP: clientIP || '',
+                    browserIP: browserIP || ''
+                }, {
+                    fileName: rootPath || '',
+                    fileSize: 0
+                }, {
+                    dateString: currentDate,
+                    unixDate: currentUnixDate
+                }, err, 'Delete File', 'FAIL', () => {
+                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                });
                 res.send(JSON.stringify({
                     status: 'FAIL',
                     data: err
@@ -177,6 +238,20 @@ class FileController {
             }
             if (process.env.NODE_ENV === 'dev') console.log('File deleted successfully!')
             global.logger.info('fileController::FileController deleteFiles() ->' + fullName + ' File deleted successfully!');
+            Audit.Add({
+                userName: userName
+            }, {
+                clientIP: clientIP || '',
+                browserIP: browserIP || ''
+            }, {
+                fileName: rootPath || '',
+                fileSize: 0
+            }, {
+                dateString: currentDate,
+                unixDate: currentUnixDate
+            }, fullName, 'Delete File', 'OK', () => {
+              if (process.env.NODE_ENV === 'dev') console.log(result);  
+            });
             res.send(JSON.stringify({
                 status: 'OK',
                 data: {
@@ -188,16 +263,54 @@ class FileController {
     }
     deleteFolder(req, res, next) {
         let newFolder = req.body.path
+        let userName = req.cookies.UserName;
+        let browserIP = (req.headers['x-forwarded-for'] ||
+                req.connection.remoteAddress ||
+                req.socket.remoteAddress ||
+                req.connection.socket.remoteAddress).split(",")[1];
+
+        let clientIP = req.connection.remoteAddress;
+        let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
+        let currentUnixDate = moment().format('x');
+
         newFolder = normalize(pathPrefix + newFolder)
         fsextra.remove(newFolder, function(err) {
             if (err) {
                 console.error(err)
+                Audit.Add({
+                    userName: userName
+                }, {
+                    clientIP: clientIP || '',
+                    browserIP: browserIP || ''
+                }, {
+                    fileName: rootPath || '',
+                    fileSize: 0
+                }, {
+                    dateString: currentDate,
+                    unixDate: currentUnixDate
+                }, err, 'Delete Folder', 'FAIL', () => {
+                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                });
                 res.send(JSON.stringify({
                     status: 'FAIL',
                     data: err
                 }))
             }
             console.log('Directory deleted successfully!')
+            Audit.Add({
+                userName: userName
+            }, {
+                clientIP: clientIP || '',
+                browserIP: browserIP || ''
+            }, {
+                fileName: rootPath || '',
+                fileSize: 0
+            }, {
+                dateString: currentDate,
+                unixDate: currentUnixDate
+            }, newFolder, 'Delete Folder', 'OK', () => {
+              if (process.env.NODE_ENV === 'dev') console.log(result);  
+            });
             res.send(JSON.stringify({
                 status: 'OK',
                 data: req.body.path
@@ -208,9 +321,19 @@ class FileController {
     upload(req, res, next) {
         if (process.env.NODE_ENV === 'dev') console.log(req.query)
         // create an incoming form object
-        let form = new formidable.IncomingForm()
-        let repoPath = req.query.destPath
-        let fileName = ''
+        let form = new formidable.IncomingForm();
+        let repoPath = req.query.destPath;
+        let fileName = '';
+        let fileSize = '';
+        let userName = req.cookies.UserName;
+        let browserIP = (req.headers['x-forwarded-for'] ||
+                req.connection.remoteAddress ||
+                req.socket.remoteAddress ||
+                req.connection.socket.remoteAddress).split(",")[1];
+
+        let clientIP = req.connection.remoteAddress;
+        let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
+        let currentUnixDate = moment().format('x');
 
         form.maxFileSize = settings.maxFileSize * 1024 * 1024;
         // specify that we want to allow the user to upload multiple files in a single request
@@ -226,6 +349,7 @@ class FileController {
         form.on('file', function(field, file) {
             if (process.env.NODE_ENV === 'dev') console.log(file);
             fileName = file.name;
+            fileSize = file.size;
             fs.rename(file.path, path.join(form.uploadDir, file.name), function (err) {
                 if (err) throw err;
                 fs.stat(path.join(form.uploadDir, file.name), function (err, stats) {
@@ -238,6 +362,20 @@ class FileController {
         // log any errors that occur
         form.on('error', function(err) {
             if (process.env.NODE_ENV === 'dev') console.log('An error has occured: \n' + err)
+            Audit.Add({
+                userName: userName
+            }, {
+                clientIP: clientIP || '',
+                browserIP: browserIP || ''
+            }, {
+                fileName: repoPath || '',
+                fileSize: fileSize
+            }, {
+                dateString: currentDate,
+                unixDate: currentUnixDate
+            }, err, 'Upload File', 'FAIL', () => {
+              if (process.env.NODE_ENV === 'dev') console.log(result);  
+            });
             res.send(JSON.stringify({
                 status: 'FAIL',
                 message: err,
@@ -249,6 +387,20 @@ class FileController {
 
         // once all the files have been uploaded, send a response to the client
         form.on('end', function() {
+            Audit.Add({
+                userName: userName
+            }, {
+                clientIP: clientIP || '',
+                browserIP: browserIP || ''
+            }, {
+                fileName: repoPath || '',
+                fileSize: fileSize
+            }, {
+                dateString: currentDate,
+                unixDate: currentUnixDate
+            }, fileName, 'Upload File', 'OK', () => {
+              if (process.env.NODE_ENV === 'dev') console.log(result);  
+            });
             res.send(JSON.stringify({
                 status: 'OK',
                 message: '',
@@ -276,14 +428,50 @@ class FileController {
         let fileId = req.params.id
         let fileRealPath = ''
         let fileName = ''
+        let userName = req.cookies.UserName;
+        let browserIP = (req.headers['x-forwarded-for'] ||
+                req.connection.remoteAddress ||
+                req.socket.remoteAddress ||
+                req.connection.socket.remoteAddress).split(",")[1];
+
+        let clientIP = req.connection.remoteAddress;
         if (process.env.NODE_ENV === 'dev') console.log(fileId)
         Util.getById(fileId, (d) => {
             if (d.status == 'OK') {
                 if (process.env.NODE_ENV === 'dev') console.log(d)
                 fileRealPath = d.data.RealPath
                 fileName = d.data.FileName
+                Audit.Add({
+                    userName: userName
+                }, {
+                    clientIP: clientIP || '',
+                    browserIP: browserIP || ''
+                }, {
+                    fileName: rootPath || '',
+                    fileSize: 0
+                }, {
+                    dateString: currentDate,
+                    unixDate: currentUnixDate
+                }, normalize(pathPrefix + fileRealPath + '/' + fileName), 'Download Shared File', 'OK', () => {
+                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                });
+                
                 res.download(normalize(pathPrefix + fileRealPath + '/' + fileName), fileName)
             } else {
+                Audit.Add({
+                    userName: userName
+                }, {
+                    clientIP: clientIP || '',
+                    browserIP: browserIP || ''
+                }, {
+                    fileName: rootPath || '',
+                    fileSize: 0
+                }, {
+                    dateString: currentDate,
+                    unixDate: currentUnixDate
+                }, d.message, 'Download Shared File', 'FAIL', () => {
+                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                });
                 return res.status(200).json({
                     "status": "FAIL",
                     "message": d.message + ".<br>Enlace no disponible.",
@@ -296,17 +484,52 @@ class FileController {
 
     shareFileManage(req,res,next) {
         let userName = req.params.name;
+        let userName = req.cookies.UserName;
+        let browserIP = (req.headers['x-forwarded-for'] ||
+                req.connection.remoteAddress ||
+                req.socket.remoteAddress ||
+                req.connection.socket.remoteAddress).split(",")[1];
+
+        let clientIP = req.connection.remoteAddress;
         console.log('hello');
         if (process.env.NODE_ENV === 'dev') console.log(userName);
         Util.getByUserName(userName,(d) =>{
             if(d.status == 'OK') {
                 if (process.env.NODE_ENV === 'dev') console.log('shareFileManage->',d.data);
+                Audit.Add({
+                    userName: userName
+                }, {
+                    clientIP: clientIP || '',
+                    browserIP: browserIP || ''
+                }, {
+                    fileName: rootPath || '',
+                    fileSize: 0
+                }, {
+                    dateString: currentDate,
+                    unixDate: currentUnixDate
+                }, data, 'Share File', 'OK', () => {
+                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                });
                 return  res.status(200).json({
                     "status": "OK",
                     "message": "",
                     "data": d.data
                 });
             } else {
+                Audit.Add({
+                    userName: userName
+                }, {
+                    clientIP: clientIP || '',
+                    browserIP: browserIP || ''
+                }, {
+                    fileName: rootPath || '',
+                    fileSize: 0
+                }, {
+                    dateString: currentDate,
+                    unixDate: currentUnixDate
+                }, d.message, 'Share File', 'FAIL', () => {
+                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                });
                 return res.status(200).json({
                     "status": "FAIL",
                     "message": d.message + "No hay archivos compartidos.",

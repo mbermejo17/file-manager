@@ -48,7 +48,7 @@ window.userData = {
 window.appData = {
     rootPath: "/",
     currentPath: "/",
-    aSelectedFiles: [],
+    aSelectedFiles: {name:[], size: []}, 
     aSelectedFolders: []
 };
 
@@ -339,14 +339,21 @@ window.appData = {
                     element.parentElement.parentElement.children[0].children[0]
                     .children[0].checked
                 );
+                if (userData.RunMode === "DEBUG")
+                console.log(
+                    "size: ",
+                    element.parentElement.parentElement.children[2].innerHTML
+                );    
             if (element.parentElement.parentElement.children[0].children[0].children[0].checked) {
-                appData.aSelectedFiles.push(element.innerHTML);
+                appData.aSelectedFiles.name.push(element.innerHTML);
+                appData.aSelectedFiles.size.push(element.parentElement.parentElement.children[2].innerHTML);
                 checkedFiles.push(element.innerHTML);
                 // c(element.children[1].innerHTML)
             } else {
-                const idx = appData.aSelectedFiles.indexOf(element.innerHTML);
+                const idx = appData.aSelectedFiles.name.indexOf(element.innerHTML);
                 if (idx > -1) {
-                    appData.aSelectedFiles.splice(idx, 1);
+                    appData.aSelectedFiles.name.splice(idx, 1);
+                    appData.aSelectedFiles.size.splice(idx, 1);
                 }
             }
         });
@@ -569,14 +576,17 @@ window.appData = {
         const isChecked = e.target.checked;
         const contentType = e.target.className.split(/\s+/).indexOf("checkFile");
         const name = e.target.parentNode.children[1].htmlFor;
+        const size = e.target.parentNode.parentNode.parentNode.children[2].innerHTML;
 
         if (contentType != -1) {
             if (isChecked) {
-                appData.aSelectedFiles.push(name);
+                appData.aSelectedFiles.name.push(name);
+                appData.aSelectedFiles.size.push(size);
             } else {
-                const idx = appData.aSelectedFiles.indexOf(name);
+                const idx = appData.aSelectedFiles.name.indexOf(name);
                 if (idx > -1) {
-                    appData.aSelectedFiles.splice(idx, 1);
+                    appData.aSelectedFiles.name.splice(idx, 1);
+                    appData.aSelectedFiles.size.splice(idx, 1);
                 }
             }
         } else {
@@ -954,7 +964,7 @@ window.appData = {
     $u("#share").on("click", e => {
         e.preventDefault();
         if (!$u("#" + e.target.id).hasClass("disabled")) {
-            if (appData.aSelectedFiles.length > 0) {
+            if (appData.aSelectedFiles.name.length > 0) {
                 /* if (appData.aSelectedFiles.length > 1) {
                     showToast(
                         "Share File",
@@ -1098,7 +1108,7 @@ window.appData = {
         if (!$u("#" + e.target.id).hasClass("disabled")) {
             if (
                 appData.aSelectedFolders.length > 0 ||
-                appData.aSelectedFiles.length > 0
+                appData.aSelectedFiles.name.length > 0
             ) {
                 deleteSelected();
             } else {
@@ -1127,8 +1137,8 @@ window.appData = {
     $u("#download").on("click", e => {
         e.preventDefault();
         if (!$u("#" + e.target.id).hasClass("disabled")) {
-            if (appData.aSelectedFiles.length > 0) {
-                if (appData.aSelectedFiles.length > 5) {
+            if (appData.aSelectedFiles.name.length > 0) {
+                if (appData.aSelectedFiles.name.length > 5) {
                     showToast(
                         "Download",
                         "No se pueden descargar más de 5 archivos a la vez",

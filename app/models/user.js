@@ -199,7 +199,7 @@ UserModel.Remove = function(userId, callback) {
             });
         }
     });
-};
+}; 
 
 
 /////////////////////////////////////////
