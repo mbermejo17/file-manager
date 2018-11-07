@@ -21,6 +21,8 @@ const fs = require('fs'),
         insecureAuth: true
       });
 const Audit = require("../controllers/auditController");   
+const log = global.logger;
+
 
     
 let _getStats = (p) => {
@@ -216,7 +218,7 @@ class FileController {
         fsextra.remove(fullName, function(err) {
             if (err) {
                 if (process.env.NODE_ENV === 'dev') console.error(err)
-                global.logger.error('fileController::FileController deleteFiles() ->Error deleting file ' + fullName + ' ' + err );
+                global.logger.error(`[${userName}] fileController::FileController deleteFiles() ->Error deleting file ${fullName} ${err}` );
                 Audit.Add({
                     userName: userName
                 }, {
@@ -237,7 +239,7 @@ class FileController {
                 }))
             }
             if (process.env.NODE_ENV === 'dev') console.log('File deleted successfully!')
-            global.logger.info('fileController::FileController deleteFiles() ->' + fullName + ' File deleted successfully!');
+            global.logger.info(`[${userName}] fileController::FileController deleteFiles() ->${fullName} File deleted successfully!`);
             Audit.Add({
                 userName: userName
             }, {
@@ -277,6 +279,7 @@ class FileController {
         fsextra.remove(newFolder, function(err) {
             if (err) {
                 console.error(err)
+                global.logger.error(`[${userName}] fileController::FileController deleteFolder() ->${newFolder} ${err}`);
                 Audit.Add({
                     userName: userName
                 }, {
@@ -297,6 +300,7 @@ class FileController {
                 }))
             }
             console.log('Directory deleted successfully!')
+            global.logger.info(`[${userName}] fileController::FileController deleteFolder() ->${newFolder} Folder deleted successfully!`);
             Audit.Add({
                 userName: userName
             }, {
@@ -362,6 +366,7 @@ class FileController {
         // log any errors that occur
         form.on('error', function(err) {
             if (process.env.NODE_ENV === 'dev') console.log('An error has occured: \n' + err)
+            global.logger.error(`[${userName}] fileController::FileController upload() ->${fileName} ${err}`);
             Audit.Add({
                 userName: userName
             }, {
@@ -387,6 +392,7 @@ class FileController {
 
         // once all the files have been uploaded, send a response to the client
         form.on('end', function() {
+            global.logger.info(`[${userName}] fileController::FileController upload() ->${fileName} File Uploaded successfully!`);
             Audit.Add({
                 userName: userName
             }, {
@@ -441,6 +447,7 @@ class FileController {
                 if (process.env.NODE_ENV === 'dev') console.log(d)
                 fileRealPath = d.data.RealPath
                 fileName = d.data.FileName
+                global.logger.info(`[${userName}] fileController::FileController shareFileDownload() ->${fileName} Shared File downloaded successfully!`);
                 Audit.Add({
                     userName: userName
                 }, {
@@ -458,6 +465,7 @@ class FileController {
                 
                 res.download(normalize(pathPrefix + fileRealPath + '/' + fileName), fileName)
             } else {
+                global.logger.error(`[${userName}] fileController::FileController shareFileDownload() ->${fileName} ${d.message}`);
                 Audit.Add({
                     userName: userName
                 }, {

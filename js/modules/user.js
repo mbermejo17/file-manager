@@ -595,6 +595,7 @@ export function showAddUserForm(title, data) {
 
         document.querySelector("#btn-addUserAcept").addEventListener("click", e => {
             e.preventDefault();
+            console.log('oldData:', oldData);
             _updateUser(oldData);
         });
     } else {
@@ -721,9 +722,9 @@ export function showAddUserForm(title, data) {
         return queryString;
     };
 
-    const _updateUser = oData => {
+    const _updateUser = (oData) => {
 
-        console.log("oData: ",oData);
+        console.log("====================== oData: ",oData);
 
         let _goBack = () => {
             document.querySelector("#AddUserModalContent").style.display = "none";
@@ -739,6 +740,7 @@ export function showAddUserForm(title, data) {
                 userId: oData.UserId,
                 queryString: queryString
             };
+            console.log("====================== userName: ",data.userName);
             document.querySelector("#waiting").classList.add("active");
             axios
                 .post("/updateuser", data, {

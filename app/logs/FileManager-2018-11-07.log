@@ -1,0 +1,87 @@
+[2018-11-07T07:26:05.344] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T07:26:05.345] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T07:29:55.328] [INFO] FileManager - fileController::FileController deleteFiles() ->./repository/126809176.pdf File deleted successfully!
+[2018-11-07T07:46:57.303] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T07:46:57.315] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-07T07:46:57.315] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-07T07:47:13.353] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T07:47:13.355] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T07:49:30.718] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T07:49:35.084] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-07T07:49:35.084] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-07T07:56:56.007] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T07:56:56.007] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T08:28:24.645] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T08:28:24.646] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-07T08:28:24.646] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-07T08:28:27.366] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T08:28:27.366] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-07T08:28:27.367] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-07T08:28:31.050] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T08:28:31.052] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T08:28:37.425] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-11-07T08:29:45.845] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T08:29:55.163] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T08:29:55.850] [ERROR] FileManager - Shutdown() -> Could not close connections in time, forcefully shutting down
+[2018-11-07T08:29:55.850] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-07T08:30:01.334] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T08:30:01.336] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T08:30:16.662] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/node-v10.12.0-x64 (1).msi File deleted successfully!
+[2018-11-07T08:30:16.663] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/cedt-286M-setup.exe File deleted successfully!
+[2018-11-07T08:30:16.665] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/EDboilerplate-master (1) (1).zip File deleted successfully!
+[2018-11-07T08:51:04.156] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/node-v10.12.0-x64 (1).msi File deleted successfully!
+[2018-11-07T08:51:04.489] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/cedt-286M-setup.exe File deleted successfully!
+[2018-11-07T08:51:04.489] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/EDboilerplate-master (1) (1).zip File deleted successfully!
+[2018-11-07T08:51:04.537] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/EDboilerplate-master (2).zip File deleted successfully!
+[2018-11-07T08:51:18.773] [INFO] FileManager - [admin] fileController::FileController upload() ->Git-2.19.1-64-bit.exe File Uploaded successfully!
+[2018-11-07T09:02:07.687] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T09:02:07.703] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-07T09:02:07.703] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-07T09:02:42.581] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T09:02:42.597] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T09:02:52.940] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-11-07T09:03:17.508] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: AccessString = '{"download":true,"upload":true,"deletefile":true,"deletefolder":false,"addfolder":true,"sharefiles":true}'
+[2018-11-07T09:05:18.973] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T09:05:18.975] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T09:40:43.372] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-11-07T09:41:19.265] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: ExpirateDate = '2018-11-30',UnixDate = '1543532400'
+[2018-11-07T09:44:11.028] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T09:44:11.028] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-07T09:44:11.028] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-07T09:45:38.069] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T09:45:38.071] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T09:46:10.514] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: ExpirateDate = '',UnixDate = 'null'
+[2018-11-07T09:55:36.243] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T09:55:36.243] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T09:56:10.033] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-11-07T09:56:24.858] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: ExpirateDate = '2018-11-30',UnixDate = '1543532400'
+[2018-11-07T10:01:00.341] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: ExpirateDate = '',UnixDate = 'null'
+[2018-11-07T10:01:49.656] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T10:01:49.656] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T10:02:11.754] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: ExpirateDate = '2018-11-30',UnixDate = '1543532400'
+[2018-11-07T10:03:13.958] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T10:03:13.958] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-07T10:03:13.958] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-07T10:03:16.614] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T10:03:16.614] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-07T10:03:16.614] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-07T10:06:30.428] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T10:06:30.430] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T10:06:49.626] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: ExpirateDate = '',UnixDate = 'null'
+[2018-11-07T10:11:26.746] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-11-07T10:11:39.580] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: ExpirateDate = '2018-11-30',UnixDate = '1543532400'
+[2018-11-07T10:17:03.898] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T10:17:03.900] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T10:17:39.639] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: ExpirateDate = '',UnixDate = 'null'
+[2018-11-07T11:15:42.050] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T11:15:42.052] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-07T11:15:42.052] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-07T11:15:50.210] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T11:15:50.212] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T11:16:02.310] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-11-07T11:34:13.284] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: ExpirateDate = '2018-11-30',UnixDate = '1543532400'
+[2018-11-07T11:36:11.365] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-07T11:36:11.367] [INFO] FileManager - Server listen on port 8443
+[2018-11-07T13:42:32.095] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-07T13:42:32.111] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-07T13:42:32.111] [INFO] FileManager - *************** Shutdown finished **************

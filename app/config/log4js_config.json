@@ -1,15 +1,15 @@
 {
     "appenders":
      {
-      "filelog": {
+      "FileManager": {
           "type": "dateFile",
-          "filename": "FileManager",
+          "filename": "app/logs/FileManager",
           "pattern": "-yyyy-MM-dd.log",
           "backups": 365,
           "alwaysIncludePattern": true
         }
     },
       "categories": {
-        "default": { "appenders": ["filelog"], "level": "all" }
+        "default": { "appenders": ["FileManager"], "level": "all" }
         }
   }

@@ -9,12 +9,11 @@ const path = require('path');
 global.appRoot = path.resolve(__dirname);
 process.env.NODE_ENV = "dev";
 
-console.log(path.resolve(__dirname + '/app/logs'));
-
 // ********************************   Configuracion logger
 const log4js = require('log4js');
-log4js.configure('./app/config/log4js_config.json', { cwd: path.resolve(__dirname + '/app/logs') });
+log4js.configure('./app/config/log4js_config.json');
 global.logger = log4js.getLogger('FileManager');
+
 
 
 //const server = http.createServer(app);
@@ -48,6 +47,7 @@ httpsServer.on('uncaughtException', (request, response, route, error) => {
   console.error(error.stack);
   response.send(error);
 });
+
 httpsServer.on('upgrade', (req, socket, head) => {
   const pathname = url.parse(req.url).pathname;
 

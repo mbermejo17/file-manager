@@ -14,6 +14,7 @@ const User = require("../models/user");
 const Audit = require("../controllers/auditController");
 const moment = require("moment");
 
+
 const makeUserPathIfNotExist = (p, callback) => {
     let r;
     if (p) {
@@ -208,6 +209,7 @@ exports.UserUpdate = (req, res) => {
         response.push(d);
         if (process.env.NODE_ENV === 'dev') console.log("d : ", d);
         if (d.status === "OK") {
+            global.logger.info(`[${req.body.username}] userController::UserController UserUpdate() ->User ${newData.userName} data modified. Data: ${newData.queryString}` );
             // audit
             if (newRootPath === '') {
                 return res.status(200).json(response[0]);
@@ -228,6 +230,7 @@ exports.UserUpdate = (req, res) => {
                 });
             }
         } else {
+            global.logger.error(`[${req.body.username}] userController::UserController UserUpdate() ->User ${newData.userName} modify data error. ${response[0]}` );
             //audit
             return res.status(200).json(d);
         }
@@ -361,6 +364,7 @@ exports.UserRemove = (req, res, next) => {
             if (process.env.NODE_ENV === 'dev') console.log(d);
             if (d.status == 'FAIL') {
                 // audit
+                global.logger.error(`[${userName}] userController::UserController UserRemove() ->Delete user error. ${d.message}`);
                 Audit.Add({
                     userName: userName
                 }, {
@@ -383,6 +387,7 @@ exports.UserRemove = (req, res, next) => {
                 });
                 
             } else {
+                global.logger.info(`[${userName}] userController::UserController UserRemove() ->User id:${userId} deleted successfully.` );
                 // audit
                 Audit.Add({
                     userName: userName
@@ -421,6 +426,7 @@ exports.UserLogin = (req, res, next) => {
             if (status) {
                 //audit 
                 if (process.env.NODE_ENV === 'dev') console.log(status);
+                global.logger.error(`[${req.body.username}] userController::UserController UserLogin() ->logon error. ${status}` );
                 res.status(500).json({
                     status: "FAIL",
                     message: status
@@ -434,6 +440,8 @@ exports.UserLogin = (req, res, next) => {
                         if (process.env.NODE_ENV === 'dev') console.log('data.UnixDate:', data.UnixDate);
                         if (process.env.NODE_ENV === 'dev') console.log('currentUnixDate:', currentUnixDate);
                         if (data.UnixDate && data.UnixDate < currentUnixDate) {
+                            global.logger.error(`[${req.body.username}] userController::UserController UserLogin() ->Expired user account` );
+                
                             // audit
                             return res
                                 .status(403)
@@ -478,7 +486,7 @@ exports.UserLogin = (req, res, next) => {
                               rootPath = data.RootPath ? data.RootPath : "GUEST";
                             }
                             if (process.env.NODE_ENV === 'dev') console.log("===========================> MaxFileSize:", settings.maxFileSize * 1024 * 1024);
-                            
+                            global.logger.info(`[${req.body.username}] userController::UserController UserLogin() ->User authenticated!` );
                             return res.json({
                                 "status": "OK",
                                 "message": "User authenticated",
