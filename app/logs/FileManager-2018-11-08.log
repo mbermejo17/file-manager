@@ -1,0 +1,9 @@
+[2018-11-08T21:44:32.404] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-08T21:44:32.405] [INFO] FileManager - Server listen on port 8443
+[2018-11-08T21:45:05.917] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-11-08T21:45:26.514] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: AccessString = '{"download":true,"upload":true,"deletefile":true,"deletefolder":true,"addfolder":true,"sharefiles":true}',ExpirateDate = '',UnixDate = 'null'
+[2018-11-08T21:46:37.185] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/PEPE File deleted successfully!
+[2018-11-08T21:47:28.173] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/JJ File deleted successfully!
+[2018-11-08T21:48:05.775] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-08T21:48:05.776] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-08T21:48:05.777] [INFO] FileManager - *************** Shutdown finished **************
