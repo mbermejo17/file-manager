@@ -5,6 +5,7 @@ const url = require('url');
 const WebSocketServer = require('ws').Server
 const port = process.env.PORT || 8443;
 const path = require('path');
+const dl  = require('delivery');
 
 global.appRoot = path.resolve(__dirname);
 process.env.NODE_ENV = "dev";
@@ -36,6 +37,12 @@ let wss = new WebSocketServer({
   noServer: true
 });
 
+let wssDelivery = new WebSocketServer({
+  //server: httpsServer,
+  path: '/delivery',
+  noServer: true
+});
+
 let wssRemoteRoom = new WebSocketServer({
   //server: httpsServer,
   path: '/room',
@@ -57,6 +64,10 @@ httpsServer.on('upgrade', (req, socket, head) => {
     });
   } else if (pathname === '/room') {
     wssRemoteRoom.handleUpgrade(req, socket, head, (ws) => {
+      wssRemoteRoom.emit('connection', ws, req);
+    });
+  }  else if (pathname === '/delivery') {
+    wssDelivery.handleUpgrade(req, socket, head, (ws) => {
       wssRemoteRoom.emit('connection', ws, req);
     });
   } else {
@@ -83,6 +94,7 @@ const interval = setInterval(function sendKeepAlive() {
     }));
     ws.ping(noop);
   });
+
   wssRemoteRoom.clients.forEach(function each(wsRemoteRoom) {
     console.log('Room.ID ' + wsRemoteRoom.id + ' isAlive ' + wsRemoteRoom.isAlive);
     if (wsRemoteRoom.isAlive === false) return wsRemoteRoom.terminate();
@@ -167,6 +179,33 @@ wssRemoteRoom.on('connection', function connection(wsRemoteRoom, req) {
     console.log("Room.ID: " + wsRemoteRoom.id + ' disconnected');
   });
 });
+
+
+wssDelivery.on('connection', function(socket){
+  var delivery = dl.listen(socket);
+  /* delivery.on('message', (data) => {
+    let jsonData = JSON.parse(data);
+    let eventType = jsonData.event;
+    let message = jsonData.message;
+    if (eventType === 'KeepAlive')
+      wsRemoteRoom.isAlive = true;
+    //ws.send(`Data received from IP ${ip} : ${data.toString()} `) // echo-server
+  }) */
+  delivery.on('delivery.connect',function(delivery){
+ 
+    delivery.send({
+      name: 'sample.txt',
+      path : './t.txt',
+      params: {foo: 'bar'}
+    });
+ 
+    delivery.on('send.success',function(file){
+      console.log('File successfully sent to client!');
+    });
+ 
+  });
+});
+
 //server.listen(port);
 
 // *******************************************************

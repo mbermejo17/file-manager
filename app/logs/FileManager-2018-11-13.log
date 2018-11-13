@@ -1,0 +1,19 @@
+[2018-11-13T11:49:45.958] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-13T11:49:45.960] [INFO] FileManager - Server listen on port 8443
+[2018-11-13T11:50:50.072] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-13T11:50:50.073] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-13T11:50:50.073] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-13T11:52:20.863] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-13T11:52:20.872] [INFO] FileManager - Server listen on port 8443
+[2018-11-13T11:52:38.623] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-11-13T11:54:03.504] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-13T11:54:03.505] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-13T11:54:03.505] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-13T11:54:36.628] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-11-13T11:54:36.630] [INFO] FileManager - Server listen on port 8443
+[2018-11-13T11:59:13.250] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-13T11:59:13.251] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-13T11:59:13.251] [INFO] FileManager - *************** Shutdown finished **************
+[2018-11-13T11:59:15.010] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-11-13T11:59:15.011] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-11-13T11:59:15.011] [INFO] FileManager - *************** Shutdown finished **************

@@ -7,6 +7,9 @@ import { modalDialog } from "../vendor/modalDialog";
 
 import uuidv4 from "uuid/v4";
 import DataTable from "../vendor/dataTables";
+import WebSocket from "wss";
+ 
+
 
 ////////////////////////////////////
 // Files and Folder module
@@ -1032,7 +1035,38 @@ export function upload(Token) {
 // Download selected Files
 /////////////////////////////////////
 
+export function socketDownloadFile(fileList, text) {
+  const wss = new WebSocket('wss://localhost:8443/delivery', {
+    perMessageDeflate: false
+  });
+  
+  
+  wss.on('connect', function(){
+    var delivery = new Delivery(wss);
+ 
+    delivery.on('receive.start',function(fileUID){
+      console.log('receiving a file!');
+    });
+ 
+    delivery.on('receive.success',function(file){
+      var params = file.params;
+      if (file.isImage()) {
+        $('img').attr('src', file.dataURL());
+      };
+    });
+  });
+}
+
+
+
+
 export function download(fileList, text) {
+
+  !streamSaver.supported && prompt(
+    'ReadableStream is not supported, you can enable it in chrome, or wait until v52',
+    'chrome://flags/#enable-experimental-web-platform-features'
+  )
+
   let reqList = [],
     handlerCounter = 0,
     responseTimeout = [];

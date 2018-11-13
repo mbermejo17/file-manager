@@ -26,6 +26,7 @@ import {
     shareFileManage,
     deleteSelected,
     download,
+    socketDownloadFile,
     upload,
     newFolder,
     showSharedFiles
@@ -1145,7 +1146,8 @@ window.appData = {
                         "error"
                     );
                 }
-                download(appData.aSelectedFiles, "File");
+                //download(appData.aSelectedFiles, "File");
+                socketDownloadFile(appData.aSelectedFiles, "File");
             } else {
                 showToast(
                     "Download",
