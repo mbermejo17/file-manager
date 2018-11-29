@@ -1184,7 +1184,7 @@ export function download(fileList, text) {
       .pop();
     reqList[i] = new XMLHttpRequest();
     reqList[i].open("POST", "/files/download", true);
-    reqList[i].responseType = "arraybuffer";
+    reqList[i].responseType = "blob";
     liNumber.style.display = "block";
     liFilename.innerHTML = fName;
     reqList[i].timeout = 36000;
