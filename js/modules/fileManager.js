@@ -1057,10 +1057,47 @@ export function socketDownloadFile(fileList, text) {
   });
 }
 
-
-
-
 export function download(fileList, text) {
+  let _Download_Loop = (d)=>{
+    axios
+    .post("/files/download", d, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + userData.Token
+            },
+            timeout: 30000
+          })
+          .then(data => {
+            var file = new Blob([data], {type: type});
+            if (window.navigator.msSaveOrOpenBlob) // IE10+
+                window.navigator.msSaveOrOpenBlob(file, d.name);
+            else { // Others
+                var a = document.createElement("a"),
+                        url = URL.createObjectURL(file);
+                a.href = url;
+                a.download = d.name;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function() {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);  
+                }, 0); 
+            }
+          })
+          .catch(e =>{});
+  };
+  for (let i = 0; i < fileList.name.length; i++) {
+     let downloadData = {"name":fileList.name[i],
+     "path": userData.RealRootPath,
+     "size": fileList.size[i],
+     "userName": userData.UserName};
+    _Download_Loop(downloadData);
+  }
+  
+};
+
+
+/* export function download(fileList, text) {
 
   !streamSaver.supported && prompt(
     'ReadableStream is not supported, you can enable it in chrome, or wait until v52',
@@ -1326,7 +1363,7 @@ export function download(fileList, text) {
     _Download_Loop(i);
   }
   document.querySelector("#waiting").classList.remove("active");
-}
+} */
 
 ///////////////////////////////////
 // End Files and Folders module

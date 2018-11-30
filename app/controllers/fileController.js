@@ -423,10 +423,16 @@ class FileController {
     }
 
     download(req, res, next) {
-        let fileName = req.body.filename
+        let data = req.body;
+        let fileName = data.name;
+        let userName = data.userName;
+        let fileSize = data.size;
+        let path = data.path;
+        console.log("downloading ->",data.name);
         res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
         res.setHeader('Content-Transfer-Encoding', 'binary')
         if (process.env.NODE_ENV === 'dev') console.log(normalize(pathPrefix + '\\' + fileName))
+        global.logger.info(`[${userName}] fileController::FileController download() ->Downloading ${path}/${fileName} size ${fileSize}`);             
         res.download(normalize(pathPrefix + '\\' + fileName), fileName)
     }
 

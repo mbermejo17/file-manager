@@ -33,101 +33,101 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 //import ajax from "./vendor/ajax";
 window.userData = {
-    UserName: _jsCookie2.default.get("UserName"),
-    UserRole: _jsCookie2.default.get("UserRole"),
-    CompanyName: _jsCookie2.default.get("CompanyName"),
-    RealRootPath: _jsCookie2.default.get("RootPath"),
-    Token: _jsCookie2.default.get("token"),
-    AccessString: JSON.parse(_jsCookie2.default.get("AccessString")),
-    RunMode: _jsCookie2.default.get("RunMode"),
-    MaxFileSize: _jsCookie2.default.get('MaxFileSize')
+  UserName: _jsCookie2.default.get("UserName"),
+  UserRole: _jsCookie2.default.get("UserRole"),
+  CompanyName: _jsCookie2.default.get("CompanyName"),
+  RealRootPath: _jsCookie2.default.get("RootPath"),
+  Token: _jsCookie2.default.get("token"),
+  AccessString: JSON.parse(_jsCookie2.default.get("AccessString")),
+  RunMode: _jsCookie2.default.get("RunMode"),
+  MaxFileSize: _jsCookie2.default.get("MaxFileSize")
 };
 //import axiosMethodOverride from 'axios-method-override';
 
 
 window.appData = {
-    rootPath: "/",
-    currentPath: "/",
-    aSelectedFiles: { name: [], size: [] },
-    aSelectedFolders: []
+  rootPath: "/",
+  currentPath: "/",
+  aSelectedFiles: { name: [], size: [] },
+  aSelectedFolders: []
 };
 
 (function (w, d) {
-    var AllowDownload = userData.AccessString.download,
-        AllowUpload = userData.AccessString.upload,
-        AllowDeleteFile = userData.AccessString.deletefile,
-        AllowDeleteFolder = userData.AccessString.deletefolder,
-        AllowNewFolder = userData.AccessString.addfolder,
-        AllowShareFile = userData.AccessString.sharefiles;
+  var AllowDownload = userData.AccessString.download,
+      AllowUpload = userData.AccessString.upload,
+      AllowDeleteFile = userData.AccessString.deletefile,
+      AllowDeleteFolder = userData.AccessString.deletefolder,
+      AllowNewFolder = userData.AccessString.addfolder,
+      AllowShareFile = userData.AccessString.sharefiles;
 
-    var aFolders = [];
-    var aFiles = [];
-    var currentTopToast = 30;
-    var topToast = 0;
+  var aFolders = [];
+  var aFiles = [];
+  var currentTopToast = 30;
+  var topToast = 0;
 
-    var logout = function logout() {
-        _jsCookie2.default.remove("UserName");
-        _jsCookie2.default.remove("UserRole");
-        _jsCookie2.default.remove("sessionId");
-        _jsCookie2.default.remove("token");
-        _jsCookie2.default.remove("wssURL");
-        _jsCookie2.default.remove("RootPath");
-        _jsCookie2.default.remove("CompanyName");
-        _jsCookie2.default.remove("AccessString");
-        _jsCookie2.default.remove("MaxFileSize");
-        document.location.href = "/";
-    };
+  var logout = function logout() {
+    _jsCookie2.default.remove("UserName");
+    _jsCookie2.default.remove("UserRole");
+    _jsCookie2.default.remove("sessionId");
+    _jsCookie2.default.remove("token");
+    _jsCookie2.default.remove("wssURL");
+    _jsCookie2.default.remove("RootPath");
+    _jsCookie2.default.remove("CompanyName");
+    _jsCookie2.default.remove("AccessString");
+    _jsCookie2.default.remove("MaxFileSize");
+    document.location.href = "/";
+  };
 
-    /* axiosMethodOverride(axios);
+  /* axiosMethodOverride(axios);
       const instance = axios.create();
     axiosMethodOverride(instance); */
 
-    //////////////////////////////////
-    //  Tools module
-    //////////////////////////////////
+  //////////////////////////////////
+  //  Tools module
+  //////////////////////////////////
 
-    var cleanArray = function cleanArray(arr) {
-        var temp = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+  var cleanArray = function cleanArray(arr) {
+    var temp = [];
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
 
-        try {
-            for (var _iterator = arr[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var i = _step.value;
-                i && temp.push(i);
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                }
-            } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
+    try {
+      for (var _iterator = arr[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var i = _step.value;
+        i && temp.push(i);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
         }
-
-        return temp;
-    };
-
-    window.FetchHandleErrors = function (response) {
-        if (!response.ok) {
-            //throw Error(response.statusText);
-            if (response.statusCode == 401) {
-                logout();
-            }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
         }
-        return response;
-    };
+      }
+    }
 
-    // TODO --> replace execFetch by axios
+    return temp;
+  };
 
-    /* window.execFetch = async function(uri, met, data) {
+  window.FetchHandleErrors = function (response) {
+    if (!response.ok) {
+      //throw Error(response.statusText);
+      if (response.statusCode == 401) {
+        logout();
+      }
+    }
+    return response;
+  };
+
+  // TODO --> replace execFetch by axios
+
+  /* window.execFetch = async function(uri, met, data) {
     const header = new Headers();
     const bodyData = data ? JSON.stringify(data) : null;
     header.append("Content-Type", "application/json");
@@ -140,425 +140,426 @@ window.appData = {
       const resp = await fetch(uri, initData);
     const json = await resp.json();
     return json;
-    };
-    */
+  };
+  */
 
-    ////////////////////////////////////////
-    // Global Function Show Toast notifications
-    ////////////////////////////////////////
-    window.showToast = function (title, msg, type) {
-        var icon = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+  ////////////////////////////////////////
+  // Global Function Show Toast notifications
+  ////////////////////////////////////////
+  window.showToast = function (title, msg, type) {
+    var icon = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-        toast.create({
-            title: title,
-            text: msg,
-            type: type,
-            icon: icon
-        });
-    };
+    toast.create({
+      title: title,
+      text: msg,
+      type: type,
+      icon: icon
+    });
+  };
 
-    /////////////////////////////////
-    //  End Tools
-    ////////////////////////////////
+  /////////////////////////////////
+  //  End Tools
+  ////////////////////////////////
 
-    ////////////////////////////////////////
-    // Change Path
-    ////////////////////////////////////////
-    var changePath = function changePath(newPath) {
-        var fullNewPath = "";
-        if (userData.RunMode === "DEBUG") console.log("changePath:newPath ", newPath);
-        if (newPath !== "/") {
-            fullNewPath = getNewPath(newPath);
+  ////////////////////////////////////////
+  // Change Path
+  ////////////////////////////////////////
+  var changePath = function changePath(newPath) {
+    var fullNewPath = "";
+    if (userData.RunMode === "DEBUG") console.log("changePath:newPath ", newPath);
+    if (newPath !== "/") {
+      fullNewPath = getNewPath(newPath);
+    } else {
+      fullNewPath = newPath;
+    }
+    if (userData.RunMode === "DEBUG") console.log("changePath:fullNewPath ", fullNewPath);
+    appData.currentPath = fullNewPath.trim();
+    refreshPath(appData.currentPath);
+    refreshBarMenu();
+  };
+
+  ////////////////////////////////////////
+  // Get content from new Path
+  ////////////////////////////////////////
+  var getNewPath = function getNewPath(pathSelected) {
+    var splitPath = appData.currentPath.split("/");
+    var newPath = "";
+    var temp = [];
+
+    splitPath = cleanArray(splitPath);
+
+    if (userData.RunMode === "DEBUG") console.log("Current Path: ", appData.currentPath);
+    if (userData.RunMode === "DEBUG") console.log("Path Selected: ", pathSelected);
+    if (userData.RunMode === "DEBUG") console.log("splitPath : ", splitPath);
+    if (splitPath.length == 0) {
+      newPath += "/" + pathSelected;
+    } else {
+      for (var x = 0; x < splitPath.length; x++) {
+        if (splitPath[x] !== pathSelected) {
+          newPath += "/" + splitPath[x];
         } else {
-            fullNewPath = newPath;
+          if (splitPath[x] === pathSelected) {
+            newPath += "/" + splitPath[x];
+            if (userData.RunMode === "DEBUG") console.log("New Path: ", newPath);
+            return newPath;
+          }
         }
-        if (userData.RunMode === "DEBUG") console.log("changePath:fullNewPath ", fullNewPath);
-        appData.currentPath = fullNewPath.trim();
-        refreshPath(appData.currentPath);
+      }
+      newPath += "/" + pathSelected;
+    }
+    if (userData.RunMode === "DEBUG") console.log("New Path: ", newPath);
+    return newPath;
+  };
+
+  ////////////////////////////////////////
+  // Got to back Folder
+  ////////////////////////////////////////
+  var goBackFolder = function goBackFolder(folder) {
+    var newPath = "";
+    var splitPath = appData.currentPath.split("/");
+
+    if (userData.RunMode === "DEBUG") console.log("goBackFolder:folder ", folder);
+    if (userData.RunMode === "DEBUG") console.log("goBackFolder:appData.currentPath ", appData.currentPath);
+
+    splitPath = cleanArray(splitPath);
+    splitPath.pop();
+
+    if (appData.currentPath !== "/" && folder == "..") {
+      if (splitPath.length > 0) {
+        newPath += splitPath[splitPath.length - 1];
+      } else {
+        newPath = "/";
+      }
+    }
+
+    if (userData.RunMode === "DEBUG") console.log("goBackFolder:newPath " + newPath);
+    changePath(newPath.trim());
+  };
+
+  ////////////////////////////////////////
+  // Refres Content Path
+  ////////////////////////////////////////
+  var refreshPath = function refreshPath(cPath) {
+    var newLinePath = [];
+    var newHtmlContent = "<li><label id=\"currentpath\">Path:</label></li>\n                              <li><spand>&nbsp;</spand><a class=\"breadcrumb-line-path\" href=\"#!\">/</a></li>";
+
+    if (userData.RunMode === "DEBUG") console.log("init path: ", cPath);
+    if (userData.RunMode === "DEBUG") console.log("cPath lenght:", cPath.length);
+    $u("#waiting").addClass("active");
+
+    if (cPath.length > 1) {
+      var cPathArray = cPath.split("/");
+      cPathArray = cleanArray(cPathArray);
+
+      if (userData.RunMode === "DEBUG") console.log("refreshPath:cPathArray ", cPathArray);
+
+      if (cPathArray.length > 0) {
+        for (var x = 0; x < cPathArray.length; x++) {
+          if (x == 0) {
+            newHtmlContent += "<li><spand>&nbsp;</spand><a class=\"breadcrumb-line-path\" href=\"#!\">" + cPathArray[x] + "</a></li>";
+          } else {
+            newHtmlContent += "<li><spand>&nbsp/&nbsp;</spand><a class=\"breadcrumb-line-path\" href=\"#!\">" + cPathArray[x] + "</a></li>";
+          }
+          if (cPathArray[x] === cPath) {
+            break;
+          }
+        }
+      }
+      $u("#waiting").removeClass("active");
+    }
+
+    $u("#currentPath").html(newHtmlContent);
+
+    $u(".breadcrumb-line-path").on("click", function (e) {
+      changePath(e.target.innerText);
+    });
+
+    //const headers = new Headers();
+    //headers.append("Authorization", "Bearer " + userData.Token);
+    var realpath = (0, _general.getRealPath)(cPath);
+
+    if (userData.RunMode === "DEBUG") console.log("userData.RealRootPath: " + userData.RealRootPath + " realpath:" + realpath);
+    /* fetch("/files?path=" + encodeURI(realpath), {
+      method: "GET",
+      headers: {"Authorization": "Bearer " + userData.Token},
+      timeout: 720000
+    }) */
+
+    _axios2.default.get("/files?path=" + encodeURI(realpath), {
+      headers: {
+        Authorization: "Bearer " + userData.Token,
+        "Content-Type": "application/json"
+      },
+      timeout: 720000
+    }).then(function (data) {
+      if (userData.RunMode === "DEBUG") console.log(data);
+      refreshFilesTable(data.data);
+      $u("#waiting").removeClass("active");
+    }).catch(function (err) {
+      if (userData.RunMode === "DEBUG") console.log(err);
+      $u("#waiting").removeClass("active");
+    });
+  };
+
+  //////////////////////////////////
+  // Select all Files & Folders
+  /////////////////////////////////
+
+  var selectAll = function selectAll(e) {
+    var allCkeckbox = document.querySelectorAll(".check");
+    var v = document.querySelector("#selectAllFiles").checked;
+    if (userData.RunMode === "DEBUG") console.log("selectAllFiles :", v);
+    allCkeckbox.forEach(function (element, i) {
+      if (!allCkeckbox[i].disabled) {
+        allCkeckbox[i].checked = v;
+      }
+    });
+    if (userData.RunMode === "DEBUG") console.log(getCheckedFiles());
+    if (userData.RunMode === "DEBUG") console.log(getCheckedFolder());
+  };
+
+  ////////////////////////////////////////
+  // Get List Checked Files
+  ////////////////////////////////////////
+  var getCheckedFiles = function getCheckedFiles() {
+    var checkedFiles = [];
+    var allElements = document.querySelectorAll(".typeFile");
+    allElements.forEach(function (element, i) {
+      if (userData.RunMode === "DEBUG") console.log("element: ", element);
+      if (userData.RunMode === "DEBUG") console.log("children: ", element.parentElement.parentElement.children[0].children[0].children[0].checked);
+      if (userData.RunMode === "DEBUG") console.log("size: ", element.parentElement.parentElement.children[2].innerHTML);
+      if (element.parentElement.parentElement.children[0].children[0].children[0].checked) {
+        appData.aSelectedFiles.name.push(element.innerHTML);
+        appData.aSelectedFiles.size.push(element.parentElement.parentElement.children[2].innerHTML);
+        checkedFiles.push(element.innerHTML);
+        // c(element.children[1].innerHTML)
+      } else {
+        var idx = appData.aSelectedFiles.name.indexOf(element.innerHTML);
+        if (idx > -1) {
+          appData.aSelectedFiles.name.splice(idx, 1);
+          appData.aSelectedFiles.size.splice(idx, 1);
+        }
+      }
+    });
+    return checkedFiles;
+  };
+
+  ////////////////////////////////////////
+  // Get List Checked Folders
+  ////////////////////////////////////////
+  var getCheckedFolder = function getCheckedFolder() {
+    var checkedFolders = [];
+    var allElements = document.querySelectorAll(".dashboard-path");
+    allElements.forEach(function (v, i) {
+      if (userData.RunMode === "DEBUG") console.log("element v: ", v);
+      if (userData.RunMode === "DEBUG") console.log("check ", v.children[0].checked);
+      if (userData.RunMode === "DEBUG") console.log("text ", v.parentElement.parentElement.children[1].children[1].text);
+      if (v.children[0].checked) {
+        appData.aSelectedFolders.push(v.parentElement.parentElement.children[1].children[1].text);
+        checkedFolders.push(v.parentElement.parentElement.children[1].children[1].text);
+      } else {
+        var idx = appData.aSelectedFolders.indexOf(v.parentElement.parentElement.children[1].children[1].text);
+        if (idx > -1) {
+          appData.aSelectedFolders.splice(idx, 1);
+        }
+      }
+    });
+    return checkedFolders;
+  };
+
+  ////////////////////////////////////////
+  // Modal Daialog
+  ////////////////////////////////////////
+  window.showDialogYesNo = function (title, content, yesCb, noCb) {
+    var w = 32;
+    var h = 440;
+    var result = null;
+    var htmlContent = "<div id=\"modal-header\">\n                            <h5>" + title + "</h5>\n                            <a class=\"modal_close\" id=\"logoutModalClose\" href=\"#hola\"></a>\n                        </div>\n                        <div class=\"modal-content\">\n                            <p>" + content + "</p>\n                        </div>\n                        <div class=\"modal-footer\">\n                            <a class=\"modal-action modal-close waves-effect waves-teal btn-flat btn2-unify\" id=\"btnYes\" href=\"#\">Yes</a>\n                            <a class=\"modal-action modal-close waves-effect waves-teal btn-flat btn2-unify\" id=\"btnNO\" href=\"#\">NO</a>\n                        </div>";
+    $u("#modal").html(htmlContent).css("width: " + w + "%;height: " + h + "px;text-align: center;");
+    //$('.modal-content').css('width: 350px;');
+    $u(".modal").css("width: 40% !important");
+    $u("#modal").show();
+    $u("#lean-overlay").show();
+    $u("#btnYes").on("click", function (e) {
+      e.preventDefault();
+      $u("#modal").hide();
+      $u("#lean-overlay").hide();
+      yesCb("YES");
+    });
+    $u("#btnNO").on("click", function (e) {
+      e.preventDefault();
+      $u("#modal").hide();
+      $u("#lean-overlay").hide();
+      noCb("NO");
+    });
+  };
+
+  ////////////////////////////////////////
+  // Format file size
+  ////////////////////////////////////////
+  var formatSize = function formatSize(bytes) {
+    if (bytes >= 1073741824) {
+      bytes = parseInt(bytes / 1000000000) + " GB";
+    } else if (bytes >= 1048576) {
+      bytes = parseInt(bytes / 1000000) + " MB";
+    } else if (bytes >= 1024) {
+      bytes = parseInt(bytes / 1000) + " KB";
+    } else if (bytes > 1) {
+      bytes = bytes + " bytes";
+    } else if (bytes == 1) {
+      bytes = bytes + " byte";
+    } else {
+      bytes = "0 byte";
+    }
+    return bytes;
+  };
+
+  ////////////////////////////////////////
+  // Render View Files & Folders
+  ////////////////////////////////////////
+  var renderFilesTable = function renderFilesTable(aFol, aFil) {
+    var newHtmlContent = "";
+    var tbodyContent = document.getElementById("tbl-files").getElementsByTagName("tbody")[0];
+
+    newHtmlContent += "<tr><td><span>&nbsp;</span></td>\n              <td><i class=\"fa fa-folder filesTable\"></i><a href=\"#\" id=\"goBackFolder\" class=\"file-Name typeFolder\">..</a></td>\n              <td>&nbsp;</td><td>&nbsp;</td></tr>";
+    aFol.forEach(function (val, idx, array) {
+      newHtmlContent += "<tr><td><div class=\"md-checkbox dashboard-path\"><input class=\"checkFolder check\" id=\"" + val.name + "\" type=\"checkbox\">\n              <label class=\"checkbox left\" for=\"" + val.name + "\"></label></div></td>";
+      newHtmlContent += "<td><i class=\"fa fa-folder filesTable\"></i><a href=\"#\" class=\"file-Name typeFolder\">" + val.name + "</a></td>";
+      newHtmlContent += "<td>&nbsp;</td><td>" + val.date + "</td></tr>";
+    });
+
+    aFil.forEach(function (val, idx, array) {
+      var fileSize = formatSize(val.size);
+      newHtmlContent += "<tr><td><div class=\"md-checkbox\"><input class=\"checkFile check\" id=\"" + val.name + "\" type=\"checkbox\">\n            <label class=\"checkbox left\" for=\"" + val.name + "\"></label><a href=\"#test\"></a></div></td>";
+      newHtmlContent += "<td><i class=\"fa fa-file filesTable\"></i><span class=\"typeFile\">" + val.name + "</span></td>";
+      newHtmlContent += "<td>" + fileSize + "</td><td>" + val.date + "</td></tr>";
+    });
+    tbodyContent.innerHTML = newHtmlContent;
+  };
+
+  ////////////////////////////////////////
+  // Refresh Files and Folders View
+  ////////////////////////////////////////
+  var refreshFilesTable = function refreshFilesTable(data) {
+    var tbodyContent = document.getElementById("tbl-files").getElementsByTagName("tbody")[0];
+
+    if (userData.RunMode === "DEBUG") console.log(data);
+    aFolders = [];
+    aFiles = [];
+    if (data.message) return null;
+    data.forEach(function (val, idx, array) {
+      var fileSize = val.size / 1024;
+      if (val.isFolder) {
+        aFolders.push({
+          name: val.name,
+          date: val.date
+        });
+      } else {
+        if (!val.name.startsWith("upload_")) {
+          aFiles.push({
+            name: val.name,
+            size: val.size,
+            date: val.date
+          });
+        }
+      }
+    });
+    aFolders.sort(function (a, b) {
+      return a.name.localeCompare(b.name);
+    });
+    aFiles.sort(function (a, b) {
+      return a.date.localeCompare(b.date);
+    });
+
+    renderFilesTable(aFolders, aFiles);
+
+    $u(".file-Name").on("click", function (e) {
+      if (userData.RunMode === "DEBUG") console.log(e);
+      if (userData.RunMode === "DEBUG") console.log("Current Path: ", appData.currentPath);
+      var newPath = "";
+      if (e.target.innerText != "..") {
+        newPath = getNewPath(e.target.innerText);
+        if (userData.RunMode === "DEBUG") console.log("New Path: ", newPath.trim());
+        refreshPath(newPath.trim());
+        appData.currentPath = newPath.trim();
         refreshBarMenu();
-    };
+      } else {
+        if (appData.currentPath !== appData.rootPath) goBackFolder(e.target.innerText);
+      }
+    });
 
-    ////////////////////////////////////////
-    // Get content from new Path
-    ////////////////////////////////////////
-    var getNewPath = function getNewPath(pathSelected) {
-        var splitPath = appData.currentPath.split("/");
-        var newPath = "";
-        var temp = [];
+    $u(".check").on("click", function (e) {
+      console.log("check: ", e);
+      selectDeselect(e);
+      if (userData.RunMode === "DEBUG") {
+        console.log("checked: ", e.target.checked);
+        console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
+        console.log(e.target.parentNode.parentNode.parentNode.rowIndex);
+        console.log(e.target.parentNode.children[1].htmlFor);
+        console.log(e.target.parentNode.children[2].href);
+      }
+    });
 
-        splitPath = cleanArray(splitPath);
+    $u("#goBackFolder").on("click", function (e) {
+      e.preventDefault();
+      goBackFolder();
+    });
+  };
 
-        if (userData.RunMode === "DEBUG") console.log("Current Path: ", appData.currentPath);
-        if (userData.RunMode === "DEBUG") console.log("Path Selected: ", pathSelected);
-        if (userData.RunMode === "DEBUG") console.log("splitPath : ", splitPath);
-        if (splitPath.length == 0) {
-            newPath += "/" + pathSelected;
-        } else {
-            for (var x = 0; x < splitPath.length; x++) {
-                if (splitPath[x] !== pathSelected) {
-                    newPath += "/" + splitPath[x];
-                } else {
-                    if (splitPath[x] === pathSelected) {
-                        newPath += "/" + splitPath[x];
-                        if (userData.RunMode === "DEBUG") console.log("New Path: ", newPath);
-                        return newPath;
-                    }
-                }
-            }
-            newPath += "/" + pathSelected;
+  ////////////////////////////////////////
+  // Select / Deselect Files & Folders
+  ////////////////////////////////////////
+  var selectDeselect = function selectDeselect(e) {
+    var isChecked = e.target.checked;
+    var contentType = e.target.className.split(/\s+/).indexOf("checkFile");
+    var name = e.target.parentNode.children[1].htmlFor;
+    var size = e.target.parentNode.parentNode.parentNode.children[2].innerHTML;
+
+    if (contentType != -1) {
+      if (isChecked) {
+        appData.aSelectedFiles.name.push(name);
+        appData.aSelectedFiles.size.push(size);
+      } else {
+        var idx = appData.aSelectedFiles.name.indexOf(name);
+        if (idx > -1) {
+          appData.aSelectedFiles.name.splice(idx, 1);
+          appData.aSelectedFiles.size.splice(idx, 1);
         }
-        if (userData.RunMode === "DEBUG") console.log("New Path: ", newPath);
-        return newPath;
-    };
-
-    ////////////////////////////////////////
-    // Got to back Folder
-    ////////////////////////////////////////
-    var goBackFolder = function goBackFolder(folder) {
-        var newPath = "";
-        var splitPath = appData.currentPath.split("/");
-
-        if (userData.RunMode === "DEBUG") console.log("goBackFolder:folder ", folder);
-        if (userData.RunMode === "DEBUG") console.log("goBackFolder:appData.currentPath ", appData.currentPath);
-
-        splitPath = cleanArray(splitPath);
-        splitPath.pop();
-
-        if (appData.currentPath !== "/" && folder == "..") {
-            if (splitPath.length > 0) {
-                newPath += splitPath[splitPath.length - 1];
-            } else {
-                newPath = "/";
-            }
+      }
+    } else {
+      if (isChecked) {
+        appData.aSelectedFolders.push(name);
+      } else {
+        var _idx = appData.aSelectedFolders.indexOf(name);
+        if (_idx > -1) {
+          appData.aSelectedFolders.splice(_idx, 1);
         }
+      }
+    }
+    if (userData.RunMode === "DEBUG") console.log(appData.aSelectedFiles, appData.aSelectedFolders);
+  };
 
-        if (userData.RunMode === "DEBUG") console.log("goBackFolder:newPath " + newPath);
-        changePath(newPath.trim());
-    };
-
-    ////////////////////////////////////////
-    // Refres Content Path
-    ////////////////////////////////////////
-    var refreshPath = function refreshPath(cPath) {
-        var newLinePath = [];
-        var newHtmlContent = "<li><label id=\"currentpath\">Path:</label></li>\n                              <li><spand>&nbsp;</spand><a class=\"breadcrumb-line-path\" href=\"#!\">/</a></li>";
-
-        if (userData.RunMode === "DEBUG") console.log("init path: ", cPath);
-        if (userData.RunMode === "DEBUG") console.log("cPath lenght:", cPath.length);
-        $u("#waiting").addClass("active");
-
-        if (cPath.length > 1) {
-            var cPathArray = cPath.split("/");
-            cPathArray = cleanArray(cPathArray);
-
-            if (userData.RunMode === "DEBUG") console.log("refreshPath:cPathArray ", cPathArray);
-
-            if (cPathArray.length > 0) {
-                for (var x = 0; x < cPathArray.length; x++) {
-                    if (x == 0) {
-                        newHtmlContent += "<li><spand>&nbsp;</spand><a class=\"breadcrumb-line-path\" href=\"#!\">" + cPathArray[x] + "</a></li>";
-                    } else {
-                        newHtmlContent += "<li><spand>&nbsp/&nbsp;</spand><a class=\"breadcrumb-line-path\" href=\"#!\">" + cPathArray[x] + "</a></li>";
-                    }
-                    if (cPathArray[x] === cPath) {
-                        break;
-                    }
-                }
-            }
-            $u("#waiting").removeClass("active");
-        }
-
-        $u("#currentPath").html(newHtmlContent);
-
-        $u(".breadcrumb-line-path").on("click", function (e) {
-            changePath(e.target.innerText);
-        });
-
-        //const headers = new Headers();
-        //headers.append("Authorization", "Bearer " + userData.Token);
-        var realpath = (0, _general.getRealPath)(cPath);
-
-        if (userData.RunMode === "DEBUG") console.log("userData.RealRootPath: " + userData.RealRootPath + " realpath:" + realpath);
-        /* fetch("/files?path=" + encodeURI(realpath), {
-        method: "GET",
-        headers: {"Authorization": "Bearer " + userData.Token},
-        timeout: 720000
-        }) */
-
-        _axios2.default.get("/files?path=" + encodeURI(realpath), {
-            headers: {
-                "Authorization": "Bearer " + userData.Token,
-                "Content-Type": "application/json"
-            },
-            timeout: 720000
-        }).then(function (data) {
-            if (userData.RunMode === "DEBUG") console.log(data);
-            refreshFilesTable(data.data);
-            $u("#waiting").removeClass("active");
-        }).catch(function (err) {
-            if (userData.RunMode === "DEBUG") console.log(err);
-            $u("#waiting").removeClass("active");
-        });
-    };
-
-    //////////////////////////////////
-    // Select all Files & Folders
-    /////////////////////////////////
-
-    var selectAll = function selectAll(e) {
-        var allCkeckbox = document.querySelectorAll(".check");
-        var v = document.querySelector("#selectAllFiles").checked;
-        if (userData.RunMode === "DEBUG") console.log("selectAllFiles :", v);
-        allCkeckbox.forEach(function (element, i) {
-            if (!allCkeckbox[i].disabled) {
-                allCkeckbox[i].checked = v;
-            }
-        });
-        if (userData.RunMode === "DEBUG") console.log(getCheckedFiles());
-        if (userData.RunMode === "DEBUG") console.log(getCheckedFolder());
-    };
-
-    ////////////////////////////////////////
-    // Get List Checked Files
-    ////////////////////////////////////////
-    var getCheckedFiles = function getCheckedFiles() {
-        var checkedFiles = [];
-        var allElements = document.querySelectorAll(".typeFile");
-        allElements.forEach(function (element, i) {
-            if (userData.RunMode === "DEBUG") console.log("element: ", element);
-            if (userData.RunMode === "DEBUG") console.log("children: ", element.parentElement.parentElement.children[0].children[0].children[0].checked);
-            if (userData.RunMode === "DEBUG") console.log("size: ", element.parentElement.parentElement.children[2].innerHTML);
-            if (element.parentElement.parentElement.children[0].children[0].children[0].checked) {
-                appData.aSelectedFiles.name.push(element.innerHTML);
-                appData.aSelectedFiles.size.push(element.parentElement.parentElement.children[2].innerHTML);
-                checkedFiles.push(element.innerHTML);
-                // c(element.children[1].innerHTML)
-            } else {
-                var idx = appData.aSelectedFiles.name.indexOf(element.innerHTML);
-                if (idx > -1) {
-                    appData.aSelectedFiles.name.splice(idx, 1);
-                    appData.aSelectedFiles.size.splice(idx, 1);
-                }
-            }
-        });
-        return checkedFiles;
-    };
-
-    ////////////////////////////////////////
-    // Get List Checked Folders
-    ////////////////////////////////////////
-    var getCheckedFolder = function getCheckedFolder() {
-        var checkedFolders = [];
-        var allElements = document.querySelectorAll(".dashboard-path");
-        allElements.forEach(function (v, i) {
-            if (userData.RunMode === "DEBUG") console.log("element v: ", v);
-            if (userData.RunMode === "DEBUG") console.log("check ", v.children[0].checked);
-            if (userData.RunMode === "DEBUG") console.log("text ", v.parentElement.parentElement.children[1].children[1].text);
-            if (v.children[0].checked) {
-                appData.aSelectedFolders.push(v.parentElement.parentElement.children[1].children[1].text);
-                checkedFolders.push(v.parentElement.parentElement.children[1].children[1].text);
-            } else {
-                var idx = appData.aSelectedFolders.indexOf(v.parentElement.parentElement.children[1].children[1].text);
-                if (idx > -1) {
-                    appData.aSelectedFolders.splice(idx, 1);
-                }
-            }
-        });
-        return checkedFolders;
-    };
-
-    ////////////////////////////////////////
-    // Modal Daialog
-    ////////////////////////////////////////
-    window.showDialogYesNo = function (title, content, yesCb, noCb) {
-        var w = 32;
-        var h = 440;
-        var result = null;
-        var htmlContent = "<div id=\"modal-header\">\n                            <h5>" + title + "</h5>\n                            <a class=\"modal_close\" id=\"logoutModalClose\" href=\"#hola\"></a>\n                        </div>\n                        <div class=\"modal-content\">\n                            <p>" + content + "</p>\n                        </div>\n                        <div class=\"modal-footer\">\n                            <a class=\"modal-action modal-close waves-effect waves-teal btn-flat btn2-unify\" id=\"btnYes\" href=\"#\">Yes</a>\n                            <a class=\"modal-action modal-close waves-effect waves-teal btn-flat btn2-unify\" id=\"btnNO\" href=\"#\">NO</a>\n                        </div>";
-        $u("#modal").html(htmlContent).css("width: " + w + "%;height: " + h + "px;text-align: center;");
-        //$('.modal-content').css('width: 350px;');
-        $u(".modal").css("width: 40% !important");
-        $u("#modal").show();
-        $u("#lean-overlay").show();
-        $u("#btnYes").on("click", function (e) {
-            e.preventDefault();
-            $u("#modal").hide();
-            $u("#lean-overlay").hide();
-            yesCb("YES");
-        });
-        $u("#btnNO").on("click", function (e) {
-            e.preventDefault();
-            $u("#modal").hide();
-            $u("#lean-overlay").hide();
-            noCb("NO");
-        });
-    };
-
-    ////////////////////////////////////////
-    // Format file size
-    ////////////////////////////////////////
-    var formatSize = function formatSize(bytes) {
-        if (bytes >= 1073741824) {
-            bytes = parseInt(bytes / 1000000000) + " GB";
-        } else if (bytes >= 1048576) {
-            bytes = parseInt(bytes / 1000000) + " MB";
-        } else if (bytes >= 1024) {
-            bytes = parseInt(bytes / 1000) + " KB";
-        } else if (bytes > 1) {
-            bytes = bytes + " bytes";
-        } else if (bytes == 1) {
-            bytes = bytes + " byte";
-        } else {
-            bytes = "0 byte";
-        }
-        return bytes;
-    };
-
-    ////////////////////////////////////////
-    // Render View Files & Folders
-    ////////////////////////////////////////
-    var renderFilesTable = function renderFilesTable(aFol, aFil) {
-        var newHtmlContent = "";
-        var tbodyContent = document.getElementById("tbl-files").getElementsByTagName("tbody")[0];
-
-        newHtmlContent += "<tr><td><span>&nbsp;</span></td>\n              <td><i class=\"fa fa-folder filesTable\"></i><a href=\"#\" id=\"goBackFolder\" class=\"file-Name typeFolder\">..</a></td>\n              <td>&nbsp;</td><td>&nbsp;</td></tr>";
-        aFol.forEach(function (val, idx, array) {
-            newHtmlContent += "<tr><td><div class=\"md-checkbox dashboard-path\"><input class=\"checkFolder check\" id=\"" + val.name + "\" type=\"checkbox\">\n              <label class=\"checkbox left\" for=\"" + val.name + "\"></label></div></td>";
-            newHtmlContent += "<td><i class=\"fa fa-folder filesTable\"></i><a href=\"#\" class=\"file-Name typeFolder\">" + val.name + "</a></td>";
-            newHtmlContent += "<td>&nbsp;</td><td>" + val.date + "</td></tr>";
-        });
-
-        aFil.forEach(function (val, idx, array) {
-            var fileSize = formatSize(val.size);
-            newHtmlContent += "<tr><td><div class=\"md-checkbox\"><input class=\"checkFile check\" id=\"" + val.name + "\" type=\"checkbox\">\n            <label class=\"checkbox left\" for=\"" + val.name + "\"></label></div></td>";
-            newHtmlContent += "<td><i class=\"fa fa-file filesTable\"></i><span class=\"typeFile\">" + val.name + "</span></td>";
-            newHtmlContent += "<td>" + fileSize + "</td><td>" + val.date + "</td></tr>";
-        });
-        tbodyContent.innerHTML = newHtmlContent;
-    };
-
-    ////////////////////////////////////////
-    // Refresh Files and Folders View
-    ////////////////////////////////////////
-    var refreshFilesTable = function refreshFilesTable(data) {
-        var tbodyContent = document.getElementById("tbl-files").getElementsByTagName("tbody")[0];
-
-        if (userData.RunMode === "DEBUG") console.log(data);
-        aFolders = [];
-        aFiles = [];
-        if (data.message) return null;
-        data.forEach(function (val, idx, array) {
-            var fileSize = val.size / 1024;
-            if (val.isFolder) {
-                aFolders.push({
-                    name: val.name,
-                    date: val.date
-                });
-            } else {
-                if (!val.name.startsWith("upload_")) {
-                    aFiles.push({
-                        name: val.name,
-                        size: val.size,
-                        date: val.date
-                    });
-                }
-            }
-        });
-        aFolders.sort(function (a, b) {
-            return a.name.localeCompare(b.name);
-        });
-        aFiles.sort(function (a, b) {
-            return a.date.localeCompare(b.date);
-        });
-
-        renderFilesTable(aFolders, aFiles);
-
-        $u(".file-Name").on("click", function (e) {
-            if (userData.RunMode === "DEBUG") console.log(e);
-            if (userData.RunMode === "DEBUG") console.log("Current Path: ", appData.currentPath);
-            var newPath = "";
-            if (e.target.innerText != "..") {
-                newPath = getNewPath(e.target.innerText);
-                if (userData.RunMode === "DEBUG") console.log("New Path: ", newPath.trim());
-                refreshPath(newPath.trim());
-                appData.currentPath = newPath.trim();
-                refreshBarMenu();
-            } else {
-                if (appData.currentPath !== appData.rootPath) goBackFolder(e.target.innerText);
-            }
-        });
-
-        $u(".check").on("click", function (e) {
-            console.log("check: ", e);
-            selectDeselect(e);
-            if (userData.RunMode === "DEBUG") {
-                console.log("checked: ", e.target.checked);
-                console.log(e.target.className.split(/\s+/).indexOf("checkFile"));
-                console.log(e.target.parentNode.parentNode.parentNode.rowIndex);
-                console.log(e.target.parentNode.children[1].htmlFor);
-            }
-        });
-
-        $u("#goBackFolder").on("click", function (e) {
-            e.preventDefault();
-            goBackFolder();
-        });
-    };
-
-    ////////////////////////////////////////
-    // Select / Deselect Files & Folders
-    ////////////////////////////////////////
-    var selectDeselect = function selectDeselect(e) {
-        var isChecked = e.target.checked;
-        var contentType = e.target.className.split(/\s+/).indexOf("checkFile");
-        var name = e.target.parentNode.children[1].htmlFor;
-        var size = e.target.parentNode.parentNode.parentNode.children[2].innerHTML;
-
-        if (contentType != -1) {
-            if (isChecked) {
-                appData.aSelectedFiles.name.push(name);
-                appData.aSelectedFiles.size.push(size);
-            } else {
-                var idx = appData.aSelectedFiles.name.indexOf(name);
-                if (idx > -1) {
-                    appData.aSelectedFiles.name.splice(idx, 1);
-                    appData.aSelectedFiles.size.splice(idx, 1);
-                }
-            }
-        } else {
-            if (isChecked) {
-                appData.aSelectedFolders.push(name);
-            } else {
-                var _idx = appData.aSelectedFolders.indexOf(name);
-                if (_idx > -1) {
-                    appData.aSelectedFolders.splice(_idx, 1);
-                }
-            }
-        }
-        if (userData.RunMode === "DEBUG") console.log(appData.aSelectedFiles, appData.aSelectedFolders);
-    };
-
-    ////////////////////////////////////////
-    // User Profile
-    ////////////////////////////////////////
-    var showUserProfile = function showUserProfile(w, h, t) {
-        var ModalTitle = t;
-        console.log('access string: ', userData.AccessString);
-        var ModalContent = "<table id=\"tableUserProfile\" class=\"striped highlight\">\n                    <tr><td>User Name:</td><td>" + userData.UserName + "</td></tr>\n                    <tr><td>User Role:</td><td>" + userData.UserRole + "</td></tr> \n                    <tr><td>Company Name:</td><td>" + userData.CompanyName + "</td></tr>\n                    <tr><td colspan=\"2\" style=\"text-align:center;border-botom:1px solid #CCC\">&nbsp;</td></tr>\n                    <tr><td>Allow new Folder:</td><td>";
-        ModalContent += userData.AccessString.addfolder === true ? "Allow" : "Deny";
-        ModalContent += "</td></tr>\n                    <tr><td>Allow Share Files:</td><td>";
-        ModalContent += userData.AccessString.sharefiles === true ? "Allow" : "Deny";
-        ModalContent += "</td></tr>\n                    <tr><td>Allow delete Folder:</td><td>";
-        ModalContent += userData.AccessString.deletefolder === true ? "Allow" : "Deny";
-        ModalContent += "</td></tr>\n                    <tr><td>Allow delete File:</td><td>";
-        ModalContent += userData.AccessString.deletefile === true ? "Allow" : "Deny";
-        ModalContent += "</td></tr>\n                    <tr><td>Allow Upload:</td><td>";
-        ModalContent += userData.AccessString.upload === true ? "Allow" : "Deny";
-        ModalContent += "</td></tr>\n                    <tr><td>Allow Download:</td><td>";
-        ModalContent += userData.AccessString.download === true ? "Allow" : "Deny";
-        ModalContent += "</td></tr>\n                </table>";
-        var htmlContent = "" + ModalContent;
-        /* $u("#modal")
+  ////////////////////////////////////////
+  // User Profile
+  ////////////////////////////////////////
+  var showUserProfile = function showUserProfile(w, h, t) {
+    var ModalTitle = t;
+    console.log("access string: ", userData.AccessString);
+    var ModalContent = "<table id=\"tableUserProfile\" class=\"striped highlight\">\n                    <tr><td>User Name:</td><td>" + userData.UserName + "</td></tr>\n                    <tr><td>User Role:</td><td>" + userData.UserRole + "</td></tr> \n                    <tr><td>Company Name:</td><td>" + userData.CompanyName + "</td></tr>\n                    <tr><td colspan=\"2\" style=\"text-align:center;border-botom:1px solid #CCC\">&nbsp;</td></tr>\n                    <tr><td>Allow new Folder:</td><td>";
+    ModalContent += userData.AccessString.addfolder === true ? "Allow" : "Deny";
+    ModalContent += "</td></tr>\n                    <tr><td>Allow Share Files:</td><td>";
+    ModalContent += userData.AccessString.sharefiles === true ? "Allow" : "Deny";
+    ModalContent += "</td></tr>\n                    <tr><td>Allow delete Folder:</td><td>";
+    ModalContent += userData.AccessString.deletefolder === true ? "Allow" : "Deny";
+    ModalContent += "</td></tr>\n                    <tr><td>Allow delete File:</td><td>";
+    ModalContent += userData.AccessString.deletefile === true ? "Allow" : "Deny";
+    ModalContent += "</td></tr>\n                    <tr><td>Allow Upload:</td><td>";
+    ModalContent += userData.AccessString.upload === true ? "Allow" : "Deny";
+    ModalContent += "</td></tr>\n                    <tr><td>Allow Download:</td><td>";
+    ModalContent += userData.AccessString.download === true ? "Allow" : "Deny";
+    ModalContent += "</td></tr>\n                </table>";
+    var htmlContent = "" + ModalContent;
+    /* $u("#modal")
           .html(htmlContent)
           .css("width: " + w + "%;height: " + h + "px;");
         $u("#modal").show();
@@ -572,56 +573,56 @@ window.appData = {
           $u("#lean-overlay").hide();
         }); */
 
-        var modalDialogOptions = {
-            cancel: true,
-            cancelText: "Close",
-            confirm: false,
-            confirmText: "",
-            type: '',
-            width: '400px'
-        };
-        (0, _modalDialog.modalDialog)("User Profile", htmlContent, modalDialogOptions);
+    var modalDialogOptions = {
+      cancel: true,
+      cancelText: "Close",
+      confirm: false,
+      confirmText: "",
+      type: "",
+      width: "400px"
+    };
+    (0, _modalDialog.modalDialog)("User Profile", htmlContent, modalDialogOptions);
+  };
+
+  ////////////////////////////////////////
+  // New Folder
+  ////////////////////////////////////////
+  var showNewFolder = function showNewFolder(w, h, t) {
+    var modalDialogOptions = {
+      cancel: true,
+      cancelText: "Cancel",
+      confirm: true,
+      confirmText: "OK",
+      type: "prompt",
+      width: "400px"
     };
 
-    ////////////////////////////////////////
-    // New Folder
-    ////////////////////////////////////////
-    var showNewFolder = function showNewFolder(w, h, t) {
-        var modalDialogOptions = {
-            cancel: true,
-            cancelText: "Cancel",
-            confirm: true,
-            confirmText: "OK",
-            type: 'prompt',
-            width: '400px'
-        };
+    modalDialogOptions.confirmCallBack = async function (e, data) {
+      if (userData.RunMode === "DEBUG") console.log("newFolderName: ", data);
+      if (data || data.trim() !== "") {
+        var parseFolderName = data.replace(/\s/g, "_");
+        (0, _fileManager.newFolder)(parseFolderName);
+      }
+    };
+    modalDialogOptions.cancelCallBack = async function (e, data) {
+      console.log(data);
+    };
+    (0, _modalDialog.modalDialog)("New Folder", "Folder Name", modalDialogOptions);
 
-        modalDialogOptions.confirmCallBack = async function (e, data) {
-            if (userData.RunMode === "DEBUG") console.log("newFolderName: ", data);
-            if (data || data.trim() !== '') {
-                var parseFolderName = data.replace(/\s/g, "_");
-                (0, _fileManager.newFolder)(parseFolderName);
-            }
-        };
-        modalDialogOptions.cancelCallBack = async function (e, data) {
-            console.log(data);
-        };
-        (0, _modalDialog.modalDialog)("New Folder", "Folder Name", modalDialogOptions);
-
-        /*  document.getElementById("newFolderName").addEventListener("keyup", e => {
+    /*  document.getElementById("newFolderName").addEventListener("keyup", e => {
            e.preventDefault();
            if (e.keyCode === 13) {
              document.getElementById("AcceptNewFolder").click();
            }
          }); */
-    };
+  };
 
-    ////////////////////////////////////////
-    // Change User Password
-    ////////////////////////////////////////
-    var showChangeUserPassword = function showChangeUserPassword(w, h, t) {
-        var ModalTitle = t;
-        /* let ModalContent = `<div class="row">
+  ////////////////////////////////////////
+  // Change User Password
+  ////////////////////////////////////////
+  var showChangeUserPassword = function showChangeUserPassword(w, h, t) {
+    var ModalTitle = t;
+    /* let ModalContent = `<div class="row">
                               <div class="input-field col s12">
                                 <input id="newpassword" type="password"/>
                                 <label for="newpassword">New Password</label>
@@ -631,7 +632,7 @@ window.appData = {
                                 <label for="newpassword2">Repeat Password</label>
                               </div>
                           </div>`;
-        let htmlContent = `<div id="modal-header">
+    let htmlContent = `<div id="modal-header">
                           <h5><i class="fas fa-user-lock icon-title"></i>${ModalTitle}</h5>
                         <a class="modal_close" id="modalClose" href="#hola"></a>
                       </div>
@@ -642,44 +643,44 @@ window.appData = {
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
                           <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptChangeUserPassword" href="#!">Accept</a>
                       </div>    `;
-        */
-        var modalDialogOptions = {
-            cancel: true,
-            cancelText: "Cancel",
-            confirm: true,
-            confirmText: "OK",
-            type: 'changePassword',
-            width: '340px'
-        };
-        modalDialogOptions.confirmCallBack = async function (e, data1, data2) {
-            await _axios2.default.post("/changepasswd", {
-                username: userData.UserName,
-                newpassword: _jsBase.Base64.encode((0, _md2.default)(data1))
-            }, {
-                headers: {
-                    Authorization: "Bearer " + userData.Token,
-                    "Content-Type": "application/json"
-                },
-                timeout: 290000
-            }).then(function (d) {
-                $u("#waiting").removeClass("active");
-                if (userData.RunMode === "DEBUG") console.log("changePassword: ", d);
-                if (d.data.status === "FAIL") {
-                    showToast("Change User Password", d.data.message, "error");
-                    d.querySelector("#message").innerHTML = d.data.message;
-                } else {
-                    showToast("Change User Password", d.data.message, "success");
-                    if (userData.RunMode === "DEBUG") console.log(d.data.message);
-                }
-            }).catch(function (e) {
-                $u("#waiting").removeClass("active");
-                showToast("Change User Password", e, "error");
-                if (userData.RunMode === "DEBUG") console.log(e);
-            });
-        };
-        (0, _modalDialog.modalDialog)("Change User Password", '<div class="input-field">' + '<input id="newpassword" class="ModalDialog-input" type="password"/>' + '<label for="newpassword" class="ModalDialog-label">New Password</label>' + '</div>' + '<div class="input-field">' + '<input id="newpassword2" class="ModalDialog-input" type="password"/>' + '<label for="newpassword2" class="ModalDialog-label">Repeat Password</label>' + '</div>', modalDialogOptions);
+    */
+    var modalDialogOptions = {
+      cancel: true,
+      cancelText: "Cancel",
+      confirm: true,
+      confirmText: "OK",
+      type: "changePassword",
+      width: "340px"
+    };
+    modalDialogOptions.confirmCallBack = async function (e, data1, data2) {
+      await _axios2.default.post("/changepasswd", {
+        username: userData.UserName,
+        newpassword: _jsBase.Base64.encode((0, _md2.default)(data1))
+      }, {
+        headers: {
+          Authorization: "Bearer " + userData.Token,
+          "Content-Type": "application/json"
+        },
+        timeout: 290000
+      }).then(function (d) {
+        $u("#waiting").removeClass("active");
+        if (userData.RunMode === "DEBUG") console.log("changePassword: ", d);
+        if (d.data.status === "FAIL") {
+          showToast("Change User Password", d.data.message, "error");
+          d.querySelector("#message").innerHTML = d.data.message;
+        } else {
+          showToast("Change User Password", d.data.message, "success");
+          if (userData.RunMode === "DEBUG") console.log(d.data.message);
+        }
+      }).catch(function (e) {
+        $u("#waiting").removeClass("active");
+        showToast("Change User Password", e, "error");
+        if (userData.RunMode === "DEBUG") console.log(e);
+      });
+    };
+    (0, _modalDialog.modalDialog)("Change User Password", '<div class="input-field">' + '<input id="newpassword" class="ModalDialog-input" type="password"/>' + '<label for="newpassword" class="ModalDialog-label">New Password</label>' + "</div>" + '<div class="input-field">' + '<input id="newpassword2" class="ModalDialog-input" type="password"/>' + '<label for="newpassword2" class="ModalDialog-label">Repeat Password</label>' + "</div>", modalDialogOptions);
 
-        /* $u("#modal").html(htmlContent);
+    /* $u("#modal").html(htmlContent);
         $u("#modal").removeClass("modal-changePassword");
         $u("#modal").addClass("modal-changePassword");
         $u(".modal-changePassword").css("height: " + h + "px;text-align: center;");
@@ -701,330 +702,330 @@ window.appData = {
           $u("#modal").hide();
           $u("#lean-overlay").hide();
         }); */
-    };
+  };
 
-    var refreshBarMenu = function refreshBarMenu() {
-        if (userData.AccessString.addfolder === true) {
-            $u("#newFolder").removeClass("disabled");
-        } else {
-            $u("#newFolder").removeClass("disabled");
-            $u("#newFolder").addClass("disabled");
-        }
-        if (userData.AccessString.deletefolder === true && userData.AccessString.deletefile === true) {
-            $u("#delete").removeClass("disabled");
-        } else {
-            $u("#delete").removeClass("disabled");
-            $u("#delete").addClass("disabled");
-        }
-        if (userData.AccessString.sharefiles === true) {
-            $u("#share").removeClass("disabled");
-        } else {
-            $u("#share").removeClass("disabled");
-            $u("#share").addClass("disabled");
-        }
-        if (userData.AccessString.upload == true) {
-            $u("#upload").removeClass("disabled");
-        } else {
-            $u("#upload").removeClass("disabled");
-            $u("#upload").addClass("disabled");
-        }
+  var refreshBarMenu = function refreshBarMenu() {
+    if (userData.AccessString.addfolder === true) {
+      $u("#newFolder").removeClass("disabled");
+    } else {
+      $u("#newFolder").removeClass("disabled");
+      $u("#newFolder").addClass("disabled");
+    }
+    if (userData.AccessString.deletefolder === true && userData.AccessString.deletefile === true) {
+      $u("#delete").removeClass("disabled");
+    } else {
+      $u("#delete").removeClass("disabled");
+      $u("#delete").addClass("disabled");
+    }
+    if (userData.AccessString.sharefiles === true) {
+      $u("#share").removeClass("disabled");
+    } else {
+      $u("#share").removeClass("disabled");
+      $u("#share").addClass("disabled");
+    }
+    if (userData.AccessString.upload == true) {
+      $u("#upload").removeClass("disabled");
+    } else {
+      $u("#upload").removeClass("disabled");
+      $u("#upload").addClass("disabled");
+    }
 
-        if (userData.AccessString.download == true) {
-            $u("#download").removeClass("disabled");
-        } else {
-            $u("#download").removeClass("disabled");
-            $u("#download").addClass("disabled");
-        }
-        if (userData.UserRole.toUpperCase() == "ADMIN") {
-            $u("#settings").removeClass("hide");
-        } else {
-            $u("#settings").addClass("hide");
-        }
-        $u("#usertrigger").html(userData.UserName);
-    };
+    if (userData.AccessString.download == true) {
+      $u("#download").removeClass("disabled");
+    } else {
+      $u("#download").removeClass("disabled");
+      $u("#download").addClass("disabled");
+    }
+    if (userData.UserRole.toUpperCase() == "ADMIN") {
+      $u("#settings").removeClass("hide");
+    } else {
+      $u("#settings").addClass("hide");
+    }
+    $u("#usertrigger").html(userData.UserName);
+  };
 
-    $u("#selectAllFiles").on("click", function (e) {
-        selectAll(e.target.htmlFor);
-    });
+  $u("#selectAllFiles").on("click", function (e) {
+    selectAll(e.target.htmlFor);
+  });
 
-    var userTrigger = function userTrigger() {
-        if (userData.RunMode === "DEBUG") console.log($u("#Usersdropdown").css("display"));
-        var position1 = document.getElementById("usertrigger").offsetLeft;
-        var position2 = document.getElementById("usertrigger").offsetWidth;
-        if (userData.RunMode === "DEBUG") console.log("position1: ", position1);
-        if (userData.RunMode === "DEBUG") console.log("position2: ", position2);
-        var newPosition = parseInt(position1 + position2) + "px";
-        if (userData.RunMode === "DEBUG") console.log("newPosition: ", newPosition);
-        if (userData.RunMode === "DEBUG") console.log("Desiplay: ", $u("#Usersdropdown").css("display"));
-        if ($u("#Usersdropdown").css("display") === "block" || $u("#Usersdropdown").css("display") == "") {
-            $u("#usertrigger").removeClass("selected");
-            $u("#Usersdropdown").hide();
-        } else {
-            $u("#usertrigger").addClass("selected");
-            document.getElementById("Usersdropdown").style.right = position2 + 10 + "px";
-            document.getElementById("Usersdropdown").style.top = "60px";
-            $u("#Usersdropdown").show();
-        }
-    };
+  var userTrigger = function userTrigger() {
+    if (userData.RunMode === "DEBUG") console.log($u("#Usersdropdown").css("display"));
+    var position1 = document.getElementById("usertrigger").offsetLeft;
+    var position2 = document.getElementById("usertrigger").offsetWidth;
+    if (userData.RunMode === "DEBUG") console.log("position1: ", position1);
+    if (userData.RunMode === "DEBUG") console.log("position2: ", position2);
+    var newPosition = parseInt(position1 + position2) + "px";
+    if (userData.RunMode === "DEBUG") console.log("newPosition: ", newPosition);
+    if (userData.RunMode === "DEBUG") console.log("Desiplay: ", $u("#Usersdropdown").css("display"));
+    if ($u("#Usersdropdown").css("display") === "block" || $u("#Usersdropdown").css("display") == "") {
+      $u("#usertrigger").removeClass("selected");
+      $u("#Usersdropdown").hide();
+    } else {
+      $u("#usertrigger").addClass("selected");
+      document.getElementById("Usersdropdown").style.right = position2 + 10 + "px";
+      document.getElementById("Usersdropdown").style.top = "60px";
+      $u("#Usersdropdown").show();
+    }
+  };
 
-    /////////////////////////////////////////
-    //  Events handlers
-    /////////////////////////////////////////
+  /////////////////////////////////////////
+  //  Events handlers
+  /////////////////////////////////////////
 
-    // Add User
+  // Add User
 
-    $u("#userAdd").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) (0, _user.showAddUserForm)("New User", null);
-    });
+  $u("#userAdd").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) (0, _user.showAddUserForm)("New User", null);
+  });
 
-    // Edit user
+  // Edit user
 
-    $u("#userMod").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) (0, _user.editUser)();
-    });
+  $u("#userMod").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) (0, _user.editUser)();
+  });
 
-    // Edit App Settings
+  // Edit App Settings
 
-    $u("#settings").on("click", function (e) {
-        e.preventDefault();
-        if (userData.RunMode === "DEBUG") console.log(e);
-        console.log("setting left:", $u(e.target.id).position().left);
-        if (userData.RunMode === "DEBUG") console.log("settingdropdown left:", $u("#Settingdropdown").css("left"));
-        if (userData.RunMode === "DEBUG") console.log($u("#Settingdropdown").css("display"));
-        var position = document.querySelector("#settings").offsetLeft;
-        if (userData.RunMode === "DEBUG") console.log("position: ", position);
-        var newPosition = position + "px";
-        if ($u("#Settingdropdown").css("display") === "block") {
-            document.getElementById("settings").classList ? document.getElementById("settings").classList.remove("selected") : document.getElementById("settings").className = "";
-            //document.getElementById('Settingdropdown').classList.remove('setting');
-            document.getElementById("Settingdropdown").style.display = "none";
-        } else {
-            if (!$u("#settings").hasClass("selected")) {
-                $u("#settings").addClass("selected");
-            }
-            //addClass(document.getElementById('Settingdropdown'),'setting');
-            document.getElementById("Settingdropdown").style.left = newPosition;
-            document.getElementById("Settingdropdown").style.display = "block";
-            if (userData.RunMode === "DEBUG") console.log("newPosition: ", newPosition);
-            if (userData.RunMode === "DEBUG") console.log("Settingdropdown new position", document.getElementById("Settingdropdown").style.left);
-        }
-    });
+  $u("#settings").on("click", function (e) {
+    e.preventDefault();
+    if (userData.RunMode === "DEBUG") console.log(e);
+    console.log("setting left:", $u(e.target.id).position().left);
+    if (userData.RunMode === "DEBUG") console.log("settingdropdown left:", $u("#Settingdropdown").css("left"));
+    if (userData.RunMode === "DEBUG") console.log($u("#Settingdropdown").css("display"));
+    var position = document.querySelector("#settings").offsetLeft;
+    if (userData.RunMode === "DEBUG") console.log("position: ", position);
+    var newPosition = position + "px";
+    if ($u("#Settingdropdown").css("display") === "block") {
+      document.getElementById("settings").classList ? document.getElementById("settings").classList.remove("selected") : document.getElementById("settings").className = "";
+      //document.getElementById('Settingdropdown').classList.remove('setting');
+      document.getElementById("Settingdropdown").style.display = "none";
+    } else {
+      if (!$u("#settings").hasClass("selected")) {
+        $u("#settings").addClass("selected");
+      }
+      //addClass(document.getElementById('Settingdropdown'),'setting');
+      document.getElementById("Settingdropdown").style.left = newPosition;
+      document.getElementById("Settingdropdown").style.display = "block";
+      if (userData.RunMode === "DEBUG") console.log("newPosition: ", newPosition);
+      if (userData.RunMode === "DEBUG") console.log("Settingdropdown new position", document.getElementById("Settingdropdown").style.left);
+    }
+  });
 
-    // Hide User Options Panel
+  // Hide User Options Panel
 
-    $u("#Usersdropdown").on("mouseleave", function () {
-        $u("#Usersdropdown").hide();
-        $u("#usertrigger").removeClass("selected");
-    });
-    $u("#Settingdropdown").on("mouseleave", function () {
-        $u("#Settingdropdown").hide();
-        $u("#settings").removeClass("selected");
-    });
+  $u("#Usersdropdown").on("mouseleave", function () {
+    $u("#Usersdropdown").hide();
+    $u("#usertrigger").removeClass("selected");
+  });
+  $u("#Settingdropdown").on("mouseleave", function () {
+    $u("#Settingdropdown").hide();
+    $u("#settings").removeClass("selected");
+  });
 
-    // User Options
+  // User Options
 
-    $u("#usertrigger").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) userTrigger();
-    });
+  $u("#usertrigger").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) userTrigger();
+  });
 
-    // Refresh view
+  // Refresh view
 
-    $u("#refresh").on("click", function (e) {
-        e.preventDefault();
-        refreshPath(appData.currentPath);
-    });
+  $u("#refresh").on("click", function (e) {
+    e.preventDefault();
+    refreshPath(appData.currentPath);
+  });
 
-    // Share File
+  // Share File
 
-    $u("#share").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            if (appData.aSelectedFiles.name.length > 0) {
-                /* if (appData.aSelectedFiles.length > 1) {
+  $u("#share").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      if (appData.aSelectedFiles.name.length > 0) {
+        /* if (appData.aSelectedFiles.length > 1) {
                     showToast(
                         "Share File",
                         "No pueden seleccionarse más de un archivo",
                         "warning"
                     );
                 } */
-                (0, _fileManager.shareFile)();
-            } else {
-                showToast("Share File", "No se ha seleccionado archivo para compartir", "warning");
-            }
+        (0, _fileManager.shareFile)();
+      } else {
+        showToast("Share File", "No se ha seleccionado archivo para compartir", "warning");
+      }
+    }
+  });
+
+  // User Logout
+
+  $u("#userLogout").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#Usersdropdown").hide();
+      var modalDialogOptions = {
+        cancel: true,
+        cancelText: "No",
+        confirm: true,
+        confirmText: "Yes",
+        type: "",
+        width: "400px"
+      };
+
+      modalDialogOptions.confirmCallBack = async function (e, data) {
+        if (userData.RunMode === "DEBUG") console.log("data: ", data);
+        logout();
+      };
+      modalDialogOptions.cancelCallBack = async function (e, data) {
+        console.log(data);
+      };
+      (0, _modalDialog.modalDialog)("Close User session", "Do you want to exit?", modalDialogOptions);
+    } else {
+      showToast("User Logout", "Opcion no permitida", "error");
+    }
+  });
+
+  // Show modal User Logout
+
+  $u("#ModalUserLogout").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#logoutmodal").hide();
+      logout();
+    } else {
+      showToast("User Logout", "Opcion no permitida", "error");
+    }
+  });
+
+  // Show Modal Dialog Change User Password
+
+  $u("#userChangePassword").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#Usersdropdown").hide();
+      showChangeUserPassword(32, 380, "Change User Password");
+    } else {
+      showToast("Change User Password", "Opcion no permitida", "error");
+    }
+  });
+
+  // Manage Shared Files
+
+  $u("#userSharedFiles").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#Usersdropdown").hide();
+      (0, _fileManager.showSharedFiles)(32, 380, "Manage Shared Files");
+    } else {
+      showToast("Change User Password", "Opcion no permitida", "error");
+    }
+  });
+
+  // Show User Profile
+
+  $u("#userProfile").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#Usersdropdown").hide();
+      showUserProfile(40, 440, "User Profile");
+    } else {
+      showToast("User Profile", "Opcion no permitida", "error");
+    }
+  });
+
+  // Cancel Modal Dialog option
+
+  $u("#cancel").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      $u("#logoutmodal").hide();
+    } else {
+      showToast("User Logout", "Opcion no permitida", "error");
+    }
+  });
+
+  // Go to Home Path
+
+  $u("#home").on("click", function (e) {
+    e.preventDefault();
+    console.log(e);
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      appData.currentPath = appData.rootPath;
+      refreshPath(appData.currentPath);
+    } else {
+      showToast("Home", "Opcion no permitida", "error");
+    }
+  });
+
+  // Show Modal Dialog Add New Folder
+
+  $u("#newFolder").on("click", function (e) {
+    e.preventDefault();
+    console.log(e);
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      showNewFolder(32, 440, "New Folder");
+    } else {
+      showToast("New Folder", "Opcion no permitida", "error");
+    }
+  });
+
+  // Delete Files / Folders
+
+  $u("#delete").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      if (appData.aSelectedFolders.length > 0 || appData.aSelectedFiles.name.length > 0) {
+        (0, _fileManager.deleteSelected)();
+      } else {
+        showToast("Delete", "No se han seleccionado archivos o carpetas", "error");
+      }
+    }
+  });
+
+  // Upload Files
+
+  $u("#upload").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      (0, _fileManager.upload)(userData.Token);
+    } else {
+      showToast("Upload", "Opcion no permitida", "error");
+    }
+  });
+
+  // Download Files
+
+  $u("#download").on("click", function (e) {
+    e.preventDefault();
+    if (!$u("#" + e.target.id).hasClass("disabled")) {
+      if (appData.aSelectedFiles.name.length > 0) {
+        if (appData.aSelectedFiles.name.length > 5) {
+          showToast("Download", "No se pueden descargar más de 5 archivos a la vez", "error");
         }
-    });
+        (0, _fileManager.download)(appData.aSelectedFiles, "File");
+        //socketDownloadFile(appData.aSelectedFiles, "File");
+      } else {
+        showToast("Download", "No se han seleccionado archivos para descargar", "error");
+      }
+    } else {
+      showToast("Download", "Opcion no permitida", "error");
+    }
+  });
 
-    // User Logout
+  ///////////////////////////////////
+  //  End event handlers
+  ///////////////////////////////////
 
-    $u("#userLogout").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            $u("#Usersdropdown").hide();
-            var modalDialogOptions = {
-                cancel: true,
-                cancelText: "No",
-                confirm: true,
-                confirmText: "Yes",
-                type: '',
-                width: '400px'
-            };
+  $u("#usertrigger").html(userData.UserName);
+  $u("#usertrigger").attr("title", "Empresa: " + userData.CompanyName);
 
-            modalDialogOptions.confirmCallBack = async function (e, data) {
-                if (userData.RunMode === "DEBUG") console.log("data: ", data);
-                logout();
-            };
-            modalDialogOptions.cancelCallBack = async function (e, data) {
-                console.log(data);
-            };
-            (0, _modalDialog.modalDialog)("Close User session", "Do you want to exit?", modalDialogOptions);
-        } else {
-            showToast("User Logout", "Opcion no permitida", "error");
-        }
-    });
+  $u("#waiting").removeClass("active");
 
-    // Show modal User Logout
+  console.log(userData.AccessString);
 
-    $u("#ModalUserLogout").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            $u("#logoutmodal").hide();
-            logout();
-        } else {
-            showToast("User Logout", "Opcion no permitida", "error");
-        }
-    });
-
-    // Show Modal Dialog Change User Password
-
-    $u("#userChangePassword").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            $u("#Usersdropdown").hide();
-            showChangeUserPassword(32, 380, "Change User Password");
-        } else {
-            showToast("Change User Password", "Opcion no permitida", "error");
-        }
-    });
-
-    // Manage Shared Files
-
-    $u("#userSharedFiles").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            $u("#Usersdropdown").hide();
-            (0, _fileManager.showSharedFiles)(32, 380, "Manage Shared Files");
-        } else {
-            showToast("Change User Password", "Opcion no permitida", "error");
-        }
-    });
-
-    // Show User Profile
-
-    $u("#userProfile").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            $u("#Usersdropdown").hide();
-            showUserProfile(40, 440, "User Profile");
-        } else {
-            showToast("User Profile", "Opcion no permitida", "error");
-        }
-    });
-
-    // Cancel Modal Dialog option
-
-    $u("#cancel").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            $u("#logoutmodal").hide();
-        } else {
-            showToast("User Logout", "Opcion no permitida", "error");
-        }
-    });
-
-    // Go to Home Path
-
-    $u("#home").on("click", function (e) {
-        e.preventDefault();
-        console.log(e);
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            appData.currentPath = appData.rootPath;
-            refreshPath(appData.currentPath);
-        } else {
-            showToast("Home", "Opcion no permitida", "error");
-        }
-    });
-
-    // Show Modal Dialog Add New Folder
-
-    $u("#newFolder").on("click", function (e) {
-        e.preventDefault();
-        console.log(e);
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            showNewFolder(32, 440, "New Folder");
-        } else {
-            showToast("New Folder", "Opcion no permitida", "error");
-        }
-    });
-
-    // Delete Files / Folders
-
-    $u("#delete").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            if (appData.aSelectedFolders.length > 0 || appData.aSelectedFiles.name.length > 0) {
-                (0, _fileManager.deleteSelected)();
-            } else {
-                showToast("Delete", "No se han seleccionado archivos o carpetas", "error");
-            }
-        }
-    });
-
-    // Upload Files
-
-    $u("#upload").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            (0, _fileManager.upload)(userData.Token);
-        } else {
-            showToast("Upload", "Opcion no permitida", "error");
-        }
-    });
-
-    // Download Files
-
-    $u("#download").on("click", function (e) {
-        e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            if (appData.aSelectedFiles.name.length > 0) {
-                if (appData.aSelectedFiles.name.length > 5) {
-                    showToast("Download", "No se pueden descargar más de 5 archivos a la vez", "error");
-                }
-                //download(appData.aSelectedFiles, "File");
-                (0, _fileManager.socketDownloadFile)(appData.aSelectedFiles, "File");
-            } else {
-                showToast("Download", "No se han seleccionado archivos para descargar", "error");
-            }
-        } else {
-            showToast("Download", "Opcion no permitida", "error");
-        }
-    });
-
-    ///////////////////////////////////
-    //  End event handlers
-    ///////////////////////////////////
-
-    $u("#usertrigger").html(userData.UserName);
-    $u("#usertrigger").attr("title", "Empresa: " + userData.CompanyName);
-
-    $u("#waiting").removeClass("active");
-
-    console.log(userData.AccessString);
-
-    refreshPath(appData.currentPath);
-    refreshBarMenu();
+  refreshPath(appData.currentPath);
+  refreshBarMenu();
 })(window, document);
 
 },{"./modules/fileManager":2,"./modules/general":3,"./modules/user":4,"./vendor/js-cookie":6,"./vendor/md5.min":7,"./vendor/modalDialog":8,"axios":27,"babel-polyfill":52,"js-base64":471}],2:[function(require,module,exports){
@@ -1781,36 +1782,93 @@ function socketDownloadFile(fileList, text) {
 }
 
 function download(fileList, text) {
+  var _Download_Loop = function _Download_Loop(d) {
+    _axios2.default.post("/files/download", d, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + userData.Token
+      },
+      timeout: 30000
+    }).then(function (data) {
+      var file = new Blob([data], { type: type });
+      if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, d.name);else {
+        // Others
+        var a = document.createElement("a"),
+            url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = d.name;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 0);
+      }
+    }).catch(function (e) {});
+  };
+  for (var i = 0; i < fileList.name.length; i++) {
+    var downloadData = { "name": fileList.name[i],
+      "path": userData.RealRootPath,
+      "size": fileList.size[i],
+      "userName": userData.UserName };
+    _Download_Loop(downloadData);
+  }
+};
 
-  !streamSaver.supported && prompt('ReadableStream is not supported, you can enable it in chrome, or wait until v52', 'chrome://flags/#enable-experimental-web-platform-features');
+/* export function download(fileList, text) {
 
-  var reqList = [],
-      handlerCounter = 0,
-      responseTimeout = [];
-  var w = 32;
-  var h = 440;
-  var ModalTitle = "Download selected files";
-  var ModalContent = htmlUploadDownloadTemplate;
-  var htmlContent = "\n    <div class=\"ModalDialog-alert\">\n      <div class=\"ModalDialog-mask\"></div>\n      <div class=\"ModalDialog-body download\">\n        <div class=\"ModalDialog-title\">\n          " + ModalTitle + "\n        </div>\n        <a class=\"modal_close\" id=\"modalClose\" href=\"#\"></a>\n        <div class=\"ModalDialog-container\">\n          <div class=\"files-progress-content\">\n            " + ModalContent + "\n          </div>\n        </div>      \n        <div class=\"ModalDialog-button\">\n              <!--<input type=\"text\" hidden id=\"destPath\" name=\"destPath\" value=\"\"/>-->\n              <a class=\"modal-action modal-close waves-effect waves-teal btn-flat btn2-unify disabled\" id=\"btnCancelAll\" href=\"#!\">Cancel Downloads</a>  \n              <a class=\"modal-action modal-close waves-effect waves-teal btn-flat btn2-unify\" id=\"btnCloseDownload\" href=\"#!\">Close</a>\n        </div>\n      </div>\n    </div>";
+  !streamSaver.supported && prompt(
+    'ReadableStream is not supported, you can enable it in chrome, or wait until v52',
+    'chrome://flags/#enable-experimental-web-platform-features'
+  )
 
-  var element = document.createElement("div");
+  let reqList = [],
+    handlerCounter = 0,
+    responseTimeout = [];
+  let w = 32;
+  let h = 440;
+  let ModalTitle = "Download selected files";
+  let ModalContent = htmlUploadDownloadTemplate;
+  let htmlContent = `
+    <div class="ModalDialog-alert">
+      <div class="ModalDialog-mask"></div>
+      <div class="ModalDialog-body download">
+        <div class="ModalDialog-title">
+          ${ModalTitle}
+        </div>
+        <a class="modal_close" id="modalClose" href="#"></a>
+        <div class="ModalDialog-container">
+          <div class="files-progress-content">
+            ${ModalContent}
+          </div>
+        </div>      
+        <div class="ModalDialog-button">
+              <!--<input type="text" hidden id="destPath" name="destPath" value=""/>-->
+              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify disabled" id="btnCancelAll" href="#!">Cancel Downloads</a>  
+              <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="btnCloseDownload" href="#!">Close</a>
+        </div>
+      </div>
+    </div>`;
+
+  let element = document.createElement("div");
   element.id = "ModalDialog-wrap";
   element.innerHTML = htmlContent;
   document.body.appendChild(element);
 
-  var _closeModal = function _closeModal() {
-    var el = document.querySelector("#ModalDialog-wrap");
+  const _closeModal = () => {
+    let el = document.querySelector("#ModalDialog-wrap");
     el.parentNode.removeChild(el);
     document.querySelector("#download").classList.remove("disabled");
     _deselectAllFiles();
   };
 
-  document.querySelector("#btnCloseDownload").addEventListener("click", function (e) {
+  document.querySelector("#btnCloseDownload").addEventListener("click", e => {
     e.preventDefault();
     _closeModal();
   });
 
-  document.querySelector("#modalClose").addEventListener("click", function (e) {
+  document.querySelector("#modalClose").addEventListener("click", e => {
     e.preventDefault();
     _closeModal();
   });
@@ -1819,28 +1877,34 @@ function download(fileList, text) {
   document.querySelector("#download").classList.add("disabled");
   document.querySelector("#waiting").classList.add("active");
 
-  document.querySelector("#btnCancelAll").addEventListener("click", function (e) {
-    for (var x = 0; x < reqList.length; x++) {
+  document.querySelector("#btnCancelAll").addEventListener("click", e => {
+    for (let x = 0; x < reqList.length; x++) {
       if (reqList[x]) {
         reqList[x].abort();
-        var percentLabel = document.querySelector("#percent" + x);
-        var progressBar = document.querySelector("#progress-bar" + x);
+        let percentLabel = document.querySelector("#percent" + x);
+        let progressBar = document.querySelector("#progress-bar" + x);
         _showAbortMessage(progressBar, "Canceled by user");
         percentLabel.innerHTML = "";
         //audit(userData.UserName,'DOWNLOAD',fileList[x] + ' ->Download canceled by User','FAIL');
-        console.log("AUDIT: " + userData.UserName + "DOWNLOAD" + fileList.name[x] + " ->Upload canceled by User,FAIL");
+        console.log(
+          "AUDIT: " +
+            userData.UserName +
+            "DOWNLOAD" +
+            fileList.name[x] +
+            " ->Upload canceled by User,FAIL"
+        );
       }
     }
     document.querySelector("#btnCancelAll").classList.add("disabled");
   });
 
-  [].forEach.call(document.querySelectorAll(".file-abort"), function (el) {
-    document.querySelector("#" + el.id).addEventListener("click", function (e) {
+  [].forEach.call(document.querySelectorAll(".file-abort"), function(el) {
+    document.querySelector("#" + el.id).addEventListener("click", function(e) {
       e.preventDefault();
-      var n = parseInt(e.target.id.slice(-1));
+      let n = parseInt(e.target.id.slice(-1));
       reqList[n].abort();
-      var percentLabel = document.querySelector("#percent" + n);
-      var progressBar = document.querySelector("#progress-bar" + n);
+      let percentLabel = document.querySelector("#percent" + n);
+      let progressBar = document.querySelector("#progress-bar" + n);
       _showAbortMessage(progressBar, "Canceled by user");
       percentLabel.innerHTML = "";
       document.querySelector("#abort" + n).style.display = "none";
@@ -1851,55 +1915,89 @@ function download(fileList, text) {
       }
       document.querySelector("#upload").classList.remove("disabled");
       //audit(userData.UserName,'DOWNLOAD',fileList[n] + ' ->Download canceled by User','FAIL');
-      console.log("AUDIT: " + userData.UserName + "DOWNLOAD" + fileList.name[n] + " ->Upload canceled by User,FAIL");
+      console.log(
+        "AUDIT: " +
+          userData.UserName +
+          "DOWNLOAD" +
+          fileList.name[n] +
+          " ->Upload canceled by User,FAIL"
+      );
     });
   });
 
-  var _Download_Loop = function _Download_Loop(i) {
-    var fName = fileList.name[i];
-    var fSize = fileList.size[i];
-    var liNumber = document.querySelector("#li" + i);
-    var liFilename = document.querySelector("#li-filename" + i);
-    var progressBar = document.querySelector("#progress-bar" + i);
-    var percentLabel = document.querySelector("#percent" + i);
+  let _Download_Loop = i => {
+    let fName = fileList.name[i];
+    let fSize = fileList.size[i];
+    let liNumber = document.querySelector("#li" + i);
+    let liFilename = document.querySelector("#li-filename" + i);
+    let progressBar = document.querySelector("#progress-bar" + i);
+    let percentLabel = document.querySelector("#percent" + i);
     responseTimeout[i] = false;
-    fName = fName.split("\\").pop().split("/").pop();
+    fName = fName
+      .split("\\")
+      .pop()
+      .split("/")
+      .pop();
     reqList[i] = new XMLHttpRequest();
     reqList[i].open("POST", "/files/download", true);
     reqList[i].responseType = "blob";
     liNumber.style.display = "block";
     liFilename.innerHTML = fName;
     reqList[i].timeout = 36000;
-    reqList[i].ontimeout = function () {
+    reqList[i].ontimeout = function() {
       // Download Timeout
-      if (userData.RunMode === "DEBUG") console.log("** Timeout error ->File:" + fName + " " + reqList[i].status + " " + reqList[i].statusText);
+      if (userData.RunMode === "DEBUG")
+        console.log(
+          "** Timeout error ->File:" +
+            fName +
+            " " +
+            reqList[i].status +
+            " " +
+            reqList[i].statusText
+        );
       // handlerCount = handlerCount - 1
       _showAbortMessage(progressBar, "Timeout Error");
       progressBar.classList.add("blink");
       responseTimeout[i] = true;
     };
-    reqList[i].onprogress = function (evt) {
+    reqList[i].onprogress = function(evt) {
       // Download progress
       if (evt.lengthComputable) {
-        var percentComplete = parseInt(evt.loaded / evt.total * 100);
+        let percentComplete = parseInt((evt.loaded / evt.total) * 100);
         progressBar.style.width = percentComplete + "%";
         percentLabel.innerHTML = percentComplete + "%";
       }
     };
-    reqList[i].onabort = function () {
+    reqList[i].onabort = function() {
       // Download abort
-      showToast("Download File", "Descarga de archivo " + fName + " cancelada", "warning");
+      showToast(
+        "Download File",
+        "Descarga de archivo " + fName + " cancelada",
+        "warning"
+      );
     };
-    reqList[i].onerror = function () {
+    reqList[i].onerror = function() {
       // Download error
-      if (userData.RunMode === "DEBUG") console.log("** An error occurred during the transaction ->File:" + fName + " " + req.status + " " + req.statusText);
+      if (userData.RunMode === "DEBUG")
+        console.log(
+          "** An error occurred during the transaction ->File:" +
+            fName +
+            " " +
+            req.status +
+            " " +
+            req.statusText
+        );
       handlerCounter = handlerCounter - 1;
       percentLabel.innerHTML = "Error";
       percentLabel.style.color = "red";
       document.querySelector("#abort" + i).style.display = "none";
-      showToast("Download File", "Error al descargar archivo " + fName + " " + req.statusText, "error");
+      showToast(
+        "Download File",
+        "Error al descargar archivo " + fName + " " + req.statusText,
+        "error"
+      );
     };
-    reqList[i].onloadend = function (e) {
+    reqList[i].onloadend = function(e) {
       // Download End
       console.log("File n:" + i + " ->", reqList[i].readyState);
       handlerCounter = handlerCounter - 1;
@@ -1912,35 +2010,40 @@ function download(fileList, text) {
         document.querySelector("#btnCancelAll").classList.add("disabled");
       }
     };
-    reqList[i].onloadstart = function () {
+    reqList[i].onloadstart = function() {
       handlerCounter = handlerCounter + 1;
       progressBar.style.width = "0";
       percentLabel.innerHTML = "0%";
     };
-    reqList[i].onload = function () {
+    reqList[i].onload = function() {
       if (reqList[i].readyState === 4 && reqList[i].status === 200) {
-        showToast("Download File", "Archivo " + fName + " descargado", "success");
-        var filename = "";
-        var disposition = reqList[i].getResponseHeader("Content-Disposition");
+        showToast(
+          "Download File",
+          "Archivo " + fName + " descargado",
+          "success"
+        );
+        let filename = "";
+        let disposition = reqList[i].getResponseHeader("Content-Disposition");
         if (disposition && disposition.indexOf("attachment") !== -1) {
-          var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-          var matches = filenameRegex.exec(disposition);
-          if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, "");
+          let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+          let matches = filenameRegex.exec(disposition);
+          if (matches != null && matches[1])
+            filename = matches[1].replace(/['"]/g, "");
         }
-        var type = reqList[i].getResponseHeader("Content-Type");
-        var blob = new Blob([this.response], {
+        let type = reqList[i].getResponseHeader("Content-Type");
+        let blob = new Blob([this.response], {
           type: type
         });
         if (typeof window.navigator.msSaveBlob !== "undefined") {
           // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
           window.navigator.msSaveBlob(blob, filename);
         } else {
-          var URL = window.URL || window.webkitURL;
-          var downloadUrl = URL.createObjectURL(blob);
+          let URL = window.URL || window.webkitURL;
+          let downloadUrl = URL.createObjectURL(blob);
 
           if (filename) {
             // use HTML5 a[download] attribute to specify filename
-            var a = document.createElement("a");
+            let a = document.createElement("a");
             // safari doesn't support this yet
             if (typeof a.download === "undefined") {
               window.location = downloadUrl;
@@ -1955,25 +2058,31 @@ function download(fileList, text) {
             window.open = downloadUrl;
           }
 
-          setTimeout(function () {
+          setTimeout(function() {
             URL.revokeObjectURL(downloadUrl);
           }, 100); // cleanup
         }
       }
     };
-    reqList[i].setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    if (userData.RunMode === "DEBUG") console.log((0, _general.getRealPath)(appData.currentPath) + "/" + fileList.name[i]);
-    reqList[i].send((0, _general.serializeObject)({
-      filename: (0, _general.getRealPath)(appData.currentPath) + "/" + fileList.name[i]
-    }));
+    reqList[i].setRequestHeader(
+      "Content-type",
+      "application/x-www-form-urlencoded"
+    );
+    if (userData.RunMode === "DEBUG")
+      console.log(getRealPath(appData.currentPath) + "/" + fileList.name[i]);
+    reqList[i].send(
+      serializeObject({
+        filename: getRealPath(appData.currentPath) + "/" + fileList.name[i]
+      })
+    );
   };
 
   document.querySelector("#btnCancelAll").classList.remove("disabled");
-  for (var i = 0; i < fileList.name.length; i++) {
+  for (let i = 0; i < fileList.name.length; i++) {
     _Download_Loop(i);
   }
   document.querySelector("#waiting").classList.remove("active");
-}
+} */
 
 ///////////////////////////////////
 // End Files and Folders module
