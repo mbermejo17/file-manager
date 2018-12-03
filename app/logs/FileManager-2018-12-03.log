@@ -1,0 +1,306 @@
+[2018-12-03T06:42:59.555] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T06:42:59.557] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T06:43:22.171] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T06:43:29.843] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T06:46:50.349] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T06:50:36.386] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T06:50:36.399] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T06:50:36.399] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T06:50:38.760] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T06:50:38.761] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T06:50:38.761] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T06:50:48.095] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T06:50:48.097] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T06:50:58.870] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T06:58:36.878] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T06:58:36.880] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T06:58:36.880] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T06:58:42.904] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T06:58:42.906] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T06:58:53.723] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T06:58:58.989] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T06:59:40.238] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T06:59:40.240] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T06:59:40.240] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T06:59:50.724] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T06:59:50.726] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T07:00:33.591] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T07:03:00.776] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T07:03:00.777] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T07:03:00.777] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T07:03:44.385] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T07:03:44.385] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T07:03:57.992] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T07:05:58.116] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T07:07:58.036] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T07:07:58.055] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T07:07:58.055] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T07:08:08.687] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T07:08:08.689] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T07:08:21.932] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T07:11:09.354] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T07:28:30.402] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T07:28:30.402] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T07:28:30.402] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T07:29:36.986] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T07:29:36.988] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T07:29:52.783] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T07:30:00.534] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T07:30:25.160] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T07:45:47.848] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T07:45:47.848] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T07:45:47.848] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T07:45:48.726] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T07:45:48.726] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T07:45:48.726] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T07:46:06.410] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T07:46:06.410] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T07:46:21.145] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T07:46:30.171] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T07:47:13.315] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T07:47:13.315] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T07:47:13.315] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T07:47:21.764] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T07:47:21.764] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T07:47:38.807] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T07:48:36.804] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T07:48:36.804] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T07:48:36.804] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T07:51:32.217] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T07:51:32.219] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T07:51:43.139] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T07:54:09.351] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T07:54:09.365] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T07:54:09.365] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T07:54:19.626] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T07:54:19.626] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T07:54:30.132] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T07:56:13.780] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T07:56:13.806] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T07:56:13.806] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T08:05:22.152] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T08:05:22.154] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T08:05:34.292] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T08:05:39.244] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T08:11:09.499] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T08:11:09.511] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T08:11:09.512] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T08:15:04.805] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T08:15:04.807] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T08:15:13.195] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T08:15:46.156] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T08:16:51.575] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T08:16:51.598] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T08:16:51.598] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T08:18:39.226] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T08:18:39.228] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T08:18:47.813] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T08:20:25.608] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T08:20:25.609] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T08:20:25.609] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T08:20:31.521] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T08:20:31.523] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T08:20:42.561] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T08:20:49.316] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T08:21:49.767] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T08:21:49.781] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T08:21:49.781] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T08:21:56.230] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T08:21:56.231] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T08:22:06.971] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T08:27:19.023] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T08:27:19.024] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T08:27:19.024] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T08:27:24.696] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T08:27:24.698] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T08:28:26.457] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T08:28:26.457] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T08:28:26.457] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T08:28:33.840] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T08:28:33.840] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T08:29:14.539] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T09:28:10.618] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T09:28:10.633] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T09:28:10.633] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T09:34:16.737] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T09:34:16.739] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T09:34:34.625] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T09:34:50.414] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T09:42:23.437] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T09:42:23.456] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T09:42:23.456] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T09:42:58.542] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T09:42:58.542] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T09:43:11.599] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T09:48:38.035] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T09:48:38.039] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T09:48:38.041] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T09:59:31.492] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T09:59:31.508] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T09:59:31.508] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T10:00:08.588] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T10:00:08.588] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T10:00:57.784] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T10:01:13.138] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T10:01:13.143] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T10:01:13.149] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T10:01:13.152] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //EDboilerplate-master.zip size 108 KB
+[2018-12-03T10:50:44.290] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T10:50:44.309] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T10:50:44.309] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T10:51:06.141] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T10:51:06.143] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T10:51:22.997] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T10:51:30.613] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T10:51:30.623] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T10:51:30.632] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T10:58:51.457] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T10:58:51.466] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T10:58:51.494] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T10:58:51.497] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T10:58:51.502] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T10:58:51.505] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T10:58:51.509] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T10:59:32.432] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T10:59:32.440] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T10:59:32.466] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T10:59:32.478] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T10:59:32.504] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T11:06:43.254] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T11:06:43.258] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T11:06:43.260] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T11:06:43.262] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T11:06:43.278] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T11:07:11.644] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T11:07:21.975] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T11:07:21.980] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T11:08:36.034] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T11:08:46.046] [ERROR] FileManager - Shutdown() -> Could not close connections in time, forcefully shutting down
+[2018-12-03T11:08:46.047] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T11:09:14.135] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T11:09:14.151] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T11:09:34.524] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T11:09:34.529] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T11:09:34.576] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T11:48:02.308] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T11:48:02.321] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T11:48:02.321] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T11:48:07.820] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T11:48:07.822] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T11:48:18.683] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T11:48:33.748] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T11:48:33.758] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T11:48:33.764] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T11:51:24.094] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T11:51:24.110] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T11:51:24.110] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T11:51:41.397] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T11:51:41.399] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T11:52:44.169] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T11:52:44.178] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T12:00:36.994] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T12:05:38.046] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T12:13:14.596] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T12:16:54.376] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T12:16:54.391] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T12:16:54.391] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T12:17:19.719] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T12:17:19.721] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T12:31:31.956] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T12:31:31.970] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T12:31:31.970] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T12:31:58.135] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T12:31:58.140] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T12:32:43.776] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T12:32:53.847] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T12:32:53.856] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T12:32:53.886] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T12:32:53.916] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //EDboilerplate-master.zip size 108 KB
+[2018-12-03T12:35:30.991] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T12:35:31.008] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T12:35:31.008] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T12:38:08.447] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T12:38:08.447] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T12:38:30.118] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T12:38:30.156] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T12:39:49.563] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T12:39:49.564] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T12:39:49.564] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T12:40:04.490] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T12:40:04.492] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T12:40:21.557] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T12:40:21.571] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T12:40:21.575] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T12:41:06.053] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T12:41:18.880] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T12:41:18.882] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T12:41:18.925] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2018-12-03T12:42:50.201] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T12:42:50.202] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T12:42:50.202] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T12:46:27.251] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T12:46:27.253] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T12:46:43.009] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T12:46:43.022] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T12:46:43.027] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T12:47:53.867] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T12:47:53.883] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T12:47:53.883] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T12:48:01.626] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T12:48:01.628] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T12:48:17.305] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T12:48:28.124] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T12:48:28.136] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T12:48:28.155] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T12:55:18.028] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T12:55:18.044] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T12:55:18.044] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T12:57:58.240] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T12:57:58.240] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T12:58:18.944] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T12:58:18.959] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T13:01:10.809] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T13:01:10.810] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T13:01:10.810] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T13:03:13.434] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T13:03:13.434] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T13:03:49.849] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T13:05:37.256] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //EDboilerplate-master.zip size 108 KB
+[2018-12-03T13:05:37.293] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T13:05:37.296] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T14:44:50.425] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T14:45:18.785] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T14:46:59.227] [INFO] FileManager - [admin] fileController::FileController upload() ->cedt-286M-setup.exe File Uploaded successfully!
+[2018-12-03T14:46:59.857] [INFO] FileManager - [admin] fileController::FileController upload() ->apache-tomcat-7.0.91-windows-x64 (1).zip File Uploaded successfully!
+[2018-12-03T14:52:52.455] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //Git-2.19.1-64-bit.exe size 43 MB
+[2018-12-03T14:52:52.459] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //cedt-286M-setup.exe size 1 MB
+[2018-12-03T14:52:52.464] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //apache-tomcat-7.0.91-windows-x64 (1).zip size 10 MB
+[2018-12-03T14:53:56.543] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/PEPE2/cedt-286M-setup.exe File deleted successfully!
+[2018-12-03T14:55:24.613] [INFO] FileManager - [undefined] userController::UserController UserUpdate() ->User undefined data modified. Data: UserPasswd = '202cb962ac59075b964b07152d234b70'
+[2018-12-03T14:55:39.879] [INFO] FileManager - [jose] userController::UserController UserLogin() ->User authenticated!
+[2018-12-03T14:56:09.912] [INFO] FileManager - [jose] fileController::FileController deleteFiles() ->./repository/PEPE File deleted successfully!
+[2018-12-03T14:56:41.773] [INFO] FileManager - [jose] fileController::FileController deleteFiles() ->./repository/JUAN File deleted successfully!
+[2018-12-03T14:56:41.775] [INFO] FileManager - [jose] fileController::FileController deleteFiles() ->./repository/PRUEBA1 File deleted successfully!
+[2018-12-03T15:07:53.731] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T15:07:53.745] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T15:07:53.745] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T15:08:24.868] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2018-12-03T15:08:24.868] [INFO] FileManager - Server listen on port 8443
+[2018-12-03T15:08:49.372] [INFO] FileManager - [jose] fileController::FileController download() ->Downloading //DB.Browser.for.SQLite-3.10.1-win64.exe size 16 MB
+[2018-12-03T15:08:49.382] [INFO] FileManager - [jose] fileController::FileController download() ->Downloading //windiff.zip size 74 KB
+[2018-12-03T15:13:56.357] [INFO] FileManager - [jose] fileController::FileController deleteFiles() ->./repository/1 File deleted successfully!
+[2018-12-03T15:13:56.395] [INFO] FileManager - [jose] fileController::FileController deleteFiles() ->./repository/13 File deleted successfully!
+[2018-12-03T15:13:56.396] [INFO] FileManager - [jose] fileController::FileController deleteFiles() ->./repository/14 File deleted successfully!
+[2018-12-03T15:13:56.396] [INFO] FileManager - [jose] fileController::FileController deleteFiles() ->./repository/15 File deleted successfully!
+[2018-12-03T15:13:56.398] [INFO] FileManager - [jose] fileController::FileController deleteFiles() ->./repository/16 File deleted successfully!
+[2018-12-03T15:13:56.399] [INFO] FileManager - [jose] fileController::FileController deleteFiles() ->./repository/2 File deleted successfully!
+[2018-12-03T15:15:56.520] [INFO] FileManager - [jose] fileController::FileController deleteFiles() ->./repository/3 File deleted successfully!
+[2018-12-03T15:21:16.857] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T15:21:16.870] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T15:21:16.870] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T15:21:17.545] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T15:21:17.546] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T15:21:17.546] [INFO] FileManager - *************** Shutdown finished **************
+[2018-12-03T15:21:19.489] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2018-12-03T15:21:19.489] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2018-12-03T15:21:19.489] [INFO] FileManager - *************** Shutdown finished **************

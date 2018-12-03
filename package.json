@@ -78,6 +78,7 @@
         "axios": "^0.18.0",
         "axios-method-override": "^1.1.2",
         "babel-polyfill": "^6.26.0",
+        "base-64": "^0.1.0",
         "bufferutil": "^4.0.0",
         "cookie-parser": "^1.4.3",
         "delivery": "0.0.6",

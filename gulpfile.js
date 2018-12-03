@@ -30,7 +30,8 @@ gulp.task('jsdashboard', function () {
       entries: './js/dashboard.js',
       debug: true,
       transform: [babelify.configure({
-        presets: ['es2015']
+        "presets": ['es2015'],
+        "plugins": ["syntax-async-functions","transform-regenerator","transform-es2015-arrow-functions"]
       })]
     });
   

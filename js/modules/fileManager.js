@@ -1035,28 +1035,6 @@ export function upload(Token) {
 // Download selected Files
 /////////////////////////////////////
 
-export function socketDownloadFile(fileList, text) {
-  const wss = new WebSocket('wss://localhost:8443/delivery', {
-    perMessageDeflate: false
-  });
-  
-  
-  wss.on('connect', function(){
-    var delivery = new Delivery(wss);
- 
-    delivery.on('receive.start',function(fileUID){
-      console.log('receiving a file!');
-    });
- 
-    delivery.on('receive.success',function(file){
-      var params = file.params;
-      if (file.isImage()) {
-        $('img').attr('src', file.dataURL());
-      };
-    });
-  });
-}
-
 export function download(fileList, text) {
   let _Download_Loop = (d)=>{
     axios
@@ -1065,26 +1043,37 @@ export function download(fileList, text) {
               "Content-Type": "application/json",
               Authorization: "Bearer " + userData.Token
             },
-            timeout: 30000
+            timeout: 3600000
           })
-          .then(data => {
-            var file = new Blob([data], {type: type});
-            if (window.navigator.msSaveOrOpenBlob) // IE10+
-                window.navigator.msSaveOrOpenBlob(file, d.name);
-            else { // Others
-                var a = document.createElement("a"),
-                        url = URL.createObjectURL(file);
-                a.href = url;
+          .then(responseData => {
+            var getUrl = window.location;
+            var baseUrl = getUrl .protocol + "//" + getUrl.host;
+            let fileId = responseData.data.data;
+            console.log('download data',responseData.data);
+            console.log(baseUrl + '/files/download/' + fileId);
+           
+            // Others
+            var URL = window.URL || window.webkitURL;
+            if(URL) {
+                var a = document.createElement("a")
+                a.href = 'files/download/' + fileId;
                 a.download = d.name;
                 document.body.appendChild(a);
                 a.click();
                 setTimeout(function() {
                     document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);  
-                }, 0); 
-            }
+                    //window.URL.revokeObjectURL(url);  
+                }, 10);
+                showToast(
+                  "Download",
+                  "Descargando archivo " + d.name + ' ...',
+                  "success"
+                );
+              } 
           })
-          .catch(e =>{});
+          .catch(e =>{
+            console.log(e);
+          });
   };
   for (let i = 0; i < fileList.name.length; i++) {
      let downloadData = {"name":fileList.name[i],
@@ -1093,7 +1082,9 @@ export function download(fileList, text) {
      "userName": userData.UserName};
     _Download_Loop(downloadData);
   }
-  
+  document.querySelector("#refresh").click();
+  _deselectAllFolders();
+  _deselectAllFiles(); 
 };
 
 

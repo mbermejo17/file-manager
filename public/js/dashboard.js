@@ -53,6 +53,8 @@ window.appData = {
 };
 
 (function (w, d) {
+  var _this = this;
+
   var AllowDownload = userData.AccessString.download,
       AllowUpload = userData.AccessString.upload,
       AllowDeleteFile = userData.AccessString.deletefile,
@@ -597,15 +599,39 @@ window.appData = {
       width: "400px"
     };
 
-    modalDialogOptions.confirmCallBack = async function (e, data) {
-      if (userData.RunMode === "DEBUG") console.log("newFolderName: ", data);
-      if (data || data.trim() !== "") {
-        var parseFolderName = data.replace(/\s/g, "_");
-        (0, _fileManager.newFolder)(parseFolderName);
-      }
+    modalDialogOptions.confirmCallBack = function _callee(e, data) {
+      var parseFolderName;
+      return regeneratorRuntime.async(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              if (userData.RunMode === "DEBUG") console.log("newFolderName: ", data);
+              if (data || data.trim() !== "") {
+                parseFolderName = data.replace(/\s/g, "_");
+
+                (0, _fileManager.newFolder)(parseFolderName);
+              }
+
+            case 2:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, null, _this);
     };
-    modalDialogOptions.cancelCallBack = async function (e, data) {
-      console.log(data);
+    modalDialogOptions.cancelCallBack = function _callee2(e, data) {
+      return regeneratorRuntime.async(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              console.log(data);
+
+            case 1:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, null, _this);
     };
     (0, _modalDialog.modalDialog)("New Folder", "Folder Name", modalDialogOptions);
 
@@ -652,31 +678,43 @@ window.appData = {
       type: "changePassword",
       width: "340px"
     };
-    modalDialogOptions.confirmCallBack = async function (e, data1, data2) {
-      await _axios2.default.post("/changepasswd", {
-        username: userData.UserName,
-        newpassword: _jsBase.Base64.encode((0, _md2.default)(data1))
-      }, {
-        headers: {
-          Authorization: "Bearer " + userData.Token,
-          "Content-Type": "application/json"
-        },
-        timeout: 290000
-      }).then(function (d) {
-        $u("#waiting").removeClass("active");
-        if (userData.RunMode === "DEBUG") console.log("changePassword: ", d);
-        if (d.data.status === "FAIL") {
-          showToast("Change User Password", d.data.message, "error");
-          d.querySelector("#message").innerHTML = d.data.message;
-        } else {
-          showToast("Change User Password", d.data.message, "success");
-          if (userData.RunMode === "DEBUG") console.log(d.data.message);
+    modalDialogOptions.confirmCallBack = function _callee3(e, data1, data2) {
+      return regeneratorRuntime.async(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.next = 2;
+              return regeneratorRuntime.awrap(_axios2.default.post("/changepasswd", {
+                username: userData.UserName,
+                newpassword: _jsBase.Base64.encode((0, _md2.default)(data1))
+              }, {
+                headers: {
+                  Authorization: "Bearer " + userData.Token,
+                  "Content-Type": "application/json"
+                },
+                timeout: 290000
+              }).then(function (d) {
+                $u("#waiting").removeClass("active");
+                if (userData.RunMode === "DEBUG") console.log("changePassword: ", d);
+                if (d.data.status === "FAIL") {
+                  showToast("Change User Password", d.data.message, "error");
+                  d.querySelector("#message").innerHTML = d.data.message;
+                } else {
+                  showToast("Change User Password", d.data.message, "success");
+                  if (userData.RunMode === "DEBUG") console.log(d.data.message);
+                }
+              }).catch(function (e) {
+                $u("#waiting").removeClass("active");
+                showToast("Change User Password", e, "error");
+                if (userData.RunMode === "DEBUG") console.log(e);
+              }));
+
+            case 2:
+            case "end":
+              return _context3.stop();
+          }
         }
-      }).catch(function (e) {
-        $u("#waiting").removeClass("active");
-        showToast("Change User Password", e, "error");
-        if (userData.RunMode === "DEBUG") console.log(e);
-      });
+      }, null, _this);
     };
     (0, _modalDialog.modalDialog)("Change User Password", '<div class="input-field">' + '<input id="newpassword" class="ModalDialog-input" type="password"/>' + '<label for="newpassword" class="ModalDialog-label">New Password</label>' + "</div>" + '<div class="input-field">' + '<input id="newpassword2" class="ModalDialog-input" type="password"/>' + '<label for="newpassword2" class="ModalDialog-label">Repeat Password</label>' + "</div>", modalDialogOptions);
 
@@ -873,12 +911,34 @@ window.appData = {
         width: "400px"
       };
 
-      modalDialogOptions.confirmCallBack = async function (e, data) {
-        if (userData.RunMode === "DEBUG") console.log("data: ", data);
-        logout();
+      modalDialogOptions.confirmCallBack = function _callee4(e, data) {
+        return regeneratorRuntime.async(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                if (userData.RunMode === "DEBUG") console.log("data: ", data);
+                logout();
+
+              case 2:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, null, _this);
       };
-      modalDialogOptions.cancelCallBack = async function (e, data) {
-        console.log(data);
+      modalDialogOptions.cancelCallBack = function _callee5(e, data) {
+        return regeneratorRuntime.async(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                console.log(data);
+
+              case 1:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, null, _this);
       };
       (0, _modalDialog.modalDialog)("Close User session", "Do you want to exit?", modalDialogOptions);
     } else {
@@ -1041,7 +1101,6 @@ exports.newFolder = newFolder;
 exports.deleteFile = deleteFile;
 exports.deleteFolder = deleteFolder;
 exports.upload = upload;
-exports.socketDownloadFile = socketDownloadFile;
 exports.download = download;
 
 var _moment = require("moment");
@@ -1240,14 +1299,36 @@ function shareFile() {
     type: "shareFile"
   };
 
-  modalDialogOptions.confirmCallBack = async function (e, data) {
-    if (userData.RunMode === "DEBUG") console.log("shareFile: ", data);
-    if (data || data.destUserName.trim() !== "") {
-      _shareFile(data);
-    }
+  modalDialogOptions.confirmCallBack = function _callee(e, data) {
+    return regeneratorRuntime.async(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            if (userData.RunMode === "DEBUG") console.log("shareFile: ", data);
+            if (data || data.destUserName.trim() !== "") {
+              _shareFile(data);
+            }
+
+          case 2:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, null, this);
   };
-  modalDialogOptions.cancelCallBack = async function (e, data) {
-    console.log(data);
+  modalDialogOptions.cancelCallBack = function _callee2(e, data) {
+    return regeneratorRuntime.async(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            console.log(data);
+
+          case 1:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, null, this);
   };
   (0, _modalDialog.modalDialog)("Share File", "      <input id=\"destUserName\" type=\"email\" autocomplete=\"off\" pattern=\".+@globex.com\" required class=\"ModalDialog-input\"/>\n                    <label for=\"destUserName\" class=\"ModalDialog-label share\">Send URL to</label>\n                    <input class=\"datepicker ModalDialog-input\" id=\"FileExpirateDate\" type=\"date\"/>\n                    <label for=\"FileExpirateDate\" class=\"ModalDialog-label datepicker share\">Expiration Date</label>\n                    <br>\n                    <input id=\"delFileAfterExpired\" type=\"checkbox\" class=\"ModalDialog-check-input share\">\n                    <label for=\"delFileAfterExpired\" class=\"ModalDialog-check-label share\">Delete File</label>\n                    <br><br>\n                    <label id=\"urlFile\" class=\"label-url-share\"></label>", modalDialogOptions);
 
@@ -1351,6 +1432,8 @@ function showSharedFiles() {
 /////////////////////////////////////
 
 function deleteSelected() {
+  var _this2 = this;
+
   if (userData.RunMode === "DEBUG") console.log("aSelectedFolders: ", appData.aSelectedFolders.length);
   var modalDialogOptions = {
     cancel: true,
@@ -1361,42 +1444,135 @@ function deleteSelected() {
   };
   if (appData.aSelectedFolders.length > 0) {
     var result = 0;
-    modalDialogOptions.confirmCallBack = async function () {
-      await deleteFolder(appData.currentPath);
-      await _deselectAllFolders();
-      if (appData.aSelectedFiles.name.length > 0) {
-        modalDialogOptions.confirmCallBack = async function () {
-          await deleteFile(appData.currentPath);
-        };
-        modalDialogOptions.confirmText = "OK";
-        (0, _modalDialog.modalDialog)("Delete Files", "Delete selected files?", modalDialogOptions);
-      } else {
-        document.getElementById("refresh").click();
-      }
+    modalDialogOptions.confirmCallBack = function _callee4() {
+      return regeneratorRuntime.async(function _callee4$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              _context4.next = 2;
+              return regeneratorRuntime.awrap(deleteFolder(appData.currentPath));
+
+            case 2:
+              _context4.next = 4;
+              return regeneratorRuntime.awrap(_deselectAllFolders());
+
+            case 4:
+              if (appData.aSelectedFiles.name.length > 0) {
+                modalDialogOptions.confirmCallBack = function _callee3() {
+                  return regeneratorRuntime.async(function _callee3$(_context3) {
+                    while (1) {
+                      switch (_context3.prev = _context3.next) {
+                        case 0:
+                          _context3.next = 2;
+                          return regeneratorRuntime.awrap(deleteFile(appData.currentPath));
+
+                        case 2:
+                        case "end":
+                          return _context3.stop();
+                      }
+                    }
+                  }, null, _this2);
+                };
+                modalDialogOptions.confirmText = "OK";
+                (0, _modalDialog.modalDialog)("Delete Files", "Delete selected files?", modalDialogOptions);
+              } else {
+                document.getElementById("refresh").click();
+              }
+
+            case 5:
+            case "end":
+              return _context4.stop();
+          }
+        }
+      }, null, _this2);
     };
-    modalDialogOptions.cancelCallBack = async function () {
-      await _deselectAllFolders();
-      if (appData.aSelectedFiles.name.length > 0) {
-        modalDialogOptions.confirmCallBack = async function () {
-          await deleteFile(appData.currentPath);
-        };
-        modalDialogOptions.cancelCallBack = async function () {
-          await _deselectAllFiles();
-        };
-        modalDialogOptions.confirmText = "OK";
-        (0, _modalDialog.modalDialog)("Delete Files", "Delete selected files?", modalDialogOptions);
-      }
+    modalDialogOptions.cancelCallBack = function _callee7() {
+      return regeneratorRuntime.async(function _callee7$(_context7) {
+        while (1) {
+          switch (_context7.prev = _context7.next) {
+            case 0:
+              _context7.next = 2;
+              return regeneratorRuntime.awrap(_deselectAllFolders());
+
+            case 2:
+              if (appData.aSelectedFiles.name.length > 0) {
+                modalDialogOptions.confirmCallBack = function _callee5() {
+                  return regeneratorRuntime.async(function _callee5$(_context5) {
+                    while (1) {
+                      switch (_context5.prev = _context5.next) {
+                        case 0:
+                          _context5.next = 2;
+                          return regeneratorRuntime.awrap(deleteFile(appData.currentPath));
+
+                        case 2:
+                        case "end":
+                          return _context5.stop();
+                      }
+                    }
+                  }, null, _this2);
+                };
+                modalDialogOptions.cancelCallBack = function _callee6() {
+                  return regeneratorRuntime.async(function _callee6$(_context6) {
+                    while (1) {
+                      switch (_context6.prev = _context6.next) {
+                        case 0:
+                          _context6.next = 2;
+                          return regeneratorRuntime.awrap(_deselectAllFiles());
+
+                        case 2:
+                        case "end":
+                          return _context6.stop();
+                      }
+                    }
+                  }, null, _this2);
+                };
+                modalDialogOptions.confirmText = "OK";
+                (0, _modalDialog.modalDialog)("Delete Files", "Delete selected files?", modalDialogOptions);
+              }
+
+            case 3:
+            case "end":
+              return _context7.stop();
+          }
+        }
+      }, null, _this2);
     };
     modalDialogOptions.confirmText = "Yes, I'm very sure";
     (0, _modalDialog.modalDialog)("Delete Folders", "<div class=\"warning-lbl\">WARNING:</div>\n            <div class=\"warning-msg\">All selected folders and their contents will be deleted.!!</div>\n            <div class=\"msg\">Are you sure?</div>", modalDialogOptions);
   } else {
     if (appData.aSelectedFiles.name.length > 0) {
-      modalDialogOptions.confirmCallBack = async function () {
-        await deleteFile(appData.currentPath);
-        document.getElementById("refresh").click();
+      modalDialogOptions.confirmCallBack = function _callee8() {
+        return regeneratorRuntime.async(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                _context8.next = 2;
+                return regeneratorRuntime.awrap(deleteFile(appData.currentPath));
+
+              case 2:
+                document.getElementById("refresh").click();
+
+              case 3:
+              case "end":
+                return _context8.stop();
+            }
+          }
+        }, null, _this2);
       };
-      modalDialogOptions.cancelCallBack = async function () {
-        await _deselectAllFiles();
+      modalDialogOptions.cancelCallBack = function _callee9() {
+        return regeneratorRuntime.async(function _callee9$(_context9) {
+          while (1) {
+            switch (_context9.prev = _context9.next) {
+              case 0:
+                _context9.next = 2;
+                return regeneratorRuntime.awrap(_deselectAllFiles());
+
+              case 2:
+              case "end":
+                return _context9.stop();
+            }
+          }
+        }, null, _this2);
       };
       (0, _modalDialog.modalDialog)("Delete Files", "Delete selected files?", modalDialogOptions);
     }
@@ -1760,27 +1936,6 @@ function upload(Token) {
 // Download selected Files
 /////////////////////////////////////
 
-function socketDownloadFile(fileList, text) {
-  var wss = new _wss2.default('wss://localhost:8443/delivery', {
-    perMessageDeflate: false
-  });
-
-  wss.on('connect', function () {
-    var delivery = new Delivery(wss);
-
-    delivery.on('receive.start', function (fileUID) {
-      console.log('receiving a file!');
-    });
-
-    delivery.on('receive.success', function (file) {
-      var params = file.params;
-      if (file.isImage()) {
-        $('img').attr('src', file.dataURL());
-      };
-    });
-  });
-}
-
 function download(fileList, text) {
   var _Download_Loop = function _Download_Loop(d) {
     _axios2.default.post("/files/download", d, {
@@ -1788,24 +1943,31 @@ function download(fileList, text) {
         "Content-Type": "application/json",
         Authorization: "Bearer " + userData.Token
       },
-      timeout: 30000
-    }).then(function (data) {
-      var file = new Blob([data], { type: type });
-      if (window.navigator.msSaveOrOpenBlob) // IE10+
-        window.navigator.msSaveOrOpenBlob(file, d.name);else {
-        // Others
-        var a = document.createElement("a"),
-            url = URL.createObjectURL(file);
-        a.href = url;
+      timeout: 3600000
+    }).then(function (responseData) {
+      var getUrl = window.location;
+      var baseUrl = getUrl.protocol + "//" + getUrl.host;
+      var fileId = responseData.data.data;
+      console.log('download data', responseData.data);
+      console.log(baseUrl + '/files/download/' + fileId);
+
+      // Others
+      var URL = window.URL || window.webkitURL;
+      if (URL) {
+        var a = document.createElement("a");
+        a.href = 'files/download/' + fileId;
         a.download = d.name;
         document.body.appendChild(a);
         a.click();
         setTimeout(function () {
           document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-        }, 0);
+          //window.URL.revokeObjectURL(url);  
+        }, 10);
+        showToast("Download", "Descargando archivo " + d.name + ' ...', "success");
       }
-    }).catch(function (e) {});
+    }).catch(function (e) {
+      console.log(e);
+    });
   };
   for (var i = 0; i < fileList.name.length; i++) {
     var downloadData = { "name": fileList.name[i],
@@ -1814,6 +1976,9 @@ function download(fileList, text) {
       "userName": userData.UserName };
     _Download_Loop(downloadData);
   }
+  document.querySelector("#refresh").click();
+  _deselectAllFolders();
+  _deselectAllFiles();
 };
 
 /* export function download(fileList, text) {

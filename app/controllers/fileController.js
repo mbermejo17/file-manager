@@ -22,6 +22,7 @@ const fs = require('fs'),
       });
 const Audit = require("../controllers/auditController");   
 const log = global.logger;
+const base64 = require('base-64');
 
 
     
@@ -422,7 +423,7 @@ class FileController {
 
     }
 
-    download(req, res, next) {
+    postDownload(req, res, next) {
         let data = req.body;
         let fileName = data.name;
         let userName = data.userName;
@@ -432,8 +433,27 @@ class FileController {
         res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
         res.setHeader('Content-Transfer-Encoding', 'binary')
         if (process.env.NODE_ENV === 'dev') console.log(normalize(pathPrefix + '\\' + fileName))
-        global.logger.info(`[${userName}] fileController::FileController download() ->Downloading ${path}/${fileName} size ${fileSize}`);             
-        res.download(normalize(pathPrefix + '\\' + fileName), fileName)
+        global.logger.info(`[${userName}] fileController::FileController download() ->Downloading ${path}/${fileName} size ${fileSize}`);
+        return res.status(200).json({
+            "status": "OK",
+            "message": "",
+            "data": encodeURIComponent(base64.encode(normalize(pathPrefix + path + '/' + fileName)))
+        });
+        //res.download(normalize(pathPrefix + path + '/' + fileName), fileName)             
+        //res.download(normalize(pathPrefix + '\\' + fileName), fileName)
+    }
+
+    getDownload(req, res, next) {
+        let fullName = decodeURIComponent(base64.decode(req.params.id));
+        let fileName = fullName.substring(fullName.lastIndexOf('/')+1);
+        console.log("downloading ->",fullName);
+        res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
+        res.setHeader('Content-Transfer-Encoding', 'binary')
+        res.cookie('downloadFile',fileName);
+        //if (process.env.NODE_ENV === 'dev') console.log(normalize(pathPrefix + '\\' + fileName))
+        //global.logger.info(`[${userName}] fileController::FileController download() ->Downloading ${path}/${fileName} size ${fileSize}`);
+        res.download(fullName);             
+        //res.download(normalize(pathPrefix + '\\' + fileName), fileName)
     }
 
     shareFileDownload(req, res, next) {
