@@ -1,0 +1,140 @@
+[2019-01-10T09:40:15.278] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T09:40:15.280] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T09:41:37.233] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T09:43:17.331] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/ESTO_ES_UNA_12_PRUEBA File deleted successfully!
+[2019-01-10T09:43:45.023] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/7 File deleted successfully!
+[2019-01-10T09:43:45.025] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/7 File deleted successfully!
+[2019-01-10T09:45:18.105] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/5 File deleted successfully!
+[2019-01-10T09:45:18.112] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/6 File deleted successfully!
+[2019-01-10T09:45:43.230] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/PEPE2/apache-tomcat-7.0.91-windows-x64 (1).zip File deleted successfully!
+[2019-01-10T09:46:19.680] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //apache-tomcat-7.0.91-windows-x64 (1).zip size 10 MB
+[2019-01-10T09:47:04.188] [INFO] FileManager - [admin] fileController::FileController upload() ->apache-tomcat-7.0.91-windows-x64.zip File Uploaded successfully!
+[2019-01-10T09:48:05.689] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/PEPE2/apache-tomcat-7.0.91-windows-x64.zip File deleted successfully!
+[2019-01-10T09:48:17.184] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //apache-tomcat-7.0.91-windows-x64.zip size 10 MB
+[2019-01-10T10:01:13.104] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T10:01:13.105] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2019-01-10T10:01:13.105] [INFO] FileManager - *************** Shutdown finished **************
+[2019-01-10T10:02:53.366] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T10:02:53.368] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T10:03:55.731] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T10:04:14.090] [INFO] FileManager - [admin] fileController::FileController upload() ->apache-tomcat-7.0.91-windows-x64.zip File Uploaded successfully!
+[2019-01-10T10:04:26.077] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/9/apache-tomcat-7.0.91-windows-x64.zip File deleted successfully!
+[2019-01-10T10:05:00.099] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/9 File deleted successfully!
+[2019-01-10T10:05:58.053] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T10:05:58.582] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T10:06:02.243] [INFO] FileManager - [admin] fileController::FileController upload() ->VMware-player-14.1.3-9474260.exe File Uploaded successfully!
+[2019-01-10T10:13:37.302] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/8/VMware-player-14.1.3-9474260.exe File deleted successfully!
+[2019-01-10T10:13:58.321] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T10:13:58.547] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T10:14:08.306] [INFO] FileManager - [admin] fileController::FileController upload() ->VMware-player-14.1.3-9474260.exe File Uploaded successfully!
+[2019-01-10T10:14:09.622] [INFO] FileManager - [admin] fileController::FileController upload() ->VMware-player-14.1.3-9474260 (1).exe File Uploaded successfully!
+[2019-01-10T10:16:04.159] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/8/VMware-player-14.1.3-9474260.exe File deleted successfully!
+[2019-01-10T10:16:04.244] [INFO] FileManager - [admin] fileController::FileController deleteFiles() ->./repository/8/VMware-player-14.1.3-9474260 (1).exe File deleted successfully!
+[2019-01-10T10:16:25.482] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T10:16:25.545] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T10:16:33.607] [INFO] FileManager - [admin] fileController::FileController upload() ->VMware-player-14.1.3-9474260 (1).exe File Uploaded successfully!
+[2019-01-10T10:16:33.794] [INFO] FileManager - [admin] fileController::FileController upload() ->VMware-player-14.1.3-9474260.exe File Uploaded successfully!
+[2019-01-10T10:50:02.413] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //VMware-player-14.1.3-9474260.exe size 118 MB
+[2019-01-10T10:50:02.418] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //VMware-player-14.1.3-9474260 (1).exe size 118 MB
+[2019-01-10T10:50:23.360] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T10:50:32.876] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //VMware-player-14.1.3-9474260.exe size 118 MB
+[2019-01-10T10:50:32.905] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //VMware-player-14.1.3-9474260 (1).exe size 118 MB
+[2019-01-10T10:55:13.848] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //VMware-player-14.1.3-9474260 (1).exe size 118 MB
+[2019-01-10T10:55:13.872] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading //VMware-player-14.1.3-9474260.exe size 118 MB
+[2019-01-10T11:07:19.572] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T11:19:22.806] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading /8/VMware-player-14.1.3-9474260 (1).exe size 118 MB
+[2019-01-10T11:19:22.812] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading /8/VMware-player-14.1.3-9474260.exe size 118 MB
+[2019-01-10T12:38:06.186] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T12:38:49.482] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T12:39:43.098] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T12:39:43.129] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2019-01-10T12:39:43.129] [INFO] FileManager - *************** Shutdown finished **************
+[2019-01-10T12:40:02.884] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T12:40:02.886] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T12:40:21.523] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T12:40:57.404] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T12:46:11.860] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T13:32:04.579] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T13:32:04.579] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2019-01-10T13:32:04.579] [INFO] FileManager - *************** Shutdown finished **************
+[2019-01-10T13:32:23.524] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T13:32:23.527] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T13:32:38.691] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T13:33:27.930] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T14:15:10.330] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T14:16:02.853] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T14:16:47.182] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T14:16:47.184] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2019-01-10T14:16:47.185] [INFO] FileManager - *************** Shutdown finished **************
+[2019-01-10T14:17:25.635] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T14:17:25.637] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T14:17:56.042] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T14:18:14.102] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T14:18:21.754] [ERROR] FileManager - [admin] fileController::FileController upload() -> Error: Request aborted
+[2019-01-10T14:23:33.048] [INFO] FileManager - [admin] fileController::FileController upload() ->9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO File Uploaded successfully!
+[2019-01-10T14:27:12.101] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T14:27:12.102] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2019-01-10T14:27:12.102] [INFO] FileManager - *************** Shutdown finished **************
+[2019-01-10T14:27:55.875] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T14:27:55.877] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T14:30:17.945] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:30:18.022] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:30:18.078] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:32:22.262] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T14:32:22.263] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2019-01-10T14:32:22.263] [INFO] FileManager - *************** Shutdown finished **************
+[2019-01-10T14:33:29.974] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T14:33:29.976] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T14:33:42.517] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T14:34:05.226] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:34:05.246] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:34:05.280] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:38:31.847] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T14:38:31.854] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2019-01-10T14:38:31.854] [INFO] FileManager - *************** Shutdown finished **************
+[2019-01-10T14:38:45.784] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T14:38:45.786] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T14:39:05.499] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:39:05.532] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:39:05.670] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:42:22.967] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:42:22.977] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:42:22.985] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:47:11.903] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:47:11.924] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:47:11.938] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:47:40.319] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T14:47:50.348] [ERROR] FileManager - Shutdown() -> Could not close connections in time, forcefully shutting down
+[2019-01-10T14:47:50.348] [INFO] FileManager - *************** Shutdown finished **************
+[2019-01-10T14:47:54.526] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T14:47:54.526] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T14:48:21.686] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:48:21.693] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:48:21.721] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:50:10.328] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T14:50:20.338] [ERROR] FileManager - Shutdown() -> Could not close connections in time, forcefully shutting down
+[2019-01-10T14:50:20.338] [INFO] FileManager - *************** Shutdown finished **************
+[2019-01-10T14:50:25.899] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T14:50:25.899] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T14:50:37.289] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T14:50:43.966] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:50:43.970] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T14:50:43.974] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T15:11:17.656] [INFO] FileManager - [admin] userController::UserController UserLogin() ->User authenticated!
+[2019-01-10T15:20:03.147] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T15:20:03.163] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2019-01-10T15:20:03.163] [INFO] FileManager - *************** Shutdown finished **************
+[2019-01-10T15:20:12.222] [INFO] FileManager - ********* Starting ScreenPop v.1.0 **********
+[2019-01-10T15:20:12.222] [INFO] FileManager - Server listen on port 8443
+[2019-01-10T15:20:37.014] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T15:20:37.023] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T15:20:37.028] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T15:23:01.734] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T15:23:01.747] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T15:23:01.765] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading /8/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2019-01-10T15:26:36.576] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T15:26:36.583] [INFO] FileManager - [undefined] fileController::FileController download() ->Downloading undefined/undefined size undefined
+[2019-01-10T15:26:36.603] [INFO] FileManager - [admin] fileController::FileController download() ->Downloading /8/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO size 4 GB
+[2019-01-10T15:32:28.108] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-10T15:32:28.110] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2019-01-10T15:32:28.110] [INFO] FileManager - *************** Shutdown finished **************

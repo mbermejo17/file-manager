@@ -19,13 +19,13 @@ const fs = require('fs'),
         password: settings.emailUserPassword,
         secure: true,
         insecureAuth: true
-      });
-const Audit = require("../controllers/auditController");   
+    });
+const Audit = require("../controllers/auditController");
 const log = global.logger;
 const base64 = require('base-64');
 
 
-    
+
 let _getStats = (p) => {
     fs.stat(p, (err, stats) => {
         return {
@@ -61,7 +61,7 @@ fs.readdirSync(dir)
     []);
  */
 
-const _sendMail = async function(userName,destName, aFile, Url) {
+const _sendMail = async function(userName, destName, aFile, Url) {
     /* await mail.message({
         from: "filemanager@filebox.unifyspain.es",
         to: [ destName],
@@ -131,9 +131,9 @@ class FileController {
     newFolder(req, res, next) {
         let userName = req.cookies.UserName;
         let browserIP = (req.headers['x-forwarded-for'] ||
-                req.connection.remoteAddress ||
-                req.socket.remoteAddress ||
-                req.connection.socket.remoteAddress).split(",")[1];
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress).split(",")[1];
 
         let clientIP = req.connection.remoteAddress;
         let destPath = req.body.path
@@ -157,7 +157,7 @@ class FileController {
                     dateString: currentDate,
                     unixDate: currentUnixDate
                 }, err, 'Add new Folder', 'FAIL', (result) => {
-                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                    if (process.env.NODE_ENV === 'dev') console.log(result);
                 });
                 if (err.code == 'EEXIST') {
                     res.send(JSON.stringify({
@@ -185,8 +185,8 @@ class FileController {
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
-                }, 'Carpeta ' + folderName + ' creada' , 'Add new Folder', 'OK', (result) => {
-                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                }, 'Carpeta ' + folderName + ' creada', 'Add new Folder', 'OK', (result) => {
+                    if (process.env.NODE_ENV === 'dev') console.log(result);
                 });
                 res.send(JSON.stringify({
                     status: 'OK',
@@ -208,9 +208,9 @@ class FileController {
         let fullName = normalize(pathPrefix + destPath + '/' + fileName)
         let userName = req.cookies.UserName;
         let browserIP = (req.headers['x-forwarded-for'] ||
-                req.connection.remoteAddress ||
-                req.socket.remoteAddress ||
-                req.connection.socket.remoteAddress).split(",")[1];
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress).split(",")[1];
 
         let clientIP = req.connection.remoteAddress;
         let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
@@ -219,20 +219,20 @@ class FileController {
         fsextra.remove(fullName, function(err) {
             if (err) {
                 if (process.env.NODE_ENV === 'dev') console.error(err)
-                global.logger.error(`[${userName}] fileController::FileController deleteFiles() ->Error deleting file ${fullName} ${err}` );
+                global.logger.error(`[${userName}] fileController::FileController deleteFiles() ->Error deleting file ${fullName} ${err}`);
                 Audit.Add({
                     userName: userName
                 }, {
                     clientIP: clientIP || '',
                     browserIP: browserIP || ''
                 }, {
-                    fileName: rootPath || '',
+                    fileName: fullName || '',
                     fileSize: 0
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
                 }, err, 'Delete File', 'FAIL', () => {
-                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                    if (process.env.NODE_ENV === 'dev') console.log(result);
                 });
                 res.send(JSON.stringify({
                     status: 'FAIL',
@@ -247,13 +247,13 @@ class FileController {
                 clientIP: clientIP || '',
                 browserIP: browserIP || ''
             }, {
-                fileName: rootPath || '',
+                fileName: fullName || '',
                 fileSize: 0
             }, {
                 dateString: currentDate,
                 unixDate: currentUnixDate
             }, fullName, 'Delete File', 'OK', () => {
-              if (process.env.NODE_ENV === 'dev') console.log(result);  
+                if (process.env.NODE_ENV === 'dev') console.log(result);
             });
             res.send(JSON.stringify({
                 status: 'OK',
@@ -268,9 +268,9 @@ class FileController {
         let newFolder = req.body.path
         let userName = req.cookies.UserName;
         let browserIP = (req.headers['x-forwarded-for'] ||
-                req.connection.remoteAddress ||
-                req.socket.remoteAddress ||
-                req.connection.socket.remoteAddress).split(",")[1];
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress).split(",")[1];
 
         let clientIP = req.connection.remoteAddress;
         let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
@@ -287,13 +287,13 @@ class FileController {
                     clientIP: clientIP || '',
                     browserIP: browserIP || ''
                 }, {
-                    fileName: rootPath || '',
+                    fileName: fullName || '',
                     fileSize: 0
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
                 }, err, 'Delete Folder', 'FAIL', () => {
-                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                    if (process.env.NODE_ENV === 'dev') console.log(result);
                 });
                 res.send(JSON.stringify({
                     status: 'FAIL',
@@ -308,13 +308,13 @@ class FileController {
                 clientIP: clientIP || '',
                 browserIP: browserIP || ''
             }, {
-                fileName: rootPath || '',
+                fileName: fullName || '',
                 fileSize: 0
             }, {
                 dateString: currentDate,
                 unixDate: currentUnixDate
             }, newFolder, 'Delete Folder', 'OK', () => {
-              if (process.env.NODE_ENV === 'dev') console.log(result);  
+                if (process.env.NODE_ENV === 'dev') console.log(result);
             });
             res.send(JSON.stringify({
                 status: 'OK',
@@ -325,16 +325,16 @@ class FileController {
 
     upload(req, res, next) {
         if (process.env.NODE_ENV === 'dev') console.log(req.query)
-        // create an incoming form object
+            // create an incoming form object
         let form = new formidable.IncomingForm();
         let repoPath = req.query.destPath;
         let fileName = '';
         let fileSize = '';
         let userName = req.cookies.UserName;
         let browserIP = (req.headers['x-forwarded-for'] ||
-                req.connection.remoteAddress ||
-                req.socket.remoteAddress ||
-                req.connection.socket.remoteAddress).split(",")[1];
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress).split(",")[1];
 
         let clientIP = req.connection.remoteAddress;
         let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
@@ -349,17 +349,17 @@ class FileController {
 
 
         if (process.env.NODE_ENV === 'dev') console.log('upload:repoPath ' + form.uploadDir)
-        // every time a file has been uploaded successfully,
-        // rename it to it's orignal name
+            // every time a file has been uploaded successfully,
+            // rename it to it's orignal name
         form.on('file', function(field, file) {
             if (process.env.NODE_ENV === 'dev') console.log(file);
             fileName = file.name;
             fileSize = file.size;
-            fs.rename(file.path, path.join(form.uploadDir, file.name), function (err) {
+            fs.rename(file.path, path.join(form.uploadDir, file.name), function(err) {
                 if (err) throw err;
-                fs.stat(path.join(form.uploadDir, file.name), function (err, stats) {
-                  if (err) throw err;
-                  console.log('stats: ' + JSON.stringify(stats));
+                fs.stat(path.join(form.uploadDir, file.name), function(err, stats) {
+                    if (err) throw err;
+                    console.log('stats: ' + JSON.stringify(stats));
                 });
             });
         });
@@ -380,7 +380,7 @@ class FileController {
                 dateString: currentDate,
                 unixDate: currentUnixDate
             }, err, 'Upload File', 'FAIL', () => {
-              if (process.env.NODE_ENV === 'dev') console.log(result);  
+                if (process.env.NODE_ENV === 'dev') console.log(result);
             });
             res.send(JSON.stringify({
                 status: 'FAIL',
@@ -406,7 +406,7 @@ class FileController {
                 dateString: currentDate,
                 unixDate: currentUnixDate
             }, fileName, 'Upload File', 'OK', () => {
-              if (process.env.NODE_ENV === 'dev') console.log(result);  
+                if (process.env.NODE_ENV === 'dev') console.log(result);
             });
             res.send(JSON.stringify({
                 status: 'OK',
@@ -429,7 +429,7 @@ class FileController {
         let userName = data.userName;
         let fileSize = data.size;
         let path = data.path;
-        console.log("downloading ->",data.name);
+        console.log("downloading ->", data.name);
         res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
         res.setHeader('Content-Transfer-Encoding', 'binary')
         if (process.env.NODE_ENV === 'dev') console.log(normalize(pathPrefix + '\\' + fileName))
@@ -445,14 +445,14 @@ class FileController {
 
     getDownload(req, res, next) {
         let fullName = decodeURIComponent(base64.decode(req.params.id));
-        let fileName = fullName.substring(fullName.lastIndexOf('/')+1);
-        console.log("downloading ->",fullName);
+        let fileName = fullName.substring(fullName.lastIndexOf('/') + 1);
+        console.log("downloading ->", fullName);
         res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
         res.setHeader('Content-Transfer-Encoding', 'binary')
-        res.cookie('downloadFile',fileName);
+        res.cookie('downloadFile', fileName);
         //if (process.env.NODE_ENV === 'dev') console.log(normalize(pathPrefix + '\\' + fileName))
         //global.logger.info(`[${userName}] fileController::FileController download() ->Downloading ${path}/${fileName} size ${fileSize}`);
-        res.download(fullName);             
+        res.download(fullName);
         //res.download(normalize(pathPrefix + '\\' + fileName), fileName)
     }
 
@@ -462,9 +462,9 @@ class FileController {
         let fileName = ''
         let userName = req.cookies.UserName;
         let browserIP = (req.headers['x-forwarded-for'] ||
-                req.connection.remoteAddress ||
-                req.socket.remoteAddress ||
-                req.connection.socket.remoteAddress).split(",")[1];
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress).split(",")[1];
 
         let clientIP = req.connection.remoteAddress;
         if (process.env.NODE_ENV === 'dev') console.log(fileId)
@@ -480,15 +480,15 @@ class FileController {
                     clientIP: clientIP || '',
                     browserIP: browserIP || ''
                 }, {
-                    fileName: rootPath || '',
+                    fileName: fullName || '',
                     fileSize: 0
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
                 }, normalize(pathPrefix + fileRealPath + '/' + fileName), 'Download Shared File', 'OK', () => {
-                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                    if (process.env.NODE_ENV === 'dev') console.log(result);
                 });
-                
+
                 res.download(normalize(pathPrefix + fileRealPath + '/' + fileName), fileName)
             } else {
                 global.logger.error(`[${userName}] fileController::FileController shareFileDownload() ->${fileName} ${d.message}`);
@@ -498,13 +498,13 @@ class FileController {
                     clientIP: clientIP || '',
                     browserIP: browserIP || ''
                 }, {
-                    fileName: rootPath || '',
+                    fileName: fullName || '',
                     fileSize: 0
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
                 }, d.message, 'Download Shared File', 'FAIL', () => {
-                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                    if (process.env.NODE_ENV === 'dev') console.log(result);
                 });
                 return res.status(200).json({
                     "status": "FAIL",
@@ -516,35 +516,35 @@ class FileController {
 
     }
 
-    shareFileManage(req,res,next) {
+    shareFileManage(req, res, next) {
         let userName = req.params.name;
         let userName = req.cookies.UserName;
         let browserIP = (req.headers['x-forwarded-for'] ||
-                req.connection.remoteAddress ||
-                req.socket.remoteAddress ||
-                req.connection.socket.remoteAddress).split(",")[1];
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress).split(",")[1];
 
         let clientIP = req.connection.remoteAddress;
         console.log('hello');
         if (process.env.NODE_ENV === 'dev') console.log(userName);
-        Util.getByUserName(userName,(d) =>{
-            if(d.status == 'OK') {
-                if (process.env.NODE_ENV === 'dev') console.log('shareFileManage->',d.data);
+        Util.getByUserName(userName, (d) => {
+            if (d.status == 'OK') {
+                if (process.env.NODE_ENV === 'dev') console.log('shareFileManage->', d.data);
                 Audit.Add({
                     userName: userName
                 }, {
                     clientIP: clientIP || '',
                     browserIP: browserIP || ''
                 }, {
-                    fileName: rootPath || '',
+                    fileName: fullName || '',
                     fileSize: 0
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
                 }, data, 'Share File', 'OK', () => {
-                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                    if (process.env.NODE_ENV === 'dev') console.log(result);
                 });
-                return  res.status(200).json({
+                return res.status(200).json({
                     "status": "OK",
                     "message": "",
                     "data": d.data
@@ -556,13 +556,13 @@ class FileController {
                     clientIP: clientIP || '',
                     browserIP: browserIP || ''
                 }, {
-                    fileName: rootPath || '',
+                    fileName: fullName || '',
                     fileSize: 0
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
                 }, d.message, 'Share File', 'FAIL', () => {
-                  if (process.env.NODE_ENV === 'dev') console.log(result);  
+                    if (process.env.NODE_ENV === 'dev') console.log(result);
                 });
                 return res.status(200).json({
                     "status": "FAIL",
@@ -614,7 +614,7 @@ class FileController {
                     });
                 } else {
                     // send email
-                    _sendMail(userName,destUserName,fileName,`https://filebox.unifyspain.es/files/share/${uid}`);
+                    _sendMail(userName, destUserName, fileName, `https://filebox.unifyspain.es/files/share/${uid}`);
                     d.data.hostServer = req.get('host');
                     return res.status(200).json(d);
                 }
