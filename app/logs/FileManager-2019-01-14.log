@@ -233,3 +233,6 @@
 [2019-01-14T14:56:35.375] [INFO] FileManager - *************** Shutdown finished **************
 [2019-01-14T14:56:44.476] [INFO] FileManager - ********* Starting FileManager v.1.0 **********
 [2019-01-14T14:56:44.491] [INFO] FileManager - Server listen on port 8443
+[2019-01-14T15:00:06.237] [INFO] FileManager - Shutdown() -> Received kill signal, shutting down gracefully.
+[2019-01-14T15:00:06.238] [INFO] FileManager - Shutdown() -> Closed out remaining connections.
+[2019-01-14T15:00:06.238] [INFO] FileManager - *************** Shutdown finished **************
