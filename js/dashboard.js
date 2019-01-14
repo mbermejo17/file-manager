@@ -24,6 +24,7 @@ import {
     showSharedFiles
 } from "./modules/fileManager";
 import { modalDialog } from "./vendor/modalDialog";
+import { showLog, showAudit } from "./modules/admin";
 
 window.userData = {
     UserName: Cookies.get("UserName"),
@@ -319,33 +320,13 @@ window.appData = {
         var allElements = document.querySelectorAll(".typeFile");
         allElements.forEach(function(element, i) {
             if (userData.RunMode === "DEBUG") console.log("element: ", element);
-            if (userData.RunMode === "DEBUG")
-                console.log(
-                    "children: ",
-                    element.parentElement.parentElement.children[0].children[0]
-                    .children[0].checked
-                );
-            if (userData.RunMode === "DEBUG")
-                console.log(
-                    "size: ",
-                    element.parentElement.parentElement.children[2].innerHTML
-                );
-            if (userData.RunMode === "DEBUG")
-                console.log(
-                    "fullsize: ",
-                    element.parentElement.parentElement.children[3].innerHTML
-                );
-            if (
-                element.parentElement.parentElement.children[0].children[0].children[0]
-                .checked
-            ) {
+            if (userData.RunMode === "DEBUG") console.log("children: ", element.parentElement.parentElement.children[0].children[0].children[0].checked);
+            if (userData.RunMode === "DEBUG") console.log("size: ", element.parentElement.parentElement.children[2].innerHTML);
+            if (userData.RunMode === "DEBUG") console.log("fullsize: ", element.parentElement.parentElement.children[3].innerHTML);
+            if (element.parentElement.parentElement.children[0].children[0].children[0].checked) {
                 appData.aSelectedFiles.name.push(element.innerHTML);
-                appData.aSelectedFiles.size.push(
-                    element.parentElement.parentElement.children[2].innerHTML
-                );
-                appData.aSelectedFiles.fullsize.push(
-                    element.parentElement.parentElement.children[3].innerHTML
-                );
+                appData.aSelectedFiles.size.push(element.parentElement.parentElement.children[2].innerHTML);
+                appData.aSelectedFiles.fullsize.push(element.parentElement.parentElement.children[3].innerHTML);
                 checkedFiles.push(element.innerHTML);
                 // c(element.children[1].innerHTML)
             } else {
@@ -353,6 +334,7 @@ window.appData = {
                 if (idx > -1) {
                     appData.aSelectedFiles.name.splice(idx, 1);
                     appData.aSelectedFiles.size.splice(idx, 1);
+                    appData.aSelectedFiles.fullsize.splice(idx, 1);
                 }
             }
         });
@@ -568,18 +550,20 @@ window.appData = {
         const isChecked = e.target.checked;
         const contentType = e.target.className.split(/\s+/).indexOf("checkFile");
         const name = e.target.parentNode.children[1].htmlFor;
-        const size =
-            e.target.parentNode.parentNode.parentNode.children[2].innerHTML;
+        const size = e.target.parentNode.parentNode.parentNode.children[2].innerHTML;
+        const fullsize = e.target.parentNode.parentNode.parentNode.children[3].innerHTML;
 
         if (contentType != -1) {
             if (isChecked) {
                 appData.aSelectedFiles.name.push(name);
                 appData.aSelectedFiles.size.push(size);
+                appData.aSelectedFiles.fullsize.push(fullsize);
             } else {
                 const idx = appData.aSelectedFiles.name.indexOf(name);
                 if (idx > -1) {
                     appData.aSelectedFiles.name.splice(idx, 1);
                     appData.aSelectedFiles.size.splice(idx, 1);
+                    appData.aSelectedFiles.fullsize.splice(idx, 1);
                 }
             }
         } else {
@@ -593,7 +577,8 @@ window.appData = {
             }
         }
         if (userData.RunMode === "DEBUG")
-            console.log(appData.aSelectedFiles, appData.aSelectedFolders);
+            console.log("Select/Deselect: ");
+        console.log(appData.aSelectedFiles, appData.aSelectedFolders);
     };
 
     ////////////////////////////////////////
@@ -695,28 +680,6 @@ window.appData = {
     ////////////////////////////////////////
     const showChangeUserPassword = (w, h, t) => {
         let ModalTitle = t;
-        /* let ModalContent = `<div class="row">
-                              <div class="input-field col s12">
-                                <input id="newpassword" type="password"/>
-                                <label for="newpassword">New Password</label>
-                              </div>
-                              <div class="input-field col s12">
-                                <input id="newpassword2" type="password"/>
-                                <label for="newpassword2">Repeat Password</label>
-                              </div>
-                          </div>`;
-    let htmlContent = `<div id="modal-header">
-                          <h5><i class="fas fa-user-lock icon-title"></i>${ModalTitle}</h5>
-                        <a class="modal_close" id="modalClose" href="#hola"></a>
-                      </div>
-                      <div class="modal-content">
-                        <p>${ModalContent}</p>
-                      </div>
-                      <div class="modal-footer">
-                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="ModalClose" href="#!">Close</a>
-                          <a class="modal-action modal-close waves-effect waves-teal btn-flat btn2-unify" id="AcceptChangeUserPassword" href="#!">Accept</a>
-                      </div>    `;
- */
         let modalDialogOptions = {
             cancel: true,
             cancelText: "Cancel",
@@ -867,10 +830,12 @@ window.appData = {
     };
 
     /////////////////////////////////////////
-    //  Events handlers
+    //  ********** Events handlers **********
     /////////////////////////////////////////
 
+    ///////////////////////////////////
     // Add User
+    ///////////////////////////////////
 
     $u("#userAdd").on("click", e => {
         e.preventDefault();
@@ -878,14 +843,47 @@ window.appData = {
             showAddUserForm("New User", null);
     });
 
+    ///////////////////////////////////
     // Edit user
+    ///////////////////////////////////
 
     $u("#userMod").on("click", e => {
         e.preventDefault();
         if (!$u("#" + e.target.id).hasClass("disabled")) editUser();
     });
 
+
+    ///////////////////////////////////
+    // View log
+    ///////////////////////////////////
+
+    $u("#viewlog").on("click", e => {
+        e.preventDefault();
+        if (!$u("#" + e.target.id).hasClass("disabled")) showLog();
+    });
+
+    ///////////////////////////////////
+    // View Audit
+    ///////////////////////////////////
+
+    $u("#viewaudit").on("click", e => {
+        e.preventDefault();
+        if (!$u("#" + e.target.id).hasClass("disabled")) showAudit(32, 380, "Manage Shared Files");
+    });
+
+
+    ///////////////////////////////////
+    // Monitoring
+    ///////////////////////////////////
+
+    $u("#monitoring").on("click", e => {
+        e.preventDefault();
+        if (!$u("#" + e.target.id).hasClass("disabled")) monitoring();
+    });
+
+    ///////////////////////////////////
     // Edit App Settings
+    ///////////////////////////////////
 
     $u("#settings").on("click", e => {
         e.preventDefault();
@@ -921,7 +919,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // Hide User Options Panel
+    ///////////////////////////////////
 
     $u("#Usersdropdown").on("mouseleave", () => {
         $u("#Usersdropdown").hide();
@@ -932,21 +932,27 @@ window.appData = {
         $u("#settings").removeClass("selected");
     });
 
+    ///////////////////////////////////
     // User Options
+    ///////////////////////////////////
 
     $u("#usertrigger").on("click", e => {
         e.preventDefault();
         if (!$u("#" + e.target.id).hasClass("disabled")) userTrigger();
     });
 
+    ///////////////////////////////////
     // Refresh view
+    ///////////////////////////////////
 
     $u("#refresh").on("click", e => {
         e.preventDefault();
         refreshPath(appData.currentPath);
     });
 
+    ///////////////////////////////////
     // Share File
+    ///////////////////////////////////
 
     $u("#share").on("click", e => {
         e.preventDefault();
@@ -970,7 +976,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // User Logout
+    ///////////////////////////////////
 
     $u("#userLogout").on("click", e => {
         e.preventDefault();
@@ -1002,7 +1010,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // Show modal User Logout
+    ///////////////////////////////////
 
     $u("#ModalUserLogout").on("click", e => {
         e.preventDefault();
@@ -1014,7 +1024,9 @@ window.appData = {
         }
     });
 
+    /////////////////////////////////////////////
     // Show Modal Dialog Change User Password
+    /////////////////////////////////////////////
 
     $u("#userChangePassword").on("click", e => {
         e.preventDefault();
@@ -1026,7 +1038,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // Manage Shared Files
+    ///////////////////////////////////
 
     $u("#userSharedFiles").on("click", e => {
         e.preventDefault();
@@ -1038,7 +1052,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // Show User Profile
+    ///////////////////////////////////
 
     $u("#userProfile").on("click", e => {
         e.preventDefault();
@@ -1050,7 +1066,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // Cancel Modal Dialog option
+    ///////////////////////////////////
 
     $u("#cancel").on("click", e => {
         e.preventDefault();
@@ -1061,7 +1079,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // Go to Home Path
+    ///////////////////////////////////
 
     $u("#home").on("click", e => {
         e.preventDefault();
@@ -1074,7 +1094,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // Show Modal Dialog Add New Folder
+    ///////////////////////////////////
 
     $u("#newFolder").on("click", e => {
         e.preventDefault();
@@ -1086,7 +1108,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // Delete Files / Folders
+    ///////////////////////////////////
 
     $u("#delete").on("click", e => {
         e.preventDefault();
@@ -1106,7 +1130,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // Upload Files
+    ///////////////////////////////////
 
     $u("#upload").on("click", e => {
         e.preventDefault();
@@ -1117,7 +1143,9 @@ window.appData = {
         }
     });
 
+    ///////////////////////////////////
     // Download Files
+    ///////////////////////////////////
 
     $u("#download").on("click", e => {
         e.preventDefault();
@@ -1130,6 +1158,7 @@ window.appData = {
                         "error"
                     );
                 }
+                console.log("Before download call", appData.aSelectedFiles);
                 download(appData.aSelectedFiles, "File");
                 //socketDownloadFile(appData.aSelectedFiles, "File");
             } else {

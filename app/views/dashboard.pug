@@ -47,11 +47,18 @@ html(lang="es")
             li
               a#userMod.btn-unify(href="#") Modify User  
             li
+              a.separator(href="#")    
+            li
               a#monitoring.btn-unify(href="#") Monitoring  
+            li
+              a#viewlog.btn-unify(href="#") View log   
+            li
+              a#viewaudit.btn-unify(href="#") View Audit                
         a#home.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Home
         a#newFolder.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") New Folder
         a#share.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Share
         a#delete.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Delete
+        a#delete.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Move
         a#download.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Download
         a#upload.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Upload
       .row
@@ -81,10 +88,10 @@ html(lang="es")
                 th
                   | Date
             tbody
-    .footer-unify
-      .footer-container
-        img(src="img/logo_brand.png" alt="")
-        h5.unify-text.right © Unify Inc. 2018
+      .footer-unify
+        .footer-container
+          img(src="img/logo_brand.png" alt="")
+          h5.unify-text.right © Unify Inc. 2019
     #modal(style="display:none").modal-dialog-alert-wrap
     #lean-overlay.modal-overlay(style="z-index: 1002; display: none; opacity: 0.5;")      
     #logoutmodal(style="display:none").modal

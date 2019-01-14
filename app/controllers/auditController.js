@@ -20,25 +20,25 @@ exports.Add = (user, ip, file, d, msg, action, result, callback) => {
     data.result = result;
 
     Audit.Add(data, (d) => {
-      if (process.env.NODE_ENV === 'dev') console.log("audit controller response : ", d);
-      if (process.env.NODE_ENV === 'dev') console.log('========================================');
-      if (process.env.NODE_ENV === 'dev') console.log('                  AUDIT END');
-      if (process.env.NODE_ENV === 'dev') console.log('========================================');
+        if (process.env.NODE_ENV === 'dev') console.log("audit controller response : ", d);
+        if (process.env.NODE_ENV === 'dev') console.log('========================================');
+        if (process.env.NODE_ENV === 'dev') console.log('                  AUDIT END');
+        if (process.env.NODE_ENV === 'dev') console.log('========================================');
         callback(d);
     });
 };
 
-exports.getAll = () => {
+exports.getAll = (req, res) => {
     Audit.All(data => {
         if (data.status == "FAIL") {
-          if (process.env.NODE_ENV === 'dev') console.log(status);
+            if (process.env.NODE_ENV === 'dev') console.log(status);
             res.status(500).json({
                 status: "FAIL",
                 message: status,
                 data: null
             });
         } else {
-          if (process.env.NODE_ENV === 'dev') console.log(data);
+            if (process.env.NODE_ENV === 'dev') console.log(data);
             return res.status(200).json({
                 status: "OK",
                 message: "Users found",
@@ -53,7 +53,7 @@ exports.findByName = (userName) => {
         `SELECT * FROM Users WHERE UPPER(UserName) = '${userName.toUpperCase()}'`,
         (status, data) => {
             if (status) {
-              if (process.env.NODE_ENV === 'dev') console.log(status);
+                if (process.env.NODE_ENV === 'dev') console.log(status);
                 res.status(500).json({
                     status: "FAIL",
                     message: status,
@@ -61,7 +61,7 @@ exports.findByName = (userName) => {
                 });
             } else {
                 if (data) {
-                  if (process.env.NODE_ENV === 'dev') console.log(data);
+                    if (process.env.NODE_ENV === 'dev') console.log(data);
                     return res.status(200).json({
                         status: "OK",
                         message: "User found",

@@ -47,11 +47,11 @@ AuditModel.Open = function() {
 };
 
 AuditModel.CreateTable = function() {
-  let db = global.db;
+    let db = global.db;
     db.run("DROP TABLE IF EXISTS Audit");
     db.run(
         "CREATE TABLE IF NOT EXISTS Audit ( 'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 'UserName' TEXT, 'FileName' TEXT, 'Size' INTEGER, 'DateString' TEXT, 'Result' TEXT )");
-        if (process.env.NODE_ENV === 'dev') console.log("La tabla usuarios ha sido correctamente creada");
+    if (process.env.NODE_ENV === 'dev') console.log("La tabla usuarios ha sido correctamente creada");
 };
 
 AuditModel.Close = function() {
@@ -59,8 +59,8 @@ AuditModel.Close = function() {
 };
 
 AuditModel.Find = function(queryString, callback) {
-  let db = global.db;
-    if(!db || !db.open) dbOpen();
+    let db = global.db;
+    if (!db || !db.open) dbOpen();
 
     db.get(queryString, (err, row) => {
         if (err) {
@@ -81,7 +81,7 @@ AuditModel.Find = function(queryString, callback) {
 
 
 AuditModel.Remove = function(Id, callback) {
-  let db = global.db;
+    let db = global.db;
     let sql = `DELETE *
              FROM audit
              WHERE id  = ?`;
@@ -113,15 +113,15 @@ AuditModel.Remove = function(Id, callback) {
 };
 
 AuditModel.FindByName = function(userName, callback) {
-  let db = global.db;
-  if (process.env.NODE_ENV === 'dev') console.log(userName);
+    let db = global.db;
+    if (process.env.NODE_ENV === 'dev') console.log(userName);
     let sql = `SELECT UserName, Filename, Size, DateString , Result, Message
                FROM Audit
                WHERE UPPER(UserName)  = ?`;
     dbOpen();
     db.get(sql, [userName.toUpperCase()], (err, row) => {
         if (err) {
-          if (process.env.NODE_ENV === 'dev') console.error(err.message);
+            if (process.env.NODE_ENV === 'dev') console.error(err.message);
             dbClose();
             callback({
                 status: "FAIL",
@@ -147,30 +147,28 @@ AuditModel.FindByName = function(userName, callback) {
 
 
 AuditModel.All = function(callback) {
-  let db = global.db;
+    let response = {};
+    let allRows = [];
+    //let where = {};
     let sql = `SELECT *  
                FROM Audit`;
     dbOpen();
-    let allRows = [];
-    db.each(
-        sql,
-        (err, row) => {
-            if (err) {
+    global.db.all(sql, (err, rows) => {
+        if (err) {
+            dbClose();
+            console.error(err.message);
+            callback({
+                status: 'FAIL',
+                message: `Error ${err.message}`,
+                data: null
+            });
+        } else {
+            if (rows) {
                 dbClose();
-                if (process.env.NODE_ENV === 'dev') console.error(err.message);
-                callback({
-                    status: "FAIL",
-                    message: err.message,
-                    data: null
+                rows.forEach((row) => {
+                    allRows.push(row);
                 });
-            } else {
-                allRows.push(row);
-            }
-        },
-        (err, count) => {
-            if (allRows.length >= 1) {
-                dbClose();
-                if (process.env.NODE_ENV === 'dev') console.log(allRows);
+                //console.log(allRows);
                 callback({
                     status: "OK",
                     message: `${allRows.length} registros encontrados`,
@@ -179,43 +177,42 @@ AuditModel.All = function(callback) {
             } else {
                 dbClose();
                 callback({
-                    status: "FAIL",
-                    message: err.message,
+                    status: 'FAIL',
+                    message: `Archivo con id ${fileId} no encontrado`,
                     data: null
                 });
             }
-        }
-    );
+        };
+    });
 };
 
 
-
-const _insert = async (data,callback) =>{
-  dbOpen();
-  try {
-    //db.configure("busyTimeout", 60000);
-      let sql = `INSERT INTO Audit (BrowserIP,ClientIP,UserName,FileName,Size,DateString,UnixDate,Message,Action,Result) VALUES ('${data.browserIP}','${data.clientIP}','${data.userName}','${data.fileName}',${data.fileSize},'${data.dateString}',${data.unixDate},'${data.message}','${data.action}','${data.result}');`;
-      if (process.env.NODE_ENV === 'dev') console.log('Audit add:',sql);
-      await global.db.run(sql);
-      callback({
-        status: "OK",
-        message: `Registro añadido`,
-        data: null
-    });
-  } catch(e) {
-    if (process.env.NODE_ENV === 'dev') console.log('ERROR :',e);
-    callback({
-      status: "FAIL",
-      message: e,
-      data: null
-  });
-  }
+const _insert = async(data, callback) => {
+    dbOpen();
+    try {
+        //db.configure("busyTimeout", 60000);
+        let sql = `INSERT INTO Audit (BrowserIP,ClientIP,UserName,FileName,Size,DateString,UnixDate,Message,Action,Result) VALUES ('${data.browserIP}','${data.clientIP}','${data.userName}','${data.fileName}',${data.fileSize},'${data.dateString}',${data.unixDate},'${data.message}','${data.action}','${data.result}');`;
+        if (process.env.NODE_ENV === 'dev') console.log('Audit add:', sql);
+        await global.db.run(sql);
+        callback({
+            status: "OK",
+            message: `Registro añadido`,
+            data: null
+        });
+    } catch (e) {
+        if (process.env.NODE_ENV === 'dev') console.log('ERROR :', e);
+        callback({
+            status: "FAIL",
+            message: e,
+            data: null
+        });
+    }
 };
 
 
 AuditModel.Add = function(data, callback) {
     let response = {};
-    _insert(data,callback);
+    _insert(data, callback);
 };
 
 module.exports = AuditModel;

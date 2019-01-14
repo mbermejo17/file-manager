@@ -189,6 +189,7 @@ const _deselectAllFiles = () => {
     document.querySelector("#selectAllFiles").checked = false;
     appData.aSelectedFiles.name = [];
     appData.aSelectedFiles.size = [];
+    appData.aSelectedFiles.fullsize = [];
 };
 
 let validateSize = f => {
@@ -234,6 +235,7 @@ export function shareFile() {
                 data = {
                     fileName: appData.aSelectedFiles.name[x],
                     fileSize: appData.aSelectedFiles.size[x],
+                    //filefullSize: appData.aSelectedFiles.fullsize[x];
                     path: appData.currentPath,
                     userName: userData.UserName,
                     destUserName: d.destUserName,
@@ -268,6 +270,7 @@ export function shareFile() {
                                 );
                                 appData.aSelectedFiles.name = [];
                                 appData.aSelectedFiles.size = [];
+                                appData.aSelectedFiles.fullsize = [];
                                 appData.aSelectedFolders = [];
                                 document.getElementById("refresh").click();
                                 document.getElementById(
@@ -289,6 +292,7 @@ export function shareFile() {
                                     );
                                     appData.aSelectedFiles.name = [];
                                     appData.aSelectedFiles.size = [];
+                                    appData.aSelectedFiles.fullsize = [];
                                     appData.aSelectedFolders = [];
                                     document.getElementById("refresh").click();
                                     document.getElementById(
@@ -383,7 +387,7 @@ export function showSharedFiles() {
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + userData.Token
             },
-            timeout: 30000
+            timeout: 300000
         })
         .then(d => {
             document.querySelector("#waiting").classList.remove("active");
@@ -647,6 +651,7 @@ export function deleteFile(path) {
                 if (d.status == "OK") {
                     appData.aSelectedFiles.name.shift();
                     appData.aSelectedFiles.size.shift();
+                    appData.aSelectedFiles.fullsize.shift();
                     showToast(
                         "Delete file",
                         "Archivo " + d.data.fileName + " borrado",
@@ -1036,6 +1041,8 @@ export function upload(Token) {
 
 export function download(fileList, text) {
     let smallFileList = { name: [], size: [], fullsize: [] };
+    console.log("Download fileList", fileList);
+
     let _Download_big_files_Loop = (d) => {
         console.log("Download post data", d);
         axios
@@ -1076,6 +1083,7 @@ export function download(fileList, text) {
                 console.log(e);
             });
     };
+
     for (let i = 0; i < fileList.name.length; i++) {
         let downloadData = {
             "name": fileList.name[i],
@@ -1093,15 +1101,18 @@ export function download(fileList, text) {
             smallFileList.fullsize.push(fileList.fullsize[i]);
         }
     }
+
     console.log('smallfileList: ', smallFileList);
     if (smallFileList.name.length > 0) {
         _Download_small_files(smallFileList, 'File');
-        smallFileList = { name: [], size: [], fullsize: [] };
+        //smallFileList = { name: [], size: [], fullsize: [] };
+    } else {
+        document.querySelector("#refresh").click();
+        _deselectAllFolders();
+        _deselectAllFiles();
     }
 
-    document.querySelector("#refresh").click();
-    _deselectAllFolders();
-    _deselectAllFiles();
+
 };
 
 
@@ -1222,29 +1233,25 @@ let _Download_small_files = function(fileList, text) {
         let liFilename = document.querySelector("#li-filename" + i);
         let progressBar = document.querySelector("#progress-bar" + i);
         let percentLabel = document.querySelector("#percent" + i);
+        let downloadData = {
+            "name": fileList.name[i],
+            "path": appData.currentPath,
+            "size": fileList.size[i],
+            "fullsize": fileList.fullsize[i],
+            "userName": userData.UserName
+        };
         responseTimeout[i] = false;
-        fName = fName
-            .split("\\")
-            .pop()
-            .split("/")
-            .pop();
+        fName = fName.split("\\").pop().split("/").pop();
+        console.log('file Name: ', fName);
         reqList[i] = new XMLHttpRequest();
-        reqList[i].open("POST", "/files/download", true);
+        reqList[i].open("POST", "/files/downloadSmall", true);
         reqList[i].responseType = "blob";
         liNumber.style.display = "block";
         liFilename.innerHTML = fName;
         reqList[i].timeout = 36000;
         reqList[i].ontimeout = function() {
             // Download Timeout
-            if (userData.RunMode === "DEBUG")
-                console.log(
-                    "** Timeout error ->File:" +
-                    fName +
-                    " " +
-                    reqList[i].status +
-                    " " +
-                    reqList[i].statusText
-                );
+            if (userData.RunMode === "DEBUG") console.log("** Timeout error ->File:" + fName + " " + reqList[i].status + " " + reqList[i].statusText);
             // handlerCount = handlerCount - 1
             _showAbortMessage(progressBar, "Timeout Error");
             progressBar.classList.add("blink");
@@ -1358,13 +1365,13 @@ let _Download_small_files = function(fileList, text) {
             "Content-type",
             "application/x-www-form-urlencoded"
         );
+
         if (userData.RunMode === "DEBUG")
             console.log(getRealPath(appData.currentPath) + "/" + fileList.name[i]);
-        reqList[i].send(
-            serializeObject({
-                filename: getRealPath(appData.currentPath) + "/" + fileList.name[i]
-            })
-        );
+        reqList[i].send(serializeObject(downloadData));
+        //serializeObject({
+        //    filename: getRealPath(appData.currentPath) + "/" + fileList.name[i]
+        //})   
     };
 
     document.querySelector("#btnCancelAll").classList.remove("disabled");

@@ -429,7 +429,7 @@ class FileController {
         let userName = data.userName;
         let fileSize = data.size;
         let path = data.path;
-        console.log("downloading ->", data.name);
+        console.log("downloading ->", data);
         res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
         res.setHeader('Content-Transfer-Encoding', 'binary')
         if (process.env.NODE_ENV === 'dev') console.log(normalize(pathPrefix + '\\' + fileName))
@@ -441,6 +441,26 @@ class FileController {
         });
         //res.download(normalize(pathPrefix + path + '/' + fileName), fileName)             
         //res.download(normalize(pathPrefix + '\\' + fileName), fileName)
+    }
+
+    postDownloadSmallFiles(req, res, next) {
+        let data = req.body;
+        let fileName = data.name;
+        let userName = data.userName;
+        let fileSize = data.size;
+        let path = data.path;
+        console.log("downloading ->", data);
+        res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
+        res.setHeader('Content-Transfer-Encoding', 'binary')
+        if (process.env.NODE_ENV === 'dev') console.log(normalize(pathPrefix + '\\' + fileName))
+        global.logger.info(`[${userName}] fileController::FileController download() ->Downloading ${path}/${fileName} size ${fileSize}`);
+        /*return res.status(200).json({
+            "status": "OK",
+            "message": "",
+            "data": encodeURIComponent(base64.encode(normalize(pathPrefix + path + '/' + fileName)))
+        });*/
+        return res.download(normalize(pathPrefix + path + '/' + fileName), fileName)
+            //res.download(normalize(pathPrefix + '\\' + fileName), fileName)
     }
 
     getDownload(req, res, next) {
@@ -467,6 +487,9 @@ class FileController {
             req.connection.socket.remoteAddress).split(",")[1];
 
         let clientIP = req.connection.remoteAddress;
+        let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
+        let currentUnixDate = moment().format('x');
+
         if (process.env.NODE_ENV === 'dev') console.log(fileId)
         Util.getById(fileId, (d) => {
             if (d.status == 'OK') {
@@ -480,7 +503,7 @@ class FileController {
                     clientIP: clientIP || '',
                     browserIP: browserIP || ''
                 }, {
-                    fileName: fullName || '',
+                    fileName: fileName || '',
                     fileSize: 0
                 }, {
                     dateString: currentDate,
@@ -516,18 +539,22 @@ class FileController {
 
     }
 
+
     shareFileManage(req, res, next) {
         let userName = req.params.name;
-        let userName = req.cookies.UserName;
+        //let userName = req.cookies.UserName;
         let browserIP = (req.headers['x-forwarded-for'] ||
             req.connection.remoteAddress ||
             req.socket.remoteAddress ||
             req.connection.socket.remoteAddress).split(",")[1];
 
         let clientIP = req.connection.remoteAddress;
+        let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
+        let currentUnixDate = moment().format('x');
         console.log('hello');
         if (process.env.NODE_ENV === 'dev') console.log(userName);
         Util.getByUserName(userName, (d) => {
+            if (process.env.NODE_ENV === 'dev') console.log(d);
             if (d.status == 'OK') {
                 if (process.env.NODE_ENV === 'dev') console.log('shareFileManage->', d.data);
                 Audit.Add({
@@ -536,12 +563,12 @@ class FileController {
                     clientIP: clientIP || '',
                     browserIP: browserIP || ''
                 }, {
-                    fileName: fullName || '',
+                    fileName: '',
                     fileSize: 0
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
-                }, data, 'Share File', 'OK', () => {
+                }, d.data, 'Share File', 'OK', (result) => {
                     if (process.env.NODE_ENV === 'dev') console.log(result);
                 });
                 return res.status(200).json({
@@ -561,7 +588,7 @@ class FileController {
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
-                }, d.message, 'Share File', 'FAIL', () => {
+                }, d.message, 'Share File', 'FAIL', (result) => {
                     if (process.env.NODE_ENV === 'dev') console.log(result);
                 });
                 return res.status(200).json({
@@ -601,6 +628,8 @@ class FileController {
             groupID: groupID
         }
         let sqlQuery = 'DELETE FROM Shared WHERE (UnixDate  < ?);';
+        let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
+        let currentUnixDate = moment().format('x');
         if (process.env.NODE_ENV === 'dev') console.log(sqlQuery);
         _cleanExpiredSharedFiles(sqlQuery, (response) => {
             if (process.env.NODE_ENV === 'dev') console.log(response);
@@ -623,5 +652,4 @@ class FileController {
     }
 
 }
-
 module.exports = new FileController()
