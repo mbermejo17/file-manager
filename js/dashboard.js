@@ -3,6 +3,7 @@
 
 "use sctrict";
 import "babel-polyfill";
+import dTree from "./modules/dtree";
 
 //import ajax from "./vendor/ajax";
 import axios from "axios";
@@ -17,6 +18,7 @@ import {
     shareFile,
     shareFileManage,
     deleteSelected,
+    moveSelected,
     download,
     socketDownloadFile,
     upload,
@@ -43,6 +45,7 @@ window.appData = {
     aSelectedFiles: { name: [], size: [], fullsize: [] },
     aSelectedFolders: []
 };
+
 
 (function(w, d) {
     let AllowDownload = userData.AccessString.download,
@@ -1129,6 +1132,30 @@ window.appData = {
             }
         }
     });
+
+
+    ///////////////////////////////////
+    // Move Files / Folders
+    ///////////////////////////////////
+
+    $u("#move").on("click", e => {
+        e.preventDefault();
+        if (!$u("#" + e.target.id).hasClass("disabled")) {
+            if (
+                appData.aSelectedFolders.length > 0 ||
+                appData.aSelectedFiles.name.length > 0
+            ) {
+                moveSelected();
+            } else {
+                showToast(
+                    "Delete",
+                    "No se han seleccionado archivos o carpetas",
+                    "error"
+                );
+            }
+        }
+    });
+
 
     ///////////////////////////////////
     // Upload Files

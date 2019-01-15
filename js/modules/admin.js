@@ -158,7 +158,7 @@ export function showAudit() {
                         containerOverlay.style.display = "none";
                     });
             } else {
-                showToast("Users", d.data.data.message, "error");
+                showToast("Users", d.data.message, "error");
             }
         })
         .catch(e => {

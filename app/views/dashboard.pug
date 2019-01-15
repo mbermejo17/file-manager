@@ -28,6 +28,7 @@ html(lang="es")
         .status
           i.fa.fa-user
           a#usertrigger.dropdown-menu.user-link.btn-unify(href="#!")
+        i#hamburger-button.fa.fa-bars.hamburger(style="display:none")   
         #Usersdropdown.dropdown-User-content
           ul
             li
@@ -58,9 +59,24 @@ html(lang="es")
         a#newFolder.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") New Folder
         a#share.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Share
         a#delete.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Delete
-        a#delete.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Move
+        a#move.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Move
         a#download.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Download
         a#upload.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Upload
+      ul#mn_menu.menu.hamburger_menu(style="display:none")
+        li
+          a#home.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Home
+        li  
+          a#newFolder.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") New Folder
+        li  
+          a#share.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Share
+        li  
+          a#delete.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Delete
+        li  
+          a#move.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Move
+        li  
+          a#download.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Download
+        li  
+          a#upload.waves-effect.waves-teal.btn-flat.btn-unify.main-Menu(href="#") Upload
       .row
       .main
         .line-path
@@ -113,5 +129,6 @@ html(lang="es")
     script(type="text/javascript" src="js/modules/toast.js")
     script(type="text/javascript" src="js/modules/unify.js")
     script(type="text/javascript" src="js/vendor/list.min.js")
+    //script(type="text/javascript" src="js/modules/dtree.js")
     script(type="text/javascript" src="js/dashboard.js")
-    script(type="text/javascript" src="js/modules/admin.js")
+    //script(type="text/javascript" src="js/modules/admin.js")

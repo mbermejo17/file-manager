@@ -7,6 +7,7 @@
 @import "./componentes/modalDialog";
 @import "./componentes/userForm";
 @import "./componentes/tableList";
+@import "./componentes/dtree";
 :root {
     --snackbarCurrentTop: 30px;
     --snackbarTop: 0;
@@ -182,9 +183,9 @@ body {
 }
 
 .footer-unify {
-    /* position: fixed;
-  bottom: 0;
-  height: 70px; */
+    position: fixed;
+    bottom: 0;
+    /*height: 70px;*/
     width: 100vw;
     background-color: $background_color_1;
 }
@@ -1126,16 +1127,29 @@ $md-checkmark-color: #fff;
         height: auto;
         text-align: center;
     }
+    #hamburger-button {
+        display: block !important;
+        color: $color_2;
+        text-align: left;
+        padding: 8px;
+        &:hover {
+            cursor: pointer !important;
+        }
+    }
+    .footer-unify {
+        position: relative;
+    }
     .status {
         text-align: center;
     }
     .nav-unify {
-        top: 0;
-        height: auto;
-        flex-direction: column;
-        position: relative;
-        background: #293037;
-        text-align: center;
+        display: none;
+        // top: 0;
+        // height: auto;
+        // flex-direction: column;
+        // position: relative;
+        // background: #293037;
+        // text-align: center;
     }
     .nav-unify a,
     #settings {

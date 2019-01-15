@@ -11,9 +11,37 @@ import WebSocket from "wss";
 
 
 
+
+
 ////////////////////////////////////
 // Files and Folder module
 ///////////////////////////////////
+
+let htmlMoveTemplate = `
+<div id="move-popup">
+  <div id="modal-header">
+    <h5>Share File</h5>
+    <a class="modal_close" id="sharedModalClose" href="#hola"></a>
+  </div>
+  <br>
+  <div class="userForm-row" id="tree-container">
+    
+  </div>  
+  <div class="row"> 
+    <div class="input-field col s9 m9">
+      <input class="check" id="delFileAfterExpired" type="checkbox">
+      <label class="checkbox" for="delFileAfterExpired"></label> 
+      <span>Delete file when expires</span>  
+    </div>
+    <div class="input-field col s1 m1">
+      <button class="waves-effect waves-teal btn-flat btn2-unify right" id="btn-ShareFileCancel" type="submit" name="action">Cancel</button>
+    </div>
+    <div class="input-field col s1 m1">  
+      <button class="waves-effect waves-teal btn-flat btn2-unify left" id="btn-ShareFileAccept" type="submit" name="action">Send</button>
+    </div>
+  </div>    
+</div>`;
+
 
 let htmlShareFile = `
 <div id="shareFileModal">
@@ -619,6 +647,91 @@ export function newFolder(folderName) {
             if (userData.RunMode === "DEBUG") console.log(err);
         });
 }
+
+/////////////////////////////////////
+// Move files/folders
+/////////////////////////////////////
+
+export function moveSelected() {
+    let AddUserModalContent = document.querySelector("#AddUserModalContent");
+    let containerOverlay = document.querySelector(".container-overlay");
+
+    AddUserModalContent.innerHTML = htmlMoveTemplate;
+    AddUserModalContent.style.display = "block";
+    containerOverlay.style.display = "block";
+    let dtreeContainer = document.querySelector("#move-popup");
+    let d = new dTree('d');
+
+    d.add(0, -1, 'My example tree');
+    d.add(1, 0, 'Node 1', 'example01.html');
+    d.add(2, 0, 'Node 2', 'example01.html');
+    d.add(3, 1, 'Node 1.1', 'example01.html');
+    d.add(4, 0, 'Node 3', 'example01.html');
+    d.add(5, 3, 'Node 1.1.1', 'example01.html');
+    d.add(6, 5, 'Node 1.1.1.1', 'example01.html');
+    d.add(7, 0, 'Node 4', 'example01.html');
+    d.add(8, 1, 'Node 1.2', 'example01.html');
+    d.add(9, 0, 'My Pictures', 'example01.html', 'Pictures I\'ve taken over the years', '', '', 'img/imgfolder.gif');
+    d.add(10, 9, 'The trip to Iceland', 'example01.html', 'Pictures of Gullfoss and Geysir');
+    d.add(11, 9, 'Mom\'s birthday', 'example01.html');
+    d.add(12, 0, 'Recycle Bin', 'example01.html', '', '', 'img/trash.gif');
+
+    //document.write(d);
+    console.log(d);
+
+    dtreeContainer.appendChild(d);
+
+}
+
+function moveFileFolder(origFullPath, destFullPath, type) {
+    const headers = new Headers();
+    headers.append("Authorization", "Bearer " + userData.Token);
+    headers.append("Content-Type", "application/json");
+    fetch("/files/move", {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify({
+                path: getRealPath(appData.currentPath),
+                orig: origFullPath,
+                dest: destFullPath
+            }),
+            timeout: 10000
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (userData.RunMode === "DEBUG") console.log(data);
+            if (data.status == "OK") {
+                $u("#modal").hide();
+                $u("#lean-overlay").hide();
+                $u("#refresh").trigger("click");
+                showToast(
+                    "Move",
+                    type + (type === "folder") ? " movida a" : " movido a" + destFullPath,
+                    "success"
+                );
+            } else {
+                showToast(
+                    "Error",
+                    "Error al mover " + (type === "folder") ? "la carpeta " : "el archivo " +
+                    origFullPath +
+                    " <br>Error: " +
+                    data.message,
+                    "error"
+                );
+            }
+        })
+        .catch(err => {
+            showToast(
+                "Error",
+                "Error al crear la carpeta " +
+                folderName +
+                " <br>Error: error no identificado",
+                "error"
+            );
+            if (userData.RunMode === "DEBUG") console.log(err);
+        });
+}
+
 
 /////////////////////////////////////
 // Delete selected Files
