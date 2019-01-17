@@ -490,45 +490,101 @@ class FileController {
         let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
         let currentUnixDate = moment().format('x');
 
-        if (process.env.NODE_ENV === 'dev') console.log(fileId)
+
+
+
+        let renderDownloadPage = (d) => {
+            let sharedFilesContent = '';
+            d.forEach((f, idx) => {
+                sharedFilesContent += `
+                <div class="sharedFile-item">
+                    <span>${f.FileName}</span>
+                    <a href="/files/share/${f.UrlCode}"><i class="fas fa-download"></i></a>
+                </div>
+                `;
+            });
+            let downloadPageHTML = `
+            <!DOCTYPE html>
+            <html lang="es">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Download Page</title>
+        <link type="text/css" rel="stylesheet" href="/css/fontawesome.all.min.css" media="screen,projection">
+        <link type="text/css" rel="stylesheet" href="/css/style.css" media="screen,projection">
+        <link rel="shortcut icon" href="/favicon.ico">
+        <link rel="shortcut icon" href="/favicon_64.png">
+    </head>
+    
+    <body>
+        <div class="row head-container">
+            <div class="container">
+                <div class="col m3 logo"></div>
+                <div class="col m12 center title">File Manager</div>
+                <div class="col m3 status right"></div>
+            </div>
+        </div>
+        <div class="row nav-unify"></div>
+        <div class="row"></div>
+        <form class="sharedFilesDounload">
+            <span class="form-title">Download Files</span> 
+            <div id="sharedFiles-container">${sharedFilesContent}</div>
+        </form>
+        <div class="footer-unify">
+            <div class="container"></div>
+        </div>
+    </body>
+    </html>
+            `;
+            res.send(downloadPageHTML);
+
+        };
+
+        if (process.env.NODE_ENV === 'dev') console.log(fileId);
         Util.getById(fileId, (d) => {
             if (d.status == 'OK') {
                 if (process.env.NODE_ENV === 'dev') console.log(d)
-                fileRealPath = d.data.RealPath
+                    //fileRealPath = d.data.RealPath
                 fileName = d.data.FileName
                 global.logger.info(`[${userName}] fileController::FileController shareFileDownload() ->${fileName} Shared File downloaded successfully!`);
-                Audit.Add({
-                    userName: userName
-                }, {
-                    clientIP: clientIP || '',
-                    browserIP: browserIP || ''
-                }, {
-                    fileName: fileName || '',
-                    fileSize: 0
-                }, {
-                    dateString: currentDate,
-                    unixDate: currentUnixDate
-                }, normalize(pathPrefix + fileRealPath + '/' + fileName), 'Download Shared File', 'OK', () => {
-                    if (process.env.NODE_ENV === 'dev') console.log(result);
-                });
-
-                res.download(normalize(pathPrefix + fileRealPath + '/' + fileName), fileName)
+                /*  Audit.Add({
+                     userName: userName
+                 }, {
+                     clientIP: clientIP,
+                     browserIP: browserIP
+                 }, {
+                     fileName: fileName,
+                     fileSize: 0
+                 }, {
+                     dateString: currentDate,
+                     unixDate: currentUnixDate
+                 }, normalize(pathPrefix + fileRealPath + '/' + fileName), 'Download Shared File', 'OK', () => {
+                     if (process.env.NODE_ENV === 'dev') console.log(result);
+                 }); */
+                console.log(d.data.length);
+                if (d.data.length > 1) {
+                    renderDownloadPage(d.data);
+                } else {
+                    return res.status(200).download(normalize(pathPrefix + d.data[0].RealPath + '/' + fileName), fileName);
+                }
             } else {
                 global.logger.error(`[${userName}] fileController::FileController shareFileDownload() ->${fileName} ${d.message}`);
-                Audit.Add({
+                /*Audit.Add({
                     userName: userName
                 }, {
-                    clientIP: clientIP || '',
-                    browserIP: browserIP || ''
+                    clientIP: clientIP,
+                    browserIP: browserIP
                 }, {
-                    fileName: fullName || '',
+                    fileName: '',
                     fileSize: 0
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
                 }, d.message, 'Download Shared File', 'FAIL', () => {
                     if (process.env.NODE_ENV === 'dev') console.log(result);
-                });
+                });*/
                 return res.status(200).json({
                     "status": "FAIL",
                     "message": d.message + ".<br>Enlace no disponible.",

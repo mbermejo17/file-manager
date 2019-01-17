@@ -1140,7 +1140,7 @@ window.appData = {
 
     $u("#move").on("click", e => {
         e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
+        /*if (!$u("#" + e.target.id).hasClass("disabled")) {
             if (
                 appData.aSelectedFolders.length > 0 ||
                 appData.aSelectedFiles.name.length > 0
@@ -1153,7 +1153,7 @@ window.appData = {
                     "error"
                 );
             }
-        }
+        }*/
     });
 
 

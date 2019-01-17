@@ -124,6 +124,58 @@ h3 {
     color: #4a89dc;
 }
 
+#sharedFiles-container {
+    margin: 0 auto;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    width: 100%;
+    overflow-y: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.sharedFilesDounload {
+    width: auto;
+    max-width: 60vw;
+    text-align: center;
+}
+
+.form-title {
+    width: 100%;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.sharedFile-item {
+    display: flex;
+    width: 100%;
+    padding-top: 10px;
+    justify-content: space-between;
+    span {
+        &:hover {
+            color: var(--bg-alternate-color);
+        }
+    }
+    i {
+        margin-left: 5px;
+        margin-right: 5px;
+        &:hover {
+            color: var(--bg-alternate-color);
+        }
+    }
+    a {
+        color: $color_2;
+        &:visited {
+            color: $color_2;
+        }
+        text-decoration: none;
+    }
+}
+
 @media only screen and (max-width: 760px) {
     .footer-unify {
         position: relative;

@@ -280,7 +280,7 @@ export function shareFile() {
                             "Content-Type": "application/json",
                             Authorization: "Bearer " + userData.Token
                         },
-                        timeout: 30000
+                        timeout: 10800000
                     })
                     .then(d => {
                         if (userData.RunMode === "DEBUG") console.log(d.data);
@@ -415,7 +415,7 @@ export function showSharedFiles() {
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + userData.Token
             },
-            timeout: 300000
+            timeout: 10800000
         })
         .then(d => {
             document.querySelector("#waiting").classList.remove("active");
@@ -611,7 +611,7 @@ export function newFolder(folderName) {
                 path: getRealPath(appData.currentPath),
                 folderName: folderName
             }),
-            timeout: 10000
+            timeout: 10800000
         })
         .then(r => r.json())
         .then(data => {
@@ -695,7 +695,7 @@ function moveFileFolder(origFullPath, destFullPath, type) {
                 orig: origFullPath,
                 dest: destFullPath
             }),
-            timeout: 10000
+            timeout: 10800000
         })
         .then(r => r.json())
         .then(data => {
@@ -755,7 +755,7 @@ export function deleteFile(path) {
                     path: getRealPath(path),
                     fileName: aF[x]
                 }),
-                timeout: 720000
+                timeout: 10800000
             })
             .then(FetchHandleErrors)
             .then(r => r.json())
@@ -803,7 +803,7 @@ export function deleteFolder(path) {
                     path: getRealPath(path),
                     fileName: aF[x]
                 }),
-                timeout: 720000
+                timeout: 10800000
             })
             .then(FetchHandleErrors)
             .then(r => r.json())
@@ -897,7 +897,7 @@ export function upload(Token) {
                     Authorization: "Bearer " + userData.Token,
                     destPath: realpath
                 },
-                timeout: 7200000,
+                timeout: 10800000,
                 cancelToken: new CancelToken(function executor(c) {
                     aListHandler[nFile] = c;
                 }),
@@ -1164,7 +1164,7 @@ export function download(fileList, text) {
                     "Content-Type": "application/json",
                     Authorization: "Bearer " + userData.Token
                 },
-                timeout: 3600000
+                timeout: 10800000
             })
             .then(responseData => {
                 var getUrl = window.location;
@@ -1361,7 +1361,7 @@ let _Download_small_files = function(fileList, text) {
         reqList[i].responseType = "blob";
         liNumber.style.display = "block";
         liFilename.innerHTML = fName;
-        reqList[i].timeout = 36000;
+        reqList[i].timeout = 10800000;
         reqList[i].ontimeout = function() {
             // Download Timeout
             if (userData.RunMode === "DEBUG") console.log("** Timeout error ->File:" + fName + " " + reqList[i].status + " " + reqList[i].statusText);
