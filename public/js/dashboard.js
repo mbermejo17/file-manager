@@ -1100,13 +1100,20 @@ window.appData = {
 
     $u("#move").on("click", function (e) {
         e.preventDefault();
-        if (!$u("#" + e.target.id).hasClass("disabled")) {
-            if (appData.aSelectedFolders.length > 0 || appData.aSelectedFiles.name.length > 0) {
-                (0, _fileManager.moveSelected)();
+        /*if (!$u("#" + e.target.id).hasClass("disabled")) {
+            if (
+                appData.aSelectedFolders.length > 0 ||
+                appData.aSelectedFiles.name.length > 0
+            ) {
+                moveSelected();
             } else {
-                showToast("Delete", "No se han seleccionado archivos o carpetas", "error");
+                showToast(
+                    "Delete",
+                    "No se han seleccionado archivos o carpetas",
+                    "error"
+                );
             }
-        }
+        }*/
     });
 
     ///////////////////////////////////

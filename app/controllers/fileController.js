@@ -82,6 +82,22 @@ const _sendMail = async function(userName, destName, aFile, Url) {
     }); */
 };
 
+const _formatSize = (bytes) => {
+    if (bytes >= 1073741824) {
+        bytes = parseInt(bytes / 1000000000) + " GB";
+    } else if (bytes >= 1048576) {
+        bytes = parseInt(bytes / 1000000) + " MB";
+    } else if (bytes >= 1024) {
+        bytes = parseInt(bytes / 1000) + " KB";
+    } else if (bytes > 1) {
+        bytes = bytes + " bytes";
+    } else if (bytes == 1) {
+        bytes = bytes + " byte";
+    } else {
+        bytes = "0 byte";
+    }
+    return bytes;
+};
 
 class FileController {
     getFiles(req, res, next) {
@@ -476,6 +492,8 @@ class FileController {
         //res.download(normalize(pathPrefix + '\\' + fileName), fileName)
     }
 
+
+
     shareFileDownload(req, res, next) {
         let fileId = req.params.id
         let fileRealPath = ''
@@ -498,7 +516,8 @@ class FileController {
             d.forEach((f, idx) => {
                 sharedFilesContent += `
                 <div class="sharedFile-item">
-                    <span>${f.FileName}</span>
+                    <span class="firstColItem">${f.FileName}</span>
+                    <span class="colItem">${f.Size}</span>
                     <a href="/files/share/${f.UrlCode}"><i class="fas fa-download"></i></a>
                 </div>
                 `;
@@ -547,7 +566,7 @@ class FileController {
             if (d.status == 'OK') {
                 if (process.env.NODE_ENV === 'dev') console.log(d)
                     //fileRealPath = d.data.RealPath
-                fileName = d.data.FileName
+                fileName = d.data[0].FileName
                 global.logger.info(`[${userName}] fileController::FileController shareFileDownload() ->${fileName} Shared File downloaded successfully!`);
                 /*  Audit.Add({
                      userName: userName
