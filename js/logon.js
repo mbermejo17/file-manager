@@ -49,11 +49,9 @@ import Cookies from "./vendor/js-cookie";
     };
 
     let showDashboard = function(data) {
-        console.log("data::showDashboard: ", data);
-        Cookies.set("token", data.Token);
         Cookies.set("UserName", data.UserName);
-        Cookies.set("UserName", data.UserFullName);
-        Cookies.set("UserName", data.UserEmail);
+        Cookies.set("UserFullName", data.UserFullName);
+        Cookies.set("UserEmail", data.UserEmail);
         Cookies.set("UserRole", data.Role);
         Cookies.set("wssURL", data.wssURL);
         Cookies.set("CompanyName", data.CompanyName);
@@ -61,6 +59,7 @@ import Cookies from "./vendor/js-cookie";
         Cookies.set("AccessString", data.AccessString);
         Cookies.set("RunMode", data.RunMode);
         Cookies.set("MaxFileSize", data.MaxFileSize);
+        Cookies.set("token", data.Token);
         window.location.href = "/dashboard";
     };
 
@@ -100,7 +99,7 @@ import Cookies from "./vendor/js-cookie";
             .then(d => {
                 //let d = JSON.parse(responseData);
                 $u("#waiting").addClass("active");
-                console.log('Login:', d.data.data);
+                console.log('Login:', d.data);
                 if (d.data.status === "OK") {
                     showDashboard(d.data.data);
                 } else {

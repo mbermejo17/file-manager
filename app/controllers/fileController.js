@@ -3,6 +3,7 @@ const fs = require('fs'),
     mime = require('mime-type'),
     mimeType = require('mime'),
     path = require('path'),
+    md5File = require('md5-file'),
     settings = require('../config/config.json'),
     //pathPrefix = '.\\repository\\',
     pathPrefix = settings.repositoryPath,
@@ -339,6 +340,40 @@ class FileController {
         })
     }
 
+    makeMd5File(req, res, next) {
+        let repoPath = req.query.destPath;
+        let fileName = req.query.fileName;
+        let fullFileName = path.join(normalize(pathPrefix + repoPath), fileName);
+        // Calcula MD5
+
+        console.log(fullFileName);
+        md5File(fullFileName, (err, hash) => {
+            if (err) console.log('******* err MD5 *******'.err);
+            console.log(`********* The MD5 sum : ${hash} ************`);
+            fs.writeFile(fullFileName + ".md5", hash, function(err) {
+                if (err) {
+                    res.send(JSON.stringify({
+                        status: 'FAIL',
+                        message: err,
+                        data: {
+                            fileName: fileName
+                        }
+                    }))
+                }
+                console.log("The file " + fullFileName + ".md5 was saved!");
+                res.send(JSON.stringify({
+                    status: 'OK',
+                    message: "MD5 created",
+                    data: {
+                        fileName: fileName,
+                        md5: hash
+                    }
+                }))
+            });
+        });
+        ////////////////  
+    }
+
     upload(req, res, next) {
         if (process.env.NODE_ENV === 'dev') console.log(req.query)
             // create an incoming form object
@@ -378,6 +413,7 @@ class FileController {
                     console.log('stats: ' + JSON.stringify(stats));
                 });
             });
+
         });
 
         // log any errors that occur
@@ -424,13 +460,14 @@ class FileController {
             }, fileName, 'Upload File', 'OK', () => {
                 if (process.env.NODE_ENV === 'dev') console.log(result);
             });
+
             res.send(JSON.stringify({
                 status: 'OK',
                 message: '',
                 data: {
                     fileName: fileName
                 }
-            }))
+            }));
         });
 
         // parse the incoming request containing the form data

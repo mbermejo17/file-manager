@@ -431,7 +431,7 @@ exports.UserLogin = (req, res, next) => {
     let browserIP = req.header('x-forwarded-for') || req.connection.remoteAddress;
     let clientIP = req.connection.remoteAddress;
     User.Find(
-        `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, UnixDate FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`,
+        `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, UnixDate, UserEmail, UserFullName FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`,
         (status, data) => {
             //console.log("User Find : " + status);
             //console.dir(data);
@@ -445,6 +445,8 @@ exports.UserLogin = (req, res, next) => {
                 });
             } else {
                 if (data) {
+                    console.log("******** LOGON DATA **********", data);
+                    console.log(req.body.username);
                     //console.log(req.body.password);
                     //console.log(Base64.decode(req.body.password))
                     if (Base64.decode(req.body.password) === data.UserPasswd) {
@@ -473,10 +475,11 @@ exports.UserLogin = (req, res, next) => {
                         makeUserPathIfNotExist(data.RootPath, (result) => {
                             if (process.env.NODE_ENV === 'dev') console.log("result: ", result);
                             let wsPath = data.UserRole === "assistant" ? config.wssURL + "/room" : config.wssURL + "/client";
+
                             const token = jwt.sign({
                                     UserName: data.UserName,
-                                    UserFullName: data.UserFullName,
-                                    UserEmail: data.UserEmail,
+                                    UserFullName: data.UserFullName || data.UserName,
+                                    UserEmail: data.UserEmail || '',
                                     UserId: data._id,
                                     Role: data.UserRole,
                                     wssURL: wsPath,
@@ -488,6 +491,7 @@ exports.UserLogin = (req, res, next) => {
                                     expiresIn: "24h"
                                 }
                             );
+                            console.log('data.UserName :', data.UserName);
                             // audit
                             if (process.env.NODE_ENV === 'dev') console.log("token", token);
                             res.cookie("sessionId", Base64.encode(data.UserName), {
@@ -506,6 +510,8 @@ exports.UserLogin = (req, res, next) => {
                                 "message": "User authenticated",
                                 "data": {
                                     "UserName": data.UserName,
+                                    "UserFullName": data.UserFullName || data.UserName,
+                                    "UserEmail": data.UserEmail || '',
                                     "Token": token,
                                     "Role": data.UserRole,
                                     "wssURL": wsPath,

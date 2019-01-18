@@ -40,6 +40,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //import axiosMethodOverride from 'axios-method-override';
 window.userData = {
     UserName: _jsCookie2.default.get("UserName"),
+    UserFullName: _jsCookie2.default.get("UserFullName"),
+    UserEmail: _jsCookie2.default.get("UserEmail"),
     UserRole: _jsCookie2.default.get("UserRole"),
     CompanyName: _jsCookie2.default.get("CompanyName"),
     RealRootPath: _jsCookie2.default.get("RootPath"),
@@ -73,9 +75,12 @@ window.appData = {
     var aFiles = [];
     var currentTopToast = 30;
     var topToast = 0;
+    console.log(_jsCookie2.default.get("UserRole"));
 
     var logout = function logout() {
         _jsCookie2.default.remove("UserName");
+        _jsCookie2.default.remove("UserFullName");
+        _jsCookie2.default.remove("UserEmail");
         _jsCookie2.default.remove("UserRole");
         _jsCookie2.default.remove("sessionId");
         _jsCookie2.default.remove("token");
@@ -2695,6 +2700,22 @@ function upload(Token) {
                     $u("#btnCancelAll").removeClass("disabled");
                     $u("#btnCancelAll").addClass("disabled");
                 }
+                _axios2.default.post("/files/upload/md5?destPath=" + realpath + "&fileName=" + uploadFiles[nFile].fileName, {
+                    headers: {
+                        Authorization: "Bearer " + userData.Token,
+                        destPath: realpath
+                    },
+                    timeout: 10800000,
+                    cancelToken: new CancelToken(function executor(c) {
+                        aListHandler[nFile] = c;
+                    })
+                }).then(function (d) {
+                    console.log("d.data", d.data);
+                    $u("#refresh").trigger("click");
+                    showToast("Upload", "MD5 from file " + d.data.data.fileName + " : " + d.data.data.md5, "success");
+                }).catch(function (err) {
+                    console.log(err);
+                });
             } else {
                 if (data.data.status == "FAIL") {
                     showToast("Error", "Error: " + data.data.message, "error");

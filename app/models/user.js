@@ -85,6 +85,7 @@ UserModel.Find = function(queryString, callback) {
         } else {
             if (row) {
                 dbClose();
+                console.log(row);
                 callback(null, row);
             } else {
                 dbClose();
@@ -101,7 +102,7 @@ UserModel.Find = function(queryString, callback) {
 /////////////////////////////////////////
 
 UserModel.FindById = function(userId, callback) {
-    let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName
+    let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName 
                FROM Users
                WHERE UserId  = ?`;
     dbOpen();
@@ -208,7 +209,7 @@ UserModel.Remove = function(userId, callback) {
 
 UserModel.FindByName = function(userName, callback) {
     if (process.env.NODE_ENV === 'dev') console.log(userName);
-    let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName
+    let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName 
                FROM Users
                WHERE UPPER(UserName)  = ?`;
     dbOpen();

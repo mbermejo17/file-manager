@@ -55,11 +55,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     };
 
     var showDashboard = function showDashboard(data) {
-        console.log("data::showDashboard: ", data);
-        _jsCookie2.default.set("token", data.Token);
         _jsCookie2.default.set("UserName", data.UserName);
-        _jsCookie2.default.set("UserName", data.UserFullName);
-        _jsCookie2.default.set("UserName", data.UserEmail);
+        _jsCookie2.default.set("UserFullName", data.UserFullName);
+        _jsCookie2.default.set("UserEmail", data.UserEmail);
         _jsCookie2.default.set("UserRole", data.Role);
         _jsCookie2.default.set("wssURL", data.wssURL);
         _jsCookie2.default.set("CompanyName", data.CompanyName);
@@ -67,6 +65,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         _jsCookie2.default.set("AccessString", data.AccessString);
         _jsCookie2.default.set("RunMode", data.RunMode);
         _jsCookie2.default.set("MaxFileSize", data.MaxFileSize);
+        _jsCookie2.default.set("token", data.Token);
         window.location.href = "/dashboard";
     };
 
@@ -104,7 +103,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         }).then(function (d) {
             //let d = JSON.parse(responseData);
             $u("#waiting").addClass("active");
-            console.log('Login:', d.data.data);
+            console.log('Login:', d.data);
             if (d.data.status === "OK") {
                 showDashboard(d.data.data);
             } else {

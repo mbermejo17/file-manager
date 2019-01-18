@@ -983,6 +983,25 @@ export function upload(Token) {
                         $u("#btnCancelAll").removeClass("disabled");
                         $u("#btnCancelAll").addClass("disabled");
                     }
+                    axios
+                        .post("/files/upload/md5?destPath=" + realpath + "&fileName=" + uploadFiles[nFile].fileName, {
+                            headers: {
+                                Authorization: "Bearer " + userData.Token,
+                                destPath: realpath
+                            },
+                            timeout: 10800000,
+                            cancelToken: new CancelToken(function executor(c) {
+                                aListHandler[nFile] = c;
+                            })
+                        })
+                        .then(d => {
+                            console.log("d.data", d.data);
+                            $u("#refresh").trigger("click");
+                            showToast("Upload", "MD5 from file " + d.data.data.fileName + " : " + d.data.data.md5, "success");
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
                 } else {
                     if (data.data.status == "FAIL") {
                         showToast("Error", "Error: " + data.data.message, "error");

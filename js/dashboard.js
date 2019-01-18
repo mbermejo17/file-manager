@@ -61,6 +61,7 @@ window.appData = {
     let aFiles = [];
     let currentTopToast = 30;
     let topToast = 0;
+    console.log(Cookies.get("UserRole"));
 
     const logout = () => {
         Cookies.remove("UserName");
