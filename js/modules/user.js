@@ -260,7 +260,7 @@ let htmlSearchUserTemplate = `
 const checkAccessRights = (aSwitch, role, accessRights) => {
     let opt = "";
     //let aAccessRights = split(accessRights, ",");
-    
+
     if (role !== "Custom") {
         switch (role.toUpperCase()) {
             case "USER":
@@ -275,12 +275,12 @@ const checkAccessRights = (aSwitch, role, accessRights) => {
         }
         changeAccessRights(aSwitch, opt);
     } else {
-      aSwitch[0].checked = accessRights.download ;
-      aSwitch[1].checked = accessRights.upload;
-      aSwitch[2].checked = accessRights.deletefile;
-      aSwitch[3].checked = accessRights.deletefolder ;
-      aSwitch[4].checked = accessRights.addfolder;
-      aSwitch[5].checked = accessRights.sharefiles;    
+        aSwitch[0].checked = accessRights.download;
+        aSwitch[1].checked = accessRights.upload;
+        aSwitch[2].checked = accessRights.deletefile;
+        aSwitch[3].checked = accessRights.deletefolder;
+        aSwitch[4].checked = accessRights.addfolder;
+        aSwitch[5].checked = accessRights.sharefiles;
     }
 };
 
@@ -571,9 +571,9 @@ export function showAddUserForm(title, data) {
         document.querySelector("#ExpirateDate").value = data.ExpirateDate;
         //document.querySelector("#expirationDate")
         selectRole(document.querySelector("#RoleOptions"), data.UserRole);
-        let aSwitch =  document.querySelectorAll(".AccessRightsSwitch");
-        if (data.UserRole.toUpperCase() === "CUSTOM"){
-          checkAccessRights(aSwitch, data.UserRole,JSON.parse(data.AccessString));
+        let aSwitch = document.querySelectorAll(".AccessRightsSwitch");
+        if (data.UserRole.toUpperCase() === "CUSTOM") {
+            checkAccessRights(aSwitch, data.UserRole, JSON.parse(data.AccessString));
         }
 
         document.querySelector("#UserName").classList.add("used");
@@ -625,11 +625,11 @@ export function showAddUserForm(title, data) {
     }
 
     [].forEach.call(document.querySelectorAll(".userForm-input"), function(el) {
-      el.addEventListener("blur", function(e) {
-        if (e.target.value && e.target.id !== 'ExpirateDate') document.querySelector("#" + e.target.id).classList.add("used");
-        else document.querySelector("#" + e.target.id).classList.remove("used");
-      });
-    }); 
+        el.addEventListener("blur", function(e) {
+            if (e.target.value && e.target.id !== 'ExpirateDate') document.querySelector("#" + e.target.id).classList.add("used");
+            else document.querySelector("#" + e.target.id).classList.remove("used");
+        });
+    });
 
     let sel = document.querySelector("select");
 
@@ -701,7 +701,7 @@ export function showAddUserForm(title, data) {
                                         queryString[prop] = md5(document.getElementById(prop).value);
                                     }
                                 } else {
-                                    console.log('prop: ',prop);
+                                    console.log('prop: ', prop);
                                     if (oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
                                         queryString[prop] = document.getElementById(prop).value;
                                         console.warn(
@@ -724,7 +724,7 @@ export function showAddUserForm(title, data) {
 
     const _updateUser = (oData) => {
 
-        console.log("====================== oData: ",oData);
+        console.log("====================== oData: ", oData);
 
         let _goBack = () => {
             document.querySelector("#AddUserModalContent").style.display = "none";
@@ -740,7 +740,7 @@ export function showAddUserForm(title, data) {
                 userId: oData.UserId,
                 queryString: queryString
             };
-            console.log("====================== userName: ",data.userName);
+            console.log("====================== userName: ", data.userName);
             document.querySelector("#waiting").classList.add("active");
             axios
                 .post("/updateuser", data, {
@@ -783,13 +783,13 @@ export function showAddUserForm(title, data) {
 
     const _getAccessString = AccessSwitch => {
         let accessName = [
-      "download",
-      "upload",
-      "deletefile",
-      "deletefolder",
-      "addfolder",
-      "sharefiles"
-    ];
+            "download",
+            "upload",
+            "deletefile",
+            "deletefolder",
+            "addfolder",
+            "sharefiles"
+        ];
         let result = "";
         let v = false;
 
@@ -812,6 +812,8 @@ export function showAddUserForm(title, data) {
     const _addUser = () => {
         let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
         let userName = document.querySelector("#UserName").value;
+        //let userFullName = document.querySelector("#UserFullName").value;
+        //let userEmail = document.querySelector("#UserEmail").value;
         let companyName = document.querySelector("#CompanyName").value;
         let userPassword = document.querySelector("#UserPasswd").value;
         let userRole = sel[sel.selectedIndex].innerHTML;
@@ -834,7 +836,8 @@ export function showAddUserForm(title, data) {
             rootPath: userRootPath,
             accessRights: result,
             unixDate: moment(expirateDate).unix(),
-            userEmail: userName
+            userEmail: userName,
+            userFullName: userFullName
         };
         document.querySelector("#waiting").classList.add("active");
         axios.post("/adduser", data, {
@@ -852,10 +855,10 @@ export function showAddUserForm(title, data) {
                     document.getElementById("refresh").click();
                     document.querySelector("#formAddUser").reset();
                     [].forEach.call(document.querySelectorAll(".userForm-input"), function(el) {
-                       if(el.id !== 'ExpirateDate'){ 
-                        document.querySelector("#" + el.id).classList.remove("used");
-                       }
-                    }); 
+                        if (el.id !== 'ExpirateDate') {
+                            document.querySelector("#" + el.id).classList.remove("used");
+                        }
+                    });
                     changeAccessRights(document.querySelectorAll(".AccessRightsSwitch"), "opt1");
                 } else {
                     showToast("Usuario ", "Error al añadir usurio " + d.data.message, "error");

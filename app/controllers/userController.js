@@ -41,6 +41,8 @@ exports.Index = (req, res, next) => {
             if (process.env.NODE_ENV === 'dev') console.log("render dashboard");
             res.render("dashboard", {
                 UserName: req.UserName,
+                UserFullName: req.UserFullName,
+                UserEmail: req.UserEmail,
                 Token: req.cookies.token,
                 Role: req.cookies.UserRole,
                 wssURL: req.cookies.wssURL,
@@ -55,6 +57,8 @@ exports.Dashboard = (req, res, next) => {
     if (process.env.NODE_ENV === 'dev') console.log(req.cookies);
     res.render("dashboard", {
         UserName: req.cookies.UserName,
+        UserFullName: req.cookies.UserFullName,
+        UserEmail: req.cookies.UserEmail,
         Token: req.cookies.token,
         Role: req.cookies.UserRole,
         wssURL: req.cookies.wssURL,
@@ -80,6 +84,8 @@ exports.changePasswd = (req, res, next) => {
 exports.UserAdd = (req, res) => {
     let data = req.body;
     let userName = req.cookies.UserName;
+    let userFullName = req.cookies.UserFullName;
+    let userEmail = req.cookies.UserEmail;
     let userPassword = Base64.decode(data.userPassword);
     let userRole = data.userRole;
     let rootPath = data.rootPath;
@@ -115,9 +121,9 @@ exports.UserAdd = (req, res) => {
                         dateString: currentDate,
                         unixDate: currentUnixDate
                     }, response[0], 'Add User', 'OK', () => {
-                      if (process.env.NODE_ENV === 'dev') console.log(result);
+                        if (process.env.NODE_ENV === 'dev') console.log(result);
                         return res.status(200).json(response[0]);
-                        
+
                     });
 
                 } else {
@@ -175,6 +181,8 @@ exports.UserAdd = (req, res) => {
 exports.UserUpdate = (req, res) => {
     let data = req.body;
     let userName = data.userName;
+    let userFullName = data.userFullName;
+    let userEmail = data.userEmail;
     let userId = data.userId;
     let queryString = data.queryString;
     let accessString = "";
@@ -209,7 +217,7 @@ exports.UserUpdate = (req, res) => {
         response.push(d);
         if (process.env.NODE_ENV === 'dev') console.log("d : ", d);
         if (d.status === "OK") {
-            global.logger.info(`[${req.body.username}] userController::UserController UserUpdate() ->User ${newData.userName} data modified. Data: ${newData.queryString}` );
+            global.logger.info(`[${req.body.username}] userController::UserController UserUpdate() ->User ${newData.userName} data modified. Data: ${newData.queryString}`);
             // audit
             if (newRootPath === '') {
                 return res.status(200).json(response[0]);
@@ -230,7 +238,7 @@ exports.UserUpdate = (req, res) => {
                 });
             }
         } else {
-            global.logger.error(`[${req.body.username}] userController::UserController UserUpdate() ->User ${newData.userName} modify data error. ${response[0]}` );
+            global.logger.error(`[${req.body.username}] userController::UserController UserUpdate() ->User ${newData.userName} modify data error. ${response[0]}`);
             //audit
             return res.status(200).json(d);
         }
@@ -272,17 +280,19 @@ exports.UserFindByName = (req, res, next) => {
             } else {
                 if (data) {
                     if (process.env.NODE_ENV === 'dev') console.log(data);
-                    let rootPath ='';
-                    if ((data.UserRole.toUpperCase() === "ADMIN") || (data.UserRole.toUpperCase() === "CUSTOM") ) {
-                      rootPath = data.RootPath ? data.RootPath : "/";
+                    let rootPath = '';
+                    if ((data.UserRole.toUpperCase() === "ADMIN") || (data.UserRole.toUpperCase() === "CUSTOM")) {
+                        rootPath = data.RootPath ? data.RootPath : "/";
                     } else {
-                      rootPath = data.RootPath ? data.RootPath : "GUEST";
+                        rootPath = data.RootPath ? data.RootPath : "GUEST";
                     }
                     return res.status(200).json({
                         status: "OK",
                         message: "User found",
                         data: {
                             UserName: data.UserName,
+                            UserFullName: data.UserFullName,
+                            UserEmail: data.UserEmail,
                             Role: data.UserRole,
                             UserPasswd: Base64.encode(data.UserPasswd),
                             CompanyName: data.CompanyName,
@@ -320,11 +330,11 @@ exports.UserFindById = (req, res, next) => {
             } else {
                 if (d.data) {
                     if (process.env.NODE_ENV === 'dev') console.log(d.data);
-                    let rootPath ='';
-                    if ((d.data.UserRole.toUpperCase() === "ADMIN") || (d.data.UserRole.toUpperCase() === "CUSTOM") ) {
-                      rootPath = d.data.RootPath ? d.data.RootPath : "/";
+                    let rootPath = '';
+                    if ((d.data.UserRole.toUpperCase() === "ADMIN") || (d.data.UserRole.toUpperCase() === "CUSTOM")) {
+                        rootPath = d.data.RootPath ? d.data.RootPath : "/";
                     } else {
-                      rootPath = d.data.RootPath ? d.data.RootPath : "GUEST";
+                        rootPath = d.data.RootPath ? d.data.RootPath : "GUEST";
                     }
                     return res.status(200).json({
                         status: "OK",
@@ -332,6 +342,8 @@ exports.UserFindById = (req, res, next) => {
                         data: {
                             UserId: d.data.UserId,
                             UserName: d.data.UserName,
+                            UserFullName: d.data.UserFullName,
+                            UserEmail: d.data.UserEmail,
                             UserRole: d.data.UserRole,
                             UserPasswd: Base64.encode(d.data.UserPasswd),
                             CompanyName: d.data.CompanyName,
@@ -380,14 +392,14 @@ exports.UserRemove = (req, res, next) => {
 
                     if (process.env.NODE_ENV === 'dev') console.log('hola2');
                     res.status(500).json({
-                      status: "FAIL",
-                      message: d.message,
-                      data: d.data
-                  });
+                        status: "FAIL",
+                        message: d.message,
+                        data: d.data
+                    });
                 });
-                
+
             } else {
-                global.logger.info(`[${userName}] userController::UserController UserRemove() ->User id:${userId} deleted successfully.` );
+                global.logger.info(`[${userName}] userController::UserController UserRemove() ->User id:${userId} deleted successfully.`);
                 // audit
                 Audit.Add({
                     userName: userName
@@ -404,12 +416,12 @@ exports.UserRemove = (req, res, next) => {
 
                     if (process.env.NODE_ENV === 'dev') console.log('hola2');
                     return res.status(200).json({
-                      status: "OK",
-                      message: `User ${userName} removed`,
-                      data: d.data
-                  });
+                        status: "OK",
+                        message: `User ${userName} removed`,
+                        data: d.data
+                    });
                 });
-                
+
             }
         }
     );
@@ -426,7 +438,7 @@ exports.UserLogin = (req, res, next) => {
             if (status) {
                 //audit 
                 if (process.env.NODE_ENV === 'dev') console.log(status);
-                global.logger.error(`[${req.body.username}] userController::UserController UserLogin() ->logon error. ${status}` );
+                global.logger.error(`[${req.body.username}] userController::UserController UserLogin() ->logon error. ${status}`);
                 res.status(500).json({
                     status: "FAIL",
                     message: status
@@ -440,8 +452,8 @@ exports.UserLogin = (req, res, next) => {
                         if (process.env.NODE_ENV === 'dev') console.log('data.UnixDate:', data.UnixDate);
                         if (process.env.NODE_ENV === 'dev') console.log('currentUnixDate:', currentUnixDate);
                         if (data.UnixDate && data.UnixDate < currentUnixDate) {
-                            global.logger.error(`[${req.body.username}] userController::UserController UserLogin() ->Expired user account` );
-                
+                            global.logger.error(`[${req.body.username}] userController::UserController UserLogin() ->Expired user account`);
+
                             // audit
                             return res
                                 .status(403)
@@ -463,6 +475,8 @@ exports.UserLogin = (req, res, next) => {
                             let wsPath = data.UserRole === "assistant" ? config.wssURL + "/room" : config.wssURL + "/client";
                             const token = jwt.sign({
                                     UserName: data.UserName,
+                                    UserFullName: data.UserFullName,
+                                    UserEmail: data.UserEmail,
                                     UserId: data._id,
                                     Role: data.UserRole,
                                     wssURL: wsPath,
@@ -479,14 +493,14 @@ exports.UserLogin = (req, res, next) => {
                             res.cookie("sessionId", Base64.encode(data.UserName), {
                                 maxAge: 900000
                             });
-                            let rootPath ='';
-                            if ((data.UserRole.toUpperCase() === "ADMIN") || (data.UserRole.toUpperCase() === "CUSTOM") ) {
-                              rootPath = data.RootPath ? data.RootPath : "/";
+                            let rootPath = '';
+                            if ((data.UserRole.toUpperCase() === "ADMIN") || (data.UserRole.toUpperCase() === "CUSTOM")) {
+                                rootPath = data.RootPath ? data.RootPath : "/";
                             } else {
-                              rootPath = data.RootPath ? data.RootPath : "GUEST";
+                                rootPath = data.RootPath ? data.RootPath : "GUEST";
                             }
                             if (process.env.NODE_ENV === 'dev') console.log("===========================> MaxFileSize:", settings.maxFileSize * 1024 * 1024);
-                            global.logger.info(`[${req.body.username}] userController::UserController UserLogin() ->User authenticated!` );
+                            global.logger.info(`[${req.body.username}] userController::UserController UserLogin() ->User authenticated!`);
                             return res.json({
                                 "status": "OK",
                                 "message": "User authenticated",

@@ -64,7 +64,7 @@ UserModel.Close = function() {
 UserModel.CreateTable = function() {
     global.db.run("DROP TABLE IF EXISTS Users");
     global.db.run(
-        "CREATE TABLE IF NOT EXISTS Users (UserId INTEGER PRIMARY KEY AUTOINCREMENT, UserName NCHAR(55), UserPasswd NCHAR(55),  UserRole NCHAR(55))"
+        "CREATE TABLE 'Users' ( 'UserId' INTEGER PRIMARY KEY AUTOINCREMENT, 'UserName' NCHAR ( 55 ), 'UserPasswd' NCHAR ( 55 ), 'UserRole' NCHAR ( 55 ), 'CompanyName' TEXT, 'RootPath' TEXT, 'AccessString' TEXT, 'ExpirateDate' TEXT, 'UnixDate' NUMERIC, 'UserEmail' TEXT, 'UserFullName' TEXT )"
     );
     if (process.env.NODE_ENV === 'dev') console.log("La tabla usuarios ha sido correctamente creada");
 };
@@ -101,7 +101,7 @@ UserModel.Find = function(queryString, callback) {
 /////////////////////////////////////////
 
 UserModel.FindById = function(userId, callback) {
-    let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate
+    let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName
                FROM Users
                WHERE UserId  = ?`;
     dbOpen();
@@ -136,7 +136,7 @@ UserModel.FindById = function(userId, callback) {
 /////////////////////////////////////////
 
 UserModel.Update = function(data, callback) {
-    if (process.env.NODE_ENV === 'dev') console.log('data: ',data);
+    if (process.env.NODE_ENV === 'dev') console.log('data: ', data);
     let sql =
         "UPDATE Users SET " +
         data.queryString +
@@ -199,7 +199,7 @@ UserModel.Remove = function(userId, callback) {
             });
         }
     });
-}; 
+};
 
 
 /////////////////////////////////////////
@@ -208,7 +208,7 @@ UserModel.Remove = function(userId, callback) {
 
 UserModel.FindByName = function(userName, callback) {
     if (process.env.NODE_ENV === 'dev') console.log(userName);
-    let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate
+    let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName
                FROM Users
                WHERE UPPER(UserName)  = ?`;
     dbOpen();
@@ -278,7 +278,7 @@ UserModel.ChangePasswd = function(userData, callback) {
 /////////////////////////////////////////
 
 UserModel.All = function(callback) {
-    let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate  
+    let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName  
                FROM Users`;
     dbOpen();
     if (process.env.NODE_ENV === 'dev') console.log('db: ', global.db);
@@ -337,7 +337,7 @@ UserModel.Add = function(userData, callback) {
                 });
             } else {
                 dbOpen();
-                stmt = global.db.prepare("INSERT INTO Users VALUES (?,?,?,?,?,?,?,?,?,?)");
+                stmt = global.db.prepare("INSERT INTO Users VALUES (?,?,?,?,?,?,?,?,?,?,?)");
                 stmt.bind(
                     null,
                     userData.userName,
@@ -348,7 +348,8 @@ UserModel.Add = function(userData, callback) {
                     decodeURI(userData.accessRights),
                     userData.expirateDate,
                     userData.unixDate,
-                    userData.userEmail
+                    userData.userEmail,
+                    userData.userFullName
                 );
                 stmt.run(function(err, result) {
                     dbClose();

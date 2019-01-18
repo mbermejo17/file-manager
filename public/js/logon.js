@@ -18,115 +18,119 @@ var _jsCookie2 = _interopRequireDefault(_jsCookie);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (c, d) {
-  var READY_STATE_COMPLETE = 4;
-  var OK = 200;
-  var NOT_FOUND = 404;
-  var main = d.querySelector("#main");
-  var loginbutton = d.querySelector("#login-button");
+    var READY_STATE_COMPLETE = 4;
+    var OK = 200;
+    var NOT_FOUND = 404;
+    var main = d.querySelector("#main");
+    var loginbutton = d.querySelector("#login-button");
 
-  var hasClass = function hasClass(el, className) {
-    if (el.classList) return el.classList.contains(className);else return !!el.className.match(new RegExp("(\\s|^)" + className + "(\\s|$)"));
-  };
+    var hasClass = function hasClass(el, className) {
+        if (el.classList) return el.classList.contains(className);else return !!el.className.match(new RegExp("(\\s|^)" + className + "(\\s|$)"));
+    };
 
-  var addClass = function addClass(el, className) {
-    if (el.classList) el.classList.add(className);else if (!hasClass(el, className)) el.className += " " + className;
-  };
+    var addClass = function addClass(el, className) {
+        if (el.classList) el.classList.add(className);else if (!hasClass(el, className)) el.className += " " + className;
+    };
 
-  var removeClass = function removeClass(el, className) {
-    if (el.classList) el.classList.remove(className);else if (hasClass(el, className)) {
-      var reg = new RegExp("(\\s|^)" + className + "(\\s|$)");
-      el.className = el.className.replace(reg, " ");
-    }
-  };
+    var removeClass = function removeClass(el, className) {
+        if (el.classList) el.classList.remove(className);else if (hasClass(el, className)) {
+            var reg = new RegExp("(\\s|^)" + className + "(\\s|$)");
+            el.className = el.className.replace(reg, " ");
+        }
+    };
 
-  var logout = function logout() {
-    _jsCookie2.default.remove("UserName");
-    _jsCookie2.default.remove("UserRole");
-    _jsCookie2.default.remove("sessionId");
-    _jsCookie2.default.remove("token");
-    _jsCookie2.default.remove("wssURL");
-    _jsCookie2.default.remove("RootPath");
-    _jsCookie2.default.remove("CompanyName");
-    _jsCookie2.default.remove("AccessString");
-    _jsCookie2.default.remove("MaxFileSize");
-    document.location.href = "/";
-  };
+    var logout = function logout() {
+        _jsCookie2.default.remove("UserName");
+        _jsCookie2.default.remove("UserFullName");
+        _jsCookie2.default.remove("UserEmail");
+        _jsCookie2.default.remove("UserRole");
+        _jsCookie2.default.remove("sessionId");
+        _jsCookie2.default.remove("token");
+        _jsCookie2.default.remove("wssURL");
+        _jsCookie2.default.remove("RootPath");
+        _jsCookie2.default.remove("CompanyName");
+        _jsCookie2.default.remove("AccessString");
+        _jsCookie2.default.remove("MaxFileSize");
+        document.location.href = "/";
+    };
 
-  var showDashboard = function showDashboard(data) {
-    console.log("data::showDashboard: ", data);
-    _jsCookie2.default.set("token", data.Token);
-    _jsCookie2.default.set("UserName", data.UserName);
-    _jsCookie2.default.set("UserRole", data.Role);
-    _jsCookie2.default.set("wssURL", data.wssURL);
-    _jsCookie2.default.set("CompanyName", data.CompanyName);
-    _jsCookie2.default.set("RootPath", data.RootPath);
-    _jsCookie2.default.set("AccessString", data.AccessString);
-    _jsCookie2.default.set("RunMode", data.RunMode);
-    _jsCookie2.default.set("MaxFileSize", data.MaxFileSize);
-    window.location.href = "/dashboard";
-  };
+    var showDashboard = function showDashboard(data) {
+        console.log("data::showDashboard: ", data);
+        _jsCookie2.default.set("token", data.Token);
+        _jsCookie2.default.set("UserName", data.UserName);
+        _jsCookie2.default.set("UserName", data.UserFullName);
+        _jsCookie2.default.set("UserName", data.UserEmail);
+        _jsCookie2.default.set("UserRole", data.Role);
+        _jsCookie2.default.set("wssURL", data.wssURL);
+        _jsCookie2.default.set("CompanyName", data.CompanyName);
+        _jsCookie2.default.set("RootPath", data.RootPath);
+        _jsCookie2.default.set("AccessString", data.AccessString);
+        _jsCookie2.default.set("RunMode", data.RunMode);
+        _jsCookie2.default.set("MaxFileSize", data.MaxFileSize);
+        window.location.href = "/dashboard";
+    };
 
-  function showToast(title, msg, type) {
-    var icon = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    function showToast(title, msg, type) {
+        var icon = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-    toast.create({
-      title: title,
-      text: msg,
-      type: type,
-      icon: icon
-    });
-  }
-
-  function submit(e) {
-    e.preventDefault();
-    var username = d.querySelector("#username").value;
-    var password = d.querySelector("#password").value;
-    var form = d.querySelector("#formLogon");
-    if (username.trim() == "" || password.trim() == "") {
-      showToast("Error", "Username or Password not provided", "error");
-      return false;
+        toast.create({
+            title: title,
+            text: msg,
+            type: type,
+            icon: icon
+        });
     }
 
-    $u("#waiting").addClass("active");
+    function submit(e) {
+        e.preventDefault();
+        var username = d.querySelector("#username").value;
+        var password = d.querySelector("#password").value;
+        var form = d.querySelector("#formLogon");
+        if (username.trim() == "" || password.trim() == "") {
+            showToast("Error", "Username or Password not provided", "error");
+            return false;
+        }
 
-    _axios2.default.post("/login", {
-      username: username,
-      password: _jsBase.Base64.encode((0, _md2.default)(password))
-    }, {
-      headers: {
-        "Content-Type": "application/json"
-      },
-      timeout: 30000
-    }).then(function (d) {
-      //let d = JSON.parse(responseData);
-      $u("#waiting").addClass("active");
-      console.log('Login:', d.data.data);
-      if (d.data.status === "OK") {
-        showDashboard(d.data.data);
-      } else {
-        showToast("Login", d.data.data.message, "error", "fas fa-exclamation-triangle");
-        document.querySelector("#message").innerHTML = d.data.data.message;
-      }
-    }).catch(function (e) {
-      $u("#waiting").removeClass("active");
-      if (e.response.status === 403) {
-        showToast("Login", e.response.data.message, "error");
-      } else {
-        showToast("Login", "Wrong user name or password", "error");
-      }
-      //console.log('Logon result:',e.response.status);
+        $u("#waiting").addClass("active");
+
+        _axios2.default.post("/login", {
+            username: username,
+            password: _jsBase.Base64.encode((0, _md2.default)(password))
+        }, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            timeout: 30000
+        }).then(function (d) {
+            //let d = JSON.parse(responseData);
+            $u("#waiting").addClass("active");
+            console.log('Login:', d.data.data);
+            if (d.data.status === "OK") {
+                showDashboard(d.data.data);
+            } else {
+                showToast("Login", d.data.data.message, "error", "fas fa-exclamation-triangle");
+                document.querySelector("#message").innerHTML = d.data.data.message;
+            }
+        }).catch(function (e) {
+            $u("#waiting").removeClass("active");
+            if (e.response.status === 403) {
+                showToast("Login", e.response.data.message, "error");
+            } else {
+                showToast("Login", "Wrong user name or password", "error");
+            }
+            //console.log('Logon result:',e.response.status);
+        });
+    }
+
+    loginbutton.addEventListener("click", submit);
+
+    $u("#waiting").removeClass("active");
+
+    [].forEach.call(document.querySelectorAll("input"), function (el) {
+        el.addEventListener("blur", function (e) {
+            if (e.target.value) $u("#" + e.target.id).addClass("used");else $u("#" + e.target.id).removeClass("used");
+        });
     });
-  }
-
-  loginbutton.addEventListener("click", submit);
-
-  $u("#waiting").removeClass("active");
-
-  [].forEach.call(document.querySelectorAll("input"), function (el) {
-    el.addEventListener("blur", function (e) {
-      if (e.target.value) $u("#" + e.target.id).addClass("used");else $u("#" + e.target.id).removeClass("used");
-    });
-  });
 })(console.log, document);
 
 },{"./vendor/js-cookie":2,"./vendor/md5.min":3,"axios":4,"js-base64":30}],2:[function(require,module,exports){

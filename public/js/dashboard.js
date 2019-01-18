@@ -3731,6 +3731,8 @@ function showAddUserForm(title, data) {
     var _addUser = function _addUser() {
         var AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
         var userName = document.querySelector("#UserName").value;
+        //let userFullName = document.querySelector("#UserFullName").value;
+        //let userEmail = document.querySelector("#UserEmail").value;
         var companyName = document.querySelector("#CompanyName").value;
         var userPassword = document.querySelector("#UserPasswd").value;
         var userRole = sel[sel.selectedIndex].innerHTML;
@@ -3753,7 +3755,8 @@ function showAddUserForm(title, data) {
             rootPath: userRootPath,
             accessRights: result,
             unixDate: (0, _moment2.default)(expirateDate).unix(),
-            userEmail: userName
+            userEmail: userName,
+            userFullName: userFullName
         };
         document.querySelector("#waiting").classList.add("active");
         _axios2.default.post("/adduser", data, {

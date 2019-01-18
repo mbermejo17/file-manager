@@ -30,6 +30,8 @@ import { showLog, showAudit } from "./modules/admin";
 
 window.userData = {
     UserName: Cookies.get("UserName"),
+    UserFullName: Cookies.get("UserFullName"),
+    UserEmail: Cookies.get("UserEmail"),
     UserRole: Cookies.get("UserRole"),
     CompanyName: Cookies.get("CompanyName"),
     RealRootPath: Cookies.get("RootPath"),
@@ -62,6 +64,8 @@ window.appData = {
 
     const logout = () => {
         Cookies.remove("UserName");
+        Cookies.remove("UserFullName");
+        Cookies.remove("UserEmail");
         Cookies.remove("UserRole");
         Cookies.remove("sessionId");
         Cookies.remove("token");
