@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Base64 } from "js-base64";
+import { Base64 } from 'js-base64';
 import md5 from "./vendor/md5.min";
 import Cookies from "./vendor/js-cookie";
 
@@ -84,8 +84,7 @@ import Cookies from "./vendor/js-cookie";
 
         $u("#waiting").addClass("active");
 
-        axios
-            .post(
+        axios.post(
                 "/login", {
                     username: username,
                     password: Base64.encode(md5(password))

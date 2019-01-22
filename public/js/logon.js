@@ -1893,8 +1893,9 @@ function isSlowBuffer (obj) {
 ), function(global) {
     'use strict';
     // existing version for noConflict()
+    global = global || {};
     var _Base64 = global.Base64;
-    var version = "2.4.9";
+    var version = "2.5.1";
     // if node.js and NOT React Native, we use Buffer
     var buffer;
     if (typeof module !== 'undefined' && module.exports) {
@@ -2022,10 +2023,13 @@ function isSlowBuffer (obj) {
         chars.length -= [0, 0, 2, 1][padlen];
         return chars.join('');
     };
-    var atob = global.atob ? function(a) {
+    var _atob = global.atob ? function(a) {
         return global.atob(a);
     } : function(a){
-        return a.replace(/[\s\S]{1,4}/g, cb_decode);
+        return a.replace(/\S{1,4}/g, cb_decode);
+    };
+    var atob = function(a) {
+        return _atob(String(a).replace(/[^A-Za-z0-9\+\/]/g, ''));
     };
     var _decode = buffer ?
         buffer.from && Uint8Array && buffer.from !== Uint8Array.from
@@ -2037,7 +2041,7 @@ function isSlowBuffer (obj) {
             return (a.constructor === buffer.constructor
                     ? a : new buffer(a, 'base64')).toString();
         }
-        : function(a) { return btou(atob(a)) };
+        : function(a) { return btou(_atob(a)) };
     var decode = function(a){
         return _decode(
             String(a).replace(/[-_]/g, function(m0) { return m0 == '-' ? '+' : '/' })

@@ -1,4 +1,4 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.dashboard = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 /* jshint laxbreak: true */
 /* experimental: [asyncawait, asyncreqawait] */
@@ -62,8 +62,6 @@ window.appData = {
 };
 
 (function (w, d) {
-    var _this = this;
-
     var AllowDownload = userData.AccessString.download,
         AllowUpload = userData.AccessString.upload,
         AllowDeleteFile = userData.AccessString.deletefile,
@@ -618,39 +616,15 @@ window.appData = {
             width: "400px"
         };
 
-        modalDialogOptions.confirmCallBack = function _callee(e, data) {
-            var parseFolderName;
-            return regeneratorRuntime.async(function _callee$(_context) {
-                while (1) {
-                    switch (_context.prev = _context.next) {
-                        case 0:
-                            if (userData.RunMode === "DEBUG") console.log("newFolderName: ", data);
-                            if (data || data.trim() !== "") {
-                                parseFolderName = data.replace(/\s/g, "_");
-
-                                (0, _fileManager.newFolder)(parseFolderName);
-                            }
-
-                        case 2:
-                        case "end":
-                            return _context.stop();
-                    }
-                }
-            }, null, _this);
+        modalDialogOptions.confirmCallBack = async function (e, data) {
+            if (userData.RunMode === "DEBUG") console.log("newFolderName: ", data);
+            if (data || data.trim() !== "") {
+                var parseFolderName = data.replace(/\s/g, "_");
+                (0, _fileManager.newFolder)(parseFolderName);
+            }
         };
-        modalDialogOptions.cancelCallBack = function _callee2(e, data) {
-            return regeneratorRuntime.async(function _callee2$(_context2) {
-                while (1) {
-                    switch (_context2.prev = _context2.next) {
-                        case 0:
-                            console.log(data);
-
-                        case 1:
-                        case "end":
-                            return _context2.stop();
-                    }
-                }
-            }, null, _this);
+        modalDialogOptions.cancelCallBack = async function (e, data) {
+            console.log(data);
         };
         (0, _modalDialog.modalDialog)("New Folder", "Folder Name", modalDialogOptions);
 
@@ -675,43 +649,31 @@ window.appData = {
             type: "changePassword",
             width: "340px"
         };
-        modalDialogOptions.confirmCallBack = function _callee3(e, data1, data2) {
-            return regeneratorRuntime.async(function _callee3$(_context3) {
-                while (1) {
-                    switch (_context3.prev = _context3.next) {
-                        case 0:
-                            _context3.next = 2;
-                            return regeneratorRuntime.awrap(_axios2.default.post("/changepasswd", {
-                                username: userData.UserName,
-                                newpassword: _jsBase.Base64.encode((0, _md2.default)(data1))
-                            }, {
-                                headers: {
-                                    Authorization: "Bearer " + userData.Token,
-                                    "Content-Type": "application/json"
-                                },
-                                timeout: 290000
-                            }).then(function (d) {
-                                $u("#waiting").removeClass("active");
-                                if (userData.RunMode === "DEBUG") console.log("changePassword: ", d);
-                                if (d.data.status === "FAIL") {
-                                    showToast("Change User Password", d.data.message, "error");
-                                    d.querySelector("#message").innerHTML = d.data.message;
-                                } else {
-                                    showToast("Change User Password", d.data.message, "success");
-                                    if (userData.RunMode === "DEBUG") console.log(d.data.message);
-                                }
-                            }).catch(function (e) {
-                                $u("#waiting").removeClass("active");
-                                showToast("Change User Password", e, "error");
-                                if (userData.RunMode === "DEBUG") console.log(e);
-                            }));
-
-                        case 2:
-                        case "end":
-                            return _context3.stop();
-                    }
+        modalDialogOptions.confirmCallBack = async function (e, data1, data2) {
+            await _axios2.default.post("/changepasswd", {
+                username: userData.UserName,
+                newpassword: _jsBase.Base64.encode((0, _md2.default)(data1))
+            }, {
+                headers: {
+                    Authorization: "Bearer " + userData.Token,
+                    "Content-Type": "application/json"
+                },
+                timeout: 290000
+            }).then(function (d) {
+                $u("#waiting").removeClass("active");
+                if (userData.RunMode === "DEBUG") console.log("changePassword: ", d);
+                if (d.data.status === "FAIL") {
+                    showToast("Change User Password", d.data.message, "error");
+                    d.querySelector("#message").innerHTML = d.data.message;
+                } else {
+                    showToast("Change User Password", d.data.message, "success");
+                    if (userData.RunMode === "DEBUG") console.log(d.data.message);
                 }
-            }, null, _this);
+            }).catch(function (e) {
+                $u("#waiting").removeClass("active");
+                showToast("Change User Password", e, "error");
+                if (userData.RunMode === "DEBUG") console.log(e);
+            });
         };
         (0, _modalDialog.modalDialog)("Change User Password", '<div class="input-field">' + '<input id="newpassword" class="ModalDialog-input" type="password"/>' + '<label for="newpassword" class="ModalDialog-label">New Password</label>' + "</div>" + '<div class="input-field">' + '<input id="newpassword2" class="ModalDialog-input" type="password"/>' + '<label for="newpassword2" class="ModalDialog-label">Repeat Password</label>' + "</div>", modalDialogOptions);
 
@@ -951,34 +913,12 @@ window.appData = {
                 width: "400px"
             };
 
-            modalDialogOptions.confirmCallBack = function _callee4(e, data) {
-                return regeneratorRuntime.async(function _callee4$(_context4) {
-                    while (1) {
-                        switch (_context4.prev = _context4.next) {
-                            case 0:
-                                if (userData.RunMode === "DEBUG") console.log("data: ", data);
-                                logout();
-
-                            case 2:
-                            case "end":
-                                return _context4.stop();
-                        }
-                    }
-                }, null, _this);
+            modalDialogOptions.confirmCallBack = async function (e, data) {
+                if (userData.RunMode === "DEBUG") console.log("data: ", data);
+                logout();
             };
-            modalDialogOptions.cancelCallBack = function _callee5(e, data) {
-                return regeneratorRuntime.async(function _callee5$(_context5) {
-                    while (1) {
-                        switch (_context5.prev = _context5.next) {
-                            case 0:
-                                console.log(data);
-
-                            case 1:
-                            case "end":
-                                return _context5.stop();
-                        }
-                    }
-                }, null, _this);
+            modalDialogOptions.cancelCallBack = async function (e, data) {
+                console.log(data);
             };
             (0, _modalDialog.modalDialog)("Close User session", "Do you want to exit?", modalDialogOptions);
         } else {
@@ -1119,6 +1059,7 @@ window.appData = {
                 );
             }
         }*/
+        showToast("Move", "Opcion no disponible", "info");
     });
 
     ///////////////////////////////////
@@ -2140,36 +2081,14 @@ function shareFile() {
         type: "shareFile"
     };
 
-    modalDialogOptions.confirmCallBack = function _callee(e, data) {
-        return regeneratorRuntime.async(function _callee$(_context) {
-            while (1) {
-                switch (_context.prev = _context.next) {
-                    case 0:
-                        if (userData.RunMode === "DEBUG") console.log("shareFile: ", data);
-                        if (data || data.destUserName.trim() !== "") {
-                            _shareFile(data);
-                        }
-
-                    case 2:
-                    case "end":
-                        return _context.stop();
-                }
-            }
-        }, null, this);
+    modalDialogOptions.confirmCallBack = async function (e, data) {
+        if (userData.RunMode === "DEBUG") console.log("shareFile: ", data);
+        if (data || data.destUserName.trim() !== "") {
+            _shareFile(data);
+        }
     };
-    modalDialogOptions.cancelCallBack = function _callee2(e, data) {
-        return regeneratorRuntime.async(function _callee2$(_context2) {
-            while (1) {
-                switch (_context2.prev = _context2.next) {
-                    case 0:
-                        console.log(data);
-
-                    case 1:
-                    case "end":
-                        return _context2.stop();
-                }
-            }
-        }, null, this);
+    modalDialogOptions.cancelCallBack = async function (e, data) {
+        console.log(data);
     };
     (0, _modalDialog.modalDialog)("Share File", "      <input id=\"destUserName\" type=\"email\" autocomplete=\"off\" pattern=\".+@globex.com\" required class=\"ModalDialog-input\"/>\n                    <label for=\"destUserName\" class=\"ModalDialog-label share\">Send URL to</label>\n                    <input class=\"datepicker ModalDialog-input\" id=\"FileExpirateDate\" type=\"date\"/>\n                    <label for=\"FileExpirateDate\" class=\"ModalDialog-label datepicker share\">Expiration Date</label>\n                    <br>\n                    <input id=\"delFileAfterExpired\" type=\"checkbox\" class=\"ModalDialog-check-input share\">\n                    <label for=\"delFileAfterExpired\" class=\"ModalDialog-check-label share\">Delete File</label>\n                    <br><br>\n                    <label id=\"urlFile\" class=\"label-url-share\"></label>", modalDialogOptions);
 
@@ -2273,8 +2192,6 @@ function showSharedFiles() {
 /////////////////////////////////////
 
 function deleteSelected() {
-    var _this2 = this;
-
     if (userData.RunMode === "DEBUG") console.log("aSelectedFolders: ", appData.aSelectedFolders.length);
     var modalDialogOptions = {
         cancel: true,
@@ -2285,135 +2202,42 @@ function deleteSelected() {
     };
     if (appData.aSelectedFolders.length > 0) {
         var result = 0;
-        modalDialogOptions.confirmCallBack = function _callee4() {
-            return regeneratorRuntime.async(function _callee4$(_context4) {
-                while (1) {
-                    switch (_context4.prev = _context4.next) {
-                        case 0:
-                            _context4.next = 2;
-                            return regeneratorRuntime.awrap(deleteFolder(appData.currentPath));
-
-                        case 2:
-                            _context4.next = 4;
-                            return regeneratorRuntime.awrap(_deselectAllFolders());
-
-                        case 4:
-                            if (appData.aSelectedFiles.name.length > 0) {
-                                modalDialogOptions.confirmCallBack = function _callee3() {
-                                    return regeneratorRuntime.async(function _callee3$(_context3) {
-                                        while (1) {
-                                            switch (_context3.prev = _context3.next) {
-                                                case 0:
-                                                    _context3.next = 2;
-                                                    return regeneratorRuntime.awrap(deleteFile(appData.currentPath));
-
-                                                case 2:
-                                                case "end":
-                                                    return _context3.stop();
-                                            }
-                                        }
-                                    }, null, _this2);
-                                };
-                                modalDialogOptions.confirmText = "OK";
-                                (0, _modalDialog.modalDialog)("Delete Files", "Delete selected files?", modalDialogOptions);
-                            } else {
-                                document.getElementById("refresh").click();
-                            }
-
-                        case 5:
-                        case "end":
-                            return _context4.stop();
-                    }
-                }
-            }, null, _this2);
+        modalDialogOptions.confirmCallBack = async function () {
+            await deleteFolder(appData.currentPath);
+            await _deselectAllFolders();
+            if (appData.aSelectedFiles.name.length > 0) {
+                modalDialogOptions.confirmCallBack = async function () {
+                    await deleteFile(appData.currentPath);
+                };
+                modalDialogOptions.confirmText = "OK";
+                (0, _modalDialog.modalDialog)("Delete Files", "Delete selected files?", modalDialogOptions);
+            } else {
+                document.getElementById("refresh").click();
+            }
         };
-        modalDialogOptions.cancelCallBack = function _callee7() {
-            return regeneratorRuntime.async(function _callee7$(_context7) {
-                while (1) {
-                    switch (_context7.prev = _context7.next) {
-                        case 0:
-                            _context7.next = 2;
-                            return regeneratorRuntime.awrap(_deselectAllFolders());
-
-                        case 2:
-                            if (appData.aSelectedFiles.name.length > 0) {
-                                modalDialogOptions.confirmCallBack = function _callee5() {
-                                    return regeneratorRuntime.async(function _callee5$(_context5) {
-                                        while (1) {
-                                            switch (_context5.prev = _context5.next) {
-                                                case 0:
-                                                    _context5.next = 2;
-                                                    return regeneratorRuntime.awrap(deleteFile(appData.currentPath));
-
-                                                case 2:
-                                                case "end":
-                                                    return _context5.stop();
-                                            }
-                                        }
-                                    }, null, _this2);
-                                };
-                                modalDialogOptions.cancelCallBack = function _callee6() {
-                                    return regeneratorRuntime.async(function _callee6$(_context6) {
-                                        while (1) {
-                                            switch (_context6.prev = _context6.next) {
-                                                case 0:
-                                                    _context6.next = 2;
-                                                    return regeneratorRuntime.awrap(_deselectAllFiles());
-
-                                                case 2:
-                                                case "end":
-                                                    return _context6.stop();
-                                            }
-                                        }
-                                    }, null, _this2);
-                                };
-                                modalDialogOptions.confirmText = "OK";
-                                (0, _modalDialog.modalDialog)("Delete Files", "Delete selected files?", modalDialogOptions);
-                            }
-
-                        case 3:
-                        case "end":
-                            return _context7.stop();
-                    }
-                }
-            }, null, _this2);
+        modalDialogOptions.cancelCallBack = async function () {
+            await _deselectAllFolders();
+            if (appData.aSelectedFiles.name.length > 0) {
+                modalDialogOptions.confirmCallBack = async function () {
+                    await deleteFile(appData.currentPath);
+                };
+                modalDialogOptions.cancelCallBack = async function () {
+                    await _deselectAllFiles();
+                };
+                modalDialogOptions.confirmText = "OK";
+                (0, _modalDialog.modalDialog)("Delete Files", "Delete selected files?", modalDialogOptions);
+            }
         };
         modalDialogOptions.confirmText = "Yes, I'm very sure";
         (0, _modalDialog.modalDialog)("Delete Folders", "<div class=\"warning-lbl\">WARNING:</div>\n            <div class=\"warning-msg\">All selected folders and their contents will be deleted.!!</div>\n            <div class=\"msg\">Are you sure?</div>", modalDialogOptions);
     } else {
         if (appData.aSelectedFiles.name.length > 0) {
-            modalDialogOptions.confirmCallBack = function _callee8() {
-                return regeneratorRuntime.async(function _callee8$(_context8) {
-                    while (1) {
-                        switch (_context8.prev = _context8.next) {
-                            case 0:
-                                _context8.next = 2;
-                                return regeneratorRuntime.awrap(deleteFile(appData.currentPath));
-
-                            case 2:
-                                document.getElementById("refresh").click();
-
-                            case 3:
-                            case "end":
-                                return _context8.stop();
-                        }
-                    }
-                }, null, _this2);
+            modalDialogOptions.confirmCallBack = async function () {
+                await deleteFile(appData.currentPath);
+                document.getElementById("refresh").click();
             };
-            modalDialogOptions.cancelCallBack = function _callee9() {
-                return regeneratorRuntime.async(function _callee9$(_context9) {
-                    while (1) {
-                        switch (_context9.prev = _context9.next) {
-                            case 0:
-                                _context9.next = 2;
-                                return regeneratorRuntime.awrap(_deselectAllFiles());
-
-                            case 2:
-                            case "end":
-                                return _context9.stop();
-                        }
-                    }
-                }, null, _this2);
+            modalDialogOptions.cancelCallBack = async function () {
+                await _deselectAllFiles();
             };
             (0, _modalDialog.modalDialog)("Delete Files", "Delete selected files?", modalDialogOptions);
         }
@@ -6197,7 +6021,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],8:[function(require,module,exports){
 'use strict';
 
@@ -6487,7 +6310,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 }();
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"_process":504}],10:[function(require,module,exports){
 "use strict";
 
@@ -8951,7 +8773,6 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"util/":28}],26:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
@@ -9574,7 +9395,6 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"./support/isBuffer":27,"_process":504,"inherits":26}],29:[function(require,module,exports){
 module.exports = require('./lib/axios');
 },{"./lib/axios":31}],30:[function(require,module,exports){
@@ -9761,7 +9581,6 @@ module.exports = function xhrAdapter(config) {
 };
 
 }).call(this,require('_process'))
-
 },{"../core/createError":37,"./../core/settle":40,"./../helpers/btoa":44,"./../helpers/buildURL":45,"./../helpers/cookies":47,"./../helpers/isURLSameOrigin":49,"./../helpers/parseHeaders":51,"./../utils":53,"_process":504}],31:[function(require,module,exports){
 'use strict';
 
@@ -10319,7 +10138,6 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this,require('_process'))
-
 },{"./adapters/http":30,"./adapters/xhr":30,"./helpers/normalizeHeaderName":50,"./utils":53,"_process":504}],43:[function(require,module,exports){
 'use strict';
 
@@ -11030,7 +10848,6 @@ define(String.prototype, "padRight", "".padEnd);
   [][key] && define(Array, key, Function.call.bind([][key]));
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"core-js/fn/regexp/escape":95,"core-js/shim":418,"regenerator-runtime/runtime":530}],55:[function(require,module,exports){
 'use strict'
 
@@ -15795,7 +15612,6 @@ exports.encrypt = function (self, chunk) {
 }
 
 }).call(this,require("buffer").Buffer)
-
 },{"buffer":90,"buffer-xor":89}],75:[function(require,module,exports){
 var aes = require('./aes')
 var Buffer = require('safe-buffer').Buffer
@@ -16016,7 +15832,6 @@ function getr(priv) {
 }
 
 }).call(this,require("buffer").Buffer)
-
 },{"bn.js":56,"buffer":90,"randombytes":515}],80:[function(require,module,exports){
 module.exports = require('./browser/algorithms.json')
 
@@ -16279,7 +16094,6 @@ module.exports = {
 }
 
 }).call(this,require("buffer").Buffer)
-
 },{"./algorithms.json":81,"./sign":84,"./verify":85,"buffer":90,"create-hash":421,"inherits":470,"stream":541}],84:[function(require,module,exports){
 (function (Buffer){
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
@@ -16429,7 +16243,6 @@ module.exports.getKey = getKey
 module.exports.makeKey = makeKey
 
 }).call(this,require("buffer").Buffer)
-
 },{"./curves.json":82,"bn.js":56,"browserify-rsa":79,"buffer":90,"create-hmac":423,"elliptic":436,"parse-asn1":496}],85:[function(require,module,exports){
 (function (Buffer){
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
@@ -16517,7 +16330,6 @@ function checkValue (b, q) {
 module.exports = verify
 
 }).call(this,require("buffer").Buffer)
-
 },{"./curves.json":82,"bn.js":56,"buffer":90,"elliptic":436,"parse-asn1":496}],86:[function(require,module,exports){
 (function (process,Buffer){
 'use strict';
@@ -16930,7 +16742,6 @@ Zlib.prototype._reset = function () {
 
 exports.Zlib = Zlib;
 }).call(this,require('_process'),require("buffer").Buffer)
-
 },{"_process":504,"assert":25,"buffer":90,"pako/lib/zlib/constants":483,"pako/lib/zlib/deflate.js":485,"pako/lib/zlib/inflate.js":487,"pako/lib/zlib/zstream":491}],87:[function(require,module,exports){
 (function (process){
 'use strict';
@@ -17543,7 +17354,6 @@ util.inherits(DeflateRaw, Zlib);
 util.inherits(InflateRaw, Zlib);
 util.inherits(Unzip, Zlib);
 }).call(this,require('_process'))
-
 },{"./binding":86,"_process":504,"assert":25,"buffer":90,"stream":541,"util":556}],88:[function(require,module,exports){
 arguments[4][58][0].apply(exports,arguments)
 },{"dup":58}],89:[function(require,module,exports){
@@ -17560,7 +17370,6 @@ module.exports = function xor (a, b) {
 }
 
 }).call(this,require("buffer").Buffer)
-
 },{"buffer":90}],90:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
@@ -19387,7 +19196,6 @@ try {
 }
 
 }).call(this,"/node_modules/bufferutil")
-
 },{"./fallback":91,"node-gyp-build":479}],93:[function(require,module,exports){
 module.exports = {
   "100": "Continue",
@@ -26444,7 +26252,6 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-
 },{"../../is-buffer/index.js":471}],420:[function(require,module,exports){
 (function (Buffer){
 var elliptic = require('elliptic')
@@ -26573,7 +26380,6 @@ function formatReturnValue (bn, enc, len) {
 }
 
 }).call(this,require("buffer").Buffer)
-
 },{"bn.js":56,"buffer":90,"elliptic":436}],421:[function(require,module,exports){
 'use strict'
 var inherits = require('inherits')
@@ -27549,7 +27355,6 @@ exports.DiffieHellmanGroup = exports.createDiffieHellmanGroup = exports.getDiffi
 exports.createDiffieHellman = exports.DiffieHellman = createDiffieHellman
 
 }).call(this,require("buffer").Buffer)
-
 },{"./lib/dh":433,"./lib/generatePrime":434,"./lib/primes.json":435,"buffer":90}],433:[function(require,module,exports){
 (function (Buffer){
 var BN = require('bn.js');
@@ -27718,7 +27523,6 @@ function formatReturnValue(bn, enc) {
 }
 
 }).call(this,require("buffer").Buffer)
-
 },{"./generatePrime":434,"bn.js":56,"buffer":90,"miller-rabin":475,"randombytes":515}],434:[function(require,module,exports){
 var randomBytes = require('randombytes');
 module.exports = findPrime;
@@ -34182,7 +33986,6 @@ module.exports = Array.isArray || function (arr) {
 }));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],474:[function(require,module,exports){
 'use strict'
 var inherits = require('inherits')
@@ -39098,7 +38901,6 @@ function isElectron () {
 }
 
 }).call(this,require('_process'))
-
 },{"_process":504,"fs":88,"os":480,"path":497}],480:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
@@ -45134,7 +44936,6 @@ module.exports = function (okey, password) {
 }
 
 }).call(this,require("buffer").Buffer)
-
 },{"browserify-aes":61,"buffer":90,"evp_bytestokey":453}],496:[function(require,module,exports){
 (function (Buffer){
 var asn1 = require('./asn1')
@@ -45245,7 +45046,6 @@ function decrypt (data, password) {
 }
 
 }).call(this,require("buffer").Buffer)
-
 },{"./aesid.json":492,"./asn1":493,"./fixProc":495,"browserify-aes":61,"buffer":90,"pbkdf2":498}],497:[function(require,module,exports){
 (function (process){
 // .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
@@ -45552,7 +45352,6 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-
 },{"_process":504}],498:[function(require,module,exports){
 exports.pbkdf2 = require('./lib/async')
 exports.pbkdf2Sync = require('./lib/sync')
@@ -45661,7 +45460,6 @@ module.exports = function (password, salt, iterations, keylen, digest, callback)
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"./default-encoding":500,"./precondition":501,"./sync":502,"_process":504,"safe-buffer":532}],500:[function(require,module,exports){
 (function (process){
 var defaultEncoding
@@ -45676,7 +45474,6 @@ if (process.browser) {
 module.exports = defaultEncoding
 
 }).call(this,require('_process'))
-
 },{"_process":504}],501:[function(require,module,exports){
 (function (Buffer){
 var MAX_ALLOC = Math.pow(2, 30) - 1 // default in iojs
@@ -45709,7 +45506,6 @@ module.exports = function (password, salt, iterations, keylen) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-
 },{"../../is-buffer/index.js":471}],502:[function(require,module,exports){
 var md5 = require('create-hash/md5')
 var RIPEMD160 = require('ripemd160')
@@ -45864,7 +45660,6 @@ function nextTick(fn, arg1, arg2, arg3) {
 
 
 }).call(this,require('_process'))
-
 },{"_process":504}],504:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
@@ -46842,7 +46637,6 @@ module.exports = function xor (a, b) {
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],512:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -47064,7 +46858,6 @@ function randomBytes (size, cb) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"_process":504,"safe-buffer":532}],516:[function(require,module,exports){
 (function (process,global){
 'use strict'
@@ -47177,7 +46970,6 @@ function randomFillSync (buf, offset, size) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"_process":504,"randombytes":515,"safe-buffer":532}],517:[function(require,module,exports){
 module.exports = require('./lib/_stream_duplex.js');
 
@@ -48383,7 +48175,6 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"./_stream_duplex":518,"./internal/streams/BufferList":523,"./internal/streams/destroy":524,"./internal/streams/stream":525,"_process":504,"core-util-is":419,"events":452,"inherits":470,"isarray":472,"process-nextick-args":503,"safe-buffer":532,"string_decoder/":546,"util":58}],521:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -49289,7 +49080,6 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
-
 },{"./_stream_duplex":518,"./internal/streams/destroy":524,"./internal/streams/stream":525,"_process":504,"core-util-is":419,"inherits":470,"process-nextick-args":503,"safe-buffer":532,"timers":547,"util-deprecate":554}],523:[function(require,module,exports){
 'use strict';
 
@@ -50206,7 +49996,6 @@ module.exports = require('./lib/_stream_writable.js');
 );
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],531:[function(require,module,exports){
 'use strict'
 var Buffer = require('buffer').Buffer
@@ -51463,7 +51252,6 @@ http.METHODS = [
 	'UNSUBSCRIBE'
 ]
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"./lib/request":544,"./lib/response":545,"builtin-status-codes":93,"url":550,"xtend":575}],543:[function(require,module,exports){
 (function (global){
 exports.fetch = isFunction(global.fetch) && isFunction(global.ReadableStream)
@@ -51541,7 +51329,6 @@ function isFunction (value) {
 xhr = null // Help gc
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],544:[function(require,module,exports){
 (function (process,global,Buffer){
 var capability = require('./capability')
@@ -51873,7 +51660,6 @@ var unsafeHeaders = [
 ]
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-
 },{"./capability":543,"./response":545,"_process":504,"buffer":90,"inherits":470,"readable-stream":527,"to-arraybuffer":548}],545:[function(require,module,exports){
 (function (process,global,Buffer){
 var capability = require('./capability')
@@ -52102,7 +51888,6 @@ IncomingMessage.prototype._onXHRProgress = function () {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-
 },{"./capability":543,"_process":504,"buffer":90,"inherits":470,"readable-stream":527}],546:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -52479,7 +52264,6 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
-
 },{"process/browser.js":504,"timers":547}],548:[function(require,module,exports){
 var Buffer = require('buffer').Buffer
 
@@ -53474,7 +53258,6 @@ try {
 }
 
 }).call(this,"/node_modules/utf-8-validate")
-
 },{"./fallback":552,"node-gyp-build":479}],554:[function(require,module,exports){
 (function (global){
 
@@ -53546,601 +53329,11 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],555:[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
 },{"dup":27}],556:[function(require,module,exports){
-(function (process,global){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-var formatRegExp = /%[sdj%]/g;
-exports.format = function(f) {
-  if (!isString(f)) {
-    var objects = [];
-    for (var i = 0; i < arguments.length; i++) {
-      objects.push(inspect(arguments[i]));
-    }
-    return objects.join(' ');
-  }
-
-  var i = 1;
-  var args = arguments;
-  var len = args.length;
-  var str = String(f).replace(formatRegExp, function(x) {
-    if (x === '%%') return '%';
-    if (i >= len) return x;
-    switch (x) {
-      case '%s': return String(args[i++]);
-      case '%d': return Number(args[i++]);
-      case '%j':
-        try {
-          return JSON.stringify(args[i++]);
-        } catch (_) {
-          return '[Circular]';
-        }
-      default:
-        return x;
-    }
-  });
-  for (var x = args[i]; i < len; x = args[++i]) {
-    if (isNull(x) || !isObject(x)) {
-      str += ' ' + x;
-    } else {
-      str += ' ' + inspect(x);
-    }
-  }
-  return str;
-};
-
-
-// Mark that a method should not be used.
-// Returns a modified function which warns once by default.
-// If --no-deprecation is set, then it is a no-op.
-exports.deprecate = function(fn, msg) {
-  // Allow for deprecating things in the process of starting up.
-  if (isUndefined(global.process)) {
-    return function() {
-      return exports.deprecate(fn, msg).apply(this, arguments);
-    };
-  }
-
-  if (process.noDeprecation === true) {
-    return fn;
-  }
-
-  var warned = false;
-  function deprecated() {
-    if (!warned) {
-      if (process.throwDeprecation) {
-        throw new Error(msg);
-      } else if (process.traceDeprecation) {
-        console.trace(msg);
-      } else {
-        console.error(msg);
-      }
-      warned = true;
-    }
-    return fn.apply(this, arguments);
-  }
-
-  return deprecated;
-};
-
-
-var debugs = {};
-var debugEnviron;
-exports.debuglog = function(set) {
-  if (isUndefined(debugEnviron))
-    debugEnviron = process.env.NODE_DEBUG || '';
-  set = set.toUpperCase();
-  if (!debugs[set]) {
-    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
-      var pid = process.pid;
-      debugs[set] = function() {
-        var msg = exports.format.apply(exports, arguments);
-        console.error('%s %d: %s', set, pid, msg);
-      };
-    } else {
-      debugs[set] = function() {};
-    }
-  }
-  return debugs[set];
-};
-
-
-/**
- * Echos the value of a value. Trys to print the value out
- * in the best way possible given the different types.
- *
- * @param {Object} obj The object to print out.
- * @param {Object} opts Optional options object that alters the output.
- */
-/* legacy: obj, showHidden, depth, colors*/
-function inspect(obj, opts) {
-  // default options
-  var ctx = {
-    seen: [],
-    stylize: stylizeNoColor
-  };
-  // legacy...
-  if (arguments.length >= 3) ctx.depth = arguments[2];
-  if (arguments.length >= 4) ctx.colors = arguments[3];
-  if (isBoolean(opts)) {
-    // legacy...
-    ctx.showHidden = opts;
-  } else if (opts) {
-    // got an "options" object
-    exports._extend(ctx, opts);
-  }
-  // set default options
-  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
-  if (isUndefined(ctx.depth)) ctx.depth = 2;
-  if (isUndefined(ctx.colors)) ctx.colors = false;
-  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
-  if (ctx.colors) ctx.stylize = stylizeWithColor;
-  return formatValue(ctx, obj, ctx.depth);
-}
-exports.inspect = inspect;
-
-
-// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
-inspect.colors = {
-  'bold' : [1, 22],
-  'italic' : [3, 23],
-  'underline' : [4, 24],
-  'inverse' : [7, 27],
-  'white' : [37, 39],
-  'grey' : [90, 39],
-  'black' : [30, 39],
-  'blue' : [34, 39],
-  'cyan' : [36, 39],
-  'green' : [32, 39],
-  'magenta' : [35, 39],
-  'red' : [31, 39],
-  'yellow' : [33, 39]
-};
-
-// Don't use 'blue' not visible on cmd.exe
-inspect.styles = {
-  'special': 'cyan',
-  'number': 'yellow',
-  'boolean': 'yellow',
-  'undefined': 'grey',
-  'null': 'bold',
-  'string': 'green',
-  'date': 'magenta',
-  // "name": intentionally not styling
-  'regexp': 'red'
-};
-
-
-function stylizeWithColor(str, styleType) {
-  var style = inspect.styles[styleType];
-
-  if (style) {
-    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
-           '\u001b[' + inspect.colors[style][1] + 'm';
-  } else {
-    return str;
-  }
-}
-
-
-function stylizeNoColor(str, styleType) {
-  return str;
-}
-
-
-function arrayToHash(array) {
-  var hash = {};
-
-  array.forEach(function(val, idx) {
-    hash[val] = true;
-  });
-
-  return hash;
-}
-
-
-function formatValue(ctx, value, recurseTimes) {
-  // Provide a hook for user-specified inspect functions.
-  // Check that value is an object with an inspect function on it
-  if (ctx.customInspect &&
-      value &&
-      isFunction(value.inspect) &&
-      // Filter out the util module, it's inspect function is special
-      value.inspect !== exports.inspect &&
-      // Also filter out any prototype objects using the circular check.
-      !(value.constructor && value.constructor.prototype === value)) {
-    var ret = value.inspect(recurseTimes, ctx);
-    if (!isString(ret)) {
-      ret = formatValue(ctx, ret, recurseTimes);
-    }
-    return ret;
-  }
-
-  // Primitive types cannot have properties
-  var primitive = formatPrimitive(ctx, value);
-  if (primitive) {
-    return primitive;
-  }
-
-  // Look up the keys of the object.
-  var keys = Object.keys(value);
-  var visibleKeys = arrayToHash(keys);
-
-  if (ctx.showHidden) {
-    keys = Object.getOwnPropertyNames(value);
-  }
-
-  // IE doesn't make error fields non-enumerable
-  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
-  if (isError(value)
-      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
-    return formatError(value);
-  }
-
-  // Some type of object without properties can be shortcutted.
-  if (keys.length === 0) {
-    if (isFunction(value)) {
-      var name = value.name ? ': ' + value.name : '';
-      return ctx.stylize('[Function' + name + ']', 'special');
-    }
-    if (isRegExp(value)) {
-      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
-    }
-    if (isDate(value)) {
-      return ctx.stylize(Date.prototype.toString.call(value), 'date');
-    }
-    if (isError(value)) {
-      return formatError(value);
-    }
-  }
-
-  var base = '', array = false, braces = ['{', '}'];
-
-  // Make Array say that they are Array
-  if (isArray(value)) {
-    array = true;
-    braces = ['[', ']'];
-  }
-
-  // Make functions say that they are functions
-  if (isFunction(value)) {
-    var n = value.name ? ': ' + value.name : '';
-    base = ' [Function' + n + ']';
-  }
-
-  // Make RegExps say that they are RegExps
-  if (isRegExp(value)) {
-    base = ' ' + RegExp.prototype.toString.call(value);
-  }
-
-  // Make dates with properties first say the date
-  if (isDate(value)) {
-    base = ' ' + Date.prototype.toUTCString.call(value);
-  }
-
-  // Make error with message first say the error
-  if (isError(value)) {
-    base = ' ' + formatError(value);
-  }
-
-  if (keys.length === 0 && (!array || value.length == 0)) {
-    return braces[0] + base + braces[1];
-  }
-
-  if (recurseTimes < 0) {
-    if (isRegExp(value)) {
-      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
-    } else {
-      return ctx.stylize('[Object]', 'special');
-    }
-  }
-
-  ctx.seen.push(value);
-
-  var output;
-  if (array) {
-    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
-  } else {
-    output = keys.map(function(key) {
-      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
-    });
-  }
-
-  ctx.seen.pop();
-
-  return reduceToSingleString(output, base, braces);
-}
-
-
-function formatPrimitive(ctx, value) {
-  if (isUndefined(value))
-    return ctx.stylize('undefined', 'undefined');
-  if (isString(value)) {
-    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
-                                             .replace(/'/g, "\\'")
-                                             .replace(/\\"/g, '"') + '\'';
-    return ctx.stylize(simple, 'string');
-  }
-  if (isNumber(value))
-    return ctx.stylize('' + value, 'number');
-  if (isBoolean(value))
-    return ctx.stylize('' + value, 'boolean');
-  // For some reason typeof null is "object", so special case here.
-  if (isNull(value))
-    return ctx.stylize('null', 'null');
-}
-
-
-function formatError(value) {
-  return '[' + Error.prototype.toString.call(value) + ']';
-}
-
-
-function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
-  var output = [];
-  for (var i = 0, l = value.length; i < l; ++i) {
-    if (hasOwnProperty(value, String(i))) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          String(i), true));
-    } else {
-      output.push('');
-    }
-  }
-  keys.forEach(function(key) {
-    if (!key.match(/^\d+$/)) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          key, true));
-    }
-  });
-  return output;
-}
-
-
-function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
-  var name, str, desc;
-  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
-  if (desc.get) {
-    if (desc.set) {
-      str = ctx.stylize('[Getter/Setter]', 'special');
-    } else {
-      str = ctx.stylize('[Getter]', 'special');
-    }
-  } else {
-    if (desc.set) {
-      str = ctx.stylize('[Setter]', 'special');
-    }
-  }
-  if (!hasOwnProperty(visibleKeys, key)) {
-    name = '[' + key + ']';
-  }
-  if (!str) {
-    if (ctx.seen.indexOf(desc.value) < 0) {
-      if (isNull(recurseTimes)) {
-        str = formatValue(ctx, desc.value, null);
-      } else {
-        str = formatValue(ctx, desc.value, recurseTimes - 1);
-      }
-      if (str.indexOf('\n') > -1) {
-        if (array) {
-          str = str.split('\n').map(function(line) {
-            return '  ' + line;
-          }).join('\n').substr(2);
-        } else {
-          str = '\n' + str.split('\n').map(function(line) {
-            return '   ' + line;
-          }).join('\n');
-        }
-      }
-    } else {
-      str = ctx.stylize('[Circular]', 'special');
-    }
-  }
-  if (isUndefined(name)) {
-    if (array && key.match(/^\d+$/)) {
-      return str;
-    }
-    name = JSON.stringify('' + key);
-    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
-      name = name.substr(1, name.length - 2);
-      name = ctx.stylize(name, 'name');
-    } else {
-      name = name.replace(/'/g, "\\'")
-                 .replace(/\\"/g, '"')
-                 .replace(/(^"|"$)/g, "'");
-      name = ctx.stylize(name, 'string');
-    }
-  }
-
-  return name + ': ' + str;
-}
-
-
-function reduceToSingleString(output, base, braces) {
-  var numLinesEst = 0;
-  var length = output.reduce(function(prev, cur) {
-    numLinesEst++;
-    if (cur.indexOf('\n') >= 0) numLinesEst++;
-    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
-  }, 0);
-
-  if (length > 60) {
-    return braces[0] +
-           (base === '' ? '' : base + '\n ') +
-           ' ' +
-           output.join(',\n  ') +
-           ' ' +
-           braces[1];
-  }
-
-  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
-}
-
-
-// NOTE: These type checking functions intentionally don't use `instanceof`
-// because it is fragile and can be easily faked with `Object.create()`.
-function isArray(ar) {
-  return Array.isArray(ar);
-}
-exports.isArray = isArray;
-
-function isBoolean(arg) {
-  return typeof arg === 'boolean';
-}
-exports.isBoolean = isBoolean;
-
-function isNull(arg) {
-  return arg === null;
-}
-exports.isNull = isNull;
-
-function isNullOrUndefined(arg) {
-  return arg == null;
-}
-exports.isNullOrUndefined = isNullOrUndefined;
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-exports.isNumber = isNumber;
-
-function isString(arg) {
-  return typeof arg === 'string';
-}
-exports.isString = isString;
-
-function isSymbol(arg) {
-  return typeof arg === 'symbol';
-}
-exports.isSymbol = isSymbol;
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-exports.isUndefined = isUndefined;
-
-function isRegExp(re) {
-  return isObject(re) && objectToString(re) === '[object RegExp]';
-}
-exports.isRegExp = isRegExp;
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-exports.isObject = isObject;
-
-function isDate(d) {
-  return isObject(d) && objectToString(d) === '[object Date]';
-}
-exports.isDate = isDate;
-
-function isError(e) {
-  return isObject(e) &&
-      (objectToString(e) === '[object Error]' || e instanceof Error);
-}
-exports.isError = isError;
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-exports.isFunction = isFunction;
-
-function isPrimitive(arg) {
-  return arg === null ||
-         typeof arg === 'boolean' ||
-         typeof arg === 'number' ||
-         typeof arg === 'string' ||
-         typeof arg === 'symbol' ||  // ES6 symbol
-         typeof arg === 'undefined';
-}
-exports.isPrimitive = isPrimitive;
-
-exports.isBuffer = require('./support/isBuffer');
-
-function objectToString(o) {
-  return Object.prototype.toString.call(o);
-}
-
-
-function pad(n) {
-  return n < 10 ? '0' + n.toString(10) : n.toString(10);
-}
-
-
-var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-              'Oct', 'Nov', 'Dec'];
-
-// 26 Feb 16:19:34
-function timestamp() {
-  var d = new Date();
-  var time = [pad(d.getHours()),
-              pad(d.getMinutes()),
-              pad(d.getSeconds())].join(':');
-  return [d.getDate(), months[d.getMonth()], time].join(' ');
-}
-
-
-// log is just a thin wrapper to console.log that prepends a timestamp
-exports.log = function() {
-  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
-};
-
-
-/**
- * Inherit the prototype methods from one constructor into another.
- *
- * The Function.prototype.inherits from lang.js rewritten as a standalone
- * function (not on Function.prototype). NOTE: If this file is to be loaded
- * during bootstrapping this function needs to be rewritten using some native
- * functions as prototype setup using normal JavaScript does not work as
- * expected during bootstrapping (see mirror.js in r114903).
- *
- * @param {function} ctor Constructor function which needs to inherit the
- *     prototype.
- * @param {function} superCtor Constructor function to inherit prototype from.
- */
-exports.inherits = require('inherits');
-
-exports._extend = function(origin, add) {
-  // Don't do anything if add isn't an object
-  if (!add || !isObject(add)) return origin;
-
-  var keys = Object.keys(add);
-  var i = keys.length;
-  while (i--) {
-    origin[keys[i]] = add[keys[i]];
-  }
-  return origin;
-};
-
-function hasOwnProperty(obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-}
-
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"./support/isBuffer":555,"_process":504,"inherits":470}],557:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"./support/isBuffer":555,"_process":504,"dup":28,"inherits":470}],557:[function(require,module,exports){
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
@@ -55189,7 +54382,6 @@ class PerMessageDeflate {
 module.exports = PerMessageDeflate;
 
 }).call(this,require('_process'))
-
 },{"./BufferUtil":564,"_process":504,"safe-buffer":562,"zlib":87}],570:[function(require,module,exports){
 /*!
  * ws: a node.js websocket client
@@ -57244,6 +56436,7 @@ function extend() {
     return target
 }
 
-},{}]},{},[1])
+},{}]},{},[1])(1)
+});
 
 //# sourceMappingURL=dashboard.js.map
