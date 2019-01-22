@@ -259,13 +259,15 @@ export function shareFile() {
             let fileList = "";
             for (let x = 0; x < nFiles; x++) {
                 fileList += `
-                    - ${appData.aSelectedFiles.name[x]}  ${appData.aSelectedFiles.size[x]}`;
+                    - ${appData.aSelectedFiles.name[x]}\t\t${appData.aSelectedFiles.size[x]}`;
                 data = {
                     fileName: appData.aSelectedFiles.name[x],
                     fileSize: appData.aSelectedFiles.size[x],
                     //filefullSize: appData.aSelectedFiles.fullsize[x];
                     path: appData.currentPath,
                     userName: userData.UserName,
+                    userFullName: userData.UserFullName || userData.UserName,
+                    userEmail: userData.UserEmail,
                     destUserName: d.destUserName,
                     expirationDate: strTime,
                     unixDate: moment(strTime).format("x"),
@@ -286,10 +288,14 @@ export function shareFile() {
                         if (userData.RunMode === "DEBUG") console.log(d.data);
                         if (d.data.status === "OK") {
                             //containerOverlay.style.display = "none";
+                            let user = userData.UserFullName || userData.UserName;
+                            let mail = userData.UserEmail || '';
+                            mail = '<' + mail + '>';
                             if (nFiles === 1) {
                                 document.querySelector("#urlFile").innerHTML = `https://filebox.unifyspain.es/files/share/${d.data.data.UrlCode}`;
-                                let emailBody = encodeURIComponent('El usuario ' + userData.UserName.toUpperCase() + ' ha compartido el archivo ' + appData.aSelectedFiles.name[x] + ' ' + appData.aSelectedFiles.size[x] + '\r\n\r\n' +
+                                let emailBody = encodeURIComponent('El usuario ' + user.toUpperCase() + ' ' + mail + ' ha compartido el archivo:\r\n\r\n\t- ' + appData.aSelectedFiles.name[x] + '\t\t' + appData.aSelectedFiles.size[x] + '\r\n\r\n' +
                                     'puede descargarlo del link: https://filebox.unifyspain.es/files/share/' + d.data.data.UrlCode);
+                                console.log(emailBody);
                                 sendEmail(
                                     d.data.data.DestUser,
                                     "filemanager@filebox.unifyspain.es",
@@ -310,8 +316,9 @@ export function shareFile() {
                                 console.log('x:', x);
                                 if (x === nFiles - 1) {
                                     document.querySelector("#urlFile").innerHTML = `https://filebox.unifyspain.es/files/share/${groupID}`;
-                                    let emailBody = encodeURIComponent('El usuario ' + userData.UserName.toUpperCase() + ' ha compartido los archivos: \r\n' + fileList + '\r\n\r\n' +
+                                    let emailBody = encodeURIComponent('El usuario ' + user.toUpperCase() + ' ' + mail + ' ha compartido los archivos:\r\n' + fileList + '\r\n\r\n' +
                                         'puede descargarlos del link: https://filebox.unifyspain.es/files/share/' + groupID);
+                                    console.log(emailBody);
                                     sendEmail(
                                         d.data.data.DestUser,
                                         "filemanager@filebox.unifyspain.es",

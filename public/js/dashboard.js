@@ -1999,13 +1999,15 @@ function shareFile() {
                 var fileList = "";
 
                 var _loop = function _loop(x) {
-                    fileList += "\n                    - " + appData.aSelectedFiles.name[x] + "  " + appData.aSelectedFiles.size[x];
+                    fileList += "\n                    - " + appData.aSelectedFiles.name[x] + "\t\t" + appData.aSelectedFiles.size[x];
                     data = {
                         fileName: appData.aSelectedFiles.name[x],
                         fileSize: appData.aSelectedFiles.size[x],
                         //filefullSize: appData.aSelectedFiles.fullsize[x];
                         path: appData.currentPath,
                         userName: userData.UserName,
+                        userFullName: userData.UserFullName || userData.UserName,
+                        userEmail: userData.UserEmail,
                         destUserName: d.destUserName,
                         expirationDate: strTime,
                         unixDate: (0, _moment2.default)(strTime).format("x"),
@@ -2023,9 +2025,13 @@ function shareFile() {
                         if (userData.RunMode === "DEBUG") console.log(d.data);
                         if (d.data.status === "OK") {
                             //containerOverlay.style.display = "none";
+                            var user = userData.UserFullName || userData.UserName;
+                            var mail = userData.UserEmail || '';
+                            mail = '<' + mail + '>';
                             if (nFiles === 1) {
                                 document.querySelector("#urlFile").innerHTML = "https://filebox.unifyspain.es/files/share/" + d.data.data.UrlCode;
-                                var emailBody = encodeURIComponent('El usuario ' + userData.UserName.toUpperCase() + ' ha compartido el archivo ' + appData.aSelectedFiles.name[x] + ' ' + appData.aSelectedFiles.size[x] + '\r\n\r\n' + 'puede descargarlo del link: https://filebox.unifyspain.es/files/share/' + d.data.data.UrlCode);
+                                var emailBody = encodeURIComponent('El usuario ' + user.toUpperCase() + ' ' + mail + ' ha compartido el archivo:\r\n\r\n\t- ' + appData.aSelectedFiles.name[x] + '\t\t' + appData.aSelectedFiles.size[x] + '\r\n\r\n' + 'puede descargarlo del link: https://filebox.unifyspain.es/files/share/' + d.data.data.UrlCode);
+                                console.log(emailBody);
                                 sendEmail(d.data.data.DestUser, "filemanager@filebox.unifyspain.es", "URL para descarga de archivo", emailBody);
                                 appData.aSelectedFiles.name = [];
                                 appData.aSelectedFiles.size = [];
@@ -2038,7 +2044,8 @@ function shareFile() {
                                 console.log('x:', x);
                                 if (x === nFiles - 1) {
                                     document.querySelector("#urlFile").innerHTML = "https://filebox.unifyspain.es/files/share/" + groupID;
-                                    var _emailBody = encodeURIComponent('El usuario ' + userData.UserName.toUpperCase() + ' ha compartido los archivos: \r\n' + fileList + '\r\n\r\n' + 'puede descargarlos del link: https://filebox.unifyspain.es/files/share/' + groupID);
+                                    var _emailBody = encodeURIComponent('El usuario ' + user.toUpperCase() + ' ' + mail + ' ha compartido los archivos:\r\n' + fileList + '\r\n\r\n' + 'puede descargarlos del link: https://filebox.unifyspain.es/files/share/' + groupID);
+                                    console.log(_emailBody);
                                     sendEmail(d.data.data.DestUser, "filemanager@filebox.unifyspain.es", "URL para descarga de archivos", _emailBody);
                                     appData.aSelectedFiles.name = [];
                                     appData.aSelectedFiles.size = [];
@@ -33775,8 +33782,9 @@ module.exports = Array.isArray || function (arr) {
 ), function(global) {
     'use strict';
     // existing version for noConflict()
+    global = global || {};
     var _Base64 = global.Base64;
-    var version = "2.4.9";
+    var version = "2.5.1";
     // if node.js and NOT React Native, we use Buffer
     var buffer;
     if (typeof module !== 'undefined' && module.exports) {
@@ -33904,10 +33912,13 @@ module.exports = Array.isArray || function (arr) {
         chars.length -= [0, 0, 2, 1][padlen];
         return chars.join('');
     };
-    var atob = global.atob ? function(a) {
+    var _atob = global.atob ? function(a) {
         return global.atob(a);
     } : function(a){
-        return a.replace(/[\s\S]{1,4}/g, cb_decode);
+        return a.replace(/\S{1,4}/g, cb_decode);
+    };
+    var atob = function(a) {
+        return _atob(String(a).replace(/[^A-Za-z0-9\+\/]/g, ''));
     };
     var _decode = buffer ?
         buffer.from && Uint8Array && buffer.from !== Uint8Array.from
@@ -33919,7 +33930,7 @@ module.exports = Array.isArray || function (arr) {
             return (a.constructor === buffer.constructor
                     ? a : new buffer(a, 'base64')).toString();
         }
-        : function(a) { return btou(atob(a)) };
+        : function(a) { return btou(_atob(a)) };
     var decode = function(a){
         return _decode(
             String(a).replace(/[-_]/g, function(m0) { return m0 == '-' ? '+' : '/' })
