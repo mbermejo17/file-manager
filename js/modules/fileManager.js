@@ -128,6 +128,7 @@ let htmlUploadDownloadTemplate = `
             <div class="progress-content">
                 <div class="progress-bar" id="progress-bar1"></div>
                 <div class="percent" id="percent1"></div>
+                <div id="speedData1"></div>
             </div>
             <div class="abort-task">
               <a class="file-abort" id="abort1" href="#" title="Cancel file download"></a>
@@ -140,6 +141,7 @@ let htmlUploadDownloadTemplate = `
             <div class="progress-content">
                 <div class="progress-bar" id="progress-bar2"></div>
                 <div class="percent" id="percent2"></div>
+                <div id="speedData2"></div>
             </div>  
             <div class="abort-task">
               <a class="file-abort" id="abort2" href="#" title="Cancel file download"></a>
@@ -152,6 +154,7 @@ let htmlUploadDownloadTemplate = `
             <div class="progress-content">
                 <div class="progress-bar" id="progress-bar3"></div>
                 <div class="percent" id="percent3"></div>
+                <div id="speedData3"></div>
             </div>
             <div class="abort-task">
                   <a class="file-abort" id="abort3" href="#" title="Cancel file download"></a>
@@ -163,7 +166,8 @@ let htmlUploadDownloadTemplate = `
             <div class="li-filename" id="li-filename4"></div>
             <div class="progress-content">
                 <div class="progress-bar" id="progress-bar4"></div>
-                <div class="percent" id="percent4"></div>  
+                <div class="percent" id="percent4"></div>
+                <div id="speedData4"></div>  
             </div>
             <div class="abort-task">
                   <a class="file-abort" id="abort4" href="#" title="Cancel file download"></a>
@@ -895,6 +899,7 @@ export function upload(Token) {
         let CancelToken = axios.CancelToken;
         let progressBar = document.querySelector("#progress-bar" + nFile);
         let percentLabel = document.querySelector("#percent" + nFile);
+        let speedData = document.querySelector("#speedData" + nFile);
 
         document.querySelector("#upload-input").disabled = true;
 
@@ -913,6 +918,9 @@ export function upload(Token) {
                     //console.log("progressEvent: ", progressEvent);
                     let percentComplete = 0;
                     let evt = progressEvent;
+                    let seconds_elapsed = (new Date().getTime() - started_at.getTime()) / 1000;
+                    let bytes_per_second = 0;
+                    let Kbytes_per_second = 0;
                     //aListHandler[nFile].upload.addEventListener(
                     //  "progress",
                     //  function(evt) {
@@ -949,11 +957,14 @@ export function upload(Token) {
                         );
                     } else {
                         if (evt.lengthComputable) {
+                            bytes_per_second = seconds_elapsed ? evt.loaded / seconds_elapsed : 0;
+                            Kbytes_per_second = bytes_per_second / 1000;
                             if (progressBar.style.width !== "100%") {
                                 percentComplete = evt.loaded / evt.total;
                                 percentComplete = parseInt(percentComplete * 100);
                                 percentLabel.innerHTML = percentComplete + "%";
                                 progressBar.style.width = percentComplete + "%";
+                                speedData.innerHTML = Kbytes_per_second + ' bits/s';
                             }
                         }
                     }
