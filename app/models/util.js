@@ -146,7 +146,7 @@ UtilModel.getById = function(fileId, callback) {
             } else {
                 sql = `SELECT *
                FROM Shared
-               WHERE UrlCode  = ?`;
+               WHERE (UrlCode  = ?)`;
                 _SharedFile(sql, fileId)
                     .then((_data) => {
                         console.log("SharedFile _data ->", _data);
@@ -228,7 +228,6 @@ UtilModel.getByUserName = function(userName, callback) {
 
 UtilModel.CleanExpiredFiles = function(query, callback) {
     let response = {};
-
     dbOpen();
     let stmt = global.db.prepare(query);
     stmt.bind(moment(Date.now()).unix());

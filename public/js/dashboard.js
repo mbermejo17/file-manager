@@ -1983,7 +1983,7 @@ function shareFile() {
         var groupID = null;
         var data = {};
         if (d.FileExpirateDate === "") {
-            strTime = (0, _moment2.default)(Date.now()).format("YYYY/MM/DD HH:mm:ss");
+            strTime = (0, _moment2.default)('01/01/1970 01:00:01').format("YYYY/MM/DD HH:mm:ss");
         } else {
             strTime = (0, _moment2.default)(d.FileExpirateDate).format("YYYY/MM/DD HH:mm:ss");
         }

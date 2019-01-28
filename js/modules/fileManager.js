@@ -247,7 +247,7 @@ export function shareFile() {
         let groupID = null;
         let data = {};
         if (d.FileExpirateDate === "") {
-            strTime = moment(Date.now()).format("YYYY/MM/DD HH:mm:ss");
+            strTime = moment('01/01/1970 01:00:01').format("YYYY/MM/DD HH:mm:ss");
         } else {
             strTime = moment(d.FileExpirateDate).format("YYYY/MM/DD HH:mm:ss");
         }

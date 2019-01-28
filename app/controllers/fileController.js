@@ -551,44 +551,49 @@ class FileController {
                 sharedFilesContent += `
                 <div class="sharedFile-item">
                     <span class="firstColItem">${f.FileName}</span>
-                    <span class="colItem">${f.Size}</span>
-                    <a href="/files/share/${f.UrlCode}"><i class="fas fa-download"></i></a>
-                </div>
-                `;
+                    <span class="colItem">${f.Size}</span>`;
+                if ((f.UnixDate < currentUnixDate) && (f.UnixDate !== 1)) {
+                    sharedFilesContent += `
+                        <a href = "#" > < i class = "fas fa-download expirated" alt="El enlace ha expirado">< /i></a >
+                        </div>`;
+                } else {
+                    sharedFilesContent += `
+                        <a href = "/files/share/${f.UrlCode}" > < i class = "fas fa-download" > < /i></a >
+                        </div>`;
+                }
             });
             let downloadPageHTML = `
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta http-equiv="X-UA-Compatible" content="ie=edge">
-                <title>Download Page</title>
-                <link type="text/css" rel="stylesheet" href="/css/fontawesome.all.min.css" media="screen,projection">
-                <link type="text/css" rel="stylesheet" href="/css/style.css" media="screen,projection">
-                <link rel="shortcut icon" href="/favicon.ico">
-                <link rel="shortcut icon" href="/favicon_64.png">
-            </head>
-            <body>
-                <div class="row head-container">
-                    <div class="container">
-                        <div class="col m3 logo"></div>
-                        <div class="col m12 center title">File Manager</div>
-                        <div class="col m3 status right"></div>
-                    </div>
-                </div>
-                <div class="row nav-unify"></div>
-                <div class="row"></div>
-                <form class="sharedFilesDounload">
-                    <span class="form-title">Download Files</span> 
-                    <div id="sharedFiles-container">${sharedFilesContent}</div>
-                </form>
-                <div class="footer-unify">
-                    <div class="container"></div>
-                </div>
-            </body>
-            </html>
-                    `;
+                        <!DOCTYPE html>
+                        <html lang = "es">
+                        <head>
+                            <meta charset = "UTF-8" >
+                            <meta name = "viewport" content = "width=device-width, initial-scale=1.0" >
+                            <meta http - equiv = "X-UA-Compatible" content = "ie=edge" >
+                            <title> Download Page < /title> 
+                            <link type = "text/css" rel = "stylesheet" href = "/css/fontawesome.all.min.css" media = "screen,projection">
+                            <link type = "text/css" rel = "stylesheet" href = "/css/style.css" media = "screen,projection">
+                            <link rel = "shortcut icon" href = "/favicon.ico">
+                            <link rel = "shortcut icon" href = "/favicon_64.png">
+                        </head> 
+                        <body>
+                            <div class = "row head-container">
+                                <div class = "container">
+                                    <div class = "col m3 logo" > < /div> 
+                                    <div class = "col m12 center title" > File Manager < /div> 
+                                    <div class = "col m3 status right" > < /div> 
+                                </div> 
+                            </div> 
+                            <div class = "row nav-unify" ></div> 
+                            <div class = "row" > < /div> 
+                            <form class = "sharedFilesDounload" >
+                                <span class = "form-title" > Download Files < /span>  
+                                <div id = "sharedFiles-container"> ${sharedFilesContent} < /div>
+                            </form> 
+                            <div class = "footer-unify" >
+                                <div class = "container" > < /div> 
+                            </div> 
+                        </body> 
+                        </html>`;
             res.send(downloadPageHTML);
         };
 
@@ -598,7 +603,8 @@ class FileController {
                 if (process.env.NODE_ENV === 'dev') console.log(d)
                     //fileRealPath = d.data.RealPath
                 fileName = d.data[0].FileName
-                global.logger.info(`[${userName}] fileController::FileController shareFileDownload() ->${fileName} Shared File downloaded successfully!`);
+                global.logger.info(` [$ { userName }] fileController::FileController shareFileDownload() - > $ { fileName }
+                    Shared File downloaded successfully!`);
                 /*  Audit.Add({
                      userName: userName
                  }, {
@@ -626,7 +632,9 @@ class FileController {
                     });
                 }
             } else {
-                global.logger.error(`[${userName}] fileController::FileController shareFileDownload() ->${fileName} ${d.message}`);
+                global.logger.error(` [$ { userName }] fileController::FileController shareFileDownload() - > $ { fileName }
+                    $ { d.message }
+                    `);
                 /*Audit.Add({
                     userName: userName
                 }, {
@@ -739,12 +747,14 @@ class FileController {
             deleteExpiredFile: deleteExpiredFile,
             groupID: groupID
         }
-        let sqlQuery = 'DELETE FROM Shared WHERE (UnixDate  < ?);';
+        let sqlQuery = 'DELETE FROM Shared WHERE ((UnixDate >1 ) AND (UnixDate  < ?));';
         let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
         let currentUnixDate = moment().format('x');
         if (process.env.NODE_ENV === 'dev') console.log(sqlQuery);
         _cleanExpiredSharedFiles(sqlQuery, (response) => {
             if (process.env.NODE_ENV === 'dev') console.log(response);
+            global.logger.info(` [$ { userName }] fileController::shareFile _cleanExpiredSharedFiles() - > $ { response.message }
+                    `);
             Util.AddSharedFiles(data, (d) => {
                 if (process.env.NODE_ENV === 'dev') console.log("d : ", d);
                 if (d.status === 'FAIL') {
@@ -755,7 +765,8 @@ class FileController {
                     });
                 } else {
                     // send email
-                    _sendMail(userName, destUserName, fileName, `https://filebox.unifyspain.es/files/share/${uid}`);
+                    _sendMail(userName, destUserName, fileName, `
+                    https: //filebox.unifyspain.es/files/share/${uid}`);
                     d.data.hostServer = req.get('host');
                     return res.status(200).json(d);
                 }
