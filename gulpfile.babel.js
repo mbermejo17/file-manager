@@ -71,13 +71,13 @@ gulp.task('scripts', ['scripts1', 'scripts2']);
 
 // Sass
 gulp.task('styles1', () =>
-    gulp.src('./src/scss/style.scss')
+    gulp.src('./rc/scss/style.scss')
     .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(plumber())
-    .pipe(sass())
+    .pipe(sass().on('error', sass.logError))
     .pipe(postcss(postcssPlugins))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./public/css'))
+    .pipe(gulp.dest('./public/css/style.css'))
     .pipe(server.stream({ match: '**/*.css' }))
 );
 
@@ -88,7 +88,7 @@ gulp.task('styles2', () =>
     .pipe(sass())
     .pipe(postcss(postcssPlugins))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./public/css'))
+    .pipe(gulp.dest('./public/css/dashboard.css'))
     .pipe(server.stream({ match: '**/*.css' }))
 );
 

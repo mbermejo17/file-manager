@@ -135,7 +135,7 @@ h3 {
     flex-direction: column;
 }
 
-.sharedFilesDounload {
+.sharedFilesDownload {
     width: auto;
     max-width: 60vw;
     text-align: center;
@@ -180,6 +180,31 @@ h3 {
 .firstColItem {
     text-align: left;
     flex-basis: 80%;
+}
+
+.expirated {
+    color: red;
+    &:hover {
+        cursor: not-allowed;
+    }
+}
+
+#expiratedLink {
+    position: relative;
+    &:hover:after {
+        position: absolute;
+        content: attr(data-title);
+        left: -216px;
+        top: -20px;
+        width: 200px;
+        height: 1.2rem;
+        background-color: var(--bg-alternate-color);
+        color: var(--main-color);
+        border-radius: 5px;
+        padding: 8px;
+        box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
 }
 
 @media only screen and (max-width: 760px) {

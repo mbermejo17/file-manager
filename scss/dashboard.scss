@@ -1192,3 +1192,10 @@ $md-checkmark-color: #fff;
 .logWarning {
     color: blue;
 }
+
+i.expirated {
+    color: red;
+    &:hover {
+        cursor: not-allowed;
+    }
+}

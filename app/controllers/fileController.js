@@ -21,6 +21,7 @@ const fs = require('fs'),
         secure: true,
         insecureAuth: true
     });
+
 const Audit = require("../controllers/auditController");
 const log = global.logger;
 const base64 = require('base-64');
@@ -543,22 +544,24 @@ class FileController {
 
         let clientIP = req.connection.remoteAddress;
         let currentDate = moment(new Date()).format('DD/MM/YYYY  HH:mm:ss');
-        let currentUnixDate = moment().format('x');
+        let currentUnixDate = moment(new Date()).format('x');
 
         let renderDownloadPage = (d) => {
             let sharedFilesContent = '';
             d.forEach((f, idx) => {
+                console.log(f.UnixDate);
+                console.log(currentUnixDate);
                 sharedFilesContent += `
                 <div class="sharedFile-item">
                     <span class="firstColItem">${f.FileName}</span>
                     <span class="colItem">${f.Size}</span>`;
-                if ((f.UnixDate < currentUnixDate) && (f.UnixDate !== 1)) {
+                if ((f.UnixDate !== 1) && (f.UnixDate < currentUnixDate)) {
                     sharedFilesContent += `
-                        <a href = "#" > < i class = "fas fa-download expirated" alt="El enlace ha expirado">< /i></a >
+                        <a href = "#" data-title="El enlace ha expirado" class="expirated" id="expiratedLink"><i class = "fas fa-download expirated" data-title="El enlace ha expirado"></i></a >
                         </div>`;
                 } else {
                     sharedFilesContent += `
-                        <a href = "/files/share/${f.UrlCode}" > < i class = "fas fa-download" > < /i></a >
+                        <a href = "/files/share/${f.UrlCode}"><i class ="fas fa-download" ></i></a >
                         </div>`;
                 }
             });
@@ -569,7 +572,7 @@ class FileController {
                             <meta charset = "UTF-8" >
                             <meta name = "viewport" content = "width=device-width, initial-scale=1.0" >
                             <meta http - equiv = "X-UA-Compatible" content = "ie=edge" >
-                            <title> Download Page < /title> 
+                            <title> Download Page</title> 
                             <link type = "text/css" rel = "stylesheet" href = "/css/fontawesome.all.min.css" media = "screen,projection">
                             <link type = "text/css" rel = "stylesheet" href = "/css/style.css" media = "screen,projection">
                             <link rel = "shortcut icon" href = "/favicon.ico">
@@ -578,19 +581,19 @@ class FileController {
                         <body>
                             <div class = "row head-container">
                                 <div class = "container">
-                                    <div class = "col m3 logo" > < /div> 
-                                    <div class = "col m12 center title" > File Manager < /div> 
-                                    <div class = "col m3 status right" > < /div> 
+                                    <div class = "col m3 logo"></div> 
+                                    <div class = "col m12 center title"> File Manager</div> 
+                                    <div class = "col m3 status right"></div> 
                                 </div> 
                             </div> 
                             <div class = "row nav-unify" ></div> 
-                            <div class = "row" > < /div> 
-                            <form class = "sharedFilesDounload" >
-                                <span class = "form-title" > Download Files < /span>  
-                                <div id = "sharedFiles-container"> ${sharedFilesContent} < /div>
+                            <div class = "row" ></div> 
+                            <form class = "sharedFilesDownload">
+                                <span class = "form-title"> Download Files </span>  
+                                <div id = "sharedFiles-container"> ${sharedFilesContent} </div>
                             </form> 
                             <div class = "footer-unify" >
-                                <div class = "container" > < /div> 
+                                <div class = "container" ></div> 
                             </div> 
                         </body> 
                         </html>`;
