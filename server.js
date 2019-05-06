@@ -6,6 +6,7 @@ const WebSocketServer = require('ws').Server
 const port = process.env.PORT || 8443;
 const path = require('path');
 const dl = require('delivery');
+const color = require('chalk');
 
 global.appRoot = path.resolve(__dirname);
 process.env.NODE_ENV = "dev";
@@ -24,8 +25,8 @@ let httpsServer = https.createServer({
 }, app).listen(port, function() {
     logger.info('********* Starting FileManager v.1.0 **********');
     logger.info('Server listen on port ' + port);
-    console.log('Enviroment: ', process.env.NODE_ENV);
-    console.log("https server listening on port " + port + "...");
+    console.log(color.blueBright('Enviroment: ', process.env.NODE_ENV));
+    console.log(color.blueBright("https server listening on port " + port + "..."));
 });
 
 
@@ -51,7 +52,7 @@ let wssRemoteRoom = new WebSocketServer({
 
 
 httpsServer.on('uncaughtException', (request, response, route, error) => {
-    console.error(error.stack);
+    console.error(color.red(error.stack));
     response.send(error);
 });
 
@@ -85,7 +86,7 @@ wss.getUniqueID = function() {
 };
 const interval = setInterval(function sendKeepAlive() {
     wss.clients.forEach(function each(ws) {
-        console.log('Client.ID ' + ws.id + ' isAlive ' + ws.isAlive);
+        console.log(color.green('Client.ID ' + ws.id + ' isAlive ' + ws.isAlive));
         if (ws.isAlive === false) return ws.terminate();
         ws.isAlive = false;
         ws.send(JSON.stringify({
@@ -96,7 +97,7 @@ const interval = setInterval(function sendKeepAlive() {
     });
 
     wssRemoteRoom.clients.forEach(function each(wsRemoteRoom) {
-        console.log('Room.ID ' + wsRemoteRoom.id + ' isAlive ' + wsRemoteRoom.isAlive);
+        console.log(color.green('Room.ID ' + wsRemoteRoom.id + ' isAlive ' + wsRemoteRoom.isAlive));
         if (wsRemoteRoom.isAlive === false) return wsRemoteRoom.terminate();
         wsRemoteRoom.isAlive = false;
         wsRemoteRoom.send(JSON.stringify({
@@ -121,7 +122,7 @@ wss.on('connection', function connection(ws, req) {
         //console.log('HandleID ' + ws._socket._handle.fd);
         ws.id = wss.getUniqueID();
         //wss.clients.forEach(function each(client) {
-        console.log('Client.ID: ' + ws.id + ' Connected');
+        console.log(color.green('Client.ID: ' + ws.id + ' Connected'));
         //});
     }
     wss.aSockets[userName].push(socketID);
