@@ -30,7 +30,6 @@ let httpsServer = https.createServer({
 });
 
 
-
 let noop = () => {};
 
 let wss = new WebSocketServer({
