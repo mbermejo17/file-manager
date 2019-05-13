@@ -110,7 +110,11 @@ UserModel.FindById = function(userId, callback) {
         if (err) {
             dbClose();
             if (process.env.NODE_ENV === 'dev') console.error(err.message);
-            callback(err.message, null);
+            callback({
+                status: "FAIL",
+                message: err.message,
+                data: null
+            });
         } else {
             if (row) {
                 if (global.db.open) dbClose();
@@ -321,7 +325,7 @@ UserModel.Add = function(userData, callback) {
     stmt.get(function(error, rows) {
         if (process.env.NODE_ENV === 'dev') console.log("error: ", error);
         if (error) {
-            dbClose();
+            //dbClose();
             callback({
                 status: "FAIL",
                 msg: `Error ${error}`,
@@ -342,7 +346,7 @@ UserModel.Add = function(userData, callback) {
                 stmt.bind(
                     null,
                     userData.userName,
-                    Base64.decode(userData.userPassword),
+                    userData.userPassword,
                     userData.userRole,
                     userData.companyName,
                     userData.rootPath.toUpperCase(),

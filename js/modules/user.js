@@ -702,14 +702,14 @@ export function showAddUserForm(title, data) {
                                     }
                                 } else {
                                     console.log('prop: ', prop);
-                                    if (oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
+                                    if (document.getElementById(prop) && oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
                                         queryString[prop] = document.getElementById(prop).value;
                                         console.warn(
                                             oldData[prop],
                                             document.getElementById(prop).value
                                         );
                                     } else {
-                                        console.log(oldData[prop], document.getElementById(prop).value);
+                                        console.log(oldData[prop], document.getElementById(prop)? document.getElementById(prop).value : "");
                                     }
                                 }
                             }
@@ -812,7 +812,9 @@ export function showAddUserForm(title, data) {
     const _addUser = () => {
         let AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
         let userName = document.querySelector("#UserName").value;
-        //let userFullName = document.querySelector("#UserFullName").value;
+        let userFullName = (document.querySelector("#UserFullName"))
+                            ?document.querySelector("#UserFullName").value
+                            : "";
         //let userEmail = document.querySelector("#UserEmail").value;
         let companyName = document.querySelector("#CompanyName").value;
         let userPassword = document.querySelector("#UserPasswd").value;

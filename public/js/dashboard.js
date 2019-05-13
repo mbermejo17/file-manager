@@ -3503,11 +3503,11 @@ function showAddUserForm(title, data) {
                                     }
                                 } else {
                                     console.log('prop: ', prop);
-                                    if (oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
+                                    if (document.getElementById(prop) && oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
                                         queryString[prop] = document.getElementById(prop).value;
                                         console.warn(oldData[prop], document.getElementById(prop).value);
                                     } else {
-                                        console.log(oldData[prop], document.getElementById(prop).value);
+                                        console.log(oldData[prop], document.getElementById(prop) ? document.getElementById(prop).value : "");
                                     }
                                 }
                             }
@@ -3590,7 +3590,7 @@ function showAddUserForm(title, data) {
     var _addUser = function _addUser() {
         var AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
         var userName = document.querySelector("#UserName").value;
-        //let userFullName = document.querySelector("#UserFullName").value;
+        var userFullName = document.querySelector("#UserFullName") ? document.querySelector("#UserFullName").value : "";
         //let userEmail = document.querySelector("#UserEmail").value;
         var companyName = document.querySelector("#CompanyName").value;
         var userPassword = document.querySelector("#UserPasswd").value;
