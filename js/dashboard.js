@@ -227,8 +227,14 @@ window.appData = {
     ////////////////////////////////////////
     const refreshPath = cPath => {
         let newLinePath = [];
-        let newHtmlContent = `<li><label id="currentpath">Path:</label></li>
-                              <li><spand>&nbsp;</spand><a class="breadcrumb-line-path" href="#!">/</a></li>`;
+        let newHtmlContent = `<li>
+                                <a id="Storage" href="#" title="Storage"><i class="fas fas-database"></i></a>    
+                                <label id="currentpath">Path:</label>
+                              </li>
+                              <li>
+                                <spand>&nbsp;</spand>
+                                <a class="breadcrumb-line-path" href="#!">/</a>
+                              </li>`;
 
         if (userData.RunMode === "DEBUG") console.log("init path: ", cPath);
         if (userData.RunMode === "DEBUG")

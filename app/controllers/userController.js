@@ -112,19 +112,19 @@ exports.UserAdd = (req, res) => {
                     Audit.Add({
                         userName: userName
                     }, {
-                        clientIP: clientIP || '',
-                        browserIP: browserIP || ''
-                    }, {
-                        fileName: rootPath || '',
-                        fileSize: 0
-                    }, {
-                        dateString: currentDate,
-                        unixDate: currentUnixDate
-                    }, response[0], 'Add User', 'OK', () => {
-                        if (process.env.NODE_ENV === 'dev') console.log(result);
-                        return res.status(200).json(response[0]);
+                            clientIP: clientIP || '',
+                            browserIP: browserIP || ''
+                        }, {
+                            fileName: rootPath || '',
+                            fileSize: 0
+                        }, {
+                            dateString: currentDate,
+                            unixDate: currentUnixDate
+                        }, response[0], 'Add User', 'OK', () => {
+                            if (process.env.NODE_ENV === 'dev') console.log(result);
+                            return res.status(200).json(response[0]);
 
-                    });
+                        });
 
                 } else {
                     // audit
@@ -132,23 +132,23 @@ exports.UserAdd = (req, res) => {
                     Audit.Add({
                         userName: userName
                     }, {
-                        clientIP: clientIP || '',
-                        browserIP: browserIP || ''
-                    }, {
-                        fileName: rootPath || '',
-                        fileSize: 0
-                    }, {
-                        dateString: currentdate,
-                        unixDate: currentUnixDate
-                    }, response[0].message, 'Add User', 'FAIL', () => {
-                        return res
-                            .status(200)
-                            .json({
-                                status: "FAIL",
-                                message: response[0].message + ".<br>Error al crear Carpeta.",
-                                data: null
-                            });
-                    });
+                            clientIP: clientIP || '',
+                            browserIP: browserIP || ''
+                        }, {
+                            fileName: rootPath || '',
+                            fileSize: 0
+                        }, {
+                            dateString: currentdate,
+                            unixDate: currentUnixDate
+                        }, response[0].message, 'Add User', 'FAIL', () => {
+                            return res
+                                .status(200)
+                                .json({
+                                    status: "FAIL",
+                                    message: response[0].message + ".<br>Error al crear Carpeta.",
+                                    data: null
+                                });
+                        });
 
                 }
             });
@@ -159,20 +159,20 @@ exports.UserAdd = (req, res) => {
             Audit.Add({
                 userName: userName
             }, {
-                clientIP: clientIP || '',
-                browserIP: browserIP || ''
-            }, {
-                fileName: rootPath || '',
-                fileSize: 0
-            }, {
-                dateString: currentDate,
-                unixDate: currentUnixDate
-            }, response[0], 'Add User', 'FAIL', () => {
+                    clientIP: clientIP || '',
+                    browserIP: browserIP || ''
+                }, {
+                    fileName: rootPath || '',
+                    fileSize: 0
+                }, {
+                    dateString: currentDate,
+                    unixDate: currentUnixDate
+                }, response[0], 'Add User', 'FAIL', () => {
 
-                if (process.env.NODE_ENV === 'dev') console.log('hola2');
-                return res.status(200).json(response[0]);
+                    if (process.env.NODE_ENV === 'dev') console.log('hola2');
+                    return res.status(200).json(response[0]);
 
-            });
+                });
 
         }
     });
@@ -373,13 +373,10 @@ exports.UserRemove = (req, res, next) => {
     let currentUnixDate = moment().format('x');
     User.Remove(userId,
         (d) => {
-            if (process.env.NODE_ENV === 'dev') console.log(d);
-            if (d.status == 'FAIL') {
-                // audit
-                global.logger.error(`[${userName}] userController::UserController UserRemove() ->Delete user error. ${d.message}`);
-                Audit.Add({
-                    userName: userName
-                }, {
+            let action = "Delete User";
+            let AuditAdd = Audit.Add({
+                userName: userName
+            }, {
                     clientIP: clientIP || '',
                     browserIP: browserIP || ''
                 }, {
@@ -388,43 +385,23 @@ exports.UserRemove = (req, res, next) => {
                 }, {
                     dateString: currentDate,
                     unixDate: currentUnixDate
-                }, response[0], 'Delete User', 'FAIL', () => {
+                }, d.message, action, d.status);
 
+            if (process.env.NODE_ENV === 'dev') console.log(d);
+            // audit
+            global.logger.error(`[${userName}] userController::UserController UserRemove() ->${action} ${d.status}. ${d.message}`);
+                console.log("===== Promise ========\n"); 
+                console.log(AuditAdd); 
+                console.log("===== Promise End ========\n"); 
+                AuditAdd.then((data) => {
                     if (process.env.NODE_ENV === 'dev') console.log('hola2');
-                    res.status(500).json({
-                        status: "FAIL",
+                    res.status(200).json({
+                        status: d.status,
                         message: d.message,
                         data: d.data
                     });
                 });
-
-            } else {
-                global.logger.info(`[${userName}] userController::UserController UserRemove() ->User id:${userId} deleted successfully.`);
-                // audit
-                Audit.Add({
-                    userName: userName
-                }, {
-                    clientIP: clientIP || '',
-                    browserIP: browserIP || ''
-                }, {
-                    fileName: '',
-                    fileSize: 0
-                }, {
-                    dateString: currentDate,
-                    unixDate: currentUnixDate
-                }, d, 'Delete User', 'OK', () => {
-
-                    if (process.env.NODE_ENV === 'dev') console.log('hola2');
-                    return res.status(200).json({
-                        status: "OK",
-                        message: `User ${userName} removed`,
-                        data: d.data
-                    });
-                });
-
-            }
-        }
-    );
+        });
 };
 
 exports.UserLogin = (req, res, next) => {
@@ -477,16 +454,16 @@ exports.UserLogin = (req, res, next) => {
                             let wsPath = data.UserRole === "assistant" ? config.wssURL + "/room" : config.wssURL + "/client";
 
                             const token = jwt.sign({
-                                    UserName: data.UserName,
-                                    UserFullName: data.UserFullName || data.UserName,
-                                    UserEmail: data.UserEmail || '',
-                                    UserId: data._id,
-                                    Role: data.UserRole,
-                                    wssURL: wsPath,
-                                    RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
-                                    AccessString: data.AccessString,
-                                    MaxFileSize: settings.maxFileSize * 1024 * 1024
-                                },
+                                UserName: data.UserName,
+                                UserFullName: data.UserFullName || data.UserName,
+                                UserEmail: data.UserEmail || '',
+                                UserId: data._id,
+                                Role: data.UserRole,
+                                wssURL: wsPath,
+                                RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
+                                AccessString: data.AccessString,
+                                MaxFileSize: settings.maxFileSize * 1024 * 1024
+                            },
                                 JWT_KEY, {
                                     expiresIn: "24h"
                                 }

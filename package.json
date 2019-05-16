@@ -7,7 +7,7 @@
         "sass2": "node-sass scss/style.scss -o public/css && npx postcss public/css/style.css  --use autoprefixer -d public/css && npx postcss public/css/style.css --use postcss-csso -d public/css",
         "sass3": "node-sass scss/dashboard.scss -o public/css && npx postcss public/css/dashboard.css  --use autoprefixer -d public/css  && npx postcss public/css/dashboard.css --use postcss-csso -d public/css",
         "sass": "node-sass -o ./public/css/ ./scss/",
-        "pug": "pug -w -P -p ./app/pug/includes/ ./src/pug/pages/ -o ./public/",
+        "pug": "pug -w -P -p ./app/views/includes/ ./src/views/pages/ -o ./public/",
         "babel": "babel -w ./js/ -d ./public/js/",
         "browserify1": "browserify ./js/dashboard.js -o ./public/js/dashboard.js -t [ babelify --presets [ env ] ] -d ",
         "browserify2": "browserify ./js/logon.js -o ./public/js/logon.js -t [ babelify --presets [ env ] ] -d ",

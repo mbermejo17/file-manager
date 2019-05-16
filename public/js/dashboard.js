@@ -253,7 +253,7 @@ window.appData = {
     ////////////////////////////////////////
     var refreshPath = function refreshPath(cPath) {
         var newLinePath = [];
-        var newHtmlContent = "<li><label id=\"currentpath\">Path:</label></li>\n                              <li><spand>&nbsp;</spand><a class=\"breadcrumb-line-path\" href=\"#!\">/</a></li>";
+        var newHtmlContent = "<li>\n                                <a id=\"Storage\" href=\"#\" title=\"Storage\"><i class=\"fas fas-database\"></i></a>    \n                                <label id=\"currentpath\">Path:</label>\n                              </li>\n                              <li>\n                                <spand>&nbsp;</spand>\n                                <a class=\"breadcrumb-line-path\" href=\"#!\">/</a>\n                              </li>";
 
         if (userData.RunMode === "DEBUG") console.log("init path: ", cPath);
         if (userData.RunMode === "DEBUG") console.log("cPath lenght:", cPath.length);

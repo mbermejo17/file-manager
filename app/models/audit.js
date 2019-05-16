@@ -31,7 +31,7 @@ let dbOpen = function() {
 /////////////////////////////////////////
 
 let dbClose = function() {
-    if (!global.db == null || global.db.open) {
+    if (!global.db == null && global.db.open) {
         global.db.close(err => {
             if (err) {
                 if (process.env.NODE_ENV === 'dev') console.error(err.message);
@@ -187,7 +187,7 @@ AuditModel.All = function(callback) {
 };
 
 
-const _insert = async(data, callback) => {
+/* const _insert = async(data, callback) => {
     dbOpen();
     try {
         //db.configure("busyTimeout", 60000);
@@ -213,6 +213,31 @@ const _insert = async(data, callback) => {
 AuditModel.Add = function(data, callback) {
     let response = {};
     _insert(data, callback);
+}; */
+
+AuditModel.Add = function(data) {
+    return new Promise((resolve,reject)=>{
+        dbOpen();
+        try {
+            //db.configure("busyTimeout", 60000);
+            let sql = `INSERT INTO Audit (BrowserIP,ClientIP,UserName,FileName,Size,DateString,UnixDate,Message,Action,Result) VALUES ('${data.browserIP}','${data.clientIP}','${data.userName}','${data.fileName}',${data.fileSize},'${data.dateString}',${data.unixDate},'${data.message}','${data.action}','${data.result}');`;
+            if (process.env.NODE_ENV === 'dev') console.log('Audit add:', sql);
+            global.db.run(sql);
+            resolve({
+                status: "OK",
+                message: `Registro añadido`,
+                data: null
+            });
+        } catch (e) {
+            if (process.env.NODE_ENV === 'dev') console.log('ERROR :', e);
+            reject({
+                status: "FAIL",
+                message: e,
+                data: null
+            });
+        }
+    });     
 };
+
 
 module.exports = AuditModel;

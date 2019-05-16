@@ -41,7 +41,7 @@ UserModel.Open = function() {
 /////////////////////////////////////////
 
 let dbClose = function() {
-    if (!global.db == null || global.db.open) {
+    if (!global.db == null && global.db.open) {
         global.db.close(err => {
             if (err) {
                 if (process.env.NODE_ENV === 'dev') console.error(err.message);
@@ -185,7 +185,7 @@ UserModel.Remove = function(userId, callback) {
     dbOpen();
     let stmt = global.db.prepare(sql);
     stmt.bind(userId);
-    stmt.run(function(err, row) {
+    stmt.run(function(err) {
         if (err) {
             dbClose();
             if (process.env.NODE_ENV === 'dev') console.error(err.message);
@@ -196,11 +196,11 @@ UserModel.Remove = function(userId, callback) {
             });
         } else {
             dbClose();
-            if (process.env.NODE_ENV === 'dev') console.log(row);
+            if (process.env.NODE_ENV === 'dev') console.log(this.changes);
             callback({
                 status: "OK",
-                message: `1 registro encontrado`,
-                data: row
+                message: `${this.changes} registro encontrado`,
+                data: this.changes
             });
         }
     });

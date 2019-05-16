@@ -8,7 +8,8 @@ html(lang="es")
     title Document
     //link(type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons")
     //link(type="text/css" rel="stylesheet" href="css/materialize.css" media="screen,projection")
-    link(type="text/css" rel="stylesheet" href="css/fontawesome.all.min.css" media="screen,projection")
+    //link(type="text/css" rel="stylesheet" href="css/fontawesome.all.min.css" media="screen,projection")
+    link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous")
     link(type="text/css" rel="stylesheet" href="css/dashboard.css" media="screen,projection")
   body
     #waiting.preloader-wrapper.active
@@ -82,6 +83,8 @@ html(lang="es")
         .line-path
           ul#currentPath.path.left
             li
+              a#Storage(href="#",title="Storage")
+                i.fas.fas-database
               label#currentpath Path:
             li
               a.breadcrumb-line-path(href="#!") \
