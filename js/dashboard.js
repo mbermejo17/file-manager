@@ -228,7 +228,6 @@ window.appData = {
     const refreshPath = cPath => {
         let newLinePath = [];
         let newHtmlContent = `<li>
-                                <a id="Storage" href="#" title="Storage"><i class="fas fas-database"></i></a>    
                                 <label id="currentpath">Path:</label>
                               </li>
                               <li>

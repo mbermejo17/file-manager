@@ -115,7 +115,8 @@ let htmlUploadDownloadTemplate = `
             <div class="li-filename" id="li-filename0"></div>
             <div class="progress-content">
                 <div class="progress-bar" id="progress-bar0"></div>
-                <div class="percent" id="percent0"></div>               
+                <div class="percent" id="percent0"></div>
+                <div id="speedData0"></div>               
             </div>
             <div class="abort-task">
                   <a class="file-abort" id="abort0" href="#" title="Cancel file download"></a>
@@ -247,7 +248,7 @@ export function shareFile() {
         let groupID = null;
         let data = {};
         if (d.FileExpirateDate === "") {
-            strTime = moment('01/01/1970 01:00:01').format("YYYY/MM/DD HH:mm:ss");
+            strTime = moment(Date.now()).format("YYYY/MM/DD HH:mm:ss");
         } else {
             strTime = moment(d.FileExpirateDate).format("YYYY/MM/DD HH:mm:ss");
         }
@@ -1385,11 +1386,12 @@ let _Download_small_files = function(fileList, text) {
         let percentLabel = document.querySelector("#percent" + i);
         let downloadData = {
             "name": fileList.name[i],
-            "path": appData.currentPath,
+            "path": getRealPath(appData.currentPath),
             "size": fileList.size[i],
             "fullsize": fileList.fullsize[i],
             "userName": userData.UserName
         };
+
         responseTimeout[i] = false;
         fName = fName.split("\\").pop().split("/").pop();
         console.log('file Name: ', fName);
