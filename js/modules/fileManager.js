@@ -901,6 +901,7 @@ export function upload(Token) {
         let progressBar = document.querySelector("#progress-bar" + nFile);
         let percentLabel = document.querySelector("#percent" + nFile);
         let speedData = document.querySelector("#speedData" + nFile);
+        let started_at = new Date();
 
         document.querySelector("#upload-input").disabled = true;
 
@@ -922,6 +923,7 @@ export function upload(Token) {
                     let seconds_elapsed = (new Date().getTime() - started_at.getTime()) / 1000;
                     let bytes_per_second = 0;
                     let Kbytes_per_second = 0;
+                    let Mbytes_per_second = 0;
                     //aListHandler[nFile].upload.addEventListener(
                     //  "progress",
                     //  function(evt) {
@@ -960,12 +962,13 @@ export function upload(Token) {
                         if (evt.lengthComputable) {
                             bytes_per_second = seconds_elapsed ? evt.loaded / seconds_elapsed : 0;
                             Kbytes_per_second = bytes_per_second / 1000;
+                            Mbytes_per_second = Kbytes_per_second / 1000;
                             if (progressBar.style.width !== "100%") {
                                 percentComplete = evt.loaded / evt.total;
                                 percentComplete = parseInt(percentComplete * 100);
                                 percentLabel.innerHTML = percentComplete + "%";
                                 progressBar.style.width = percentComplete + "%";
-                                speedData.innerHTML = Kbytes_per_second + ' bits/s';
+                                speedData.innerHTML = Mbytes_per_second.toFixed(2) + ' Mbits/s';
                             }
                         }
                     }
@@ -983,6 +986,7 @@ export function upload(Token) {
 
                 if (data.data.status == "OK") {
                     showToast("Upload", fileName + " uploaded sucessfully", "success");
+                    document.querySelector("#speedData" + nFile).innerHTML="";
                     //audit(userData.UserName,'UPLOAD',uploadFiles[nFile].fileName + ' [' + uploadFiles[nFile].fileSize +']','OK');
                     if (userData.RunMode === "DEBUG")
                         console.log("ocultando abort", nFile);

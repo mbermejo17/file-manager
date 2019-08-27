@@ -253,7 +253,7 @@ window.appData = {
     ////////////////////////////////////////
     var refreshPath = function refreshPath(cPath) {
         var newLinePath = [];
-        var newHtmlContent = "<li>\n                                <a id=\"Storage\" href=\"#\" title=\"Storage\"><i class=\"fas fas-database\"></i></a>    \n                                <label id=\"currentpath\">Path:</label>\n                              </li>\n                              <li>\n                                <spand>&nbsp;</spand>\n                                <a class=\"breadcrumb-line-path\" href=\"#!\">/</a>\n                              </li>";
+        var newHtmlContent = "<li>\n                                <label id=\"currentpath\">Path:</label>\n                              </li>\n                              <li>\n                                <spand>&nbsp;</spand>\n                                <a class=\"breadcrumb-line-path\" href=\"#!\">/</a>\n                              </li>";
 
         if (userData.RunMode === "DEBUG") console.log("init path: ", cPath);
         if (userData.RunMode === "DEBUG") console.log("cPath lenght:", cPath.length);
@@ -1916,7 +1916,7 @@ var htmlShareFile = "\n<div id=\"shareFileModal\">\n  <div id=\"modal-header\">\
 
 var htmlSearchSharedFilesTemplate = "\n<div>\n      <div class=\"head-Title\">Edit Shared Files</div> \n      <table id=\"SharedFilesTableList\" class=\"tableList\">\n        <thead>\n          <tr>\n            <th>Id</th>\n            <th>User</th>\n            <th>Dest User Name</th>\n            <th>File Name</th>\n            <th>State</th>\n            <th data-type=\"date\" data-format=\"YYYY/MM/DD\">Expirate Date</th>\n            <th>Delete</div>\n            <th>Group Id</th>\n            <th></th>\n          </tr>\n        </thead>\n        <tbody id=\"bodyList\">    \n        </tbody>\n      </table>\n      <div class=\"AddUserModalContent-footer\">\n        <div class=\"button-container\">\n            <button class=\"waves-effect waves-teal btn-flat btn2-unify\" id=\"btn-EditSharedFileCancel\" type=\"submit\" name=\"action\">Close</button>\n        </div> \n      </div>\n</div>\n";
 
-var htmlUploadDownloadTemplate = "\n<ul class=\"preloader-file\" id=\"DownloadfileList\">\n    <li id=\"li0\">\n        <div class=\"li-content\">\n            <div class=\"li-filename\" id=\"li-filename0\"></div>\n            <div class=\"progress-content\">\n                <div class=\"progress-bar\" id=\"progress-bar0\"></div>\n                <div class=\"percent\" id=\"percent0\"></div>               \n            </div>\n            <div class=\"abort-task\">\n                  <a class=\"file-abort\" id=\"abort0\" href=\"#\" title=\"Cancel file download\"></a>\n            </div>\n        </div>\n    </li>\n    <li id=\"li1\">\n        <div class=\"li-content\">\n            <div class=\"li-filename\" id=\"li-filename1\"></div>\n            <div class=\"progress-content\">\n                <div class=\"progress-bar\" id=\"progress-bar1\"></div>\n                <div class=\"percent\" id=\"percent1\"></div>\n                <div id=\"speedData1\"></div>\n            </div>\n            <div class=\"abort-task\">\n              <a class=\"file-abort\" id=\"abort1\" href=\"#\" title=\"Cancel file download\"></a>\n            </div> \n        </div>\n    </li>\n    <li id=\"li2\">\n        <div class=\"li-content\">\n            <div class=\"li-filename\" id=\"li-filename2\"></div>\n            <div class=\"progress-content\">\n                <div class=\"progress-bar\" id=\"progress-bar2\"></div>\n                <div class=\"percent\" id=\"percent2\"></div>\n                <div id=\"speedData2\"></div>\n            </div>  \n            <div class=\"abort-task\">\n              <a class=\"file-abort\" id=\"abort2\" href=\"#\" title=\"Cancel file download\"></a>\n            </div> \n        </div>\n    </li>\n    <li id=\"li3\">\n        <div class=\"li-content\">\n            <div class=\"li-filename\" id=\"li-filename3\"></div>\n            <div class=\"progress-content\">\n                <div class=\"progress-bar\" id=\"progress-bar3\"></div>\n                <div class=\"percent\" id=\"percent3\"></div>\n                <div id=\"speedData3\"></div>\n            </div>\n            <div class=\"abort-task\">\n                  <a class=\"file-abort\" id=\"abort3\" href=\"#\" title=\"Cancel file download\"></a>\n                </div>   \n        </div>\n    </li>\n    <li id=\"li4\">\n        <div class=\"li-content\">\n            <div class=\"li-filename\" id=\"li-filename4\"></div>\n            <div class=\"progress-content\">\n                <div class=\"progress-bar\" id=\"progress-bar4\"></div>\n                <div class=\"percent\" id=\"percent4\"></div>\n                <div id=\"speedData4\"></div>  \n            </div>\n            <div class=\"abort-task\">\n                  <a class=\"file-abort\" id=\"abort4\" href=\"#\" title=\"Cancel file download\"></a>\n                </div> \n        </div>\n    </li>\n</ul>";
+var htmlUploadDownloadTemplate = "\n<ul class=\"preloader-file\" id=\"DownloadfileList\">\n    <li id=\"li0\">\n        <div class=\"li-content\">\n            <div class=\"li-filename\" id=\"li-filename0\"></div>\n            <div class=\"progress-content\">\n                <div class=\"progress-bar\" id=\"progress-bar0\"></div>\n                <div class=\"percent\" id=\"percent0\"></div>\n                <div id=\"speedData0\"></div>               \n            </div>\n            <div class=\"abort-task\">\n                  <a class=\"file-abort\" id=\"abort0\" href=\"#\" title=\"Cancel file download\"></a>\n            </div>\n        </div>\n    </li>\n    <li id=\"li1\">\n        <div class=\"li-content\">\n            <div class=\"li-filename\" id=\"li-filename1\"></div>\n            <div class=\"progress-content\">\n                <div class=\"progress-bar\" id=\"progress-bar1\"></div>\n                <div class=\"percent\" id=\"percent1\"></div>\n                <div id=\"speedData1\"></div>\n            </div>\n            <div class=\"abort-task\">\n              <a class=\"file-abort\" id=\"abort1\" href=\"#\" title=\"Cancel file download\"></a>\n            </div> \n        </div>\n    </li>\n    <li id=\"li2\">\n        <div class=\"li-content\">\n            <div class=\"li-filename\" id=\"li-filename2\"></div>\n            <div class=\"progress-content\">\n                <div class=\"progress-bar\" id=\"progress-bar2\"></div>\n                <div class=\"percent\" id=\"percent2\"></div>\n                <div id=\"speedData2\"></div>\n            </div>  \n            <div class=\"abort-task\">\n              <a class=\"file-abort\" id=\"abort2\" href=\"#\" title=\"Cancel file download\"></a>\n            </div> \n        </div>\n    </li>\n    <li id=\"li3\">\n        <div class=\"li-content\">\n            <div class=\"li-filename\" id=\"li-filename3\"></div>\n            <div class=\"progress-content\">\n                <div class=\"progress-bar\" id=\"progress-bar3\"></div>\n                <div class=\"percent\" id=\"percent3\"></div>\n                <div id=\"speedData3\"></div>\n            </div>\n            <div class=\"abort-task\">\n                  <a class=\"file-abort\" id=\"abort3\" href=\"#\" title=\"Cancel file download\"></a>\n                </div>   \n        </div>\n    </li>\n    <li id=\"li4\">\n        <div class=\"li-content\">\n            <div class=\"li-filename\" id=\"li-filename4\"></div>\n            <div class=\"progress-content\">\n                <div class=\"progress-bar\" id=\"progress-bar4\"></div>\n                <div class=\"percent\" id=\"percent4\"></div>\n                <div id=\"speedData4\"></div>  \n            </div>\n            <div class=\"abort-task\">\n                  <a class=\"file-abort\" id=\"abort4\" href=\"#\" title=\"Cancel file download\"></a>\n                </div> \n        </div>\n    </li>\n</ul>";
 
 var _getUID = function _getUID() {
     var uid = (0, _v2.default)();
@@ -1983,7 +1983,7 @@ function shareFile() {
         var groupID = null;
         var data = {};
         if (d.FileExpirateDate === "") {
-            strTime = (0, _moment2.default)('01/01/1970 01:00:01').format("YYYY/MM/DD HH:mm:ss");
+            strTime = (0, _moment2.default)(Date.now()).format("YYYY/MM/DD HH:mm:ss");
         } else {
             strTime = (0, _moment2.default)(d.FileExpirateDate).format("YYYY/MM/DD HH:mm:ss");
         }
@@ -2465,6 +2465,7 @@ function upload(Token) {
         var progressBar = document.querySelector("#progress-bar" + nFile);
         var percentLabel = document.querySelector("#percent" + nFile);
         var speedData = document.querySelector("#speedData" + nFile);
+        var started_at = new Date();
 
         document.querySelector("#upload-input").disabled = true;
 
@@ -2485,6 +2486,7 @@ function upload(Token) {
                 var seconds_elapsed = (new Date().getTime() - started_at.getTime()) / 1000;
                 var bytes_per_second = 0;
                 var Kbytes_per_second = 0;
+                var Mbytes_per_second = 0;
                 //aListHandler[nFile].upload.addEventListener(
                 //  "progress",
                 //  function(evt) {
@@ -2507,12 +2509,13 @@ function upload(Token) {
                     if (evt.lengthComputable) {
                         bytes_per_second = seconds_elapsed ? evt.loaded / seconds_elapsed : 0;
                         Kbytes_per_second = bytes_per_second / 1000;
+                        Mbytes_per_second = Kbytes_per_second / 1000;
                         if (progressBar.style.width !== "100%") {
                             percentComplete = evt.loaded / evt.total;
                             percentComplete = parseInt(percentComplete * 100);
                             percentLabel.innerHTML = percentComplete + "%";
                             progressBar.style.width = percentComplete + "%";
-                            speedData.innerHTML = Kbytes_per_second + ' bits/s';
+                            speedData.innerHTML = Mbytes_per_second.toFixed(2) + ' Mbits/s';
                         }
                     }
                 }
@@ -2527,6 +2530,7 @@ function upload(Token) {
 
             if (data.data.status == "OK") {
                 showToast("Upload", fileName + " uploaded sucessfully", "success");
+                document.querySelector("#speedData" + nFile).innerHTML = "";
                 //audit(userData.UserName,'UPLOAD',uploadFiles[nFile].fileName + ' [' + uploadFiles[nFile].fileSize +']','OK');
                 if (userData.RunMode === "DEBUG") console.log("ocultando abort", nFile);
                 if (userData.RunMode === "DEBUG") console.log("AUDIT: " + userData.UserName + ",UPLOAD,", uploadFiles[nFile].fileName + " [" + uploadFiles[nFile].fileSize + "],OK");
@@ -2852,11 +2856,12 @@ var _Download_small_files = function _Download_small_files(fileList, text) {
         var percentLabel = document.querySelector("#percent" + i);
         var downloadData = {
             "name": fileList.name[i],
-            "path": appData.currentPath,
+            "path": (0, _general.getRealPath)(appData.currentPath),
             "size": fileList.size[i],
             "fullsize": fileList.fullsize[i],
             "userName": userData.UserName
         };
+
         responseTimeout[i] = false;
         fName = fName.split("\\").pop().split("/").pop();
         console.log('file Name: ', fName);
@@ -3503,11 +3508,14 @@ function showAddUserForm(title, data) {
                                     }
                                 } else {
                                     console.log('prop: ', prop);
-                                    if (document.getElementById(prop) && oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
+                                    //if (document.getElementById(prop) && oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
+                                    if (oldData[prop].toUpperCase() !== document.getElementById(prop).value.toUpperCase()) {
+
                                         queryString[prop] = document.getElementById(prop).value;
                                         console.warn(oldData[prop], document.getElementById(prop).value);
                                     } else {
-                                        console.log(oldData[prop], document.getElementById(prop) ? document.getElementById(prop).value : "");
+                                        //console.log(oldData[prop], document.getElementById(prop)? document.getElementById(prop).value : "");
+                                        console.log(oldData[prop], document.getElementById(prop).value);
                                     }
                                 }
                             }
@@ -3590,7 +3598,7 @@ function showAddUserForm(title, data) {
     var _addUser = function _addUser() {
         var AccessSwitch = document.querySelectorAll(".AccessRightsSwitch");
         var userName = document.querySelector("#UserName").value;
-        var userFullName = document.querySelector("#UserFullName") ? document.querySelector("#UserFullName").value : "";
+        var userFullName = userName;
         //let userEmail = document.querySelector("#UserEmail").value;
         var companyName = document.querySelector("#CompanyName").value;
         var userPassword = document.querySelector("#UserPasswd").value;

@@ -4,7 +4,7 @@
     "dbName": "app.db",
     "dbPath": "./app/db",
     "jwtKey": "Ejz1IpiziX_niPnMw3TGss2UQ",
-    "repositoryPath": "./repository",
+    "repositoryPath": "Z:\\",
     "maxFileSize": 10000,
     "emailServer": "172.100.10.234",
     "emailPort": 25,
