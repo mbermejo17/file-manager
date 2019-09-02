@@ -48,7 +48,8 @@ window.userData = {
     Token: _jsCookie2.default.get("token"),
     AccessString: JSON.parse(_jsCookie2.default.get("AccessString")),
     RunMode: _jsCookie2.default.get("RunMode"),
-    MaxFileSize: _jsCookie2.default.get("MaxFileSize")
+    MaxFileSize: _jsCookie2.default.get("MaxFileSize"),
+    Repositories: _jsCookie2.default.get("Repositories")
 };
 
 //import ajax from "./vendor/ajax";
@@ -67,7 +68,8 @@ window.appData = {
         AllowDeleteFile = userData.AccessString.deletefile,
         AllowDeleteFolder = userData.AccessString.deletefolder,
         AllowNewFolder = userData.AccessString.addfolder,
-        AllowShareFile = userData.AccessString.sharefiles;
+        AllowShareFile = userData.AccessString.sharefiles,
+        AllowOtherRepositories = userData.AccessString.repositories;
 
     var aFolders = [];
     var aFiles = [];
@@ -87,6 +89,7 @@ window.appData = {
         _jsCookie2.default.remove("CompanyName");
         _jsCookie2.default.remove("AccessString");
         _jsCookie2.default.remove("MaxFileSize");
+        _jsCookie2.default.remove("Repositories");
         document.location.href = "/";
     };
 
@@ -576,6 +579,9 @@ window.appData = {
         ModalContent += userData.AccessString.upload === true ? "Allow" : "Deny";
         ModalContent += "</td></tr>\n                    <tr><td>Allow Download:</td><td>";
         ModalContent += userData.AccessString.download === true ? "Allow" : "Deny";
+        ModalContent += "</td></tr>";
+        ModalContent += "</td></tr>\n                    <tr><td>Allow Other repositories:</td><td>";
+        ModalContent += userData.AccessString.repositories !== "FTP" ? "Allow" : "Deny";
         ModalContent += "</td></tr>\n                </table>";
         var htmlContent = "" + ModalContent;
         /* $u("#modal")
@@ -737,6 +743,11 @@ window.appData = {
             $u("#settings").removeClass("hide");
         } else {
             $u("#settings").addClass("hide");
+        }
+        if (userData.AccessString.repositories !== "FTP") {
+            $u("#repositories").removeClass("hide");
+        } else {
+            $u("#repositories").addClass("hide");
         }
         $u("#usertrigger").html(userData.UserName);
     };

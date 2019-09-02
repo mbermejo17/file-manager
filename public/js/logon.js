@@ -51,6 +51,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         _jsCookie2.default.remove("CompanyName");
         _jsCookie2.default.remove("AccessString");
         _jsCookie2.default.remove("MaxFileSize");
+        _jsCookie2.default.remove("Repositories");
         document.location.href = "/";
     };
 
@@ -66,6 +67,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
         _jsCookie2.default.set("RunMode", data.RunMode);
         _jsCookie2.default.set("MaxFileSize", data.MaxFileSize);
         _jsCookie2.default.set("token", data.Token);
+        _jsCookie2.default.set("Repositories", data.Repositories);
         window.location.href = "/dashboard";
     };
 

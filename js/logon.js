@@ -45,6 +45,7 @@ import Cookies from "./vendor/js-cookie";
         Cookies.remove("CompanyName");
         Cookies.remove("AccessString");
         Cookies.remove("MaxFileSize");
+        Cookies.remove("Repositories");
         document.location.href = "/";
     };
 
@@ -60,6 +61,7 @@ import Cookies from "./vendor/js-cookie";
         Cookies.set("RunMode", data.RunMode);
         Cookies.set("MaxFileSize", data.MaxFileSize);
         Cookies.set("token", data.Token);
+        Cookies.set("Repositories", data.Repositories);
         window.location.href = "/dashboard";
     };
 

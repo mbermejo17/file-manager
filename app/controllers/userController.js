@@ -46,7 +46,8 @@ exports.Index = (req, res, next) => {
                 Token: req.cookies.token,
                 Role: req.cookies.UserRole,
                 wssURL: req.cookies.wssURL,
-                MaxFileSize: req.cookies.MaxFileSize
+                MaxFileSize: req.cookies.MaxFileSize,
+                Repositories: req.Repositories
             });
         }
     }
@@ -62,7 +63,8 @@ exports.Dashboard = (req, res, next) => {
         Token: req.cookies.token,
         Role: req.cookies.UserRole,
         wssURL: req.cookies.wssURL,
-        MaxFileSize: req.cookies.MaxFileSize
+        MaxFileSize: req.cookies.MaxFileSize,
+        Repositories: req.Repositories
     });
 };
 
@@ -299,7 +301,8 @@ exports.UserFindByName = (req, res, next) => {
                             RootPath: rootPath,
                             AccessString: data.AccessString,
                             ExpirateDate: data.ExpirateDate,
-                            MaxFileSize: settings.maxFileSize * 1024 * 1024
+                            MaxFileSize: settings.maxFileSize * 1024 * 1024,
+                            Repositories: data.Repositories
                         }
                     });
                 } else {
@@ -350,7 +353,8 @@ exports.UserFindById = (req, res, next) => {
                             RootPath: rootPath,
                             AccessString: d.data.AccessString,
                             ExpirateDate: d.data.ExpirateDate,
-                            MaxFileSize: settings.maxFileSize * 1024 * 1024
+                            MaxFileSize: settings.maxFileSize * 1024 * 1024,
+                            Repositories: d.data.Repositories
                         }
                     });
                 }
@@ -431,7 +435,7 @@ exports.UserLogin = (req, res, next) => {
     let browserIP = req.header('x-forwarded-for') || req.connection.remoteAddress;
     let clientIP = req.connection.remoteAddress;
     User.Find(
-        `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, UnixDate, UserEmail, UserFullName FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`,
+        `SELECT UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, UnixDate, UserEmail, UserFullName, Repositories FROM Users WHERE UPPER(UserName) = '${req.body.username.toUpperCase()}'`,
         (status, data) => {
             //console.log("User Find : " + status);
             //console.dir(data);
@@ -485,7 +489,8 @@ exports.UserLogin = (req, res, next) => {
                                     wssURL: wsPath,
                                     RootPath: data.UserRole.toUpperCase() === "ADMIN" ? "/" : data.RootPath,
                                     AccessString: data.AccessString,
-                                    MaxFileSize: settings.maxFileSize * 1024 * 1024
+                                    MaxFileSize: settings.maxFileSize * 1024 * 1024,
+                                    Repositories: data.Repositories
                                 },
                                 JWT_KEY, {
                                     expiresIn: "24h"
@@ -519,7 +524,8 @@ exports.UserLogin = (req, res, next) => {
                                     "RootPath": rootPath,
                                     "MaxFileSize": settings.maxFileSize * 1024 * 1024,
                                     "AccessString": data.AccessString,
-                                    "RunMode": "DEBUG"
+                                    "RunMode": "DEBUG",
+                                    "Repositories": data.Repositories
                                 }
                             });
                         });

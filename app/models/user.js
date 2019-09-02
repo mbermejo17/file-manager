@@ -64,7 +64,7 @@ UserModel.Close = function() {
 UserModel.CreateTable = function() {
     global.db.run("DROP TABLE IF EXISTS Users");
     global.db.run(
-        "CREATE TABLE 'Users' ( 'UserId' INTEGER PRIMARY KEY AUTOINCREMENT, 'UserName' NCHAR ( 55 ), 'UserPasswd' NCHAR ( 55 ), 'UserRole' NCHAR ( 55 ), 'CompanyName' TEXT, 'RootPath' TEXT, 'AccessString' TEXT, 'ExpirateDate' TEXT, 'UnixDate' NUMERIC, 'UserEmail' TEXT, 'UserFullName' TEXT )"
+        "CREATE TABLE 'Users' ( 'UserId' INTEGER PRIMARY KEY AUTOINCREMENT, 'UserName' NCHAR ( 55 ), 'UserPasswd' NCHAR ( 55 ), 'UserRole' NCHAR ( 55 ), 'CompanyName' TEXT, 'RootPath' TEXT, 'AccessString' TEXT, 'ExpirateDate' TEXT, 'UnixDate' NUMERIC, 'UserEmail' TEXT, 'UserFullName' TEXT, 'Repositories' TEXT  )"
     );
     if (process.env.NODE_ENV === 'dev') console.log("La tabla usuarios ha sido correctamente creada");
 };
@@ -102,7 +102,7 @@ UserModel.Find = function(queryString, callback) {
 /////////////////////////////////////////
 
 UserModel.FindById = function(userId, callback) {
-    let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName 
+    let sql = `SELECT UserId, UserName, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName, Repositories 
                FROM Users
                WHERE UserId  = ?`;
     dbOpen();
@@ -213,7 +213,7 @@ UserModel.Remove = function(userId, callback) {
 
 UserModel.FindByName = function(userName, callback) {
     if (process.env.NODE_ENV === 'dev') console.log(userName);
-    let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName 
+    let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName, Repositories 
                FROM Users
                WHERE UPPER(UserName)  = ?`;
     dbOpen();
@@ -283,7 +283,7 @@ UserModel.ChangePasswd = function(userData, callback) {
 /////////////////////////////////////////
 
 UserModel.All = function(callback) {
-    let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName  
+    let sql = `SELECT UserName, UserId, UserPasswd, UserRole, CompanyName, RootPath, AccessString, ExpirateDate, UnixDate, UserEmail, UserFullName, Repositories  
                FROM Users`;
     dbOpen();
     if (process.env.NODE_ENV === 'dev') console.log('db: ', global.db);

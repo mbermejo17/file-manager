@@ -4,6 +4,11 @@
     "dbName": "app.db",
     "dbPath": "./app/db",
     "jwtKey": "Ejz1IpiziX_niPnMw3TGss2UQ",
+    "repositories" : {
+        "FTP":"./repository",
+        "NAS3":"Z:\\",
+        "NAS2": "Y:\\"
+    },
     "repositoryPath": "Z:\\",
     "maxFileSize": 10000,
     "emailServer": "172.100.10.234",

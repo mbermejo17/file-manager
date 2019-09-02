@@ -38,7 +38,8 @@ window.userData = {
     Token: Cookies.get("token"),
     AccessString: JSON.parse(Cookies.get("AccessString")),
     RunMode: Cookies.get("RunMode"),
-    MaxFileSize: Cookies.get("MaxFileSize")
+    MaxFileSize: Cookies.get("MaxFileSize"),
+    Repositories: Cookies.get("Repositories")
 };
 
 window.appData = {
@@ -55,7 +56,8 @@ window.appData = {
         AllowDeleteFile = userData.AccessString.deletefile,
         AllowDeleteFolder = userData.AccessString.deletefolder,
         AllowNewFolder = userData.AccessString.addfolder,
-        AllowShareFile = userData.AccessString.sharefiles;
+        AllowShareFile = userData.AccessString.sharefiles,
+        AllowOtherRepositories = userData.AccessString.repositories;
 
     let aFolders = [];
     let aFiles = [];
@@ -75,6 +77,7 @@ window.appData = {
         Cookies.remove("CompanyName");
         Cookies.remove("AccessString");
         Cookies.remove("MaxFileSize");
+        Cookies.remove("Repositories");
         document.location.href = "/";
     };
 
@@ -627,6 +630,10 @@ window.appData = {
         ModalContent += `</td></tr>
                     <tr><td>Allow Download:</td><td>`;
         ModalContent += userData.AccessString.download === true ? "Allow" : "Deny";
+        ModalContent += `</td></tr>`;
+        ModalContent += `</td></tr>
+                    <tr><td>Allow Other repositories:</td><td>`;
+        ModalContent += userData.AccessString.repositories !== "FTP"  ? "Allow" : "Deny";
         ModalContent += `</td></tr>
                 </table>`;
         let htmlContent = `${ModalContent}`;
@@ -809,6 +816,11 @@ window.appData = {
         } else {
             $u("#settings").addClass("hide");
         }
+        if (userData.AccessString.repositories !== "FTP") {
+            $u("#repositories").removeClass("hide");
+        } else {
+            $u("#repositories").addClass("hide");
+        }
         $u("#usertrigger").html(userData.UserName);
     };
 
@@ -932,6 +944,48 @@ window.appData = {
         }
     });
 
+
+///////////////////////////////////
+    // Edit App Settings
+    ///////////////////////////////////
+
+    $u("#repositories").on("click", e => {
+        e.preventDefault();
+        if (userData.RunMode === "DEBUG") console.log(e);
+        console.log("setting left:", $u(e.target.id).position().left);
+        if (userData.RunMode === "DEBUG")
+            console.log("respositoriesdropdown left:", $u("#Repositoriesdropdown").css("left"));
+        if (userData.RunMode === "DEBUG")
+            console.log($u("#Repositoriesdropdown").css("display"));
+        let position = document.querySelector("#repositories").offsetLeft;
+        if (userData.RunMode === "DEBUG") console.log("position: ", position);
+        let newPosition = position + "px";
+        if ($u("#repositoriesdropdown").css("display") === "block") {
+            document.getElementById("settings").classList ?
+                document.getElementById("settings").classList.remove("selected") :
+                (document.getElementById("settings").className = "");
+            //document.getElementById('Settingdropdown').classList.remove('setting');
+            document.getElementById("repositoriesdropdown").style.display = "none";
+        } else {
+            if (!$u("#repositories").hasClass("selected")) {
+                $u("#repositories").addClass("selected");
+            }
+            //addClass(document.getElementById('Settingdropdown'),'setting');
+            document.getElementById("repositoriesdropdown").style.left = newPosition;
+            document.getElementById("repositoriesdropdown").style.display = "block";
+            if (userData.RunMode === "DEBUG")
+                console.log("newPosition: ", newPosition);
+            if (userData.RunMode === "DEBUG")
+                console.log(
+                    "Settingdropdown new position",
+                    document.getElementById("repositoriesdropdown").style.left
+                );
+        }
+    });
+
+
+
+
     ///////////////////////////////////
     // Hide User Options Panel
     ///////////////////////////////////
@@ -943,6 +997,11 @@ window.appData = {
     $u("#Settingdropdown").on("mouseleave", () => {
         $u("#Settingdropdown").hide();
         $u("#settings").removeClass("selected");
+    });
+
+    $u("#repositoriesdropdown").on("mouseleave", () => {
+        $u("#repositoriesdropdown").hide();
+        $u("#repositories").removeClass("selected");
     });
 
     ///////////////////////////////////

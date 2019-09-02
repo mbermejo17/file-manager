@@ -213,6 +213,7 @@ wssDelivery.on('connection', function(socket) {
 //  Cierra conexiones cuando la aplicacion es interrumpida
 // *******************************************************
 var Shutdown = function() {
+    console.log("Shutdown...");
     logger.info('Shutdown() -> Received kill signal, shutting down gracefully.');
     //console.log("Received kill signal, shutting down gracefully.");
 
