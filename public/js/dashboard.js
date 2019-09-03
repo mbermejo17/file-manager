@@ -855,6 +855,35 @@ window.appData = {
     });
 
     ///////////////////////////////////
+    // Edit App Settings
+    ///////////////////////////////////
+
+    document.getElementById("repositories").addEventListener("click", function (e) {
+        e.preventDefault();
+        if (userData.RunMode === "DEBUG") console.log(e);
+        console.log("setting left:", $u(e.target.id).position().left);
+        if (userData.RunMode === "DEBUG") console.log("Respositoriesdropdown left:", $u("#Repositoriesdropdown").css("left"));
+        if (userData.RunMode === "DEBUG") console.log($u("#Repositoriesdropdown").css("display"));
+        var position = document.querySelector("#repositories").offsetLeft;
+        if (userData.RunMode === "DEBUG") console.log("position: ", position);
+        var newPosition = position + "px";
+        if ($u("#Repositoriesdropdown").css("display") === "block") {
+            document.getElementById("repositories").classList ? document.getElementById("repositories").classList.remove("selected") : document.getElementById("repositories").className = "";
+            //document.getElementById('Settingdropdown').classList.remove('setting');
+            document.getElementById("Repositoriesdropdown").style.display = "none";
+        } else {
+            if (!$u("#repositories").hasClass("selected")) {
+                $u("#repositories").addClass("selected");
+            }
+            //addClass(document.getElementById('Settingdropdown'),'setting');
+            document.getElementById("Repositoriesdropdown").style.left = newPosition;
+            document.getElementById("Repositoriesdropdown").style.display = "block";
+            if (userData.RunMode === "DEBUG") console.log("newPosition: ", newPosition);
+            if (userData.RunMode === "DEBUG") console.log("Settingdropdown new position", document.getElementById("Repositoriesdropdown").style.left);
+        }
+    });
+
+    ///////////////////////////////////
     // Hide User Options Panel
     ///////////////////////////////////
 
@@ -865,6 +894,11 @@ window.appData = {
     $u("#Settingdropdown").on("mouseleave", function () {
         $u("#Settingdropdown").hide();
         $u("#settings").removeClass("selected");
+    });
+
+    $u("#Repositoriesdropdown").on("mouseleave", function () {
+        $u("#Repositoriesdropdown").hide();
+        $u("#repositories").removeClass("selected");
     });
 
     ///////////////////////////////////
