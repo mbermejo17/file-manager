@@ -19,7 +19,7 @@ const postcssPlugins = [
         core: false, // true for minified output
         autoprefixer: {
             add: true,
-            browsers: '> 1%, last 2 versions, Firefox ESR, Opera 12.1'
+            browsers: 'last 2 versions, Firefox ESR, Opera 12.1'
         }
     })
 ];
@@ -94,7 +94,7 @@ gulp.task('styles2', () =>
 
 gulp.task('styles', ['styles1', 'styles2']);
 
-gulp.task('build', ['jsindex', 'jsdashboard']);
+gulp.task('build', ['scripts', 'styles']);
 
 gulp.task('start', ['browser-sync'], function() {});
 

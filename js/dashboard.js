@@ -45,6 +45,7 @@ window.userData = {
 window.appData = {
     rootPath: "/",
     currentPath: "/",
+    currentRepository: "FTP",
     aSelectedFiles: { name: [], size: [], fullsize: [] },
     aSelectedFolders: []
 };
@@ -268,7 +269,7 @@ window.appData = {
             }
             $u("#waiting").removeClass("active");
         }
-
+        newHtmlContent = `<li><span>${appData.currentRepository}&nbsp;</span></li>` + newHtmlContent;
         $u("#currentPath").html(newHtmlContent);
 
         $u(".breadcrumb-line-path").on("click", e => {
@@ -293,7 +294,7 @@ window.appData = {
         }) */
 
         axios
-            .get("/files?path=" + encodeURI(realpath), {
+            .get("/files?path=" + encodeURI(realpath) + "&repo=" + appData.currentRepository, {
                 headers: {
                     Authorization: "Bearer " + userData.Token,
                     "Content-Type": "application/json"
@@ -946,8 +947,8 @@ window.appData = {
 
 
 ///////////////////////////////////
-    // Edit App Settings
-    ///////////////////////////////////
+// Respositories
+///////////////////////////////////
 
     document.getElementById("repositories").addEventListener("click", e => {
         e.preventDefault();
@@ -983,7 +984,27 @@ window.appData = {
         }
     });
 
-
+    document.querySelector('#RepoFTP').addEventListener('click',(e)=>{
+        e.preventDefault();
+        appData.currentRepository ="FTP";
+        document.getElementById("Repositoriesdropdown").style.display = "none";
+        //refresh
+        changePath("/");
+    });
+    document.querySelector('#RepoNAS2').addEventListener('click',(e)=>{
+        e.preventDefault();
+        appData.currentRepository ="NAS2";
+        document.getElementById("Repositoriesdropdown").style.display = "none";
+        //refresh
+        changePath("/");
+    });
+    document.querySelector('#RepoNAS3').addEventListener('click',(e)=>{e.preventDefault();
+        e.preventDefault();
+        appData.currentRepository ="NAS3";
+        document.getElementById("Repositoriesdropdown").style.display = "none";
+        //refresh
+        changePath("/");
+    });
 
 
     ///////////////////////////////////

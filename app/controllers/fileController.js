@@ -1,3 +1,4 @@
+
 const fs = require('fs'),
     fsextra = require('fs-extra'),
     mime = require('mime-type'),
@@ -6,7 +7,6 @@ const fs = require('fs'),
     md5File = require('md5-file'),
     settings = require('../config/config.json'),
     //pathPrefix = '.\\repository\\',
-    pathPrefix = settings.repositoryPath,
     repositories = settings.repositories,
     platform = require('os').platform,
     normalize = require('normalize-path'),
@@ -25,7 +25,7 @@ const fs = require('fs'),
 const Audit = require("../controllers/auditController");
 const log = global.logger;
 const base64 = require('base-64');
-
+let pathPrefix = settings.repositoryPath;
 
 
 let _getStats = (p) => {
@@ -101,22 +101,31 @@ const _formatSize = (bytes) => {
     return bytes;
 };
 
+let getPathPrefix = (repo,userdata) =>{
+    console.log("\n\n\n********** " + repo  +" ***********");
+    console.log("\n\n\n********** " + repositories[repo] +" ***********\n\n\n");
+    return repositories[repo];
+};
+
 class FileController {
     getFiles(req, res, next) {
-        let result = {},
-            response = [],
+        let result = {};
+        let response = [];
             // dirPath = req.body.dirPath
-            dirPath = req.query.path;
+        let dirPath = req.query.path;
+        let userData = JSON.parse(req.userData)    
+        let repository = (req.query.repo) ? req.query.repo : "FTP";            
+        let rPath = userData.RootPath;
 
         if (process.env.NODE_ENV === 'dev') console.log('fileController::req.userData: ', req.userData)
         if (process.env.NODE_ENV === 'dev') console.log('fileController::getFiles:dirPath: ', dirPath)
-        let userData = JSON.parse(req.userData)
         if (process.env.NODE_ENV === 'dev') console.log('fileController::getFiles:userData: ', userData)
-        let rPath = userData.RootPath
         if (process.env.NODE_ENV === 'dev') console.log('getFiles:dirPath.indexOf(rPath) ', dirPath.indexOf(rPath))
+        
         if (dirPath.indexOf(rPath) != 1 && rPath != '/') {
             return res.send(JSON.stringify({}))
         }
+        pathPrefix = getPathPrefix(repository,userData);
         dirPath = normalize(pathPrefix + dirPath)
         if (process.env.NODE_ENV === 'dev') console.log('fileController::getFiles:realPath ' + dirPath)
         response = (dirPath) => {

@@ -58,6 +58,7 @@ window.userData = {
 window.appData = {
     rootPath: "/",
     currentPath: "/",
+    currentRepository: "FTP",
     aSelectedFiles: { name: [], size: [], fullsize: [] },
     aSelectedFolders: []
 };
@@ -282,7 +283,7 @@ window.appData = {
             }
             $u("#waiting").removeClass("active");
         }
-
+        newHtmlContent = "<li><span>" + appData.currentRepository + "&nbsp;</span></li>" + newHtmlContent;
         $u("#currentPath").html(newHtmlContent);
 
         $u(".breadcrumb-line-path").on("click", function (e) {
@@ -300,7 +301,7 @@ window.appData = {
           timeout: 720000
         }) */
 
-        _axios2.default.get("/files?path=" + encodeURI(realpath), {
+        _axios2.default.get("/files?path=" + encodeURI(realpath) + "&repo=" + appData.currentRepository, {
             headers: {
                 Authorization: "Bearer " + userData.Token,
                 "Content-Type": "application/json"
@@ -855,7 +856,7 @@ window.appData = {
     });
 
     ///////////////////////////////////
-    // Edit App Settings
+    // Respositories
     ///////////////////////////////////
 
     document.getElementById("repositories").addEventListener("click", function (e) {
@@ -881,6 +882,29 @@ window.appData = {
             if (userData.RunMode === "DEBUG") console.log("newPosition: ", newPosition);
             if (userData.RunMode === "DEBUG") console.log("Settingdropdown new position", document.getElementById("Repositoriesdropdown").style.left);
         }
+    });
+
+    document.querySelector('#RepoFTP').addEventListener('click', function (e) {
+        e.preventDefault();
+        appData.currentRepository = "FTP";
+        document.getElementById("Repositoriesdropdown").style.display = "none";
+        //refresh
+        changePath("/");
+    });
+    document.querySelector('#RepoNAS2').addEventListener('click', function (e) {
+        e.preventDefault();
+        appData.currentRepository = "NAS2";
+        document.getElementById("Repositoriesdropdown").style.display = "none";
+        //refresh
+        changePath("/");
+    });
+    document.querySelector('#RepoNAS3').addEventListener('click', function (e) {
+        e.preventDefault();
+        e.preventDefault();
+        appData.currentRepository = "NAS3";
+        document.getElementById("Repositoriesdropdown").style.display = "none";
+        //refresh
+        changePath("/");
     });
 
     ///////////////////////////////////
